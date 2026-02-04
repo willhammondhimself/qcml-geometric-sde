@@ -1,0 +1,12 @@
+{
+  "eigenvalue_chern_correlation": 0.03381897722957172,
+  "eigenvalue_shift_spike_alignment": 0.5454545454545454,
+  "fisher_berry_correlation": -0.0033952107115269563,
+  "fisher_metric_stability": 1.346955005228296e-09,
+  "optimal_lag_days": -18,
+  "lead_lag_correlation": 0.06429802077425852,
+  "chern_leads_correlation": false,
+  "explained_false_positives": 54,
+  "total_false_positives": 351,
+  "fp_explanation_rate": 0.15384615384615385
+}

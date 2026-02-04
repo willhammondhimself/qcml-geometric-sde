@@ -9,6 +9,7 @@ Modules:
     dynamics: SDEs on learned manifolds, neural SDE learning
     regime: Topological regime detection via Chern numbers
     trading: Trading signal generation from geometric features
+    data: Professional data pipeline for market data acquisition and processing
 """
 
 from .qcml_geometry import (
@@ -35,6 +36,13 @@ from .topological_regime import (
     analyze_historical_crises
 )
 
+from .improved_chern import (
+    ImprovedChernDetector,
+    ImprovedChernResult,
+    ThresholdMethod,
+    compare_detection_methods
+)
+
 from .trading_signals import (
     TopologicalTradingStrategy,
     EnsembleTopologicalStrategy,
@@ -42,6 +50,18 @@ from .trading_signals import (
     SignalType,
     backtest_topological_strategy,
     generate_synthetic_market_data
+)
+
+# Data pipeline (Phase 1)
+from .data import (
+    PolygonDataSource,
+    AlpacaDataSource,
+    UniverseManager,
+    ParquetDataStore,
+    CacheManager,
+    QCMLDataset,
+    load_crisis_dataset,
+    create_multi_timeframe_dataset
 )
 
 __version__ = "0.1.0"
@@ -69,6 +89,12 @@ __all__ = [
     "RegimeType",
     "analyze_historical_crises",
 
+    # Improved Chern
+    "ImprovedChernDetector",
+    "ImprovedChernResult",
+    "ThresholdMethod",
+    "compare_detection_methods",
+
     # Trading
     "TopologicalTradingStrategy",
     "EnsembleTopologicalStrategy",
@@ -76,4 +102,14 @@ __all__ = [
     "SignalType",
     "backtest_topological_strategy",
     "generate_synthetic_market_data",
+
+    # Data pipeline
+    "PolygonDataSource",
+    "AlpacaDataSource",
+    "UniverseManager",
+    "ParquetDataStore",
+    "CacheManager",
+    "QCMLDataset",
+    "load_crisis_dataset",
+    "create_multi_timeframe_dataset",
 ]

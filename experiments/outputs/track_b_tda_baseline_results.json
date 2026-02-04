@@ -1,0 +1,14 @@
+{
+  "tda_spikes_detected": 522,
+  "tda_precision": 0.017241379310344827,
+  "tda_recall": 0.6923076923076923,
+  "tda_f1": 0.033644859813084106,
+  "chern_spikes_detected": 368,
+  "chern_precision": 0.021739130434782608,
+  "chern_recall": 0.6153846153846154,
+  "chern_f1": 0.04199475065616798,
+  "agreement_rate": 0.047058823529411764,
+  "unique_tda_detections": 482,
+  "unique_chern_detections": 328,
+  "ripser_available": false
+}

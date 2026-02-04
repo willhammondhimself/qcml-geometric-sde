@@ -170,12 +170,22 @@ detector = TopologicalRegimeDetector(qcml, window_size=30)
 transitions = detector.detect_transitions(X)
 ```
 
-## Key Papers & References
+## References & Citations
 
-The framework builds on:
-- QCML from Qognitive research (Papers 1-7)
-- Your SDE learning notebook (`SDE/Lesson01_Learning_SDE.ipynb`)
-- Differential geometry and topological data analysis
+This work builds upon the QCML (Quantum Cognition Machine Learning) framework developed by Qognitive, Inc. and academic collaborators.
+
+**📚 See [REFERENCES.md](REFERENCES.md) for complete citations** of:
+- 7 core QCML research papers (Scientific Reports, arXiv)
+- Financial applications (equity forecasting, corporate bonds, firm linkages)
+- Biomedical validation (cancer prediction)
+- Theoretical foundations (quantum geometry, intrinsic dimension)
+
+**Key papers**:
+1. **Candelori et al. (2025)** - Intrinsic dimension with spectral gap detection (*Scientific Reports*)
+2. **Abanov et al. (2025)** - Quantum geometry of data (arXiv:2507.21135)
+3. **Samson et al. (2024)** - Financial forecasting with QCML
+4. **Rosaler et al. (2025)** - Corporate bond similarity (arXiv:2502.01495)
+5. **Samson et al. (2025)** - Firm linkages and momentum spillover (arXiv:2506.19856)
 
 ## Testing Hypotheses
 

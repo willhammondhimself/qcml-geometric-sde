@@ -1,0 +1,306 @@
+======================================================================
+HONEST ASSESSMENT: Is the Chern Number Signal Actually Useful?
+======================================================================
+
+1. DETECTION PERFORMANCE
+----------------------------------------
+   Precision: 7.3%
+   Recall: 78.3%
+   F1 Score: 13.3%
+   Total Spikes Detected: 247
+   True Positives: 18
+   False Positives: 229
+   Major Events Detected: 13/11
+
+   ⚠️ LOW PRECISION: Too many false alarms for practical trading
+   ✓ GOOD RECALL: Catches most major events
+
+2. CHERN VS SIMPLE VOLATILITY
+----------------------------------------
+   Correlation with Realized Vol: 0.168
+   R² (variance explained by vol): 2.8%
+   Unique Information in Chern: 97.2%
+
+   ✓ LOW CORRELATION: Chern is distinct from volatility
+      The signal captures something genuinely different
+
+3. BLIND DETECTION TEST (Would this work in practice?)
+----------------------------------------
+   ⚠️ NOT SIGNIFICANT at 20-day horizon (p=0.2548)
+   ✓ 5d: Returns worse after spikes (as expected for risk signal)
+   ✓ 10d: Returns worse after spikes (as expected for risk signal)
+   ✓ 20d: Returns worse after spikes (as expected for risk signal)
+
+4. OVERALL VERDICT
+----------------------------------------
+   ~ ACADEMICALLY INTERESTING, MARGINALLY USEFUL
+   The signal has some value but isn't reliable enough alone
+   Recommendation: Combine with other signals, use as confirmation
+
+5. FALSE POSITIVE ANALYSIS
+----------------------------------------
+   False Positives: 229
+   Dates with unexplained spikes:
+      2006-05-15: σ=2.8, No known event (closest: Lehman Collapse at 854 days)
+      2006-05-31: σ=2.2, No known event (closest: Lehman Collapse at 838 days)
+      2006-06-12: σ=3.4, No known event (closest: Lehman Collapse at 826 days)
+      2006-07-05: σ=5.3, No known event (closest: Lehman Collapse at 803 days)
+      2006-07-10: σ=3.8, No known event (closest: Lehman Collapse at 798 days)
+      2006-08-01: σ=2.5, No known event (closest: Lehman Collapse at 776 days)
+      2006-11-27: σ=2.1, No known event (closest: Lehman Collapse at 658 days)
+      2006-12-15: σ=2.1, No known event (closest: Lehman Collapse at 640 days)
+      2006-12-26: σ=3.6, No known event (closest: Lehman Collapse at 629 days)
+      2007-01-25: σ=2.7, No known event (closest: Lehman Collapse at 599 days)
+
+======================================================================
+
+CLASSIFIED SPIKES:
+----------------------------------------------------------------------
+                   date  delta_chern  chern_value  threshold  sigma_magnitude            classification                                                   matched_event  distance_days
+0   2006-05-15 04:00:00     0.018792     0.056044   0.013653         2.752732            FALSE_POSITIVE           No known event (closest: Lehman Collapse at 854 days)            854
+1   2006-05-31 04:00:00     0.011654     0.070400   0.010633         2.192104            FALSE_POSITIVE           No known event (closest: Lehman Collapse at 838 days)            838
+2   2006-06-12 04:00:00    -0.020081     0.042989   0.011855         3.387958            FALSE_POSITIVE           No known event (closest: Lehman Collapse at 826 days)            826
+3   2006-07-05 04:00:00     0.055708     0.143224   0.021146         5.268807            FALSE_POSITIVE           No known event (closest: Lehman Collapse at 803 days)            803
+4   2006-07-10 04:00:00     0.069581     0.357195   0.037087         3.752325            FALSE_POSITIVE           No known event (closest: Lehman Collapse at 798 days)            798
+5   2006-08-01 04:00:00    -0.053897     0.332802   0.043298         2.489605            FALSE_POSITIVE           No known event (closest: Lehman Collapse at 776 days)            776
+6   2006-11-27 05:00:00     0.002439     0.009616   0.002367         2.060615            FALSE_POSITIVE           No known event (closest: Lehman Collapse at 658 days)            658
+7   2006-12-15 05:00:00     0.004671     0.028768   0.004554         2.051077            FALSE_POSITIVE           No known event (closest: Lehman Collapse at 640 days)            640
+8   2006-12-26 05:00:00    -0.009497     0.017205   0.005267         3.606395            FALSE_POSITIVE           No known event (closest: Lehman Collapse at 629 days)            629
+9   2007-01-25 05:00:00     0.007849     0.026966   0.005790         2.711122            FALSE_POSITIVE           No known event (closest: Lehman Collapse at 599 days)            599
+10  2007-02-22 05:00:00    -0.014511     0.008935   0.007149         4.059282            FALSE_POSITIVE           No known event (closest: Lehman Collapse at 571 days)            571
+11  2007-02-27 05:00:00     0.021508     0.027432   0.008059         5.337801            FALSE_POSITIVE           No known event (closest: Lehman Collapse at 566 days)            566
+12  2007-03-26 04:00:00    -0.021573     0.069880   0.012678         3.403271            FALSE_POSITIVE           No known event (closest: Lehman Collapse at 539 days)            539
+13  2007-04-26 04:00:00    -0.054692     0.003924   0.025124         4.353793            FALSE_POSITIVE           No known event (closest: Lehman Collapse at 508 days)            508
+14  2007-06-08 04:00:00     0.043543     0.070807   0.025541         3.409659            FALSE_POSITIVE           No known event (closest: Lehman Collapse at 465 days)            465
+15  2007-06-13 04:00:00     0.036519     0.125744   0.027645         2.642010            FALSE_POSITIVE           No known event (closest: Lehman Collapse at 460 days)            460
+16  2007-06-20 04:00:00     0.041680     0.171250   0.028965         2.877989            FALSE_POSITIVE           No known event (closest: Lehman Collapse at 453 days)            453
+17  2007-07-06 04:00:00    -0.040468     0.205007   0.029180         2.773640            FALSE_POSITIVE           No known event (closest: Lehman Collapse at 437 days)            437
+18  2007-07-11 04:00:00     0.032571     0.244428   0.030219         2.155704            FALSE_POSITIVE           No known event (closest: Lehman Collapse at 432 days)            432
+19  2007-07-18 04:00:00    -0.040917     0.199754   0.032175         2.543412            FALSE_POSITIVE           No known event (closest: Lehman Collapse at 425 days)            425
+20  2007-07-23 04:00:00     0.033715     0.203802   0.030248         2.229197            FALSE_POSITIVE           No known event (closest: Lehman Collapse at 420 days)            420
+21  2007-08-07 04:00:00    -0.069221     0.305304   0.042104         3.288068            FALSE_POSITIVE           No known event (closest: Lehman Collapse at 405 days)            405
+22  2007-08-20 04:00:00    -0.055102     0.197910   0.047252         2.332231            FALSE_POSITIVE           No known event (closest: Lehman Collapse at 392 days)            392
+23  2007-11-01 04:00:00     0.060517     0.187644   0.041977         2.883358            FALSE_POSITIVE           No known event (closest: Lehman Collapse at 319 days)            319
+24  2007-11-16 05:00:00    -0.033813     0.174789   0.032971         2.051054            FALSE_POSITIVE           No known event (closest: Lehman Collapse at 304 days)            304
+25  2007-11-28 05:00:00    -0.033752     0.132985   0.033115         2.038430            FALSE_POSITIVE           No known event (closest: Lehman Collapse at 292 days)            292
+26  2007-12-27 05:00:00     0.044026     0.151911   0.034510         2.551434            FALSE_POSITIVE           No known event (closest: Lehman Collapse at 263 days)            263
+27  2008-01-25 05:00:00    -0.047946     0.030329   0.036024         2.661860            FALSE_POSITIVE           No known event (closest: Lehman Collapse at 234 days)            234
+28  2008-02-21 05:00:00     0.041483     0.090786   0.030877         2.686934            FALSE_POSITIVE           No known event (closest: Lehman Collapse at 207 days)            207
+29  2008-03-06 05:00:00     0.045351     0.179745   0.028961         3.131851            FALSE_POSITIVE           No known event (closest: Lehman Collapse at 193 days)            193
+30  2008-04-03 04:00:00    -0.047532     0.103396   0.030251         3.142481            FALSE_POSITIVE           No known event (closest: Lehman Collapse at 165 days)            165
+31  2008-05-07 04:00:00     0.054869     0.158219   0.031550         3.478291            FALSE_POSITIVE           No known event (closest: Lehman Collapse at 131 days)            131
+32  2008-06-04 04:00:00    -0.061491     0.114979   0.032987         3.728146            FALSE_POSITIVE           No known event (closest: Lehman Collapse at 103 days)            103
+33  2008-07-03 04:00:00    -0.064017     0.024023   0.038340         3.339433            FALSE_POSITIVE            No known event (closest: Lehman Collapse at 74 days)             74
+34  2008-08-08 04:00:00     0.043129     0.173905   0.038178         2.259341            FALSE_POSITIVE            No known event (closest: Lehman Collapse at 38 days)             38
+35  2008-08-29 04:00:00     0.040949     0.249967   0.035896         2.281513            FALSE_POSITIVE            No known event (closest: Lehman Collapse at 17 days)             17
+36  2008-09-05 04:00:00    -0.037176     0.174460   0.034820         2.135319             TRUE_POSITIVE                                                 Lehman Collapse             10
+37  2008-09-26 04:00:00    -0.040378     0.103563   0.037079         2.177942             TRUE_POSITIVE                                        Market Crash Accelerates             10
+38  2009-01-07 05:00:00     0.023838     0.047630   0.010538         4.524393            FALSE_POSITIVE   No known event (closest: Market Crash Accelerates at 93 days)             93
+39  2009-01-21 05:00:00     0.019791     0.084367   0.011434         3.461743            FALSE_POSITIVE  No known event (closest: Market Crash Accelerates at 107 days)            107
+40  2009-01-29 05:00:00     0.017310     0.107441   0.012030         2.877671            FALSE_POSITIVE  No known event (closest: Market Crash Accelerates at 115 days)            115
+41  2009-02-04 05:00:00    -0.025650     0.082818   0.013856         3.702170            FALSE_POSITIVE  No known event (closest: Market Crash Accelerates at 121 days)            121
+42  2009-02-18 05:00:00    -0.019528     0.044490   0.014825         2.634424            FALSE_POSITIVE  No known event (closest: Market Crash Accelerates at 135 days)            135
+43  2009-02-26 05:00:00    -0.017268     0.031796   0.015678         2.202736            FALSE_POSITIVE  No known event (closest: Market Crash Accelerates at 143 days)            143
+44  2009-05-11 04:00:00     0.019860     0.086560   0.011387         3.488202            FALSE_POSITIVE  No known event (closest: Market Crash Accelerates at 217 days)            217
+45  2009-05-27 04:00:00     0.025152     0.149490   0.011752         4.280491            FALSE_POSITIVE  No known event (closest: Market Crash Accelerates at 233 days)            233
+46  2009-06-08 04:00:00    -0.017583     0.152378   0.013613         2.583368            FALSE_POSITIVE  No known event (closest: Market Crash Accelerates at 245 days)            245
+47  2009-06-22 04:00:00     0.019039     0.144608   0.015553         2.448326            FALSE_POSITIVE  No known event (closest: Market Crash Accelerates at 259 days)            259
+48  2009-07-20 04:00:00    -0.025940     0.089398   0.018122         2.862799            FALSE_POSITIVE  No known event (closest: Market Crash Accelerates at 287 days)            287
+49  2009-08-18 04:00:00     0.059935     0.088639   0.023823         5.031770            FALSE_POSITIVE               No known event (closest: Flash Crash at 261 days)            261
+50  2009-08-31 04:00:00     0.026469     0.111069   0.023251         2.276801            FALSE_POSITIVE               No known event (closest: Flash Crash at 248 days)            248
+51  2009-09-15 04:00:00    -0.059941     0.057836   0.027759         4.318678            FALSE_POSITIVE               No known event (closest: Flash Crash at 233 days)            233
+52  2009-10-16 04:00:00     0.041971     0.164145   0.028427         2.952882            FALSE_POSITIVE               No known event (closest: Flash Crash at 202 days)            202
+53  2009-10-22 04:00:00     0.054558     0.275736   0.032768         3.329985            FALSE_POSITIVE               No known event (closest: Flash Crash at 196 days)            196
+54  2009-10-29 04:00:00     0.066003     0.319022   0.037005         3.567242            FALSE_POSITIVE               No known event (closest: Flash Crash at 189 days)            189
+55  2009-11-18 05:00:00    -0.053640     0.251020   0.041771         2.568299            FALSE_POSITIVE               No known event (closest: Flash Crash at 169 days)            169
+56  2009-11-25 05:00:00    -0.067983     0.189084   0.045510         2.987597            FALSE_POSITIVE               No known event (closest: Flash Crash at 162 days)            162
+57  2009-12-09 05:00:00     0.047538     0.255219   0.045100         2.108148            FALSE_POSITIVE               No known event (closest: Flash Crash at 148 days)            148
+58  2010-02-24 05:00:00     0.056203     0.135221   0.036007         3.121738            FALSE_POSITIVE                No known event (closest: Flash Crash at 71 days)             71
+59  2010-03-22 04:00:00    -0.033056     0.095731   0.031435         2.103140            FALSE_POSITIVE                No known event (closest: Flash Crash at 45 days)             45
+60  2010-04-28 04:00:00     0.074990     0.148585   0.035018         4.282900             TRUE_POSITIVE                                                     Flash Crash              8
+61  2010-05-03 04:00:00     0.065935     0.296455   0.044140         2.987542             TRUE_POSITIVE                                                     Flash Crash              3
+62  2010-05-25 04:00:00    -0.075026     0.260043   0.048264         3.109009            FALSE_POSITIVE                No known event (closest: Flash Crash at 19 days)             19
+63  2010-06-01 04:00:00    -0.067200     0.054467   0.057437         2.339943            FALSE_POSITIVE                No known event (closest: Flash Crash at 26 days)             26
+64  2010-08-19 04:00:00     0.051262     0.123262   0.035105         2.920489            FALSE_POSITIVE               No known event (closest: Flash Crash at 105 days)            105
+65  2010-09-16 04:00:00    -0.050612     0.047669   0.021749         4.654250            FALSE_POSITIVE               No known event (closest: Flash Crash at 133 days)            133
+66  2010-10-19 04:00:00     0.037768     0.074079   0.023243         3.249823            FALSE_POSITIVE          No known event (closest: Japan Earthquake at 148 days)            148
+67  2010-11-15 05:00:00    -0.032574     0.060028   0.022394         2.909157            FALSE_POSITIVE          No known event (closest: Japan Earthquake at 121 days)            121
+68  2010-11-24 05:00:00     0.063520     0.124104   0.029425         4.317437            FALSE_POSITIVE          No known event (closest: Japan Earthquake at 112 days)            112
+69  2010-12-01 05:00:00     0.049869     0.231793   0.035204         2.833121            FALSE_POSITIVE          No known event (closest: Japan Earthquake at 105 days)            105
+70  2010-12-22 05:00:00    -0.063801     0.129627   0.037074         3.441808            FALSE_POSITIVE           No known event (closest: Japan Earthquake at 84 days)             84
+71  2010-12-29 05:00:00    -0.049907     0.022040   0.042087         2.371637            FALSE_POSITIVE           No known event (closest: Japan Earthquake at 77 days)             77
+72  2011-02-22 05:00:00     0.039312     0.108570   0.036998         2.125073            FALSE_POSITIVE           No known event (closest: Japan Earthquake at 22 days)             22
+73  2011-02-28 05:00:00    -0.038920     0.047812   0.033001         2.358702            FALSE_POSITIVE           No known event (closest: Japan Earthquake at 16 days)             16
+74  2011-03-08 05:00:00     0.045742     0.208225   0.039888         2.293515       TRUE_POSITIVE_MINOR                                                Japan Earthquake              8
+75  2011-03-28 04:00:00    -0.053505     0.171001   0.034651         3.088219            FALSE_POSITIVE           No known event (closest: Japan Earthquake at 12 days)             12
+76  2011-04-04 04:00:00    -0.044364     0.088243   0.037594         2.360153            FALSE_POSITIVE           No known event (closest: Japan Earthquake at 19 days)             19
+77  2011-06-01 04:00:00     0.037167     0.116938   0.030175         2.463443            FALSE_POSITIVE          No known event (closest: US Debt Downgrade at 68 days)             68
+78  2011-06-28 04:00:00    -0.037800     0.036945   0.022922         3.298156            FALSE_POSITIVE          No known event (closest: US Debt Downgrade at 41 days)             41
+79  2011-07-18 04:00:00     0.022495     0.092160   0.020111         2.237081            FALSE_POSITIVE          No known event (closest: US Debt Downgrade at 21 days)             21
+80  2011-07-27 04:00:00     0.024221     0.124006   0.021267         2.277748            FALSE_POSITIVE          No known event (closest: US Debt Downgrade at 12 days)             12
+81  2011-08-23 04:00:00    -0.022516     0.050372   0.022064         2.041042            FALSE_POSITIVE          No known event (closest: US Debt Downgrade at 15 days)             15
+82  2011-09-21 04:00:00     0.025105     0.060924   0.019313         2.599878            FALSE_POSITIVE          No known event (closest: US Debt Downgrade at 44 days)             44
+83  2011-10-25 04:00:00     0.017280     0.120152   0.014941         2.313057            FALSE_POSITIVE          No known event (closest: US Debt Downgrade at 78 days)             78
+84  2011-11-02 04:00:00     0.019964     0.152623   0.016553         2.412187            FALSE_POSITIVE          No known event (closest: US Debt Downgrade at 86 days)             86
+85  2011-11-09 05:00:00     0.037763     0.172122   0.017819         4.238600            FALSE_POSITIVE          No known event (closest: US Debt Downgrade at 93 days)             93
+86  2011-11-21 05:00:00    -0.023369     0.134969   0.018975         2.463147            FALSE_POSITIVE         No known event (closest: US Debt Downgrade at 105 days)            105
+87  2011-12-07 05:00:00    -0.040927     0.066275   0.022767         3.595233            FALSE_POSITIVE         No known event (closest: US Debt Downgrade at 121 days)            121
+88  2011-12-30 05:00:00     0.028511     0.149422   0.025307         2.253212            FALSE_POSITIVE         No known event (closest: US Debt Downgrade at 144 days)            144
+89  2012-01-30 05:00:00    -0.028607     0.065052   0.027595         2.073388            FALSE_POSITIVE         No known event (closest: US Debt Downgrade at 175 days)            175
+90  2012-03-07 05:00:00     0.024661     0.039752   0.022814         2.161972            FALSE_POSITIVE         No known event (closest: US Debt Downgrade at 212 days)            212
+91  2012-04-03 04:00:00    -0.023749     0.020019   0.017600         2.698722            FALSE_POSITIVE         No known event (closest: US Debt Downgrade at 239 days)            239
+92  2012-04-11 04:00:00     0.021032     0.064356   0.018378         2.288824            FALSE_POSITIVE         No known event (closest: US Debt Downgrade at 247 days)            247
+93  2012-05-04 04:00:00    -0.014671     0.093250   0.013829         2.121706            FALSE_POSITIVE         No known event (closest: US Debt Downgrade at 270 days)            270
+94  2012-05-10 04:00:00    -0.019425     0.063446   0.015335         2.533414            FALSE_POSITIVE         No known event (closest: US Debt Downgrade at 276 days)            276
+95  2012-06-12 04:00:00     0.018239     0.047813   0.015537         2.347813            FALSE_POSITIVE         No known event (closest: US Debt Downgrade at 309 days)            309
+96  2012-06-21 04:00:00     0.026626     0.117655   0.018728         2.843462            FALSE_POSITIVE         No known event (closest: US Debt Downgrade at 318 days)            318
+97  2012-06-29 04:00:00     0.028673     0.242736   0.023522         2.438065            FALSE_POSITIVE         No known event (closest: US Debt Downgrade at 326 days)            326
+98  2012-07-13 04:00:00     0.051458     0.272113   0.026227         3.924074            FALSE_POSITIVE         No known event (closest: US Debt Downgrade at 340 days)            340
+99  2012-07-23 04:00:00    -0.035281     0.269814   0.033439         2.110186            FALSE_POSITIVE         No known event (closest: US Debt Downgrade at 350 days)            350
+100 2012-08-03 04:00:00     0.048865     0.311175   0.037232         2.624909            FALSE_POSITIVE         No known event (closest: US Debt Downgrade at 361 days)            361
+101 2012-08-09 04:00:00    -0.051738     0.218845   0.040137         2.578064            FALSE_POSITIVE         No known event (closest: US Debt Downgrade at 367 days)            367
+102 2012-08-30 04:00:00    -0.052296     0.014386   0.046653         2.241926            FALSE_POSITIVE         No known event (closest: US Debt Downgrade at 388 days)            388
+103 2012-11-26 05:00:00     0.020356     0.061294   0.016292         2.499020            FALSE_POSITIVE         No known event (closest: US Debt Downgrade at 476 days)            476
+104 2012-12-05 05:00:00    -0.017982     0.061015   0.012112         2.969258            FALSE_POSITIVE         No known event (closest: US Debt Downgrade at 485 days)            485
+105 2012-12-21 05:00:00     0.021574     0.084756   0.012974         3.325742            FALSE_POSITIVE         No known event (closest: US Debt Downgrade at 501 days)            501
+106 2012-12-26 05:00:00    -0.025209     0.062597   0.014559         3.463046            FALSE_POSITIVE         No known event (closest: US Debt Downgrade at 506 days)            506
+107 2012-12-31 05:00:00     0.019654     0.083142   0.015366         2.558115            FALSE_POSITIVE         No known event (closest: US Debt Downgrade at 511 days)            511
+108 2013-01-22 05:00:00    -0.042372     0.042546   0.019018         4.455914            FALSE_POSITIVE         No known event (closest: US Debt Downgrade at 533 days)            533
+109 2013-01-29 05:00:00    -0.021814     0.013863   0.019730         2.211274            FALSE_POSITIVE         No known event (closest: US Debt Downgrade at 540 days)            540
+110 2013-02-20 05:00:00     0.020935     0.044958   0.020130         2.079966            FALSE_POSITIVE         No known event (closest: US Debt Downgrade at 562 days)            562
+111 2013-02-25 05:00:00     0.063755     0.116100   0.025548         4.990916            FALSE_POSITIVE         No known event (closest: US Debt Downgrade at 567 days)            567
+112 2013-03-22 04:00:00    -0.051541     0.089215   0.030501         3.379634            FALSE_POSITIVE               No known event (closest: Flash Rally at 572 days)            572
+113 2013-04-16 04:00:00     0.069466     0.144009   0.036772         3.778177            FALSE_POSITIVE               No known event (closest: Flash Rally at 547 days)            547
+114 2013-05-13 04:00:00    -0.069567     0.213233   0.044724         3.110964            FALSE_POSITIVE               No known event (closest: Flash Rally at 520 days)            520
+115 2013-10-04 04:00:00     0.014913     0.040941   0.010851         2.748495            FALSE_POSITIVE               No known event (closest: Flash Rally at 376 days)            376
+116 2013-10-15 04:00:00     0.026677     0.087567   0.012126         4.399768            FALSE_POSITIVE               No known event (closest: Flash Rally at 365 days)            365
+117 2013-10-31 04:00:00    -0.015840     0.086262   0.014224         2.227222            FALSE_POSITIVE               No known event (closest: Flash Rally at 349 days)            349
+118 2013-11-11 05:00:00    -0.026511     0.061269   0.015960         3.322254            FALSE_POSITIVE               No known event (closest: Flash Rally at 338 days)            338
+119 2014-01-13 05:00:00     0.016726     0.044144   0.014182         2.358831            FALSE_POSITIVE               No known event (closest: Flash Rally at 275 days)            275
+120 2014-02-10 05:00:00    -0.015101     0.061257   0.010789         2.799304            FALSE_POSITIVE               No known event (closest: Flash Rally at 247 days)            247
+121 2014-02-19 05:00:00     0.019923     0.060886   0.013196         3.019663            FALSE_POSITIVE               No known event (closest: Flash Rally at 238 days)            238
+122 2014-02-24 05:00:00     0.077350     0.194670   0.025677         6.024967            FALSE_POSITIVE               No known event (closest: Flash Rally at 233 days)            233
+123 2014-03-19 04:00:00    -0.029064     0.134336   0.027432         2.118952            FALSE_POSITIVE               No known event (closest: Flash Rally at 210 days)            210
+124 2014-04-10 04:00:00     0.053765     0.106354   0.035621         3.018733            FALSE_POSITIVE               No known event (closest: Flash Rally at 188 days)            188
+125 2014-04-25 04:00:00     0.039875     0.146028   0.037326         2.136586            FALSE_POSITIVE               No known event (closest: Flash Rally at 173 days)            173
+126 2014-05-08 04:00:00    -0.053041     0.166061   0.040954         2.590260            FALSE_POSITIVE               No known event (closest: Flash Rally at 160 days)            160
+127 2014-05-22 04:00:00    -0.041153     0.110537   0.035691         2.306072            FALSE_POSITIVE               No known event (closest: Flash Rally at 146 days)            146
+128 2014-08-27 04:00:00    -0.012975     0.022641   0.010484         2.475259            FALSE_POSITIVE                No known event (closest: Flash Rally at 49 days)             49
+129 2014-09-25 04:00:00     0.021435     0.031622   0.009788         4.379958            FALSE_POSITIVE                No known event (closest: Flash Rally at 20 days)             20
+130 2014-10-08 04:00:00     0.021596     0.077740   0.012010         3.596438             TRUE_POSITIVE                                                     Flash Rally              7
+131 2014-11-04 05:00:00    -0.021492     0.077421   0.015067         2.852811            FALSE_POSITIVE                No known event (closest: Flash Rally at 20 days)             20
+132 2014-12-11 05:00:00     0.018683     0.034554   0.017193         2.173241            FALSE_POSITIVE                No known event (closest: Flash Rally at 57 days)             57
+133 2014-12-19 05:00:00     0.037744     0.103572   0.019984         3.777456            FALSE_POSITIVE                No known event (closest: Flash Rally at 65 days)             65
+134 2014-12-30 05:00:00     0.063935     0.204896   0.026700         4.789096            FALSE_POSITIVE                No known event (closest: Flash Rally at 76 days)             76
+135 2015-01-16 05:00:00     0.049844     0.254487   0.029761         3.349551            FALSE_POSITIVE                No known event (closest: Flash Rally at 93 days)             93
+136 2015-01-21 05:00:00    -0.033438     0.185063   0.032385         2.065031            FALSE_POSITIVE                No known event (closest: Flash Rally at 98 days)             98
+137 2015-01-28 05:00:00    -0.065925     0.141352   0.036901         3.573090            FALSE_POSITIVE               No known event (closest: Flash Rally at 105 days)            105
+138 2015-02-10 05:00:00     0.064069     0.234909   0.039634         3.233074            FALSE_POSITIVE               No known event (closest: Flash Rally at 118 days)            118
+139 2015-05-15 04:00:00    -0.020355     0.048438   0.019372         2.101434            FALSE_POSITIVE        No known event (closest: China Black Monday at 101 days)            101
+140 2015-05-27 04:00:00     0.025534     0.074349   0.019660         2.597598            FALSE_POSITIVE         No known event (closest: China Black Monday at 89 days)             89
+141 2015-06-23 04:00:00    -0.025814     0.055501   0.018592         2.776848            FALSE_POSITIVE         No known event (closest: China Black Monday at 62 days)             62
+142 2015-07-08 04:00:00     0.037602     0.100499   0.018642         4.034098            FALSE_POSITIVE         No known event (closest: China Black Monday at 47 days)             47
+143 2015-08-04 04:00:00    -0.038839     0.038293   0.020806         3.733525            FALSE_POSITIVE         No known event (closest: China Black Monday at 20 days)             20
+144 2015-10-06 04:00:00     0.020420     0.070762   0.015585         2.620480            FALSE_POSITIVE         No known event (closest: China Black Monday at 43 days)             43
+145 2015-10-13 04:00:00     0.035886     0.130865   0.018741         3.829666            FALSE_POSITIVE         No known event (closest: China Black Monday at 50 days)             50
+146 2015-11-02 05:00:00    -0.025752     0.108309   0.018397         2.799689            FALSE_POSITIVE         No known event (closest: China Black Monday at 70 days)             70
+147 2015-11-09 05:00:00    -0.029813     0.050878   0.020941         2.847320            FALSE_POSITIVE         No known event (closest: China Black Monday at 77 days)             77
+148 2015-11-16 05:00:00     0.044614     0.085987   0.025449         3.506176            FALSE_POSITIVE         No known event (closest: China Black Monday at 84 days)             84
+149 2015-12-02 05:00:00     0.029311     0.122126   0.025885         2.264679            FALSE_POSITIVE        No known event (closest: China Black Monday at 100 days)            100
+150 2015-12-17 05:00:00     0.051713     0.224982   0.030881         3.349125            FALSE_POSITIVE        No known event (closest: China Black Monday at 115 days)            115
+151 2016-01-04 05:00:00    -0.031930     0.182432   0.031521         2.025973            FALSE_POSITIVE        No known event (closest: China Black Monday at 133 days)            133
+152 2016-01-12 05:00:00    -0.047615     0.088731   0.032774         2.905610            FALSE_POSITIVE        No known event (closest: China Black Monday at 141 days)            141
+153 2016-02-23 05:00:00     0.031055     0.073843   0.030856         2.012874            FALSE_POSITIVE               No known event (closest: Brexit Vote at 122 days)            122
+154 2016-03-01 05:00:00     0.044589     0.153155   0.032552         2.739604            FALSE_POSITIVE               No known event (closest: Brexit Vote at 115 days)            115
+155 2016-03-21 04:00:00    -0.033500     0.099024   0.028695         2.334909            FALSE_POSITIVE                No known event (closest: Brexit Vote at 95 days)             95
+156 2016-03-29 04:00:00    -0.045289     0.013106   0.031028         2.919223            FALSE_POSITIVE                No known event (closest: Brexit Vote at 87 days)             87
+157 2016-06-24 04:00:00     0.063401     0.092994   0.021987         5.767199       TRUE_POSITIVE_MINOR                                                     Brexit Vote              0
+158 2016-07-22 04:00:00    -0.060680     0.055692   0.026376         4.601178            FALSE_POSITIVE                No known event (closest: Brexit Vote at 28 days)             28
+159 2016-09-12 04:00:00     0.034485     0.048834   0.025760         2.677469            FALSE_POSITIVE                No known event (closest: Brexit Vote at 80 days)             80
+160 2016-09-30 04:00:00     0.027063     0.164947   0.022862         2.367467            FALSE_POSITIVE                No known event (closest: Brexit Vote at 98 days)             98
+161 2016-10-07 04:00:00    -0.026346     0.138512   0.024067         2.189383            FALSE_POSITIVE               No known event (closest: Brexit Vote at 105 days)            105
+162 2016-10-26 04:00:00    -0.021556     0.096352   0.021102         2.043022            FALSE_POSITIVE               No known event (closest: Brexit Vote at 124 days)            124
+163 2017-03-21 04:00:00     0.005619     0.012650   0.003255         3.452407            FALSE_POSITIVE               No known event (closest: Brexit Vote at 270 days)            270
+164 2017-04-18 04:00:00    -0.004470     0.016535   0.003384         2.641850            FALSE_POSITIVE               No known event (closest: Volmageddon at 293 days)            293
+165 2017-05-17 04:00:00     0.013286     0.019781   0.004998         5.316691            FALSE_POSITIVE               No known event (closest: Volmageddon at 264 days)            264
+166 2017-06-14 04:00:00    -0.013798     0.025619   0.008286         3.330359            FALSE_POSITIVE               No known event (closest: Volmageddon at 236 days)            236
+167 2017-08-17 04:00:00     0.011418     0.023824   0.009212         2.479105            FALSE_POSITIVE               No known event (closest: Volmageddon at 172 days)            172
+168 2017-09-14 04:00:00    -0.011422     0.021096   0.007447         3.067346            FALSE_POSITIVE               No known event (closest: Volmageddon at 144 days)            144
+169 2018-01-02 05:00:00     0.001325     0.004598   0.001061         2.496865            FALSE_POSITIVE                No known event (closest: Volmageddon at 34 days)             34
+170 2018-01-31 05:00:00     0.001975     0.005726   0.001165         3.389513             TRUE_POSITIVE                                                     Volmageddon              5
+171 2018-02-06 05:00:00     0.033034     0.070363   0.011036         5.986518             TRUE_POSITIVE                                                     Volmageddon              1
+172 2018-03-02 05:00:00    -0.025594     0.076619   0.013421         3.814079            FALSE_POSITIVE                No known event (closest: Volmageddon at 25 days)             25
+173 2018-03-20 04:00:00     0.019100     0.053794   0.016777         2.277001            FALSE_POSITIVE                No known event (closest: Volmageddon at 43 days)             43
+174 2018-04-25 04:00:00     0.044051     0.156650   0.021983         4.007793            FALSE_POSITIVE                No known event (closest: Volmageddon at 79 days)             79
+175 2018-05-01 04:00:00     0.024073     0.152308   0.022522         2.137792            FALSE_POSITIVE                No known event (closest: Volmageddon at 85 days)             85
+176 2018-05-21 04:00:00    -0.030456     0.166707   0.027598         2.207115            FALSE_POSITIVE               No known event (closest: Volmageddon at 105 days)            105
+177 2018-05-30 04:00:00    -0.039382     0.059833   0.031409         2.507717            FALSE_POSITIVE               No known event (closest: Volmageddon at 114 days)            114
+178 2018-10-10 04:00:00     0.009781     0.018260   0.009608         2.035939  TRUE_POSITIVE_CORRECTION                                                 October Selloff              0
+179 2018-10-25 04:00:00     0.006836     0.039556   0.005973         2.288917            FALSE_POSITIVE            No known event (closest: October Selloff at 15 days)             15
+180 2018-11-06 05:00:00    -0.010005     0.036372   0.005765         3.470802            FALSE_POSITIVE            No known event (closest: October Selloff at 27 days)             27
+181 2018-11-15 05:00:00     0.007543     0.053919   0.007021         2.148822            FALSE_POSITIVE            No known event (closest: October Selloff at 36 days)             36
+182 2018-11-26 05:00:00     0.014634     0.074479   0.007872         3.717853            FALSE_POSITIVE        No known event (closest: Christmas Eve Crash at 28 days)             28
+183 2018-12-04 05:00:00     0.060560     0.162301   0.018016         6.723037            FALSE_POSITIVE        No known event (closest: Christmas Eve Crash at 20 days)             20
+184 2019-01-03 05:00:00    -0.060508     0.042206   0.026300         4.601284  TRUE_POSITIVE_CORRECTION                                             Christmas Eve Crash             10
+185 2019-03-22 04:00:00     0.062305     0.071152   0.024527         5.080624            FALSE_POSITIVE        No known event (closest: Christmas Eve Crash at 88 days)             88
+186 2019-04-18 04:00:00    -0.061986     0.039505   0.023978         5.170345            FALSE_POSITIVE           No known event (closest: Trade War Spike at 109 days)            109
+187 2019-05-13 04:00:00     0.034234     0.054589   0.025764         2.657506            FALSE_POSITIVE            No known event (closest: Trade War Spike at 84 days)             84
+188 2019-06-10 04:00:00    -0.034386     0.053240   0.027963         2.459397            FALSE_POSITIVE            No known event (closest: Trade War Spike at 56 days)             56
+189 2019-08-06 04:00:00     0.020980     0.040941   0.016804         2.497041       TRUE_POSITIVE_MINOR                                                 Trade War Spike              1
+190 2019-08-14 04:00:00     0.020898     0.085298   0.014208         2.941728       TRUE_POSITIVE_MINOR                                                 Trade War Spike              9
+191 2019-09-04 04:00:00     0.015255     0.119164   0.011729         2.601286            FALSE_POSITIVE            No known event (closest: Trade War Spike at 30 days)             30
+192 2019-09-11 04:00:00    -0.023671     0.076102   0.012778         3.704844            FALSE_POSITIVE            No known event (closest: Trade War Spike at 37 days)             37
+193 2019-09-20 04:00:00     0.016310     0.074208   0.013446         2.425970            FALSE_POSITIVE            No known event (closest: Trade War Spike at 46 days)             46
+194 2019-10-17 04:00:00    -0.017908     0.102578   0.015252         2.348379            FALSE_POSITIVE            No known event (closest: Trade War Spike at 73 days)             73
+195 2019-10-28 04:00:00    -0.021278     0.100114   0.018026         2.360773            FALSE_POSITIVE            No known event (closest: Trade War Spike at 84 days)             84
+196 2019-11-15 05:00:00    -0.027850     0.021346   0.018201         3.060293            FALSE_POSITIVE              No known event (closest: COVID Begins at 101 days)            101
+197 2020-01-28 05:00:00     0.040141     0.056687   0.013902         5.774693            FALSE_POSITIVE               No known event (closest: COVID Begins at 27 days)             27
+198 2020-02-03 05:00:00     0.050633     0.150389   0.021946         4.614428            FALSE_POSITIVE               No known event (closest: COVID Begins at 21 days)             21
+199 2020-02-25 05:00:00    -0.040303     0.159550   0.023310         3.458105             TRUE_POSITIVE                                                    COVID Begins              1
+200 2020-03-02 05:00:00    -0.047556     0.077373   0.029165         3.261172             TRUE_POSITIVE                                                    COVID Begins              7
+201 2020-06-09 04:00:00    -0.017004     0.053736   0.011305         3.008328            FALSE_POSITIVE               No known event (closest: COVID Bottom at 85 days)             85
+202 2020-06-24 04:00:00     0.019555     0.104307   0.015069         2.595449            FALSE_POSITIVE              No known event (closest: COVID Bottom at 100 days)            100
+203 2020-07-09 04:00:00    -0.021695     0.138885   0.016178         2.682044            FALSE_POSITIVE              No known event (closest: COVID Bottom at 115 days)            115
+204 2020-07-14 04:00:00     0.021122     0.157774   0.019124         2.209028            FALSE_POSITIVE              No known event (closest: COVID Bottom at 120 days)            120
+205 2020-07-22 04:00:00    -0.023934     0.131981   0.020344         2.352963            FALSE_POSITIVE              No known event (closest: COVID Bottom at 128 days)            128
+206 2020-08-07 04:00:00    -0.022839     0.055101   0.022106         2.066289            FALSE_POSITIVE              No known event (closest: COVID Bottom at 144 days)            144
+207 2020-09-03 04:00:00     0.070490     0.081782   0.028450         4.955406            FALSE_POSITIVE          No known event (closest: Meme Stock Chaos at 146 days)            146
+208 2020-09-09 04:00:00     0.054523     0.137277   0.030484         3.577151            FALSE_POSITIVE          No known event (closest: Meme Stock Chaos at 140 days)            140
+209 2020-10-01 04:00:00    -0.070485     0.156897   0.036734         3.837581            FALSE_POSITIVE          No known event (closest: Meme Stock Chaos at 118 days)            118
+210 2020-10-26 04:00:00     0.054105     0.208233   0.037987         2.848632            FALSE_POSITIVE           No known event (closest: Meme Stock Chaos at 93 days)             93
+211 2020-11-20 05:00:00    -0.046312     0.167047   0.041981         2.206335            FALSE_POSITIVE           No known event (closest: Meme Stock Chaos at 68 days)             68
+212 2021-01-04 05:00:00     0.030358     0.060689   0.030073         2.018891            FALSE_POSITIVE           No known event (closest: Meme Stock Chaos at 23 days)             23
+213 2021-01-27 05:00:00     0.031716     0.113382   0.027632         2.295572       TRUE_POSITIVE_MINOR                                                Meme Stock Chaos              0
+214 2021-02-23 05:00:00     0.074911     0.348718   0.040992         3.654899            FALSE_POSITIVE           No known event (closest: Meme Stock Chaos at 27 days)             27
+215 2021-03-24 04:00:00    -0.063105     0.326133   0.053268         2.369356            FALSE_POSITIVE           No known event (closest: Meme Stock Chaos at 56 days)             56
+216 2021-07-19 04:00:00    -0.033411     0.025337   0.023411         2.854366            FALSE_POSITIVE           No known event (closest: Omicron Variant at 135 days)            135
+217 2021-08-16 04:00:00    -0.027150     0.032358   0.022404         2.423693            FALSE_POSITIVE           No known event (closest: Omicron Variant at 107 days)            107
+218 2021-11-26 05:00:00     0.037609     0.040176   0.011090         6.782478       TRUE_POSITIVE_MINOR                                                 Omicron Variant              5
+219 2021-12-09 05:00:00     0.026693     0.228380   0.025695         2.077743       TRUE_POSITIVE_MINOR                                                 Omicron Variant              8
+220 2021-12-16 05:00:00     0.039775     0.426995   0.035167         2.262029            FALSE_POSITIVE            No known event (closest: Omicron Variant at 15 days)             15
+221 2021-12-23 05:00:00    -0.037610     0.406270   0.036927         2.036982            FALSE_POSITIVE            No known event (closest: Omicron Variant at 22 days)             22
+222 2021-12-28 05:00:00    -0.063302     0.289354   0.043766         2.892752            FALSE_POSITIVE      No known event (closest: Fed Pivot Fears Start at 27 days)             27
+223 2022-01-07 05:00:00    -0.061464     0.218312   0.048929         2.512394            FALSE_POSITIVE      No known event (closest: Fed Pivot Fears Start at 17 days)             17
+224 2022-04-14 04:00:00     0.066196     0.176683   0.027693         4.780764            FALSE_POSITIVE            No known event (closest: First Rate Hike at 29 days)             29
+225 2022-05-12 04:00:00    -0.066060     0.065921   0.027646         4.778961            FALSE_POSITIVE       No known event (closest: Bear Market Official at 32 days)             32
+226 2022-07-26 04:00:00     0.035270     0.088051   0.022398         3.149462            FALSE_POSITIVE       No known event (closest: Bear Market Official at 43 days)             43
+227 2022-08-22 04:00:00    -0.031725     0.089342   0.024773         2.561246            FALSE_POSITIVE       No known event (closest: Bear Market Official at 70 days)             70
+228 2022-09-23 04:00:00    -0.072863     0.032694   0.038456         3.789389            FALSE_POSITIVE      No known event (closest: Bear Market Official at 102 days)            102
+229 2022-12-08 05:00:00    -0.027231     0.061114   0.025406         2.143639            FALSE_POSITIVE               No known event (closest: SVB Collapse at 92 days)             92
+230 2022-12-14 05:00:00     0.046277     0.177047   0.030795         3.005488            FALSE_POSITIVE               No known event (closest: SVB Collapse at 86 days)             86
+231 2023-01-09 05:00:00    -0.031516     0.143885   0.025973         2.426891            FALSE_POSITIVE               No known event (closest: SVB Collapse at 60 days)             60
+232 2023-03-22 04:00:00     0.032260     0.106806   0.029964         2.153259            FALSE_POSITIVE               No known event (closest: SVB Collapse at 12 days)             12
+233 2023-04-19 04:00:00    -0.041137     0.050371   0.024995         3.291576            FALSE_POSITIVE               No known event (closest: SVB Collapse at 40 days)             40
+234 2023-05-10 04:00:00     0.043954     0.130508   0.027095         3.244500            FALSE_POSITIVE               No known event (closest: SVB Collapse at 61 days)             61
+235 2023-06-07 04:00:00    -0.045210     0.123403   0.030173         2.996733            FALSE_POSITIVE               No known event (closest: SVB Collapse at 89 days)             89
+236 2023-09-15 04:00:00     0.051514     0.107158   0.015838         6.505240            FALSE_POSITIVE              No known event (closest: SVB Collapse at 189 days)            189
+237 2023-10-12 04:00:00    -0.050343     0.052083   0.021320         4.722553            FALSE_POSITIVE              No known event (closest: SVB Collapse at 216 days)            216
+238 2023-10-25 04:00:00     0.030912     0.049619   0.023858         2.591382            FALSE_POSITIVE              No known event (closest: SVB Collapse at 229 days)            229
+239 2023-11-10 05:00:00     0.066227     0.129157   0.029354         4.512324            FALSE_POSITIVE              No known event (closest: SVB Collapse at 245 days)            245
+240 2023-11-21 05:00:00    -0.030692     0.112812   0.030570         2.007970            FALSE_POSITIVE              No known event (closest: SVB Collapse at 256 days)            256
+241 2023-12-08 05:00:00    -0.070291     0.026091   0.035713         3.936385            FALSE_POSITIVE              No known event (closest: SVB Collapse at 273 days)            273
+242 2024-02-01 05:00:00     0.040537     0.070328   0.030725         2.638628            FALSE_POSITIVE              No known event (closest: SVB Collapse at 328 days)            328
+243 2024-02-29 05:00:00    -0.040966     0.043095   0.026577         3.082800            FALSE_POSITIVE              No known event (closest: SVB Collapse at 356 days)            356
+244 2024-03-18 04:00:00     0.029225     0.079869   0.021458         2.723873            FALSE_POSITIVE              No known event (closest: SVB Collapse at 374 days)            374
+245 2024-04-12 04:00:00     0.028043     0.150652   0.023722         2.364321            FALSE_POSITIVE              No known event (closest: SVB Collapse at 399 days)            399
+246 2024-05-09 04:00:00    -0.037805     0.021058   0.025333         2.984649            FALSE_POSITIVE              No known event (closest: SVB Collapse at 426 days)            426
