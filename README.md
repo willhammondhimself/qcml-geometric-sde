@@ -1,6 +1,6 @@
 # QCML-Geometric SDEs: Topological Market Regime Detection
 
-A groundbreaking framework combining Quantum Cognition-inspired Metric Learning (QCML) with stochastic differential equations on learned manifolds and topological invariants for quantitative finance.
+A very new and experimental framework combining Quantum Cognative Metric Learning (QCML) with stochastic differential equations on learned manifolds and topological invariants for quantitative finance.
 
 ## Project Structure
 
@@ -196,7 +196,6 @@ On real financial data:
 
 ## Quality Standards
 
-Code follows guidelines in `internal-docs`:
 - Readable variable names and clear structure
 - Physics/math correctness (Hermitian operators, normalized states)
 - Reproducibility (fixed random seeds)
@@ -206,8 +205,3 @@ Code follows guidelines in `internal-docs`:
 ## Author
 
 Will Hammond
-
-## Version
-
-0.1.0 - Initial framework implementation
-# qcml-geometric-sde
