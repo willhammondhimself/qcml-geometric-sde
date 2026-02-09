@@ -160,6 +160,20 @@ class QCMLGeometry:
 
         return self
 
+    def set_operators(self, operators: list) -> 'QCMLGeometry':
+        """Set operators directly (e.g., from learned operators).
+
+        Args:
+            operators: List of Hermitian matrices, each (hilbert_dim, hilbert_dim).
+
+        Returns:
+            self
+        """
+        self.operators = [np.asarray(op) for op in operators]
+        self.is_fitted = True
+        self._ground_state_cache.clear()
+        return self
+
     def error_hamiltonian(self, x: np.ndarray) -> np.ndarray:
         """
         Compute error Hamiltonian H(x) = ½∑ₖ(Aₖ - xₖ·I)².
@@ -530,6 +544,136 @@ class QCMLGeometry:
         """Clear the ground state cache."""
         self._ground_state_cache.clear()
 
+    def compute_qfi_susceptibility(self, x: np.ndarray, epsilon: float = 1e-5) -> float:
+        """
+        Compute quantum Fisher information susceptibility χ(x) = tr(g_ab(x)).
+
+        The QFI susceptibility is the trace of the quantum metric tensor,
+        equal to 1/4 the quantum Fisher information. Near regime transitions
+        the market state becomes maximally sensitive to parameter changes,
+        causing χ to spike — analogous to divergent susceptibility at quantum
+        critical points (Zanardi et al., PRL 2007).
+
+        Args:
+            x: Data point of shape (n_features,)
+            epsilon: Step size for numerical differentiation
+
+        Returns:
+            chi: QFI susceptibility (non-negative scalar)
+        """
+        g = self.quantum_metric(x, epsilon=epsilon)
+        return float(np.trace(g))
+
+    def compute_qfi_determinant(self, x: np.ndarray, epsilon: float = 1e-5) -> float:
+        """
+        Compute quantum metric determinant det(g_ab(x)).
+
+        The determinant of the quantum metric tensor is the volume element
+        of the data manifold. A collapsing determinant indicates a degenerate
+        (lower-dimensional) state; a diverging determinant indicates rapid
+        expansion of the accessible state space.
+
+        Args:
+            x: Data point of shape (n_features,)
+            epsilon: Step size for numerical differentiation
+
+        Returns:
+            det_g: Metric determinant (can be zero or positive)
+        """
+        g = self.quantum_metric(x, epsilon=epsilon)
+        return float(np.linalg.det(g))
+
+    def _christoffel_symbols(self, x: np.ndarray, epsilon_metric: float = 1e-5,
+                             epsilon_christoffel: float = 1e-4) -> tuple:
+        """Compute Christoffel symbols of the Levi-Civita connection.
+
+        Args:
+            x: Data point of shape (n_features,)
+            epsilon_metric: Step size for quantum_metric differentiation
+            epsilon_christoffel: Step size for metric derivative finite differences
+
+        Returns:
+            (christoffel, g, g_inv) where christoffel[sigma, mu, nu] = Gamma^sigma_{mu nu}
+        """
+        x = np.asarray(x).flatten()
+        n = len(x)
+
+        g = self.quantum_metric(x, epsilon=epsilon_metric)
+
+        # Metric derivatives: dg[a, b, c] = d_c g_{ab}
+        dg = np.zeros((n, n, n))
+        for c in range(n):
+            x_plus, x_minus = x.copy(), x.copy()
+            x_plus[c] += epsilon_christoffel
+            x_minus[c] -= epsilon_christoffel
+            g_plus = self.quantum_metric(x_plus, epsilon=epsilon_metric)
+            g_minus = self.quantum_metric(x_minus, epsilon=epsilon_metric)
+            dg[:, :, c] = (g_plus - g_minus) / (2 * epsilon_christoffel)
+
+        # Regularized inverse via eigendecomposition
+        eigenvalues, eigenvectors = np.linalg.eigh(g)
+        eigenvalues = np.maximum(eigenvalues, 1e-8)
+        g_inv = eigenvectors @ np.diag(1.0 / eigenvalues) @ eigenvectors.T
+
+        # Christoffel symbols: Gamma^sigma_{mu nu} = 1/2 g^{sigma rho}(d_mu g_{rho nu} + d_nu g_{rho mu} - d_rho g_{mu nu})
+        christoffel = np.zeros((n, n, n))
+        for sigma in range(n):
+            for mu in range(n):
+                for nu in range(n):
+                    gamma_first = 0.5 * (dg[:, nu, mu] + dg[:, mu, nu] - dg[mu, nu, :])
+                    christoffel[sigma, mu, nu] = g_inv[sigma] @ gamma_first
+
+        return christoffel, g, g_inv
+
+    def ricci_scalar(self, x: np.ndarray, epsilon_metric: float = 1e-5,
+                     epsilon_christoffel: float = 1e-4,
+                     epsilon_ricci: float = 1e-3) -> float:
+        """Compute Ricci scalar curvature R = g^{mu nu} R_{mu nu}.
+
+        Uses hierarchical finite differences: metric (1e-5) -> Christoffel (1e-4)
+        -> Ricci (1e-3). Each level uses 10x coarser epsilon to avoid
+        differentiating numerical noise.
+
+        Args:
+            x: Data point of shape (n_features,)
+            epsilon_metric: Step size for quantum_metric
+            epsilon_christoffel: Step size for Christoffel symbol computation
+            epsilon_ricci: Step size for Christoffel derivative computation
+
+        Returns:
+            R: Ricci scalar curvature (can be positive, negative, or zero)
+        """
+        x = np.asarray(x).flatten()
+        n = len(x)
+
+        christoffel, g, g_inv = self._christoffel_symbols(x, epsilon_metric, epsilon_christoffel)
+
+        # Christoffel derivatives: dGamma[sigma, mu, nu, rho] = d_rho Gamma^sigma_{mu nu}
+        dGamma = np.zeros((n, n, n, n))
+        for rho in range(n):
+            x_plus, x_minus = x.copy(), x.copy()
+            x_plus[rho] += epsilon_ricci
+            x_minus[rho] -= epsilon_ricci
+            G_plus, _, _ = self._christoffel_symbols(x_plus, epsilon_metric, epsilon_christoffel)
+            G_minus, _, _ = self._christoffel_symbols(x_minus, epsilon_metric, epsilon_christoffel)
+            dGamma[:, :, :, rho] = (G_plus - G_minus) / (2 * epsilon_ricci)
+
+        # Ricci tensor: R_{mu nu} = sum_sigma R^sigma_{mu sigma nu}
+        # R^sigma_{rho mu nu} = d_mu Gamma^sigma_{nu rho} - d_nu Gamma^sigma_{mu rho}
+        #                       + Gamma^sigma_{mu lam} Gamma^lam_{nu rho}
+        #                       - Gamma^sigma_{nu lam} Gamma^lam_{mu rho}
+        ricci = np.zeros((n, n))
+        for mu in range(n):
+            for nu in range(n):
+                for sigma in range(n):
+                    val = dGamma[sigma, nu, mu, sigma] - dGamma[sigma, sigma, mu, nu]
+                    for lam in range(n):
+                        val += christoffel[sigma, sigma, lam] * christoffel[lam, nu, mu]
+                        val -= christoffel[sigma, nu, lam] * christoffel[lam, sigma, mu]
+                    ricci[mu, nu] += val
+
+        return float(np.einsum('ij,ij->', g_inv, ricci))
+
     def spectral_gap(self, x: np.ndarray) -> float:
         """
         Compute spectral gap at point x.
@@ -607,7 +751,7 @@ def create_test_data_torus(n_samples: int = 500, R: float = 2.0, r: float = 0.5,
 
     # Uniform points on torus
     n_u = int(np.sqrt(n_samples * R / r))
-    n_v = n_samples // n_u
+    n_v = int(np.ceil(n_samples / n_u))
 
     u = np.linspace(0, 2 * np.pi, n_u, endpoint=False)
     v = np.linspace(0, 2 * np.pi, n_v, endpoint=False)

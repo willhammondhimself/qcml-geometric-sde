@@ -256,16 +256,200 @@ CRISIS_2022 = CrisisDefinition(
     lookahead_months=6
 )
 
-# All crises for validation
+# Extended historical crises (1998-2018)
+CRISIS_1998 = CrisisDefinition(
+    name="1998_ltcm",
+    crisis_date="1998-08-31",
+    description="LTCM collapse and Russian debt crisis",
+    universe=["SPY"],  # Limited data availability for 1998; other ETFs not yet launched
+    crisis_type=CrisisType.FINANCIAL,
+    expected_lead_days=10,
+    lookback_months=6,
+    lookahead_months=6
+)
+
+CRISIS_2010 = CrisisDefinition(
+    name="2010_flash_crash",
+    crisis_date="2010-05-06",
+    description="Flash crash - algorithmic trading meltdown",
+    universe=["SPY", "IWM", "DIA"],  # QQQ had data issues; XLF also available
+    crisis_type=CrisisType.FLASH_CRASH,
+    expected_lead_days=5,  # Flash crash was sudden
+    lookback_months=6,
+    lookahead_months=6
+)
+
+CRISIS_2011 = CrisisDefinition(
+    name="2011_debt_downgrade",
+    crisis_date="2011-08-05",
+    description="S&P downgrades US credit rating for first time",
+    universe=["SPY", "TLT", "GLD"],  # Flight to safety: equities, treasuries, gold
+    crisis_type=CrisisType.GEOPOLITICAL,
+    expected_lead_days=10,
+    lookback_months=6,
+    lookahead_months=6
+)
+
+CRISIS_2015 = CrisisDefinition(
+    name="2015_china",
+    crisis_date="2015-08-24",
+    description="China yuan devaluation and market turmoil",
+    universe=["SPY", "EEM", "FXI"],  # US equities + emerging markets + China
+    crisis_type=CrisisType.GEOPOLITICAL,
+    expected_lead_days=10,
+    lookback_months=6,
+    lookahead_months=6
+)
+
+CRISIS_2018 = CrisisDefinition(
+    name="2018_fed_selloff",
+    crisis_date="2018-12-24",
+    description="Federal Reserve tightening triggers Q4 selloff",
+    universe=["SPY", "TLT", "XLF"],  # Equities, treasuries, financials
+    crisis_type=CrisisType.MONETARY,
+    expected_lead_days=10,
+    lookback_months=6,
+    lookahead_months=6
+)
+
+# All crises for validation (original 3)
 ALL_CRISES = [CRISIS_2008, CRISIS_2020, CRISIS_2022]
 
+# Extended crisis set (8 total: original 3 + 5 historical)
+EXTENDED_CRISES = [
+    CRISIS_1998,
+    CRISIS_2008,
+    CRISIS_2010,
+    CRISIS_2011,
+    CRISIS_2015,
+    CRISIS_2018,
+    CRISIS_2020,
+    CRISIS_2022,
+]
 
-def get_crisis_by_name(name: str) -> CrisisDefinition:
+# Additional crises for full statistical power (n >= 15)
+CRISIS_2000 = CrisisDefinition(
+    name="2000_dotcom",
+    crisis_date="2000-03-10",
+    description="Dot-Com bubble burst",
+    universe=["SPY"],
+    crisis_type=CrisisType.FINANCIAL,
+    expected_lead_days=10,
+    lookback_months=6,
+    lookahead_months=6
+)
+
+CRISIS_2001 = CrisisDefinition(
+    name="2001_sept11",
+    crisis_date="2001-09-17",
+    description="September 11 terrorist attacks — markets reopen",
+    universe=["SPY"],
+    crisis_type=CrisisType.GEOPOLITICAL,
+    expected_lead_days=5,
+    lookback_months=6,
+    lookahead_months=6
+)
+
+CRISIS_2007 = CrisisDefinition(
+    name="2007_quant_meltdown",
+    crisis_date="2007-08-09",
+    description="Quant meltdown — factor crowding unwind",
+    universe=["SPY"],
+    crisis_type=CrisisType.FINANCIAL,
+    expected_lead_days=10,
+    lookback_months=6,
+    lookahead_months=6
+)
+
+CRISIS_2016 = CrisisDefinition(
+    name="2016_brexit",
+    crisis_date="2016-06-24",
+    description="Brexit referendum — UK votes to leave EU",
+    universe=["SPY", "EFA"],
+    crisis_type=CrisisType.GEOPOLITICAL,
+    expected_lead_days=5,
+    lookback_months=6,
+    lookahead_months=6
+)
+
+CRISIS_2018_VIX = CrisisDefinition(
+    name="2018_volmageddon",
+    crisis_date="2018-02-05",
+    description="VIX-mageddon — short-vol blowup",
+    universe=["SPY"],
+    crisis_type=CrisisType.FLASH_CRASH,
+    expected_lead_days=5,
+    lookback_months=6,
+    lookahead_months=6
+)
+
+CRISIS_2019 = CrisisDefinition(
+    name="2019_repo_crisis",
+    crisis_date="2019-09-17",
+    description="Repo market crisis — overnight rate spike",
+    universe=["SPY", "TLT"],
+    crisis_type=CrisisType.MONETARY,
+    expected_lead_days=5,
+    lookback_months=6,
+    lookahead_months=6
+)
+
+CRISIS_2023 = CrisisDefinition(
+    name="2023_svb",
+    crisis_date="2023-03-10",
+    description="Silicon Valley Bank collapse — regional banking crisis",
+    universe=["SPY", "XLF"],
+    crisis_type=CrisisType.FINANCIAL,
+    expected_lead_days=5,
+    lookback_months=6,
+    lookahead_months=6
+)
+
+# Full crisis set (15 total) for statistical power ≥ 80%
+FULL_CRISES = [
+    CRISIS_1998,
+    CRISIS_2000,
+    CRISIS_2001,
+    CRISIS_2007,
+    CRISIS_2008,
+    CRISIS_2010,
+    CRISIS_2011,
+    CRISIS_2015,
+    CRISIS_2016,
+    CRISIS_2018_VIX,
+    CRISIS_2018,
+    CRISIS_2019,
+    CRISIS_2020,
+    CRISIS_2022,
+    CRISIS_2023,
+]
+
+# Data-available crisis set (12 total) — excludes pre-2004 crises
+# where Polygon API has no data (1998 LTCM, 2000 Dot-com, 2001 9/11)
+DATA_AVAILABLE_CRISES = [
+    CRISIS_2007,
+    CRISIS_2008,
+    CRISIS_2010,
+    CRISIS_2011,
+    CRISIS_2015,
+    CRISIS_2016,
+    CRISIS_2018_VIX,
+    CRISIS_2018,
+    CRISIS_2019,
+    CRISIS_2020,
+    CRISIS_2022,
+    CRISIS_2023,
+]
+
+
+def get_crisis_by_name(name: str, use_extended: bool = False, use_full: bool = False) -> CrisisDefinition:
     """
     Get crisis definition by name.
 
     Args:
         name: Crisis name (e.g., "2008_crisis", "2020_covid", "2022_rates")
+        use_extended: If True, search in EXTENDED_CRISES (8 total), else ALL_CRISES (3 original)
+        use_full: If True, search in FULL_CRISES (15 total), overrides use_extended
 
     Returns:
         CrisisDefinition for the specified crisis
@@ -273,10 +457,32 @@ def get_crisis_by_name(name: str) -> CrisisDefinition:
     Raises:
         ValueError: If crisis name is not found
     """
-    crisis_map = {c.name: c for c in ALL_CRISES}
+    if use_full:
+        crisis_list = FULL_CRISES
+    elif use_extended:
+        crisis_list = EXTENDED_CRISES
+    else:
+        crisis_list = ALL_CRISES
+    crisis_map = {c.name: c for c in crisis_list}
     if name not in crisis_map:
-        raise ValueError(f"Unknown crisis: {name}. Available: {list(crisis_map.keys())}")
+        available = list(crisis_map.keys())
+        raise ValueError(f"Unknown crisis: {name}. Available: {available}")
     return crisis_map[name]
+
+
+def get_crises_by_type(crisis_type: CrisisType, use_extended: bool = False) -> List[CrisisDefinition]:
+    """
+    Get all crises of a specific type.
+
+    Args:
+        crisis_type: Type of crisis to filter by
+        use_extended: If True, search in EXTENDED_CRISES, else ALL_CRISES
+
+    Returns:
+        List of CrisisDefinition objects matching the type
+    """
+    crisis_list = EXTENDED_CRISES if use_extended else ALL_CRISES
+    return [c for c in crisis_list if c.crisis_type == crisis_type]
 
 
 def get_default_validation_config() -> ValidationConfig:

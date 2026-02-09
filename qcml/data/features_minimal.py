@@ -4,12 +4,19 @@ Minimal Feature Engine for Quick Hypothesis Validation
 Computes 5 essential features for testing the Chern number hypothesis
 on 2008 crisis data before investing in full Phase 2 feature engineering.
 
-Features:
+Base Features (per symbol):
     1. Log returns - Core price dynamics
     2. Rolling volatility - Regime indicator
     3. Rolling mean - Momentum
     4. Correlation to benchmark - Cross-sectional relationship
     5. Relative strength - Cross-sectional performance
+
+Optional Bond Features (if bond_col provided):
+    6. Bond returns - Treasury price dynamics
+    7. Bond volatility - Duration risk indicator
+    8. Bond momentum - Treasury trend
+    9. Equity-bond correlation - Flight-to-safety indicator
+    10. Duration spread - Bond vol / Equity vol (rate sensitivity)
 
 Author: QCML Research
 """
@@ -139,7 +146,8 @@ class MinimalFeatureEngine:
         return returns - benchmark_returns
 
     def create_feature_matrix(
-        self, prices_df: pd.DataFrame, benchmark_col: str = "SPY"
+        self, prices_df: pd.DataFrame, benchmark_col: str = "SPY",
+        bond_col: Optional[str] = None
     ) -> pd.DataFrame:
         """
         Create feature matrix from price DataFrame.
@@ -147,31 +155,45 @@ class MinimalFeatureEngine:
         Computes all 5 minimal features for each symbol and combines
         into a single feature matrix suitable for QCML processing.
 
+        If bond_col is provided, adds 5 bond/cross-asset features:
+        - Bond returns, volatility, momentum
+        - Equity-bond correlation
+        - Duration spread (bond vol / equity vol)
+
         Args:
             prices_df: DataFrame with columns as symbols, index as dates
             benchmark_col: Column name of benchmark (default: 'SPY')
+            bond_col: Optional bond ETF column (e.g., 'TLT'). If provided,
+                     adds bond-specific features for rate crisis detection.
 
         Returns:
             DataFrame with features for each symbol, aligned by date.
-            Shape: (n_dates, n_symbols * 5)
+            Shape: (n_dates, n_symbols * 5 + 5) if bond_col provided
             NaN values from warmup period are dropped.
 
         Example:
             >>> prices = pd.DataFrame({
             ...     'SPY': spy_prices,
             ...     'XLF': xlf_prices,
-            ...     'BAC': bac_prices
+            ...     'BAC': bac_prices,
+            ...     'TLT': tlt_prices
             ... })
-            >>> features = engine.create_feature_matrix(prices, benchmark_col='SPY')
+            >>> features = engine.create_feature_matrix(
+            ...     prices, benchmark_col='SPY', bond_col='TLT'
+            ... )
             >>> print(f"Features: {features.columns.tolist()}")
         """
         logger.info(
             f"Creating feature matrix for {len(prices_df.columns)} symbols, "
-            f"benchmark={benchmark_col}"
+            f"benchmark={benchmark_col}" +
+            (f", bond={bond_col}" if bond_col else "")
         )
 
         if benchmark_col not in prices_df.columns:
             raise ValueError(f"Benchmark column '{benchmark_col}' not in DataFrame")
+
+        if bond_col is not None and bond_col not in prices_df.columns:
+            raise ValueError(f"Bond column '{bond_col}' not in DataFrame")
 
         # Compute benchmark returns first
         benchmark_returns = self.compute_returns(prices_df[benchmark_col])
@@ -201,6 +223,27 @@ class MinimalFeatureEngine:
 
         # Combine all features
         result = pd.concat(feature_dfs, axis=1)
+
+        # Add bond/cross-asset features if bond_col provided
+        if bond_col is not None:
+            logger.info(f"Adding bond/cross-asset features using {bond_col}")
+
+            bond_returns = self.compute_returns(prices_df[bond_col])
+            bond_vol = self.compute_volatility(bond_returns)
+            equity_vol = self.compute_volatility(benchmark_returns)
+
+            # Create bond feature set
+            bond_features = pd.DataFrame({
+                'bond_returns': bond_returns,
+                'bond_volatility': bond_vol,
+                'bond_momentum': self.compute_rolling_mean(bond_returns),
+                'equity_bond_corr': self.compute_correlation(
+                    benchmark_returns, bond_returns
+                ),
+                'duration_spread': bond_vol / (equity_vol + 1e-8),  # Rate sensitivity
+            })
+
+            result = pd.concat([result, bond_features], axis=1)
 
         # Drop warmup period (rows with NaN)
         n_before = len(result)

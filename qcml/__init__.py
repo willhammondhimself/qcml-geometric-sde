@@ -10,7 +10,26 @@ Modules:
     regime: Topological regime detection via Chern numbers
     trading: Trading signal generation from geometric features
     data: Professional data pipeline for market data acquisition and processing
+    supervised_qcml: Supervised QCML for volatility forecasting
+    qcml_similarity: QCML similarity analysis for regime detection
 """
+
+# Supervised QCML (new)
+from .supervised_qcml import (
+    SupervisedQCML,
+    HermitianParameter,
+    QCMLTrainer,
+    QCMLTrainingConfig,
+    train_supervised_qcml,
+    seed_everything,
+)
+
+# QCML Similarity Analysis (new)
+from .qcml_similarity import (
+    QCMLSimilarityAnalyzer,
+    FidelityAnalysis,
+    analyze_vol_regimes,
+)
 
 from .qcml_geometry import (
     QCMLGeometry,
@@ -64,10 +83,23 @@ from .data import (
     create_multi_timeframe_dataset
 )
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 __author__ = "Will Hammond"
 
 __all__ = [
+    # Supervised QCML (new)
+    "SupervisedQCML",
+    "HermitianParameter",
+    "QCMLTrainer",
+    "QCMLTrainingConfig",
+    "train_supervised_qcml",
+    "seed_everything",
+
+    # QCML Similarity (new)
+    "QCMLSimilarityAnalyzer",
+    "FidelityAnalysis",
+    "analyze_vol_regimes",
+
     # Geometry
     "QCMLGeometry",
     "create_test_data_sphere",

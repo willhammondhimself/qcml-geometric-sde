@@ -352,6 +352,44 @@ class GeometricSDE:
 
         return paths, times
 
+    def fit_to_data(
+        self,
+        returns: np.ndarray,
+        dt: float = 1.0,
+    ) -> 'GeometricSDE':
+        """Estimate empirical drift and diffusion from observed returns.
+
+        Fits a simple model:
+          drift = rolling mean of returns
+          diffusion = metric-induced (from self.geometry)
+
+        This allows comparing geometric-SDE-generated paths to actual
+        market returns.
+
+        Args:
+            returns: (T, d) array of feature-space returns (differences).
+            dt: Time step (default 1 day).
+
+        Returns:
+            self (with updated drift function).
+        """
+        returns = np.asarray(returns)
+        if returns.ndim == 1:
+            returns = returns.reshape(-1, 1)
+
+        # Estimate empirical drift as sample mean of returns
+        mu_hat = np.mean(returns, axis=0) / dt
+        # Empirical covariance (for optional comparison)
+        cov_hat = np.cov(returns.T) / dt if returns.shape[1] > 1 else np.array([[np.var(returns) / dt]])
+
+        self._empirical_drift = mu_hat
+        self._empirical_cov = cov_hat
+
+        # Set drift function to constant empirical drift
+        self._drift_fn = lambda x, t: mu_hat
+
+        return self
+
 
 class NeuralGeometricSDE(nn.Module):
     """

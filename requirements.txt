@@ -18,6 +18,13 @@ fastparquet>=2023.0.0
 pandas-ta>=0.3.14
 # ta-lib  # Optional - requires system install: brew install ta-lib (macOS)
 
+# Volatility Forecasting (Pillar 1)
+yfinance>=0.2.0
+arch>=6.0
+
+# Hyperparameter Optimization
+optuna>=3.5.0
+
 # Utilities
 tqdm>=4.65.0
 requests>=2.31.0

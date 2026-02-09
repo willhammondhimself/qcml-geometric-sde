@@ -1,0 +1,41 @@
+{
+  "best_params": {
+    "fusion_method": "weighted_mean",
+    "hilbert_dim": 8,
+    "n_pca_components": 8,
+    "operator_method": "random",
+    "min_expanding": 80,
+    "rolling_window": 30,
+    "w_berry": 0.012887038865452671,
+    "w_qfi": 0.9701337030195142,
+    "w_multilag": 0.012146269464394954
+  },
+  "n_trials": 100,
+  "opt_elapsed_s": 265.3996398448944,
+  "pre_2020_crises": [
+    "2007_quant_meltdown",
+    "2008_crisis",
+    "2010_flash_crash",
+    "2011_debt_downgrade",
+    "2015_china",
+    "2016_brexit",
+    "2018_volmageddon",
+    "2018_fed_selloff",
+    "2019_repo_crisis"
+  ],
+  "post_2020_crises": [
+    "2020_covid",
+    "2022_rates",
+    "2023_svb"
+  ],
+  "pre_2020_median_d": 1.7036984032507096,
+  "pre_2020_mean_d": 1.3964386259513661,
+  "post_2020_median_d": 1.823091104142663,
+  "post_2020_mean_d": 1.855391345408183,
+  "post_2020_per_crisis": {
+    "2020_covid": 1.823091104142663,
+    "2022_rates": 1.9483931537573467,
+    "2023_svb": 1.7946897783245392
+  },
+  "overfitting_gap": -0.11939270089195331
+}

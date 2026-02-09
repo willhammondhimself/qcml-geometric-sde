@@ -1,0 +1,251 @@
+{
+  "timestamp": "20260207_124504",
+  "experiment": "temporal_oos_validation",
+  "calibration_cutoff": "2020-01-01",
+  "training_crises": [
+    "2007_quant_meltdown",
+    "2008_crisis",
+    "2010_flash_crash",
+    "2011_debt_downgrade",
+    "2015_china",
+    "2016_brexit",
+    "2018_volmageddon",
+    "2018_fed_selloff",
+    "2019_repo_crisis"
+  ],
+  "test_crises": [
+    "2020_covid",
+    "2022_rates",
+    "2023_svb"
+  ],
+  "parameters": {
+    "seed": 42
+  },
+  "oos_results": {
+    "2020_covid": {
+      "QCML Chern": {
+        "effect_size_d": 0.9172750872684594,
+        "p_value": 0.00014279735805205825,
+        "t_stat": 4.58794419920578
+      },
+      "Multi-Scale Chern": {
+        "effect_size_d": 0.2981056105131147,
+        "p_value": 0.26186445433361255,
+        "t_stat": 1.1530385143397877
+      },
+      "Quantum Ensemble": {
+        "effect_size_d": 0.1652358876914781,
+        "p_value": 0.3837239307284813,
+        "t_stat": 0.8870785714472461
+      },
+      "QFI Susceptibility": {
+        "effect_size_d": 0.5460250490383889,
+        "p_value": 9.94417626174525e-05,
+        "t_stat": 4.454827818011145
+      },
+      "Scalar Curvature": {
+        "effect_size_d": 0.05844959175905198,
+        "p_value": 0.3169954189128817,
+        "t_stat": 1.0022637055440526
+      },
+      "Geometric Consensus": {
+        "effect_size_d": 0.0,
+        "p_value": NaN,
+        "t_stat": NaN
+      },
+      "QFI Determinant": {
+        "effect_size_d": 0.694740772559121,
+        "p_value": 0.00877246858076833,
+        "t_stat": 2.885686717587776
+      },
+      "Berry Phase Rate": {
+        "effect_size_d": 0.20192325520428986,
+        "p_value": 0.09192638632447955,
+        "t_stat": 1.7350973073557376
+      },
+      "Multi-Lag Fidelity": {
+        "effect_size_d": 0.9863931519676699,
+        "p_value": 1.2266288990027962e-08,
+        "t_stat": 7.7393183521682225
+      },
+      "Metric Condition Number": {
+        "effect_size_d": 0.15351389268799778,
+        "p_value": 0.15924562561462297,
+        "t_stat": 1.4359328165391585
+      },
+      "Rolling Vol Z": {
+        "effect_size_d": 0.09094668615344333,
+        "p_value": 0.20631638162590812,
+        "t_stat": 1.2708597447909578
+      },
+      "CUSUM": {
+        "effect_size_d": 0.5787321600088517,
+        "p_value": 1.6537195702568385e-08,
+        "t_stat": 6.800869271143132
+      },
+      "HMM 2-state": {
+        "effect_size_d": 0.40735093900960034,
+        "p_value": 0.13966338805757364,
+        "t_stat": 1.5368671799976656
+      },
+      "Random Forest": {
+        "effect_size_d": 0.19798333565171677,
+        "p_value": 0.00165158805220369,
+        "t_stat": 3.1916778128314935
+      }
+    },
+    "2022_rates": {
+      "QCML Chern": {
+        "effect_size_d": 0.6157527641554232,
+        "p_value": 0.008793556057395029,
+        "t_stat": 2.902641513076593
+      },
+      "Multi-Scale Chern": {
+        "effect_size_d": 0.01173178168245919,
+        "p_value": 0.9270206232912472,
+        "t_stat": 0.09263195004031892
+      },
+      "Quantum Ensemble": {
+        "effect_size_d": 0.9928507470065651,
+        "p_value": 5.271775699063934e-10,
+        "t_stat": 9.742245856219466
+      },
+      "QFI Susceptibility": {
+        "effect_size_d": 0.4168618599819395,
+        "p_value": 0.009876038514582814,
+        "t_stat": 2.831900021662861
+      },
+      "Scalar Curvature": {
+        "effect_size_d": 0.03541389038422918,
+        "p_value": 0.31759116889315175,
+        "t_stat": 1.0000333814107718
+      },
+      "Geometric Consensus": {
+        "effect_size_d": 0.11868161542011144,
+        "p_value": 0.0005357039741823313,
+        "t_stat": 3.475127709974935
+      },
+      "QFI Determinant": {
+        "effect_size_d": 0.9022637137495629,
+        "p_value": 2.127036385183522e-05,
+        "t_stat": 5.453006741918489
+      },
+      "Berry Phase Rate": {
+        "effect_size_d": 0.2314973178394348,
+        "p_value": 0.0274722695583258,
+        "t_stat": 2.3417450232847474
+      },
+      "Multi-Lag Fidelity": {
+        "effect_size_d": 0.40142280284705784,
+        "p_value": 0.00039543025414783033,
+        "t_stat": 4.086263057549678
+      },
+      "Metric Condition Number": {
+        "effect_size_d": 0.7622622638326251,
+        "p_value": 2.56912184225753e-22,
+        "t_stat": 14.672628282220797
+      },
+      "Rolling Vol Z": {
+        "effect_size_d": 0.638719094718305,
+        "p_value": 1.2199774506046359e-11,
+        "t_stat": 9.679733729882352
+      },
+      "CUSUM": {
+        "effect_size_d": 0.5047297101203088,
+        "p_value": 1.8119608646246177e-10,
+        "t_stat": 8.432213772335526
+      },
+      "HMM 2-state": {
+        "effect_size_d": 0.39583948454373685,
+        "p_value": 0.0009977629868449121,
+        "t_stat": 3.7554720109077873
+      },
+      "Random Forest": {
+        "effect_size_d": 0.3979264094105824,
+        "p_value": 1.869624558059188e-08,
+        "t_stat": 6.851640108920081
+      }
+    },
+    "2023_svb": {
+      "QCML Chern": {
+        "effect_size_d": 0.44451372899232877,
+        "p_value": 3.6382318188963173e-16,
+        "t_stat": 10.370906008065077
+      },
+      "Multi-Scale Chern": {
+        "effect_size_d": 0.11424219355627077,
+        "p_value": 0.08301348570799436,
+        "t_stat": 1.7884561835322277
+      },
+      "Quantum Ensemble": {
+        "effect_size_d": 0.16499933955737642,
+        "p_value": 0.06685027502992424,
+        "t_stat": 1.9145358162819155
+      },
+      "QFI Susceptibility": {
+        "effect_size_d": 0.2614460292118808,
+        "p_value": 0.0032457804603182273,
+        "t_stat": 3.2405901901859337
+      },
+      "Scalar Curvature": {
+        "effect_size_d": 0.031108071840414805,
+        "p_value": 0.3154526158183848,
+        "t_stat": 1.004322044674578
+      },
+      "Geometric Consensus": {
+        "effect_size_d": 0.22677888511816316,
+        "p_value": 1.0467629947652768e-13,
+        "t_stat": 7.529264804688405
+      },
+      "QFI Determinant": {
+        "effect_size_d": 0.04745681979370435,
+        "p_value": 0.4729108120026071,
+        "t_stat": 0.7264627535599385
+      },
+      "Berry Phase Rate": {
+        "effect_size_d": 1.0438509479826825,
+        "p_value": 2.0248944306083083e-14,
+        "t_stat": 14.268808275799387
+      },
+      "Multi-Lag Fidelity": {
+        "effect_size_d": 0.1300878813705261,
+        "p_value": 0.14850137829369858,
+        "t_stat": 1.4911746404527917
+      },
+      "Metric Condition Number": {
+        "effect_size_d": 0.5946799013819565,
+        "p_value": 3.2346583825081115e-28,
+        "t_stat": 14.830546315428592
+      },
+      "Rolling Vol Z": {
+        "effect_size_d": 1.644521434732514,
+        "p_value": 5.750269260834001e-14,
+        "t_stat": 16.06280290786781
+      },
+      "CUSUM": {
+        "effect_size_d": 0.6193546677194863,
+        "p_value": 0.00024541998198110605,
+        "t_stat": 4.4141150805489735
+      },
+      "HMM 2-state": {
+        "effect_size_d": 0.4092389780899457,
+        "p_value": 0.07437314757962812,
+        "t_stat": 1.8841112609452826
+      },
+      "Random Forest": {
+        "effect_size_d": 0.33452618252309746,
+        "p_value": 0.07565556690277693,
+        "t_stat": 1.873131356719458
+      }
+    }
+  },
+  "degradation": {},
+  "summary": {
+    "qcml_mean_oos_d": 0.38565216181314277,
+    "qcml_std_oos_d": 0.33178024346907137,
+    "rf_mean_oos_d": 0.3101453091951322,
+    "rf_std_oos_d": 0.0834271275793492,
+    "n_qcml_above_08": 5,
+    "n_qcml_total": 30
+  }
+}

@@ -1,0 +1,612 @@
+{
+  "timestamp": "20260208_155853",
+  "assets": [
+    "SPY",
+    "QQQ",
+    "IWM",
+    "EFA",
+    "DIA"
+  ],
+  "crises": [
+    "2008_crisis",
+    "2015_china",
+    "2020_covid",
+    "2022_rates"
+  ],
+  "methods": [
+    "Berry Phase Rate",
+    "QFI Determinant",
+    "Multi-Lag Fidelity",
+    "Random Forest"
+  ],
+  "results": [
+    {
+      "asset": "SPY",
+      "crisis": "2008_crisis",
+      "method": "Berry Phase Rate",
+      "effect_size_d": 0.9759640455062337,
+      "p_value": 0.001311190516208711
+    },
+    {
+      "asset": "SPY",
+      "crisis": "2008_crisis",
+      "method": "QFI Determinant",
+      "effect_size_d": 2.0385938007501276,
+      "p_value": 1.718848189505628e-26
+    },
+    {
+      "asset": "SPY",
+      "crisis": "2008_crisis",
+      "method": "Multi-Lag Fidelity",
+      "effect_size_d": 1.9852312631919249,
+      "p_value": 3.411377246540148e-27
+    },
+    {
+      "asset": "SPY",
+      "crisis": "2015_china",
+      "method": "Berry Phase Rate",
+      "effect_size_d": 0.4864888678206929,
+      "p_value": 0.9356385195560133
+    },
+    {
+      "asset": "SPY",
+      "crisis": "2015_china",
+      "method": "QFI Determinant",
+      "effect_size_d": 1.640635948236907,
+      "p_value": 7.358992630196797e-36
+    },
+    {
+      "asset": "SPY",
+      "crisis": "2015_china",
+      "method": "Multi-Lag Fidelity",
+      "effect_size_d": 1.4048160937778253,
+      "p_value": 1.2811958433530804e-29
+    },
+    {
+      "asset": "SPY",
+      "crisis": "2020_covid",
+      "method": "Berry Phase Rate",
+      "effect_size_d": 0.03210643263742889,
+      "p_value": 0.49568765031348105
+    },
+    {
+      "asset": "SPY",
+      "crisis": "2020_covid",
+      "method": "QFI Determinant",
+      "effect_size_d": 2.032625391242382,
+      "p_value": 4.330233989124936e-17
+    },
+    {
+      "asset": "SPY",
+      "crisis": "2020_covid",
+      "method": "Multi-Lag Fidelity",
+      "effect_size_d": 1.9414211028213098,
+      "p_value": 2.5916227173315285e-09
+    },
+    {
+      "asset": "SPY",
+      "crisis": "2022_rates",
+      "method": "Berry Phase Rate",
+      "effect_size_d": 1.9635031031774548,
+      "p_value": 5.479812630349119e-07
+    },
+    {
+      "asset": "SPY",
+      "crisis": "2022_rates",
+      "method": "QFI Determinant",
+      "effect_size_d": 1.277270103729834,
+      "p_value": 5.939141264818049e-07
+    },
+    {
+      "asset": "SPY",
+      "crisis": "2022_rates",
+      "method": "Multi-Lag Fidelity",
+      "effect_size_d": 2.011734826205972,
+      "p_value": 2.0589799110845127e-11
+    },
+    {
+      "asset": "QQQ",
+      "crisis": "2015_china",
+      "method": "Berry Phase Rate",
+      "effect_size_d": 1.6976342149528016,
+      "p_value": 1.0474564622753217e-08
+    },
+    {
+      "asset": "QQQ",
+      "crisis": "2015_china",
+      "method": "QFI Determinant",
+      "effect_size_d": 0.6398874754985978,
+      "p_value": 5.2039739167466934e-05
+    },
+    {
+      "asset": "QQQ",
+      "crisis": "2015_china",
+      "method": "Multi-Lag Fidelity",
+      "effect_size_d": 2.0117348262059727,
+      "p_value": 1.299278546506938e-17
+    },
+    {
+      "asset": "QQQ",
+      "crisis": "2020_covid",
+      "method": "Berry Phase Rate",
+      "effect_size_d": 1.9118170775680778,
+      "p_value": 8.768093887634523e-53
+    },
+    {
+      "asset": "QQQ",
+      "crisis": "2020_covid",
+      "method": "QFI Determinant",
+      "effect_size_d": 1.747723772487114,
+      "p_value": 3.976980986193702e-24
+    },
+    {
+      "asset": "QQQ",
+      "crisis": "2020_covid",
+      "method": "Multi-Lag Fidelity",
+      "effect_size_d": 1.4662954411282532,
+      "p_value": 1.230432258585005e-13
+    },
+    {
+      "asset": "QQQ",
+      "crisis": "2022_rates",
+      "method": "Berry Phase Rate",
+      "effect_size_d": 1.1691759988392403,
+      "p_value": 0.00012065726410549573
+    },
+    {
+      "asset": "QQQ",
+      "crisis": "2022_rates",
+      "method": "QFI Determinant",
+      "effect_size_d": 1.931431323027238,
+      "p_value": 1.8332032163522586e-16
+    },
+    {
+      "asset": "QQQ",
+      "crisis": "2022_rates",
+      "method": "Multi-Lag Fidelity",
+      "effect_size_d": 1.6157904430822188,
+      "p_value": 2.852917335984209e-06
+    },
+    {
+      "asset": "IWM",
+      "crisis": "2008_crisis",
+      "method": "Berry Phase Rate",
+      "effect_size_d": 1.9026684685667676,
+      "p_value": 2.7958339979047278e-18
+    },
+    {
+      "asset": "IWM",
+      "crisis": "2008_crisis",
+      "method": "QFI Determinant",
+      "effect_size_d": 1.5316930962114161,
+      "p_value": 1.1256270063084661e-14
+    },
+    {
+      "asset": "IWM",
+      "crisis": "2008_crisis",
+      "method": "Multi-Lag Fidelity",
+      "effect_size_d": 1.9087343289039815,
+      "p_value": 1.1684840240806374e-23
+    },
+    {
+      "asset": "IWM",
+      "crisis": "2015_china",
+      "method": "Berry Phase Rate",
+      "effect_size_d": 1.5624820396497154,
+      "p_value": 3.1032434731157237e-32
+    },
+    {
+      "asset": "IWM",
+      "crisis": "2015_china",
+      "method": "QFI Determinant",
+      "effect_size_d": 0.019263132098746746,
+      "p_value": 0.938157634029307
+    },
+    {
+      "asset": "IWM",
+      "crisis": "2015_china",
+      "method": "Multi-Lag Fidelity",
+      "effect_size_d": 0.4520937488006835,
+      "p_value": 0.06451265783153615
+    },
+    {
+      "asset": "IWM",
+      "crisis": "2020_covid",
+      "method": "Berry Phase Rate",
+      "effect_size_d": 1.537266129435489,
+      "p_value": 7.308639675404848e-13
+    },
+    {
+      "asset": "IWM",
+      "crisis": "2020_covid",
+      "method": "QFI Determinant",
+      "effect_size_d": 0.8400099269616316,
+      "p_value": 0.0011459821900303645
+    },
+    {
+      "asset": "IWM",
+      "crisis": "2020_covid",
+      "method": "Multi-Lag Fidelity",
+      "effect_size_d": 1.787971978982361,
+      "p_value": 3.309838988830658e-41
+    },
+    {
+      "asset": "IWM",
+      "crisis": "2022_rates",
+      "method": "Berry Phase Rate",
+      "effect_size_d": 0.2140362412309622,
+      "p_value": 0.17839383255399394
+    },
+    {
+      "asset": "IWM",
+      "crisis": "2022_rates",
+      "method": "QFI Determinant",
+      "effect_size_d": 1.6521932782102688,
+      "p_value": 9.689764433824511e-09
+    },
+    {
+      "asset": "IWM",
+      "crisis": "2022_rates",
+      "method": "Multi-Lag Fidelity",
+      "effect_size_d": 0.06165412510289694,
+      "p_value": 0.9642742047041506
+    },
+    {
+      "asset": "EFA",
+      "crisis": "2008_crisis",
+      "method": "Berry Phase Rate",
+      "effect_size_d": 1.4400173919363102,
+      "p_value": 1.8515264173140442e-08
+    },
+    {
+      "asset": "EFA",
+      "crisis": "2008_crisis",
+      "method": "QFI Determinant",
+      "effect_size_d": 1.688210210872457,
+      "p_value": 2.874057729957713e-16
+    },
+    {
+      "asset": "EFA",
+      "crisis": "2008_crisis",
+      "method": "Multi-Lag Fidelity",
+      "effect_size_d": 1.3971570731104348,
+      "p_value": 9.202331918851574e-19
+    },
+    {
+      "asset": "EFA",
+      "crisis": "2015_china",
+      "method": "Berry Phase Rate",
+      "effect_size_d": 0.8598477408557502,
+      "p_value": 0.005062820259603351
+    },
+    {
+      "asset": "EFA",
+      "crisis": "2015_china",
+      "method": "QFI Determinant",
+      "effect_size_d": 0.021831681622682474,
+      "p_value": 0.9556073160185031
+    },
+    {
+      "asset": "EFA",
+      "crisis": "2015_china",
+      "method": "Multi-Lag Fidelity",
+      "effect_size_d": 1.9534367861437734,
+      "p_value": 7.171164986597438e-19
+    },
+    {
+      "asset": "EFA",
+      "crisis": "2020_covid",
+      "method": "Berry Phase Rate",
+      "effect_size_d": 0.2942409456511927,
+      "p_value": 0.17680683550453036
+    },
+    {
+      "asset": "EFA",
+      "crisis": "2020_covid",
+      "method": "QFI Determinant",
+      "effect_size_d": 1.4645257301481651,
+      "p_value": 7.515613444614e-07
+    },
+    {
+      "asset": "EFA",
+      "crisis": "2020_covid",
+      "method": "Multi-Lag Fidelity",
+      "effect_size_d": 1.3656512569889134,
+      "p_value": 5.283383397073245e-07
+    },
+    {
+      "asset": "EFA",
+      "crisis": "2022_rates",
+      "method": "Berry Phase Rate",
+      "effect_size_d": 0.3981889687743974,
+      "p_value": 0.6173945037839502
+    },
+    {
+      "asset": "EFA",
+      "crisis": "2022_rates",
+      "method": "QFI Determinant",
+      "effect_size_d": 0.6371372020170251,
+      "p_value": 3.840701303619411e-05
+    },
+    {
+      "asset": "EFA",
+      "crisis": "2022_rates",
+      "method": "Multi-Lag Fidelity",
+      "effect_size_d": 0.6578033444939574,
+      "p_value": 0.0005486850540522512
+    },
+    {
+      "asset": "DIA",
+      "crisis": "2008_crisis",
+      "method": "Berry Phase Rate",
+      "effect_size_d": 1.2510130423419354,
+      "p_value": 0.293682232012301
+    },
+    {
+      "asset": "DIA",
+      "crisis": "2008_crisis",
+      "method": "QFI Determinant",
+      "effect_size_d": 0.30270786977499614,
+      "p_value": 0.4668007655786923
+    },
+    {
+      "asset": "DIA",
+      "crisis": "2008_crisis",
+      "method": "Multi-Lag Fidelity",
+      "effect_size_d": 1.5712753304174152,
+      "p_value": 1.6011896587816664e-17
+    },
+    {
+      "asset": "DIA",
+      "crisis": "2015_china",
+      "method": "Berry Phase Rate",
+      "effect_size_d": 1.9997257865543383,
+      "p_value": 1.9117751952303304e-32
+    },
+    {
+      "asset": "DIA",
+      "crisis": "2015_china",
+      "method": "QFI Determinant",
+      "effect_size_d": 0.0590841541467441,
+      "p_value": 0.8420113906411308
+    },
+    {
+      "asset": "DIA",
+      "crisis": "2015_china",
+      "method": "Multi-Lag Fidelity",
+      "effect_size_d": 1.2722938195898543,
+      "p_value": 2.681977530751384e-13
+    },
+    {
+      "asset": "DIA",
+      "crisis": "2020_covid",
+      "method": "Berry Phase Rate",
+      "effect_size_d": 1.1842245769125188,
+      "p_value": 4.656317881884157e-06
+    },
+    {
+      "asset": "DIA",
+      "crisis": "2020_covid",
+      "method": "QFI Determinant",
+      "effect_size_d": 2.0554764932181326,
+      "p_value": 2.1044933090510037e-15
+    },
+    {
+      "asset": "DIA",
+      "crisis": "2020_covid",
+      "method": "Multi-Lag Fidelity",
+      "effect_size_d": 1.9765514589631379,
+      "p_value": 1.346368044933648e-09
+    },
+    {
+      "asset": "DIA",
+      "crisis": "2022_rates",
+      "method": "Berry Phase Rate",
+      "effect_size_d": 1.691676485324712,
+      "p_value": 1.3179801395592612e-23
+    },
+    {
+      "asset": "DIA",
+      "crisis": "2022_rates",
+      "method": "QFI Determinant",
+      "effect_size_d": 0.10279664971738377,
+      "p_value": 0.759816241903202
+    },
+    {
+      "asset": "DIA",
+      "crisis": "2022_rates",
+      "method": "Multi-Lag Fidelity",
+      "effect_size_d": 0.5028171051245606,
+      "p_value": 0.006315843323321347
+    },
+    {
+      "asset": "SPY",
+      "crisis": "2008_crisis",
+      "method": "Random Forest",
+      "effect_size_d": 0.0,
+      "p_value": 1.0
+    },
+    {
+      "asset": "SPY",
+      "crisis": "2015_china",
+      "method": "Random Forest",
+      "effect_size_d": 0.0,
+      "p_value": 1.0
+    },
+    {
+      "asset": "SPY",
+      "crisis": "2020_covid",
+      "method": "Random Forest",
+      "effect_size_d": 0.0,
+      "p_value": 1.0
+    },
+    {
+      "asset": "SPY",
+      "crisis": "2022_rates",
+      "method": "Random Forest",
+      "effect_size_d": 0.0,
+      "p_value": 1.0
+    },
+    {
+      "asset": "QQQ",
+      "crisis": "2015_china",
+      "method": "Random Forest",
+      "effect_size_d": 0.0,
+      "p_value": 1.0
+    },
+    {
+      "asset": "QQQ",
+      "crisis": "2020_covid",
+      "method": "Random Forest",
+      "effect_size_d": 0.0,
+      "p_value": 1.0
+    },
+    {
+      "asset": "QQQ",
+      "crisis": "2022_rates",
+      "method": "Random Forest",
+      "effect_size_d": 0.0,
+      "p_value": 1.0
+    },
+    {
+      "asset": "IWM",
+      "crisis": "2008_crisis",
+      "method": "Random Forest",
+      "effect_size_d": 0.0,
+      "p_value": 1.0
+    },
+    {
+      "asset": "IWM",
+      "crisis": "2015_china",
+      "method": "Random Forest",
+      "effect_size_d": 0.0,
+      "p_value": 1.0
+    },
+    {
+      "asset": "IWM",
+      "crisis": "2020_covid",
+      "method": "Random Forest",
+      "effect_size_d": 0.0,
+      "p_value": 1.0
+    },
+    {
+      "asset": "IWM",
+      "crisis": "2022_rates",
+      "method": "Random Forest",
+      "effect_size_d": 0.0,
+      "p_value": 1.0
+    },
+    {
+      "asset": "EFA",
+      "crisis": "2008_crisis",
+      "method": "Random Forest",
+      "effect_size_d": 0.0,
+      "p_value": 1.0
+    },
+    {
+      "asset": "EFA",
+      "crisis": "2015_china",
+      "method": "Random Forest",
+      "effect_size_d": 0.0,
+      "p_value": 1.0
+    },
+    {
+      "asset": "EFA",
+      "crisis": "2020_covid",
+      "method": "Random Forest",
+      "effect_size_d": 0.0,
+      "p_value": 1.0
+    },
+    {
+      "asset": "EFA",
+      "crisis": "2022_rates",
+      "method": "Random Forest",
+      "effect_size_d": 0.0,
+      "p_value": 1.0
+    },
+    {
+      "asset": "DIA",
+      "crisis": "2008_crisis",
+      "method": "Random Forest",
+      "effect_size_d": 0.0,
+      "p_value": 1.0
+    },
+    {
+      "asset": "DIA",
+      "crisis": "2015_china",
+      "method": "Random Forest",
+      "effect_size_d": 0.0,
+      "p_value": 1.0
+    },
+    {
+      "asset": "DIA",
+      "crisis": "2020_covid",
+      "method": "Random Forest",
+      "effect_size_d": 0.0,
+      "p_value": 1.0
+    },
+    {
+      "asset": "DIA",
+      "crisis": "2022_rates",
+      "method": "Random Forest",
+      "effect_size_d": 0.0,
+      "p_value": 1.0
+    }
+  ],
+  "method_summary": {
+    "mean": {
+      "Berry Phase Rate": 1.1880040819861062,
+      "Multi-Lag Fidelity": 1.4391823343702868,
+      "QFI Determinant": 1.1412156442090449,
+      "Random Forest": 0.0
+    },
+    "median": {
+      "Berry Phase Rate": 1.2510130423419354,
+      "Multi-Lag Fidelity": 1.5712753304174152,
+      "QFI Determinant": 1.4645257301481651,
+      "Random Forest": 0.0
+    },
+    "std": {
+      "Berry Phase Rate": 0.6450892160437784,
+      "Multi-Lag Fidelity": 0.6030590125200089,
+      "QFI Determinant": 0.7664371059892446,
+      "Random Forest": 0.0
+    },
+    "count": {
+      "Berry Phase Rate": 19,
+      "Multi-Lag Fidelity": 19,
+      "QFI Determinant": 19,
+      "Random Forest": 19
+    }
+  },
+  "asset_method_matrix": {
+    "Berry Phase Rate": {
+      "DIA": 1.5316599727833762,
+      "EFA": 0.7480737618044127,
+      "IWM": 1.3041132197207337,
+      "QQQ": 1.5928757637867068,
+      "SPY": 0.8645156122854526
+    },
+    "Multi-Lag Fidelity": {
+      "DIA": 1.330734428523742,
+      "EFA": 1.3435121151842697,
+      "IWM": 1.0526135454474808,
+      "QQQ": 1.6979402368054817,
+      "SPY": 1.835800821499258
+    },
+    "QFI Determinant": {
+      "DIA": 0.6300162917143142,
+      "EFA": 0.9529262061650824,
+      "IWM": 1.010789858370516,
+      "QQQ": 1.4396808570043165,
+      "SPY": 1.7472813109898127
+    },
+    "Random Forest": {
+      "DIA": 0.0,
+      "EFA": 0.0,
+      "IWM": 0.0,
+      "QQQ": 0.0,
+      "SPY": 0.0
+    }
+  }
+}
