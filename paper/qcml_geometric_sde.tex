@@ -1718,23 +1718,28 @@ validation, with 200 TPE trials per method (Phase~A).  An optional
 Phase~B refined the expanding window refit interval on top of Phase~A
 configurations (150 trials).
 
-\textbf{Causal-Optimal Configurations Differ Substantially.}  Under the
-causal constraint, optimal hyperparameters diverge from non-causal
-settings:
+\textbf{Causal-Optimal Configurations Converge.}  Under the
+causal constraint, all three methods converge to a consistent optimal
+configuration family:
 
 \begin{itemize}
+  \item \textbf{Hilbert dimension}: All methods converge to $h = 8$ under
+    causal optimization, matching the non-causal optimum.  This suggests
+    that moderate-dimensional Hilbert spaces provide sufficient geometric
+    resolution without overfitting to pre-crisis data.
   \item \textbf{Rolling window}: All methods converge to \texttt{rolling\_window}
     $= 30$ under causal optimization, versus 10--20 in non-causal settings.
     Longer windows provide stability when operators are calibrated on limited
     pre-crisis data.
-  \item \textbf{Operator method}: \texttt{pca\_inspired} dominates for
-    QFI Determinant ($+0.30$ mean $d$ over random) and Multi-Lag Fidelity
-    ($+0.34$), confirming that principal component alignment is critical
+  \item \textbf{Operator method}: \texttt{pca\_inspired} dominates for all
+    three methods, confirming that principal component alignment is critical
     when training data is restricted.
-  \item \textbf{Hilbert dimension}: Berry Phase Rate prefers $h=16$
-    (higher than non-causal $h=8$), while QFI and Multi-Lag Fidelity
-    stabilize at $h=8$--$h=12$.
 \end{itemize}
+
+\noindent The Optuna Phase~A optimization achieves median Cohen's $d > 2.0$
+for all three methods across 12 crises: Multi-Lag Fidelity
+(median $d = 2.06$), Berry Phase Rate (median $d = 2.05$), and QFI
+Determinant (median $d = 2.01$).
 
 \textbf{Statistical Validation.}  We evaluated six conditions across
 12 crises: (1)~original non-causal defaults with causal fitting,
@@ -1762,12 +1767,15 @@ performance heatmaps, revealing that QCML methods excel in fast crashes
 (2018 Vol Spike).
 
 \textbf{Expanding Window Trade-off.}  Phase~B expanding window
-optimization (periodic refitting with growing data) improves Berry
-Phase Rate ($+0.25$ mean $d$) but \emph{degrades} QFI Determinant
-($-0.43$) and Multi-Lag Fidelity ($-0.48$).  This asymmetry reflects
-differential sensitivity to operator recalibration: Berry curvature
-benefits from adaptive updates, while QFI-based methods suffer from
-parameter instability during volatile periods.
+optimization (periodic refitting with growing data at 30-step intervals)
+marginally improves Berry Phase Rate ($+0.09$ mean $d$) but
+\emph{severely degrades} QFI Determinant ($-1.40$ mean $d$, from $2.30$
+to $0.89$) and reduces Multi-Lag Fidelity ($-0.34$).  This asymmetry
+reflects differential sensitivity to operator recalibration: Berry
+curvature tolerates adaptive updates, while QFI-based methods suffer
+from parameter instability during volatile periods.  The conclusion is
+that single-shot causal fitting with Optuna-optimized hyperparameters
+outperforms expanding window approaches.
 Figure~\ref{fig:optuna_phase_ab} illustrates this trade-off across
 all 12 crises.
 
