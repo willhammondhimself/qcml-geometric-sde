@@ -36,21 +36,25 @@ from dotenv import load_dotenv
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
-from qcml.regime.classical_baselines import (
+from qcml_geometry import (
     BaseRegimeDetector,
-    QCMLChernDetector,
+    BerryPhaseRateDetector,
+    QFIDeterminantDetector,
+    MultiLagFidelityDetector,
+)
+from experiments.baselines import (
     RollingVolatilityDetector,
     CUSUMDetector,
     HMMRegimeDetector,
     RandomForestRegimeDetector,
+)
+from experiments.additional_detectors import (
+    QCMLChernDetector,
     MultiScaleChernDetector,
     QuantumEnsembleDetector,
     QFISusceptibilityDetector,
     ScalarCurvatureDetector,
     GeometricConsensusDetector,
-    QFIDeterminantDetector,
-    BerryPhaseRateDetector,
-    MultiLagFidelityDetector,
     MetricConditionNumberDetector,
 )
 from experiments.crisis_config import (

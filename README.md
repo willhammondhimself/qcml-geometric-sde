@@ -1,217 +1,117 @@
-# QCML-Geometric SDEs: Topological Market Regime Detection
+# Quantum Geometric Observables for Financial Regime Detection
 
-A very new and experimental framework combining Quantum Cognative Metric Learning (QCML) with stochastic differential equations on learned manifolds and topological invariants for quantitative finance.
+Academic research code for the paper:
 
-## Project Structure
+> **Quantum Geometric Observables for Financial Regime Detection**
+> Will Hammond, Pitzer College
+
+## Overview
+
+This project introduces three unsupervised regime detection observables derived from the quantum metric tensor of a QCML (Quantum Cognition Machine Learning) induced geometry on financial data manifolds:
+
+1. **Berry Phase Rate** -- rate of change of Berry curvature signals topological transitions
+2. **QFI Pseudo-Determinant** -- quantum metric volume element detects phase boundary crossings
+3. **Multi-Lag Fidelity** -- multi-scale quantum state overlap measures regime instability
+
+These geometric observables are competitive with supervised Random Forest baselines (median Cohen's d = 1.67 vs 1.13 via simple weighted combination) and generalize across 5 ETFs (SPY, QQQ, IWM, EFA, DIA).
+
+## Repository Structure
 
 ```
-Personal-QCML/
-├── qcml/                           # Core QCML package
-│   ├── __init__.py
-│   ├── qcml_geometry.py           # QCML operators, quantum metric, Berry curvature
-│   ├── geometric_sde.py           # SDEs on learned manifolds
-│   ├── topological_regime.py      # Regime detection via Chern numbers
-│   └── trading_signals.py         # Trading signal generation
-│
-├── notebooks/                      # Research notebooks
-│   ├── __init__.py
-│   └── Geometric_SDE_QCML.ipynb   # Full pipeline demonstration
-│
-├── tests/                          # Unit tests
-│   ├── __init__.py
-│   ├── test_geometry.py
-│   ├── test_sde.py
-│   ├── test_regime.py
-│   └── test_signals.py
-│
-├── experiments/                    # Experiment scripts
-│   └── __init__.py
-│
-├── docs/                           # Documentation
-│   └── ...
-│
-├── internal-docs                       # Code quality guidelines
-├── PRD.md                          # Product requirements
-├── Quick-Start-Guide.md            # Getting started
-└── README.md                       # This file
-```
+qcml_geometry/       Core math library (pure functions, no I/O)
+  core.py            QCMLGeometry: error Hamiltonian, quantum metric, Berry curvature
+  observables.py     BerryPhaseRateDetector, QFIDeterminantDetector, MultiLagFidelityDetector
+  topology.py        TopologicalRegimeDetector, Chern number computation
+  indicators.py      Spectral gap, energy evolution, fidelity decay, multi-scale Chern
 
-## Core Modules
+experiments/         Paper 1 experiment scripts
+  data/              PolygonDataSource, MinimalFeatureEngine
+  baselines.py       Classical baselines (Vol-Z, CUSUM, HMM, Random Forest)
+  additional_detectors.py  Additional QCML detectors (Chern, QFI susceptibility, etc.)
+  crisis_config.py   Crisis period definitions
+  config.yaml        Default hyperparameters
 
-### 1. QCML Geometry (`qcml_geometry.py`)
-
-Learns geometric structure from data using quantum-inspired methods:
-- Error Hamiltonian: $H(x) = \frac{1}{2}\sum_k (A_k - x_k \cdot I)^2$
-- Quasi-coherent states: ground states of H(x)
-- Quantum metric tensor: $g_{ab}$ encoding manifold geometry
-- Berry curvature: $F_{ab}$ for topological analysis
-
-```python
-from qcml import QCMLGeometry
-import numpy as np
-
-# Create and fit geometry
-geometry = QCMLGeometry(n_features=3, hilbert_dim=4)
-geometry.fit_operators(X, method='pca_inspired')
-
-# Compute quantum metric and Berry curvature
-g = geometry.quantum_metric(x)      # Metric tensor
-F = geometry.berry_curvature(x)     # Topological structure
-d = geometry.quantum_distance(x1, x2)  # Quantum metric distance
-```
-
-### 2. Geometric SDEs (`geometric_sde.py`)
-
-Stochastic differential equations that respect the learned geometry:
-
-**Traditional SDE**: $dX = \mu(X)dt + \sigma(X)dW$
-
-**Geometric SDE**: $dX^a = \mu^a(X)dt + \sigma^a_b(X)dW^b$ where $\Sigma^{ab} = \sigma^a_c \sigma^{bc} \propto g^{-1}$
-
-```python
-from qcml import GeometricSDE
-
-# Create SDE respecting QCML geometry
-sde = GeometricSDE(geometry=geometry)
-
-# Simulate paths
-paths, times = sde.simulate_euler_maruyama(
-    x0=x0, T=2.0, dt=0.01, n_paths=100,
-    use_metric_diffusion=True
-)
-
-# Train neural SDE model
-from qcml import NeuralGeometricSDE, train_neural_sde
-model = NeuralGeometricSDE(n_features=3)
-train_neural_sde(model, dataset, n_epochs=100)
-```
-
-### 3. Topological Regime Detection (`topological_regime.py`)
-
-Detects market regime changes using topological invariants:
-- **Chern number**: Integer topological invariant robust to noise
-- **Key insight**: $\Delta C = 0$ → same regime (extreme event); $\Delta C \neq 0$ → topological transition (regime change)
-
-```python
-from qcml import TopologicalRegimeDetector
-
-detector = TopologicalRegimeDetector(
-    geometry=geometry,
-    window_size=50,
-    chern_threshold=0.5
-)
-
-# Detect transitions
-transitions = detector.detect_transitions(X_timeseries)
-
-# Compute regime signatures
-signature = detector.compute_regime_signature(X_window)
-print(f"Chern number: {signature['chern_number']:.2f}")
-```
-
-### 4. Trading Signals (`trading_signals.py`)
-
-Generates trading signals from topological and geometric features:
-- Curvature spikes → market stress
-- Chern transitions → regime changes
-- Metric expansion → volatility shifts
-- Spectral gap compression → instability
-
-```python
-from qcml import TopologicalTradingStrategy, backtest_topological_strategy
-
-strategy = TopologicalTradingStrategy(
-    geometry=geometry,
-    lookback=30,
-    position_limit=1.0
-)
-
-results = backtest_topological_strategy(
-    strategy, X, prices,
-    transaction_cost=0.001
-)
-
-print(f"Sharpe: {results['metrics']['sharpe']:.2f}")
-print(f"Max Drawdown: {results['metrics']['max_drawdown']:.2%}")
+notebooks/           3 polished notebooks for Paper 1
+paper/               LaTeX source
+archive/             Non-Paper-1 code (SDE, trading, deep learning, TDA, etc.)
+tests/               Unit tests
 ```
 
 ## Quick Start
 
-### Installation
-
 ```bash
-cd Personal-QCML
-# No external dependencies beyond numpy, torch, scipy
+# Install dependencies
+pip install -r requirements.txt
+
+# Set up Polygon API key
+echo "POLYGON_API_KEY=your_key_here" > .env
+
+# Run example regime detection
+python experiments/example_regime_detection.py
+
+# Run tests
+pytest tests/ -v
 ```
 
-### Basic Usage
+## Core Modules
+
+### QCML Geometry (`qcml_geometry/core.py`)
+
+Learns geometric structure from data using quantum-inspired methods:
+- Error Hamiltonian: H(x) = 1/2 sum_k (A_k - x_k I)^2
+- Quasi-coherent states: ground states of H(x)
+- Quantum metric tensor: g_ab encoding manifold geometry
+- Berry curvature: F_ab for topological analysis
 
 ```python
-from qcml import (
-    QCMLGeometry,
-    create_test_data_sphere,
-    GeometricSDE,
-    TopologicalRegimeDetector
-)
+from qcml_geometry import QCMLGeometry
 
-# Create test data
-X = create_test_data_sphere(n_samples=500, noise=0.05)
+geometry = QCMLGeometry(n_features=5, hilbert_dim=8)
+geometry.fit_operators(X, method='pca_inspired')
 
-# Fit QCML geometry
-qcml = QCMLGeometry(n_features=3, hilbert_dim=4)
-qcml.fit_operators(X)
-
-# Create and simulate geometric SDE
-sde = GeometricSDE(geometry=qcml)
-paths, times = sde.simulate_euler_maruyama(x0=X[0], T=1.0, dt=0.01)
-
-# Detect regime changes
-detector = TopologicalRegimeDetector(qcml, window_size=30)
-transitions = detector.detect_transitions(X)
+g = geometry.quantum_metric(x)       # Metric tensor
+F = geometry.berry_curvature(x)      # Topological structure
+d = geometry.quantum_distance(x1, x2)  # Fubini-Study distance
 ```
 
-## References & Citations
+### Geometric Observables (`qcml_geometry/observables.py`)
 
-This work builds upon the QCML (Quantum Cognition Machine Learning) framework developed by Qognitive, Inc. and academic collaborators.
+Three novel unsupervised regime detectors:
 
-**📚 See [REFERENCES.md](REFERENCES.md) for complete citations** of:
-- 7 core QCML research papers (Scientific Reports, arXiv)
-- Financial applications (equity forecasting, corporate bonds, firm linkages)
-- Biomedical validation (cancer prediction)
-- Theoretical foundations (quantum geometry, intrinsic dimension)
+```python
+from qcml_geometry import BerryPhaseRateDetector, QFIDeterminantDetector, MultiLagFidelityDetector
 
-**Key papers**:
-1. **Candelori et al. (2025)** - Intrinsic dimension with spectral gap detection (*Scientific Reports*)
-2. **Abanov et al. (2025)** - Quantum geometry of data (arXiv:2507.21135)
-3. **Samson et al. (2024)** - Financial forecasting with QCML
-4. **Rosaler et al. (2025)** - Corporate bond similarity (arXiv:2502.01495)
-5. **Samson et al. (2025)** - Firm linkages and momentum spillover (arXiv:2506.19856)
+detector = BerryPhaseRateDetector(hilbert_dim=8, n_pca_components=15)
+detector.fit(X_features)
+scores = detector.compute_regime_scores(X_features)
+```
 
-## Testing Hypotheses
+## Key Results
 
-On real financial data:
+| Method | Median Cohen's d | Type |
+|--------|-----------------|------|
+| Fused QCML (Phase B) | 1.79 | Unsupervised geometric |
+| Fused QCML (Phase A) | 1.67 | Unsupervised geometric |
+| QFI Determinant | 1.42 | Unsupervised geometric |
+| Berry Phase Rate | 1.31 | Unsupervised geometric |
+| Multi-Lag Fidelity | 1.26 | Unsupervised geometric |
+| Random Forest | 1.13 | Supervised statistical |
 
-1. **2008 Financial Crisis** → Expect Chern number discontinuity (topological)
-2. **Flash Crash 2010** → NO Chern change (same topology, extreme point)
-3. **COVID March 2020** → Test for topological transition
-4. **2022 Rate Hikes** → Gradual Chern shift vs discontinuity
+## References
 
-## Next Steps
+This work builds upon the QCML framework developed by Qognitive, Inc. and academic collaborators. See `paper/qcml_geometric_sde.tex` for complete references.
 
-1. **Apply to real data**: Equities, options, fixed income
-2. **Validate on historical crises**: 2008, 2020, etc.
-3. **Optimize hyperparameters**: Hilbert dimension, window sizes
-4. **Use Astra for numerical optimization**: Matrix exponential, eigenvalue solvers
-5. **Write academic paper**: Novel framework + empirical validation
+## Citation
 
-## Quality Standards
-
-- Readable variable names and clear structure
-- Physics/math correctness (Hermitian operators, normalized states)
-- Reproducibility (fixed random seeds)
-- Testing on synthetic data before real applications
-- Comprehensive docstrings
+```bibtex
+@article{hammond2026quantum,
+  title={Quantum Geometric Observables for Financial Regime Detection},
+  author={Hammond, Will},
+  year={2026},
+  institution={Pitzer College}
+}
+```
 
 ## Author
 
-Will Hammond
+Will Hammond (whammond@pitzer.edu), Pitzer College

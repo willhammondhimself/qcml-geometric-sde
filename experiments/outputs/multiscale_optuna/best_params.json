@@ -1,0 +1,104 @@
+{
+  "timestamp": "20260205_172357",
+  "study_name": "qcml_multiscale_chern",
+  "summary": {
+    "n_trials_total": 2,
+    "n_completed": 2,
+    "n_pruned": 0,
+    "best_value": 0.8950617862052841,
+    "best_params": {
+      "scales_preset": "short_5",
+      "weight_0": 0.17881888245041863,
+      "weight_1": 0.07440107705542671,
+      "weight_2": 0.9493966818808,
+      "weight_3": 0.9659757127438138,
+      "weight_4": 0.8103133746352965,
+      "consensus_threshold": 0.4436910153386966,
+      "normalization_strategy": "rolling_fixed",
+      "normalization_window": 75,
+      "hilbert_dim": 8,
+      "n_pca_components": 8,
+      "operator_method": "pca_inspired",
+      "analysis_window_days": 20
+    },
+    "best_trial_number": 1,
+    "best_user_attrs": {
+      "avg_f1": 0.22234702234702233,
+      "avg_recall": 1.0,
+      "avg_lead_time": 2.0,
+      "avg_fpr": 0.16093004949507192,
+      "avg_stat_sig": 0.8333333333333334,
+      "fold_2008_crisis_f1": 0.32727272727272727,
+      "fold_2008_crisis_recall": 1.0,
+      "fold_2020_covid_f1": 0.05405405405405406,
+      "fold_2020_covid_recall": 1.0,
+      "fold_2022_rates_f1": 0.2857142857142857,
+      "fold_2022_rates_recall": 1.0
+    }
+  },
+  "top_10_trials": [
+    {
+      "number": 1,
+      "value": 0.8950617862052841,
+      "params": {
+        "scales_preset": "short_5",
+        "weight_0": 0.17881888245041863,
+        "weight_1": 0.07440107705542671,
+        "weight_2": 0.9493966818808,
+        "weight_3": 0.9659757127438138,
+        "weight_4": 0.8103133746352965,
+        "consensus_threshold": 0.4436910153386966,
+        "normalization_strategy": "rolling_fixed",
+        "normalization_window": 75,
+        "hilbert_dim": 8,
+        "n_pca_components": 8,
+        "operator_method": "pca_inspired",
+        "analysis_window_days": 20
+      },
+      "user_attrs": {
+        "avg_f1": 0.22234702234702233,
+        "avg_recall": 1.0,
+        "avg_lead_time": 2.0,
+        "avg_fpr": 0.16093004949507192,
+        "avg_stat_sig": 0.8333333333333334,
+        "fold_2008_crisis_f1": 0.32727272727272727,
+        "fold_2008_crisis_recall": 1.0,
+        "fold_2020_covid_f1": 0.05405405405405406,
+        "fold_2020_covid_recall": 1.0,
+        "fold_2022_rates_f1": 0.2857142857142857,
+        "fold_2022_rates_recall": 1.0
+      }
+    },
+    {
+      "number": 0,
+      "value": 0.8113201476140641,
+      "params": {
+        "scales_preset": "default_5",
+        "weight_0": 0.06750277604651747,
+        "weight_1": 0.8675143843171859,
+        "weight_2": 0.6051038616257767,
+        "weight_3": 0.710991852018085,
+        "weight_4": 0.03037864935284442,
+        "consensus_threshold": 0.9759278817295955,
+        "normalization_strategy": "rolling_adaptive",
+        "hilbert_dim": 8,
+        "n_pca_components": 11,
+        "operator_method": "pauli",
+        "analysis_window_days": 12
+      },
+      "user_attrs": {
+        "avg_f1": 0.16726572528883185,
+        "avg_recall": 1.0,
+        "avg_lead_time": 2.0,
+        "avg_fpr": 0.13889522903693782,
+        "avg_stat_sig": 0.16666666666666666,
+        "fold_2008_crisis_f1": 0.1,
+        "fold_2008_crisis_recall": 1.0,
+        "fold_2020_covid_f1": 0.15789473684210528,
+        "fold_2020_covid_recall": 1.0,
+        "fold_2022_rates_f1": 0.24390243902439027,
+        "fold_2022_rates_recall": 1.0
+      }
+    }
+  ]
+}

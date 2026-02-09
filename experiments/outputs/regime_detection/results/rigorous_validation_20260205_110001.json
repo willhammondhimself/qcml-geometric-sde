@@ -1,0 +1,143 @@
+{
+  "timestamp": "20260205_110001",
+  "config": {
+    "hilbert_dim": 8,
+    "window_size": 20,
+    "chern_threshold": 0.1,
+    "n_pca_components": 15,
+    "use_full_features": true,
+    "operator_method": "random",
+    "smoothing_window": 5,
+    "normalize_features": true,
+    "analysis_window_days": 10
+  },
+  "statistical_parameters": {
+    "n_bootstrap": 10000,
+    "n_permutations": 5000,
+    "bonferroni_n_tests": 3,
+    "bonferroni_threshold": 0.016666666666666666,
+    "seed": 42
+  },
+  "crises": {
+    "2008_crisis": {
+      "crisis_name": "2008_crisis",
+      "crisis_date": "2008-09-15",
+      "welch_t_stat": 14.877336841836076,
+      "welch_p_value": 7.98139659723569e-11,
+      "bonferroni_p_value": 2.394418979170707e-10,
+      "effect_size_d": 6.653345969853999,
+      "effect_size_interpretation": "large",
+      "bootstrap_delta_chern": {
+        "statistic": 0.0033267278796221527,
+        "ci_lower": 0.0029070506774654817,
+        "ci_upper": 0.0037351352524994225,
+        "se": 0.000210434373621059,
+        "n_bootstrap": 10000
+      },
+      "bootstrap_lead_time": null,
+      "permutation": {
+        "observed_statistic": 0.0033267278796221527,
+        "p_value": 0.0001999600079984003,
+        "n_permutations": 5000
+      },
+      "bayes_factor": {
+        "bf_10": 2526697132.021832,
+        "interpretation": "decisive evidence for H1"
+      },
+      "f1_score": 0.0,
+      "recall": 0.0,
+      "precision": 0.0,
+      "lead_time_days": null,
+      "chern_before_mean": 0.0055919021120375695,
+      "chern_after_mean": 0.008918629991659722,
+      "delta_chern": 0.0033267278796221527,
+      "hypothesis_supported": "True",
+      "evidence_strength": "strong"
+    },
+    "2020_covid": {
+      "crisis_name": "2020_covid",
+      "crisis_date": "2020-03-16",
+      "welch_t_stat": 6.00700753182898,
+      "welch_p_value": 0.0001348836499337708,
+      "bonferroni_p_value": 0.00040465094980131247,
+      "effect_size_d": 2.6864151467772843,
+      "effect_size_interpretation": "large",
+      "bootstrap_delta_chern": {
+        "statistic": 0.0024909035395523386,
+        "ci_lower": 0.0017612664466785995,
+        "ci_upper": 0.0033246102877599617,
+        "se": 0.0003968410730622299,
+        "n_bootstrap": 10000
+      },
+      "bootstrap_lead_time": null,
+      "permutation": {
+        "observed_statistic": 0.0024909035395523386,
+        "p_value": 0.0001999600079984003,
+        "n_permutations": 5000
+      },
+      "bayes_factor": {
+        "bf_10": 4228.317029751667,
+        "interpretation": "decisive evidence for H1"
+      },
+      "f1_score": 0.0,
+      "recall": 0.0,
+      "precision": 0.0,
+      "lead_time_days": null,
+      "chern_before_mean": 0.005507597184453371,
+      "chern_after_mean": 0.00799850072400571,
+      "delta_chern": 0.0024909035395523386,
+      "hypothesis_supported": "True",
+      "evidence_strength": "strong"
+    },
+    "2022_rates": {
+      "crisis_name": "2022_rates",
+      "crisis_date": "2022-03-16",
+      "welch_t_stat": 6.216406389461296,
+      "welch_p_value": 8.209617862847184e-05,
+      "bonferroni_p_value": 0.0002462885358854155,
+      "effect_size_d": 2.7800610777560166,
+      "effect_size_interpretation": "large",
+      "bootstrap_delta_chern": {
+        "statistic": -0.002062296027826832,
+        "ci_lower": -0.0027131456630471932,
+        "ci_upper": -0.0014881745412188214,
+        "se": 0.0003156994652715568,
+        "n_bootstrap": 10000
+      },
+      "bootstrap_lead_time": null,
+      "permutation": {
+        "observed_statistic": 0.002062296027826832,
+        "p_value": 0.0001999600079984003,
+        "n_permutations": 5000
+      },
+      "bayes_factor": {
+        "bf_10": 6373.3278336250005,
+        "interpretation": "decisive evidence for H1"
+      },
+      "f1_score": 0.0,
+      "recall": 0.0,
+      "precision": 0.0,
+      "lead_time_days": null,
+      "chern_before_mean": 0.008747606001368652,
+      "chern_after_mean": 0.00668530997354182,
+      "delta_chern": -0.002062296027826832,
+      "hypothesis_supported": "True",
+      "evidence_strength": "strong"
+    }
+  },
+  "aggregate": {
+    "n_crises": 3,
+    "n_supported": 3,
+    "success_rate": 1.0,
+    "fisher_combined_p": 7.771561172376096e-16,
+    "mean_effect_size": 4.039940731462433,
+    "median_effect_size": 2.7800610777560166,
+    "min_effect_size": 2.6864151467772843,
+    "all_large_effects": true,
+    "evidence_strengths": {
+      "2008_crisis": "strong",
+      "2020_covid": "strong",
+      "2022_rates": "strong"
+    }
+  }
+}

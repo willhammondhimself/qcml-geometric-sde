@@ -58,7 +58,7 @@ from experiments.regime_comparison import (
     prepare_data,
     seed_everything,
 )
-from qcml.regime.fused_detector import FusedQCMLDetector
+# from qcml.regime.fused_detector import FusedQCMLDetector  # archived
 
 logging.basicConfig(
     level=logging.INFO,

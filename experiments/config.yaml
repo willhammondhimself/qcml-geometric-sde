@@ -1,0 +1,26 @@
+# Paper 1: Quantum Geometric Observables for Financial Regime Detection
+# Default hyperparameters and evaluation settings
+
+geometry:
+  hilbert_dim: 8
+  n_pca_components: 15
+  operator_method: pca_inspired
+  seed: 42
+
+observables:
+  rolling_window: 20
+  min_expanding: 60
+
+evaluation:
+  crisis_buffer_days: 60
+  min_crisis_length: 10
+  bootstrap_n: 10000
+  permutation_n: 5000
+  significance_level: 0.05
+  effect_size_threshold: 0.8  # Cohen's d
+
+data:
+  symbols:
+    - SPY
+  start_date: "2006-01-01"
+  end_date: "2024-12-31"

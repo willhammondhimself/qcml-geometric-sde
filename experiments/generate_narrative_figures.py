@@ -34,17 +34,17 @@ from dotenv import load_dotenv
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
-from qcml.data import PolygonDataSource, MinimalFeatureEngine
-from qcml.qcml_geometry import QCMLGeometry
-from qcml.regime.classical_baselines import (
+from experiments.data import PolygonDataSource, MinimalFeatureEngine
+from qcml_geometry import QCMLGeometry
+from qcml_geometry import (
     BaseRegimeDetector,
-    QCMLChernDetector,
-    RandomForestRegimeDetector,
-    QFIDeterminantDetector,
     BerryPhaseRateDetector,
+    QFIDeterminantDetector,
     MultiLagFidelityDetector,
 )
-from qcml.regime.quantum_indicators import QuantumIndicatorSuite
+from experiments.baselines import RandomForestRegimeDetector
+from experiments.additional_detectors import QCMLChernDetector
+from qcml_geometry.indicators import QuantumIndicatorSuite
 from experiments.crisis_config import (
     CRISIS_2008,
     CRISIS_2020,

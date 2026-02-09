@@ -1,0 +1,1212 @@
+{
+  "timestamp": "20260205_162649",
+  "experiment": "regime_detection_comparison",
+  "config": {
+    "hilbert_dim": 8,
+    "window_size": 20,
+    "chern_threshold": 0.1,
+    "n_pca_components": 15,
+    "use_full_features": true,
+    "operator_method": "random",
+    "smoothing_window": 5,
+    "normalize_features": true,
+    "analysis_window_days": 10
+  },
+  "parameters": {
+    "seed": 42,
+    "n_bootstrap": 2000,
+    "n_permutations": 1000
+  },
+  "crises": {
+    "2008_crisis": [
+      {
+        "method_name": "QCML Chern",
+        "delta_score": 0.0012316603824629488,
+        "t_stat": 8.494469825518436,
+        "p_value": 1.2945829747695075e-08,
+        "bonferroni_p": 3.883748924308523e-08,
+        "effect_size_d": 1.9408501860886902,
+        "bootstrap_ci": [
+          0.0009516739423649912,
+          0.0014965485067969988
+        ],
+        "bootstrap_se": 0.0001422028769598631,
+        "permutation_p": 0.000999000999000999,
+        "bayes_factor": 632688670817.0024,
+        "bf_interpretation": "decisive evidence for H1",
+        "f1": 0.6,
+        "precision": 0.42857142857142855,
+        "recall": 1.0,
+        "n_false_positives": 16,
+        "lead_time_days": "36"
+      },
+      {
+        "method_name": "Rolling Vol Z",
+        "delta_score": 0.4860189125530987,
+        "t_stat": 3.3257102788820667,
+        "p_value": 0.0021961399853307954,
+        "bonferroni_p": 0.006588419955992386,
+        "effect_size_d": 0.5730233366176783,
+        "bootstrap_ci": [
+          0.20894344386398148,
+          0.7677994717717951
+        ],
+        "bootstrap_se": 0.14410895268837426,
+        "permutation_p": 0.022977022977022976,
+        "bayes_factor": 2.8378801924081754,
+        "bf_interpretation": "anecdotal evidence for H1",
+        "f1": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "n_false_positives": 15,
+        "lead_time_days": null
+      },
+      {
+        "method_name": "CUSUM",
+        "delta_score": -4.0307252598785155,
+        "t_stat": 3.2601491911888387,
+        "p_value": 0.0013907972514708336,
+        "bonferroni_p": 0.0041723917544125005,
+        "effect_size_d": 0.2788010570633853,
+        "bootstrap_ci": [
+          -6.325496200948303,
+          -1.705180753091387
+        ],
+        "bootstrap_se": 1.1978243823419628,
+        "permutation_p": 0.23976023976023977,
+        "bayes_factor": 0.38483233153215307,
+        "bf_interpretation": "anecdotal evidence for H0",
+        "f1": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "n_false_positives": 23,
+        "lead_time_days": null
+      },
+      {
+        "method_name": "HMM 2-state",
+        "delta_score": 0.257361675630533,
+        "t_stat": 8.750191990765588,
+        "p_value": 7.173217849665656e-16,
+        "bonferroni_p": 2.1519653548996965e-15,
+        "effect_size_d": 0.6306700614856291,
+        "bootstrap_ci": [
+          0.20183437041201083,
+          0.3182161026681828
+        ],
+        "bootstrap_se": 0.02912076912599738,
+        "permutation_p": 0.005994005994005994,
+        "bayes_factor": 5.55881809049611,
+        "bf_interpretation": "moderate evidence for H1",
+        "f1": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "n_false_positives": 0,
+        "lead_time_days": null
+      },
+      {
+        "method_name": "Random Forest",
+        "delta_score": 0.19124061443711987,
+        "t_stat": 13.141814835742933,
+        "p_value": 7.744607174779633e-13,
+        "bonferroni_p": 2.32338215243389e-12,
+        "effect_size_d": 2.6078529037198193,
+        "bootstrap_ci": [
+          0.1629212071383577,
+          0.21681051294708106
+        ],
+        "bootstrap_se": 0.014083387064095579,
+        "permutation_p": 0.000999000999000999,
+        "bayes_factor": 9.101991032918444e+19,
+        "bf_interpretation": "decisive evidence for H1",
+        "f1": 0.761904761904762,
+        "precision": 0.6153846153846154,
+        "recall": 1.0,
+        "n_false_positives": 10,
+        "lead_time_days": null
+      },
+      {
+        "method_name": "Oracle RF (in-sample)",
+        "delta_score": 0.8246112933058858,
+        "t_stat": 60.42658555331094,
+        "p_value": 4.0996395048721335e-32,
+        "bonferroni_p": 1.22989185146164e-31,
+        "effect_size_d": 10.170233627096083,
+        "bootstrap_ci": [
+          0.7960747366536441,
+          0.8490159922367515
+        ],
+        "bootstrap_se": 0.013564610400231845,
+        "permutation_p": 0.000999000999000999,
+        "bayes_factor": 2.5184096082847393e+103,
+        "bf_interpretation": "decisive evidence for H1",
+        "f1": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "n_false_positives": 0,
+        "lead_time_days": "10"
+      },
+      {
+        "method_name": "Multi-Scale Chern",
+        "delta_score": 0.03693850536716642,
+        "t_stat": 0.2579307952042717,
+        "p_value": 0.8010846210098602,
+        "bonferroni_p": 1.0,
+        "effect_size_d": 0.07749630109204038,
+        "bootstrap_ci": [
+          -0.20167570480464933,
+          0.31843345084467006
+        ],
+        "bootstrap_se": 0.13352606100769276,
+        "permutation_p": 0.8421578421578422,
+        "bayes_factor": 0.2820527597184309,
+        "bf_interpretation": "moderate evidence for H0",
+        "f1": 0.19999999999999998,
+        "precision": 0.1111111111111111,
+        "recall": 1.0,
+        "n_false_positives": 8,
+        "lead_time_days": null
+      },
+      {
+        "method_name": "Quantum Ensemble",
+        "delta_score": -0.11575531962901761,
+        "t_stat": 0.4025855448984184,
+        "p_value": 0.6957765416148765,
+        "bonferroni_p": 1.0,
+        "effect_size_d": 0.17390802585317167,
+        "bootstrap_ci": [
+          -0.6499353942710341,
+          0.44652152819515106
+        ],
+        "bootstrap_se": 0.2774708029830316,
+        "permutation_p": 0.6003996003996004,
+        "bayes_factor": 0.3097776331267722,
+        "bf_interpretation": "moderate evidence for H0",
+        "f1": 0.19999999999999998,
+        "precision": 0.1111111111111111,
+        "recall": 1.0,
+        "n_false_positives": 8,
+        "lead_time_days": null
+      }
+    ],
+    "2010_flash_crash": [
+      {
+        "method_name": "QCML Chern",
+        "delta_score": 0.0002167613804856315,
+        "t_stat": 2.7082125309369114,
+        "p_value": 0.011080679020494942,
+        "bonferroni_p": 0.033242037061484826,
+        "effect_size_d": 0.4422788842784478,
+        "bootstrap_ci": [
+          5.6575499830576443e-05,
+          0.00036522281738057865
+        ],
+        "bootstrap_se": 7.942780739926756e-05,
+        "permutation_p": 0.054945054945054944,
+        "bayes_factor": 1.011031629489345,
+        "bf_interpretation": "anecdotal evidence for H1",
+        "f1": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "n_false_positives": 19,
+        "lead_time_days": null
+      },
+      {
+        "method_name": "Rolling Vol Z",
+        "delta_score": 1.253770698967394,
+        "t_stat": 3.636966630470123,
+        "p_value": 0.0015342517781819919,
+        "bonferroni_p": 0.004602755334545976,
+        "effect_size_d": 1.2145570744585035,
+        "bootstrap_ci": [
+          0.5666762400326674,
+          1.8969307892031309
+        ],
+        "bootstrap_se": 0.3390479014649857,
+        "permutation_p": 0.000999000999000999,
+        "bayes_factor": 22168.687212806075,
+        "bf_interpretation": "decisive evidence for H1",
+        "f1": 0.8571428571428571,
+        "precision": 0.75,
+        "recall": 1.0,
+        "n_false_positives": 4,
+        "lead_time_days": "5"
+      },
+      {
+        "method_name": "CUSUM",
+        "delta_score": -0.2877822535190169,
+        "t_stat": 1.0250437349169128,
+        "p_value": 0.3144501411869206,
+        "bonferroni_p": 0.9433504235607618,
+        "effect_size_d": 0.1787184129127626,
+        "bootstrap_ci": [
+          -0.8501524923498939,
+          0.22638454654779697
+        ],
+        "bootstrap_se": 0.28044298843236565,
+        "permutation_p": 0.4565434565434565,
+        "bayes_factor": 0.2647250937599553,
+        "bf_interpretation": "moderate evidence for H0",
+        "f1": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "n_false_positives": 29,
+        "lead_time_days": null
+      },
+      {
+        "method_name": "HMM 2-state",
+        "delta_score": -0.009065818462629327,
+        "t_stat": 0.1237710934859378,
+        "p_value": 0.9025890433350955,
+        "bonferroni_p": 1.0,
+        "effect_size_d": 0.029332872081073408,
+        "bootstrap_ci": [
+          -0.15548138131716593,
+          0.12228046647333636
+        ],
+        "bootstrap_se": 0.07084394854412074,
+        "permutation_p": 0.8971028971028971,
+        "bayes_factor": 0.2058866397275049,
+        "bf_interpretation": "moderate evidence for H0",
+        "f1": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "n_false_positives": 0,
+        "lead_time_days": "44"
+      },
+      {
+        "method_name": "Random Forest",
+        "delta_score": -0.007252875681755158,
+        "t_stat": 0.8483350013131413,
+        "p_value": 0.4006085929500448,
+        "bonferroni_p": 1.0,
+        "effect_size_d": 0.10424162684759997,
+        "bootstrap_ci": [
+          -0.023899885688486253,
+          0.01044391774447232
+        ],
+        "bootstrap_se": 0.00869204294296659,
+        "permutation_p": 0.6503496503496503,
+        "bayes_factor": 0.2238204222349539,
+        "bf_interpretation": "moderate evidence for H0",
+        "f1": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "n_false_positives": 20,
+        "lead_time_days": null
+      },
+      {
+        "method_name": "Oracle RF (in-sample)",
+        "delta_score": 0.8395707979315375,
+        "t_stat": 86.54289734281667,
+        "p_value": 1.8761738097812185e-48,
+        "bonferroni_p": 5.628521429343656e-48,
+        "effect_size_d": 11.235771756713152,
+        "bootstrap_ci": [
+          0.8195052871113557,
+          0.857593610419362
+        ],
+        "bootstrap_se": 0.009713237282706805,
+        "permutation_p": 0.000999000999000999,
+        "bayes_factor": 1.0108461462662039e+112,
+        "bf_interpretation": "decisive evidence for H1",
+        "f1": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "n_false_positives": 0,
+        "lead_time_days": "10"
+      },
+      {
+        "method_name": "Multi-Scale Chern",
+        "delta_score": 0.00853656577954387,
+        "t_stat": 0.05894270421404845,
+        "p_value": 0.9537199414462001,
+        "bonferroni_p": 1.0,
+        "effect_size_d": 0.011726821519770069,
+        "bootstrap_ci": [
+          -0.25638373600534464,
+          0.26545972157491704
+        ],
+        "bootstrap_se": 0.13628978556404112,
+        "permutation_p": 0.9760239760239761,
+        "bayes_factor": 0.2756401926071349,
+        "bf_interpretation": "moderate evidence for H0",
+        "f1": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "n_false_positives": 6,
+        "lead_time_days": null
+      },
+      {
+        "method_name": "Quantum Ensemble",
+        "delta_score": 0.6791728523447624,
+        "t_stat": 5.656199463215129,
+        "p_value": 1.9757849979611367e-05,
+        "bonferroni_p": 5.92735499388341e-05,
+        "effect_size_d": 1.024084254389898,
+        "bootstrap_ci": [
+          0.4543640588398199,
+          0.8981167462856358
+        ],
+        "bootstrap_se": 0.11461082609326556,
+        "permutation_p": 0.003996003996003996,
+        "bayes_factor": 18.023346444661478,
+        "bf_interpretation": "strong evidence for H1",
+        "f1": 0.2222222222222222,
+        "precision": 0.125,
+        "recall": 1.0,
+        "n_false_positives": 7,
+        "lead_time_days": null
+      }
+    ],
+    "2011_debt_downgrade": [
+      {
+        "method_name": "QCML Chern",
+        "delta_score": 0.0008164151768574087,
+        "t_stat": 8.736976361183002,
+        "p_value": 5.740870202130469e-09,
+        "bonferroni_p": 1.7222610606391406e-08,
+        "effect_size_d": 1.8629446404305372,
+        "bootstrap_ci": [
+          0.000627724133949942,
+          0.000994366355783947
+        ],
+        "bootstrap_se": 9.283057182235191e-05,
+        "permutation_p": 0.000999000999000999,
+        "bayes_factor": 83519543802.43677,
+        "bf_interpretation": "decisive evidence for H1",
+        "f1": 0.6829268292682926,
+        "precision": 0.5185185185185185,
+        "recall": 1.0,
+        "n_false_positives": 13,
+        "lead_time_days": null
+      },
+      {
+        "method_name": "Rolling Vol Z",
+        "delta_score": -0.24477122350859037,
+        "t_stat": 1.1700504563756744,
+        "p_value": 0.2533651507276316,
+        "bonferroni_p": 0.7600954521828949,
+        "effect_size_d": 0.2810050869381184,
+        "bootstrap_ci": [
+          -0.6191503350163291,
+          0.17902003761340557
+        ],
+        "bootstrap_se": 0.20401130044494778,
+        "permutation_p": 0.26073926073926074,
+        "bayes_factor": 0.3857548894876761,
+        "bf_interpretation": "anecdotal evidence for H0",
+        "f1": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "n_false_positives": 4,
+        "lead_time_days": "15"
+      },
+      {
+        "method_name": "CUSUM",
+        "delta_score": -2.814139111484162,
+        "t_stat": 6.150484020818036,
+        "p_value": 1.4818162484521297e-07,
+        "bonferroni_p": 4.4454487453563895e-07,
+        "effect_size_d": 0.7113520076940931,
+        "bootstrap_ci": [
+          -3.659933638413831,
+          -1.9415942384482028
+        ],
+        "bootstrap_se": 0.4438907318130501,
+        "permutation_p": 0.000999000999000999,
+        "bayes_factor": 13.830083710227392,
+        "bf_interpretation": "strong evidence for H1",
+        "f1": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "n_false_positives": 25,
+        "lead_time_days": null
+      },
+      {
+        "method_name": "HMM 2-state",
+        "delta_score": 0.10692234294916947,
+        "t_stat": 1.4095402537191222,
+        "p_value": 0.17172192554361373,
+        "bonferroni_p": 0.5151657766308412,
+        "effect_size_d": 0.305074211149748,
+        "bootstrap_ci": [
+          -0.04387769747805299,
+          0.24118677182431664
+        ],
+        "bootstrap_se": 0.07395378600553322,
+        "permutation_p": 0.19480519480519481,
+        "bayes_factor": 0.4364925969082168,
+        "bf_interpretation": "anecdotal evidence for H0",
+        "f1": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "n_false_positives": 0,
+        "lead_time_days": null
+      },
+      {
+        "method_name": "Random Forest",
+        "delta_score": 0.008593282852386724,
+        "t_stat": 0.5321095948626547,
+        "p_value": 0.5971988854191466,
+        "bonferroni_p": 1.0,
+        "effect_size_d": 0.06566315600868679,
+        "bootstrap_ci": [
+          -0.02254366679102334,
+          0.03950547878930992
+        ],
+        "bootstrap_se": 0.015832874718712208,
+        "permutation_p": 0.7852147852147852,
+        "bayes_factor": 0.21242268702950717,
+        "bf_interpretation": "moderate evidence for H0",
+        "f1": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "n_false_positives": 27,
+        "lead_time_days": "81"
+      },
+      {
+        "method_name": "Oracle RF (in-sample)",
+        "delta_score": 0.7698238826933433,
+        "t_stat": 62.85785517862355,
+        "p_value": 3.376536481948485e-86,
+        "bonferroni_p": 1.0129609445845454e-85,
+        "effect_size_d": 5.986058509166311,
+        "bootstrap_ci": [
+          0.7453205652277031,
+          0.7938007284568336
+        ],
+        "bootstrap_se": 0.012428238177317683,
+        "permutation_p": 0.000999000999000999,
+        "bayes_factor": 1.0719836115845471e+63,
+        "bf_interpretation": "decisive evidence for H1",
+        "f1": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "n_false_positives": 0,
+        "lead_time_days": "10"
+      },
+      {
+        "method_name": "Multi-Scale Chern",
+        "delta_score": -0.08965805121419879,
+        "t_stat": 0.4618243566643591,
+        "p_value": 0.6524221131200107,
+        "bonferroni_p": 1.0,
+        "effect_size_d": 0.12477261431136277,
+        "bootstrap_ci": [
+          -0.4451858999023154,
+          0.27116173112878583
+        ],
+        "bootstrap_se": 0.18675475064143127,
+        "permutation_p": 0.6923076923076923,
+        "bayes_factor": 0.2926680429068331,
+        "bf_interpretation": "moderate evidence for H0",
+        "f1": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "n_false_positives": 4,
+        "lead_time_days": null
+      },
+      {
+        "method_name": "Quantum Ensemble",
+        "delta_score": 0.5804552691034363,
+        "t_stat": 3.848553212123858,
+        "p_value": 0.002587509190267118,
+        "bonferroni_p": 0.007762527570801354,
+        "effect_size_d": 1.1671301927002171,
+        "bootstrap_ci": [
+          0.2997393314767643,
+          0.8595207025741999
+        ],
+        "bootstrap_se": 0.14438656397295677,
+        "permutation_p": 0.000999000999000999,
+        "bayes_factor": 61.809288820184484,
+        "bf_interpretation": "very strong evidence for H1",
+        "f1": 0.42857142857142855,
+        "precision": 0.2727272727272727,
+        "recall": 1.0,
+        "n_false_positives": 8,
+        "lead_time_days": null
+      }
+    ],
+    "2015_china": [
+      {
+        "method_name": "QCML Chern",
+        "delta_score": 0.0008766115301866186,
+        "t_stat": 11.063530719540948,
+        "p_value": 1.851111452456358e-11,
+        "bonferroni_p": 5.553334357369074e-11,
+        "effect_size_d": 2.0480811763289615,
+        "bootstrap_ci": [
+          0.0007244948596385306,
+          0.0010243884711391561
+        ],
+        "bootstrap_se": 7.679178462003876e-05,
+        "permutation_p": 0.000999000999000999,
+        "bayes_factor": 11795932954171.861,
+        "bf_interpretation": "decisive evidence for H1",
+        "f1": 0.6451612903225806,
+        "precision": 0.47619047619047616,
+        "recall": 1.0,
+        "n_false_positives": 11,
+        "lead_time_days": null
+      },
+      {
+        "method_name": "Rolling Vol Z",
+        "delta_score": 1.1641648707942223,
+        "t_stat": 9.584882144282671,
+        "p_value": 9.177119203996047e-12,
+        "bonferroni_p": 2.753135761198814e-11,
+        "effect_size_d": 1.4606548840874192,
+        "bootstrap_ci": [
+          0.9161555949101451,
+          1.3867958014328352
+        ],
+        "bootstrap_se": 0.11849825171326697,
+        "permutation_p": 0.000999000999000999,
+        "bayes_factor": 2765206.727934691,
+        "bf_interpretation": "decisive evidence for H1",
+        "f1": 0.8,
+        "precision": 0.6666666666666666,
+        "recall": 1.0,
+        "n_false_positives": 2,
+        "lead_time_days": "43"
+      },
+      {
+        "method_name": "CUSUM",
+        "delta_score": 0.3328488260912632,
+        "t_stat": 1.4922455838436899,
+        "p_value": 0.13725820296471222,
+        "bonferroni_p": 0.41177460889413664,
+        "effect_size_d": 0.11935180013726823,
+        "bootstrap_ci": [
+          -0.09807682957021235,
+          0.7672296209729101
+        ],
+        "bootstrap_se": 0.22222622644331588,
+        "permutation_p": 0.5974025974025974,
+        "bayes_factor": 0.22930936799396798,
+        "bf_interpretation": "moderate evidence for H0",
+        "f1": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "n_false_positives": 25,
+        "lead_time_days": null
+      },
+      {
+        "method_name": "HMM 2-state",
+        "delta_score": 0.11696020100687843,
+        "t_stat": 2.5086523651873383,
+        "p_value": 0.01940829428976525,
+        "bonferroni_p": 0.05822488286929575,
+        "effect_size_d": 0.5399468049621836,
+        "bootstrap_ci": [
+          0.02483329731776519,
+          0.1998653383037958
+        ],
+        "bootstrap_se": 0.0445334069503415,
+        "permutation_p": 0.02097902097902098,
+        "bayes_factor": 2.282977967716112,
+        "bf_interpretation": "anecdotal evidence for H1",
+        "f1": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "n_false_positives": 0,
+        "lead_time_days": null
+      },
+      {
+        "method_name": "Random Forest",
+        "delta_score": 0.0902369571748719,
+        "t_stat": 5.559872700873287,
+        "p_value": 8.185520995940299e-07,
+        "bonferroni_p": 2.45565629878209e-06,
+        "effect_size_d": 0.6354608440968086,
+        "bootstrap_ci": [
+          0.061251111744313136,
+          0.122837732804117
+        ],
+        "bootstrap_se": 0.015711186697337495,
+        "permutation_p": 0.006993006993006993,
+        "bayes_factor": 5.70531773239634,
+        "bf_interpretation": "moderate evidence for H1",
+        "f1": 0.19999999999999998,
+        "precision": 0.1111111111111111,
+        "recall": 1.0,
+        "n_false_positives": 24,
+        "lead_time_days": "32"
+      },
+      {
+        "method_name": "Oracle RF (in-sample)",
+        "delta_score": 0.7953389416633261,
+        "t_stat": 65.41647739546649,
+        "p_value": 1.2506080975184725e-81,
+        "bonferroni_p": 3.7518242925554177e-81,
+        "effect_size_d": 6.347213522425952,
+        "bootstrap_ci": [
+          0.7712589748287226,
+          0.8189390778946808
+        ],
+        "bootstrap_se": 0.011872764309838751,
+        "permutation_p": 0.000999000999000999,
+        "bayes_factor": 2.9117239119538395e+67,
+        "bf_interpretation": "decisive evidence for H1",
+        "f1": 0.9130434782608696,
+        "precision": 0.84,
+        "recall": 1.0,
+        "n_false_positives": 4,
+        "lead_time_days": "13"
+      },
+      {
+        "method_name": "Multi-Scale Chern",
+        "delta_score": 0.16441989449269534,
+        "t_stat": 0.7107032232720145,
+        "p_value": 0.49106990410174767,
+        "bonferroni_p": 1.0,
+        "effect_size_d": 0.19683808624784271,
+        "bootstrap_ci": [
+          -0.2598671066352159,
+          0.6145338225292755
+        ],
+        "bootstrap_se": 0.2218847211248343,
+        "permutation_p": 0.5514485514485514,
+        "bayes_factor": 0.32001690318767173,
+        "bf_interpretation": "moderate evidence for H0",
+        "f1": 0.19999999999999998,
+        "precision": 0.1111111111111111,
+        "recall": 1.0,
+        "n_false_positives": 8,
+        "lead_time_days": null
+      },
+      {
+        "method_name": "Quantum Ensemble",
+        "delta_score": 0.3929721188917625,
+        "t_stat": 3.006390111505843,
+        "p_value": 0.008202589106127683,
+        "bonferroni_p": 0.024607767318383048,
+        "effect_size_d": 0.5899645977815924,
+        "bootstrap_ci": [
+          0.1585576115576973,
+          0.6438346820944346
+        ],
+        "bootstrap_se": 0.1252015776040555,
+        "permutation_p": 0.07292707292707293,
+        "bayes_factor": 1.088266051841179,
+        "bf_interpretation": "anecdotal evidence for H1",
+        "f1": 0.4444444444444445,
+        "precision": 0.2857142857142857,
+        "recall": 1.0,
+        "n_false_positives": 5,
+        "lead_time_days": null
+      }
+    ],
+    "2018_fed_selloff": [
+      {
+        "method_name": "QCML Chern",
+        "delta_score": -0.00019187783308002079,
+        "t_stat": 0.7799304719282875,
+        "p_value": 0.44209461202314637,
+        "bonferroni_p": 1.0,
+        "effect_size_d": 0.13948497640077726,
+        "bootstrap_ci": [
+          -0.0006293435512483499,
+          0.00029287704926319073
+        ],
+        "bootstrap_se": 0.0002420950214039906,
+        "permutation_p": 0.5454545454545454,
+        "bayes_factor": 0.23981801806439842,
+        "bf_interpretation": "moderate evidence for H0",
+        "f1": 0.17391304347826084,
+        "precision": 0.09523809523809523,
+        "recall": 1.0,
+        "n_false_positives": 19,
+        "lead_time_days": "18"
+      },
+      {
+        "method_name": "Rolling Vol Z",
+        "delta_score": -0.2464286249444324,
+        "t_stat": 1.23285744526793,
+        "p_value": 0.2284465441245412,
+        "bonferroni_p": 0.6853396323736236,
+        "effect_size_d": 0.2594363194114823,
+        "bootstrap_ci": [
+          -0.6277404961947378,
+          0.14804489202393128
+        ],
+        "bootstrap_se": 0.19600626938335225,
+        "permutation_p": 0.2727272727272727,
+        "bayes_factor": 0.35181352457772863,
+        "bf_interpretation": "anecdotal evidence for H0",
+        "f1": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "n_false_positives": 13,
+        "lead_time_days": null
+      },
+      {
+        "method_name": "CUSUM",
+        "delta_score": -1.5034488837565751,
+        "t_stat": 5.266647948711212,
+        "p_value": 3.215080583264038e-07,
+        "bonferroni_p": 9.645241749792114e-07,
+        "effect_size_d": 0.3905900721092041,
+        "bootstrap_ci": [
+          -2.0433041881106924,
+          -0.957513720177416
+        ],
+        "bootstrap_se": 0.27796646076987447,
+        "permutation_p": 0.1018981018981019,
+        "bayes_factor": 0.7140676378881096,
+        "bf_interpretation": "anecdotal evidence for H0",
+        "f1": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "n_false_positives": 30,
+        "lead_time_days": null
+      },
+      {
+        "method_name": "HMM 2-state",
+        "delta_score": -0.24543426599961377,
+        "t_stat": 2.8793136178986396,
+        "p_value": 0.008906773014095311,
+        "bonferroni_p": 0.026720319042285934,
+        "effect_size_d": 0.8289463530180606,
+        "bootstrap_ci": [
+          -0.4052608081091794,
+          -0.09083054411220781
+        ],
+        "bootstrap_se": 0.08165330712450852,
+        "permutation_p": 0.001998001998001998,
+        "bayes_factor": 62.90390545561005,
+        "bf_interpretation": "very strong evidence for H1",
+        "f1": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "n_false_positives": 0,
+        "lead_time_days": null
+      },
+      {
+        "method_name": "Random Forest",
+        "delta_score": 0.04067284242652111,
+        "t_stat": 3.4054642690230374,
+        "p_value": 0.0009207477454880803,
+        "bonferroni_p": 0.0027622432364642407,
+        "effect_size_d": 0.3216383368103797,
+        "bootstrap_ci": [
+          0.01826945596718587,
+          0.0644177994458689
+        ],
+        "bootstrap_se": 0.011769857543575847,
+        "permutation_p": 0.17482517482517482,
+        "bayes_factor": 0.4737132478596698,
+        "bf_interpretation": "anecdotal evidence for H0",
+        "f1": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "n_false_positives": 24,
+        "lead_time_days": "33"
+      },
+      {
+        "method_name": "Oracle RF (in-sample)",
+        "delta_score": 0.7686200966186991,
+        "t_stat": 58.27911717389251,
+        "p_value": 5.696350456359061e-88,
+        "bonferroni_p": 1.7089051369077184e-87,
+        "effect_size_d": 5.4455189162160424,
+        "bootstrap_ci": [
+          0.7414353187355228,
+          0.7933339324995463
+        ],
+        "bootstrap_se": 0.013274699584407539,
+        "permutation_p": 0.000999000999000999,
+        "bayes_factor": 4.711721737956655e+56,
+        "bf_interpretation": "decisive evidence for H1",
+        "f1": 0.9333333333333333,
+        "precision": 0.875,
+        "recall": 1.0,
+        "n_false_positives": 3,
+        "lead_time_days": "12"
+      },
+      {
+        "method_name": "Multi-Scale Chern",
+        "delta_score": -0.16347259303977935,
+        "t_stat": 1.0541117506061257,
+        "p_value": 0.3099254807753059,
+        "bonferroni_p": 0.9297764423259177,
+        "effect_size_d": 0.24125370204363838,
+        "bootstrap_ci": [
+          -0.44994423700871056,
+          0.12462518573553939
+        ],
+        "bootstrap_se": 0.1476648091003866,
+        "permutation_p": 0.4745254745254745,
+        "bayes_factor": 0.3453173603573056,
+        "bf_interpretation": "anecdotal evidence for H0",
+        "f1": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "n_false_positives": 7,
+        "lead_time_days": null
+      },
+      {
+        "method_name": "Quantum Ensemble",
+        "delta_score": 0.11160830963400441,
+        "t_stat": 0.8464237838208819,
+        "p_value": 0.4082920784984798,
+        "bonferroni_p": 1.0,
+        "effect_size_d": 0.1564939202743483,
+        "bootstrap_ci": [
+          -0.13523551547597865,
+          0.35599630899958196
+        ],
+        "bootstrap_se": 0.12769595017523763,
+        "permutation_p": 0.6303696303696303,
+        "bayes_factor": 0.3029487662841646,
+        "bf_interpretation": "moderate evidence for H0",
+        "f1": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "n_false_positives": 8,
+        "lead_time_days": null
+      }
+    ],
+    "2020_covid": [
+      {
+        "method_name": "QCML Chern",
+        "delta_score": -0.0003012118089298864,
+        "t_stat": 4.139585100396094,
+        "p_value": 0.00021558527373421465,
+        "bonferroni_p": 0.0006467558212026439,
+        "effect_size_d": 0.6027090069754385,
+        "bootstrap_ci": [
+          -0.00044452840683114497,
+          -0.00015645305888202632
+        ],
+        "bootstrap_se": 7.26578605384717e-05,
+        "permutation_p": 0.007992007992007992,
+        "bayes_factor": 4.076742624345972,
+        "bf_interpretation": "moderate evidence for H1",
+        "f1": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "n_false_positives": 25,
+        "lead_time_days": null
+      },
+      {
+        "method_name": "Rolling Vol Z",
+        "delta_score": 1.339359877780941,
+        "t_stat": 12.143218732642698,
+        "p_value": 1.6742174549220327e-19,
+        "bonferroni_p": 5.022652364766098e-19,
+        "effect_size_d": 1.4089345821831654,
+        "bootstrap_ci": [
+          1.114895422219066,
+          1.541821924424574
+        ],
+        "bootstrap_se": 0.1091107017885899,
+        "permutation_p": 0.000999000999000999,
+        "bayes_factor": 972824.1767440906,
+        "bf_interpretation": "decisive evidence for H1",
+        "f1": 0.2857142857142857,
+        "precision": 0.16666666666666666,
+        "recall": 1.0,
+        "n_false_positives": 5,
+        "lead_time_days": null
+      },
+      {
+        "method_name": "CUSUM",
+        "delta_score": -3.094709514258952,
+        "t_stat": 6.520293811647119,
+        "p_value": 4.574718287917682e-10,
+        "bonferroni_p": 1.3724154863753046e-09,
+        "effect_size_d": 0.49884808863662317,
+        "bootstrap_ci": [
+          -4.032966429934234,
+          -2.1669146694208736
+        ],
+        "bootstrap_se": 0.47763390380111,
+        "permutation_p": 0.03596403596403597,
+        "bayes_factor": 1.5982426287178295,
+        "bf_interpretation": "anecdotal evidence for H1",
+        "f1": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "n_false_positives": 8,
+        "lead_time_days": null
+      },
+      {
+        "method_name": "HMM 2-state",
+        "delta_score": 0.4590550943473857,
+        "t_stat": 15.332686830534518,
+        "p_value": 8.159036439533657e-37,
+        "bonferroni_p": 2.4477109318600972e-36,
+        "effect_size_d": 1.1179680020345768,
+        "bootstrap_ci": [
+          0.3976826813779984,
+          0.5168256705318015
+        ],
+        "bootstrap_se": 0.030367359746555248,
+        "permutation_p": 0.000999000999000999,
+        "bayes_factor": 6588.9840868366155,
+        "bf_interpretation": "decisive evidence for H1",
+        "f1": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "n_false_positives": 0,
+        "lead_time_days": "94"
+      },
+      {
+        "method_name": "Random Forest",
+        "delta_score": 0.1532460396620576,
+        "t_stat": 22.086198936577507,
+        "p_value": 1.469652915076761e-25,
+        "bonferroni_p": 4.408958745230283e-25,
+        "effect_size_d": 2.7568536563154873,
+        "bootstrap_ci": [
+          0.13973279139842967,
+          0.16709263019996556
+        ],
+        "bootstrap_se": 0.006870931429524384,
+        "permutation_p": 0.000999000999000999,
+        "bayes_factor": 9.61201217622694e+21,
+        "bf_interpretation": "decisive evidence for H1",
+        "f1": 0.782608695652174,
+        "precision": 0.6428571428571429,
+        "recall": 1.0,
+        "n_false_positives": 10,
+        "lead_time_days": null
+      },
+      {
+        "method_name": "Oracle RF (in-sample)",
+        "delta_score": 0.8399292547609054,
+        "t_stat": 73.22595961086203,
+        "p_value": 7.0498656268169945e-59,
+        "bonferroni_p": 2.1149596880450983e-58,
+        "effect_size_d": 8.18546648760174,
+        "bootstrap_ci": [
+          0.8172773261333764,
+          0.8599883288683461
+        ],
+        "bootstrap_se": 0.01116521760267379,
+        "permutation_p": 0.000999000999000999,
+        "bayes_factor": 6.107570602517253e+86,
+        "bf_interpretation": "decisive evidence for H1",
+        "f1": 0.9545454545454545,
+        "precision": 0.9130434782608695,
+        "recall": 1.0,
+        "n_false_positives": 2,
+        "lead_time_days": "11"
+      },
+      {
+        "method_name": "Multi-Scale Chern",
+        "delta_score": -0.43953646042726846,
+        "t_stat": 4.274215732611135,
+        "p_value": 0.00015120990647331933,
+        "bonferroni_p": 0.000453629719419958,
+        "effect_size_d": 0.6084145057757332,
+        "bootstrap_ci": [
+          -0.6431043304694908,
+          -0.24400853124965785
+        ],
+        "bootstrap_se": 0.10136174138810126,
+        "permutation_p": 0.06693306693306693,
+        "bayes_factor": 1.1902793996436338,
+        "bf_interpretation": "anecdotal evidence for H1",
+        "f1": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "n_false_positives": 6,
+        "lead_time_days": null
+      },
+      {
+        "method_name": "Quantum Ensemble",
+        "delta_score": -0.22169155203267885,
+        "t_stat": 1.2093719642879721,
+        "p_value": 0.2517201042974173,
+        "bonferroni_p": 0.7551603128922519,
+        "effect_size_d": 0.37596345592966723,
+        "bootstrap_ci": [
+          -0.5678456843720986,
+          0.1116774246815938
+        ],
+        "bootstrap_se": 0.1721417185393939,
+        "permutation_p": 0.2817182817182817,
+        "bayes_factor": 0.47834800537618677,
+        "bf_interpretation": "anecdotal evidence for H0",
+        "f1": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "n_false_positives": 8,
+        "lead_time_days": null
+      }
+    ],
+    "2022_rates": [
+      {
+        "method_name": "QCML Chern",
+        "delta_score": 1.2010370925350295,
+        "t_stat": 4.581671541018273,
+        "p_value": 8.26493869863638e-06,
+        "bonferroni_p": 2.479481609590914e-05,
+        "effect_size_d": 0.3447564276807101,
+        "bootstrap_ci": [
+          0.6962519240520266,
+          1.7082656090804758
+        ],
+        "bootstrap_se": 0.26526377201556306,
+        "permutation_p": 0.08091908091908091,
+        "bayes_factor": 0.5376398083428874,
+        "bf_interpretation": "anecdotal evidence for H0",
+        "f1": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "n_false_positives": 0,
+        "lead_time_days": "86"
+      },
+      {
+        "method_name": "Rolling Vol Z",
+        "delta_score": 1.101293351929822,
+        "t_stat": 10.607797484820384,
+        "p_value": 7.822146201144728e-14,
+        "bonferroni_p": 2.346643860343418e-13,
+        "effect_size_d": 1.4927358078488588,
+        "bootstrap_ci": [
+          0.8925897565434019,
+          1.2953088043179433
+        ],
+        "bootstrap_se": 0.10260390588756836,
+        "permutation_p": 0.000999000999000999,
+        "bayes_factor": 5415709.535401531,
+        "bf_interpretation": "decisive evidence for H1",
+        "f1": 0.5,
+        "precision": 0.3333333333333333,
+        "recall": 1.0,
+        "n_false_positives": 8,
+        "lead_time_days": "11"
+      },
+      {
+        "method_name": "CUSUM",
+        "delta_score": -0.5099651642163803,
+        "t_stat": 2.706261821551854,
+        "p_value": 0.007316183760303642,
+        "bonferroni_p": 0.021948551280910923,
+        "effect_size_d": 0.20461246449374204,
+        "bootstrap_ci": [
+          -0.8755706286573388,
+          -0.14552071733921818
+        ],
+        "bootstrap_se": 0.1891612493041078,
+        "permutation_p": 0.36663336663336665,
+        "bayes_factor": 0.2869870815081845,
+        "bf_interpretation": "moderate evidence for H0",
+        "f1": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "n_false_positives": 0,
+        "lead_time_days": null
+      },
+      {
+        "method_name": "HMM 2-state",
+        "delta_score": 0.03433595173506876,
+        "t_stat": 0.663625524213911,
+        "p_value": 0.513016217620001,
+        "bonferroni_p": 1.0,
+        "effect_size_d": 0.12923429568409545,
+        "bootstrap_ci": [
+          -0.06586248010994171,
+          0.1270381877006172
+        ],
+        "bootstrap_se": 0.050076139386048706,
+        "permutation_p": 0.5934065934065934,
+        "bayes_factor": 0.23394382224327612,
+        "bf_interpretation": "moderate evidence for H0",
+        "f1": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "n_false_positives": 0,
+        "lead_time_days": null
+      },
+      {
+        "method_name": "Random Forest",
+        "delta_score": 0.032976622156371746,
+        "t_stat": 4.461874228225956,
+        "p_value": 1.9473037045560777e-05,
+        "bonferroni_p": 5.841911113668233e-05,
+        "effect_size_d": 0.41854644619952225,
+        "bootstrap_ci": [
+          0.01840700683788946,
+          0.046624632982718295
+        ],
+        "bootstrap_se": 0.007288491512080419,
+        "permutation_p": 0.08491508491508491,
+        "bayes_factor": 0.8545648970314086,
+        "bf_interpretation": "anecdotal evidence for H0",
+        "f1": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "n_false_positives": 14,
+        "lead_time_days": null
+      },
+      {
+        "method_name": "Oracle RF (in-sample)",
+        "delta_score": 0.8014546377402537,
+        "t_stat": 57.01675092871885,
+        "p_value": 5.8604942990380886e-43,
+        "bonferroni_p": 1.7581482897114265e-42,
+        "effect_size_d": 7.15421220582423,
+        "bootstrap_ci": [
+          0.7728084340911406,
+          0.8262627863190363
+        ],
+        "bootstrap_se": 0.013725626515164499,
+        "permutation_p": 0.000999000999000999,
+        "bayes_factor": 1.64430132735237e+76,
+        "bf_interpretation": "decisive evidence for H1",
+        "f1": 0.9767441860465117,
+        "precision": 0.9545454545454546,
+        "recall": 1.0,
+        "n_false_positives": 1,
+        "lead_time_days": "10"
+      },
+      {
+        "method_name": "Multi-Scale Chern",
+        "delta_score": -0.17331585370528857,
+        "t_stat": 2.185453882471617,
+        "p_value": 0.03747761608790268,
+        "bonferroni_p": 0.11243284826370806,
+        "effect_size_d": 0.3314927642831185,
+        "bootstrap_ci": [
+          -0.3251318350406093,
+          -0.029900462649191977
+        ],
+        "bootstrap_se": 0.07500946793979583,
+        "permutation_p": 0.27172827172827174,
+        "bayes_factor": 0.42259773286013325,
+        "bf_interpretation": "anecdotal evidence for H0",
+        "f1": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "n_false_positives": 5,
+        "lead_time_days": null
+      },
+      {
+        "method_name": "Quantum Ensemble",
+        "delta_score": -0.0816301951807189,
+        "t_stat": 1.088864024313286,
+        "p_value": 0.27946242132604227,
+        "bonferroni_p": 0.8383872639781268,
+        "effect_size_d": 0.12786228590864837,
+        "bootstrap_ci": [
+          -0.23198241243937526,
+          0.0626001013513613
+        ],
+        "bootstrap_se": 0.07468380681834397,
+        "permutation_p": 0.7132867132867133,
+        "bayes_factor": 0.2933760741930778,
+        "bf_interpretation": "moderate evidence for H0",
+        "f1": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "n_false_positives": 11,
+        "lead_time_days": null
+      }
+    ]
+  }
+}

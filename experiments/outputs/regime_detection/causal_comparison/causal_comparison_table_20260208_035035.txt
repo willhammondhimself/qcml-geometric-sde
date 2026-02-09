@@ -1,0 +1,116 @@
+====================================================================================================
+CAUSAL vs NON-CAUSAL COMPARISON RESULTS
+====================================================================================================
+
+--- 2007_quant_meltdown ---
+  Method                      d(nc)  d(causal)   inflation
+  ------------------------------------------------------------
+  Berry Phase Rate            0.547      1.610      -66.0%
+  QFI Determinant             2.090      0.630     +231.9%
+  Multi-Lag Fidelity          0.987      1.353      -27.1%
+  Random Forest               0.924      0.924       +0.0%
+
+--- 2008_crisis ---
+  Method                      d(nc)  d(causal)   inflation
+  ------------------------------------------------------------
+  Berry Phase Rate            1.814      1.070      +69.5%
+  QFI Determinant             2.578      2.358       +9.3%
+  Multi-Lag Fidelity          1.215      0.237     +412.9%
+  Random Forest               2.259      2.259       +0.0%
+
+--- 2010_flash_crash ---
+  Method                      d(nc)  d(causal)   inflation
+  ------------------------------------------------------------
+  Berry Phase Rate            0.823      0.606      +35.8%
+  QFI Determinant             0.998      1.263      -21.0%
+  Multi-Lag Fidelity          0.528      3.010      -82.5%
+  Random Forest               1.935      1.935       +0.0%
+
+--- 2011_debt_downgrade ---
+  Method                      d(nc)  d(causal)   inflation
+  ------------------------------------------------------------
+  Berry Phase Rate            0.856      0.371     +130.9%
+  QFI Determinant             0.742      0.573      +29.3%
+  Multi-Lag Fidelity          0.701      1.095      -36.0%
+  Random Forest               0.437      0.437       +0.0%
+
+--- 2015_china ---
+  Method                      d(nc)  d(causal)   inflation
+  ------------------------------------------------------------
+  Berry Phase Rate            1.719      0.685     +150.9%
+  QFI Determinant             0.700      1.193      -41.3%
+  Multi-Lag Fidelity          0.448      1.062      -57.8%
+  Random Forest               1.795      1.795       +0.0%
+
+--- 2016_brexit ---
+  Method                      d(nc)  d(causal)   inflation
+  ------------------------------------------------------------
+  Berry Phase Rate            0.503      3.295      -84.7%
+  QFI Determinant             1.171      0.297     +294.7%
+  Multi-Lag Fidelity          0.996      3.286      -69.7%
+  Random Forest               1.976      1.976       +0.0%
+
+--- 2018_volmageddon ---
+  Method                      d(nc)  d(causal)   inflation
+  ------------------------------------------------------------
+  Berry Phase Rate            0.890      1.842      -51.7%
+  QFI Determinant             0.209      0.010         N/A
+  Multi-Lag Fidelity          0.927      1.558      -40.5%
+  Random Forest               0.193      0.193       +0.0%
+
+--- 2018_fed_selloff ---
+  Method                      d(nc)  d(causal)   inflation
+  ------------------------------------------------------------
+  Berry Phase Rate            0.234      0.622      -62.4%
+  QFI Determinant             1.103      0.466     +136.5%
+  Multi-Lag Fidelity          0.173      1.112      -84.5%
+  Random Forest               0.124      0.124       +0.0%
+
+--- 2019_repo_crisis ---
+  Method                      d(nc)  d(causal)   inflation
+  ------------------------------------------------------------
+  Berry Phase Rate            0.437      0.649      -32.6%
+  QFI Determinant             1.173      0.984      +19.2%
+  Multi-Lag Fidelity          1.094      2.091      -47.7%
+  Random Forest               1.079      1.079       +0.0%
+
+--- 2020_covid ---
+  Method                      d(nc)  d(causal)   inflation
+  ------------------------------------------------------------
+  Berry Phase Rate            7.081      0.389    +1720.0%
+  QFI Determinant             2.035      0.733     +177.5%
+  Multi-Lag Fidelity          4.846      1.364     +255.3%
+  Random Forest               1.243      1.243       +0.0%
+
+--- 2022_rates ---
+  Method                      d(nc)  d(causal)   inflation
+  ------------------------------------------------------------
+  Berry Phase Rate            0.682      0.756       -9.9%
+  QFI Determinant             1.044      1.918      -45.5%
+  Multi-Lag Fidelity          1.273      1.460      -12.8%
+  Random Forest               1.425      1.425       +0.0%
+
+--- 2023_svb ---
+  Method                      d(nc)  d(causal)   inflation
+  ------------------------------------------------------------
+  Berry Phase Rate            0.177      1.485      -88.1%
+  QFI Determinant             3.134      1.330     +135.6%
+  Multi-Lag Fidelity          1.905      1.969       -3.2%
+  Random Forest               0.149      0.149       +0.0%
+
+====================================================================================================
+AGGREGATE SUMMARY
+====================================================================================================
+  Method                    Avg d(nc)   Avg d(c)  Med d(nc)   Med d(c)   Avg Infl
+  --------------------------------------------------------------------------------
+  Berry Phase Rate              1.314      1.115      0.752      0.721    +142.6%
+  QFI Determinant               1.415      0.980      1.137      0.859     +84.2%
+  Multi-Lag Fidelity            1.258      1.633      0.992      1.412     +17.2%
+  Random Forest                 1.128      1.128      1.161      1.161      +0.0%
+
+====================================================================================================
+INTERPRETATION
+====================================================================================================
+  Mean inflation across all methods/crises: +81.3%
+  Median inflation: -12.8%
+  => LARGE lookahead effect (>20%): results are materially inflated by lookahead

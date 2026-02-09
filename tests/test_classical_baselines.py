@@ -24,13 +24,15 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-from qcml.regime.classical_baselines import (
-    BaseRegimeDetector,
-    QCMLChernDetector,
+from qcml_geometry import BaseRegimeDetector
+from experiments.baselines import (
     RollingVolatilityDetector,
     CUSUMDetector,
     HMMRegimeDetector,
     RandomForestRegimeDetector,
+)
+from experiments.additional_detectors import (
+    QCMLChernDetector,
     GeometricConsensusDetector,
 )
 
@@ -48,7 +50,7 @@ def real_market_data():
     Lehman Brothers collapse, providing a genuine regime transition.
     Cached at module scope so the API is only called once per test run.
     """
-    from qcml.data import PolygonDataSource, MinimalFeatureEngine
+    from experiments.data import PolygonDataSource, MinimalFeatureEngine
 
     ds = PolygonDataSource()
     df = ds.fetch_equities(["SPY"], start_date="2008-06-01", end_date="2008-12-31")

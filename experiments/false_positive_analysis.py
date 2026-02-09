@@ -40,25 +40,29 @@ from dotenv import load_dotenv
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
-from qcml.data import PolygonDataSource, MinimalFeatureEngine
-from qcml.regime.classical_baselines import (
+from experiments.data import PolygonDataSource, MinimalFeatureEngine
+from qcml_geometry import (
     BaseRegimeDetector,
-    QCMLChernDetector,
+    BerryPhaseRateDetector,
+    QFIDeterminantDetector,
+    MultiLagFidelityDetector,
+)
+from experiments.baselines import (
     RollingVolatilityDetector,
     CUSUMDetector,
     HMMRegimeDetector,
     RandomForestRegimeDetector,
+)
+from experiments.additional_detectors import (
+    QCMLChernDetector,
     MultiScaleChernDetector,
     QuantumEnsembleDetector,
     QFISusceptibilityDetector,
     ScalarCurvatureDetector,
     GeometricConsensusDetector,
-    QFIDeterminantDetector,
-    BerryPhaseRateDetector,
-    MultiLagFidelityDetector,
     MetricConditionNumberDetector,
 )
-from qcml.regime.adaptive_ensemble import AdaptiveRegimeEnsemble
+# from qcml.regime.adaptive_ensemble import AdaptiveRegimeEnsemble  # archived
 from experiments.crisis_config import (
     DATA_AVAILABLE_CRISES,
     ValidationConfig,

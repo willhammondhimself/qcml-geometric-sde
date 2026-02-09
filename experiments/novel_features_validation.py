@@ -42,9 +42,9 @@ from dotenv import load_dotenv
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
-from qcml.qcml_geometry import QCMLGeometry
-from qcml.topological_regime import TopologicalRegimeDetector
-from qcml.regime.quantum_indicators import (
+from qcml_geometry import QCMLGeometry
+from qcml_geometry.topology import TopologicalRegimeDetector
+from qcml_geometry.indicators import (
     SpectralGapIndicator,
     EnergyEvolutionIndicator,
     FidelityDecayIndicator,
@@ -52,7 +52,21 @@ from qcml.regime.quantum_indicators import (
     QuantumIndicatorSuite,
     IndicatorResult,
 )
-from qcml.data import PolygonDataSource, MinimalFeatureEngine, QCMLDataset
+from experiments.data import PolygonDataSource, MinimalFeatureEngine
+# Minimal QCMLDataset replacement (original archived in archive/data_pipeline/)
+from dataclasses import dataclass as _dataclass
+@_dataclass
+class QCMLDataset:
+    """Minimal dataset wrapper for QCML experiments."""
+    features: object
+    prices: object
+    times: object
+    metadata: dict
+
+    @property
+    def X(self):
+        """Feature matrix as numpy array."""
+        return self.features.values if hasattr(self.features, 'values') else self.features
 
 from experiments.crisis_config import (
     CrisisDefinition,

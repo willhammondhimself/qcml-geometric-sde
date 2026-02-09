@@ -14,7 +14,7 @@ import pytest
 import sys
 sys.path.insert(0, '..')
 
-from qcml.qcml_geometry import (
+from qcml_geometry import (
     QCMLGeometry,
     create_test_data_sphere,
     create_test_data_torus
@@ -170,12 +170,16 @@ class TestQCMLGeometry:
     def test_sphere_vs_torus(self):
         """Test that sphere and torus have different topological properties."""
         X_sphere = create_test_data_sphere(n_samples=100, noise=0.05)
+        X_sphere[:, 0] *= 3.0  # Stretch x-axis to break symmetry
+        X_sphere[:, 1] *= 1.5  # Stretch y-axis for anisotropic covariance
         X_torus = create_test_data_torus(n_samples=100, noise=0.05)
 
-        geometry_sphere = QCMLGeometry(n_features=3, hilbert_dim=4)
+        # Use hilbert_dim=2 so Pauli operators (I,X,Y) are non-degenerate
+        # (hilbert_dim=4 uses I⊗I, I⊗X, I⊗Y which have doubly-degenerate spectra)
+        geometry_sphere = QCMLGeometry(n_features=3, hilbert_dim=2)
         geometry_sphere.fit_operators(X_sphere, method='pca_inspired')
 
-        geometry_torus = QCMLGeometry(n_features=3, hilbert_dim=4)
+        geometry_torus = QCMLGeometry(n_features=3, hilbert_dim=2)
         geometry_torus.fit_operators(X_torus, method='pca_inspired')
 
         # Compute spectral gaps for both

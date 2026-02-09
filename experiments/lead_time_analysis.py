@@ -44,24 +44,28 @@ from experiments.regime_comparison import (
     prepare_data,
     seed_everything,
 )
-from qcml.regime.classical_baselines import (
+from qcml_geometry import (
     BaseRegimeDetector,
-    QCMLChernDetector,
+    BerryPhaseRateDetector,
+    QFIDeterminantDetector,
+    MultiLagFidelityDetector,
+)
+from experiments.baselines import (
     RollingVolatilityDetector,
     CUSUMDetector,
     HMMRegimeDetector,
     RandomForestRegimeDetector,
+)
+from experiments.additional_detectors import (
+    QCMLChernDetector,
     MultiScaleChernDetector,
     QuantumEnsembleDetector,
     QFISusceptibilityDetector,
     ScalarCurvatureDetector,
     GeometricConsensusDetector,
-    QFIDeterminantDetector,
-    BerryPhaseRateDetector,
-    MultiLagFidelityDetector,
     MetricConditionNumberDetector,
 )
-from qcml.regime.adaptive_ensemble import AdaptiveRegimeEnsemble
+# from qcml.regime.adaptive_ensemble import AdaptiveRegimeEnsemble  # archived
 from experiments.rigorous_crisis_validation import fetch_real_crisis_data
 from experiments.regime_comparison import (
     prepare_rf_training_data,

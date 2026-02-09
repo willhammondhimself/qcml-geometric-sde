@@ -40,12 +40,12 @@ from experiments.regime_comparison import (
     prepare_data,
     seed_everything,
 )
-from qcml.regime.classical_baselines import (
+from qcml_geometry import (
     BerryPhaseRateDetector,
     MultiLagFidelityDetector,
     QFIDeterminantDetector,
-    RandomForestRegimeDetector,
 )
+from experiments.baselines import RandomForestRegimeDetector
 
 logging.basicConfig(
     level=logging.INFO,

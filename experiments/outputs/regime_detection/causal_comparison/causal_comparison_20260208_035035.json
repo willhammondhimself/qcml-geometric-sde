@@ -1,0 +1,266 @@
+{
+  "2007_quant_meltdown": {
+    "Berry Phase Rate": {
+      "d_noncausal": 0.5469959875776944,
+      "d_causal": 1.6095105605150481,
+      "inflation_pct": -66.01476243792685
+    },
+    "QFI Determinant": {
+      "d_noncausal": 2.090409783814002,
+      "d_causal": 0.6297647058256112,
+      "inflation_pct": 231.93504883280323
+    },
+    "Multi-Lag Fidelity": {
+      "d_noncausal": 0.9872204759158798,
+      "d_causal": 1.353309115284953,
+      "inflation_pct": -27.051368769653894
+    },
+    "Random Forest": {
+      "d_noncausal": 0.9238176062568648,
+      "d_causal": 0.9238176062568648,
+      "inflation_pct": 0.0
+    }
+  },
+  "2008_crisis": {
+    "Berry Phase Rate": {
+      "d_noncausal": 1.8142908443485284,
+      "d_causal": 1.0701937608226566,
+      "inflation_pct": 69.52919282148359
+    },
+    "QFI Determinant": {
+      "d_noncausal": 2.578385324034425,
+      "d_causal": 2.358213315519141,
+      "inflation_pct": 9.336390693172504
+    },
+    "Multi-Lag Fidelity": {
+      "d_noncausal": 1.214573325017163,
+      "d_causal": 0.2368157052490506,
+      "inflation_pct": 412.87701706263096
+    },
+    "Random Forest": {
+      "d_noncausal": 2.259086882565437,
+      "d_causal": 2.259086882565437,
+      "inflation_pct": 0.0
+    }
+  },
+  "2010_flash_crash": {
+    "Berry Phase Rate": {
+      "d_noncausal": 0.823363566565428,
+      "d_causal": 0.6062570244944345,
+      "inflation_pct": 35.810973448438205
+    },
+    "QFI Determinant": {
+      "d_noncausal": 0.998292991413627,
+      "d_causal": 1.2630021311711976,
+      "inflation_pct": -20.958724710314026
+    },
+    "Multi-Lag Fidelity": {
+      "d_noncausal": 0.5277985110079276,
+      "d_causal": 3.0104552479494995,
+      "inflation_pct": -82.46781740511089
+    },
+    "Random Forest": {
+      "d_noncausal": 1.9349716358701443,
+      "d_causal": 1.9349716358701443,
+      "inflation_pct": 0.0
+    }
+  },
+  "2011_debt_downgrade": {
+    "Berry Phase Rate": {
+      "d_noncausal": 0.8555642034393751,
+      "d_causal": 0.3705838932579201,
+      "inflation_pct": 130.8692360906028
+    },
+    "QFI Determinant": {
+      "d_noncausal": 0.7415464479637796,
+      "d_causal": 0.5733439664253617,
+      "inflation_pct": 29.337098040311304
+    },
+    "Multi-Lag Fidelity": {
+      "d_noncausal": 0.7014772408586818,
+      "d_causal": 1.0953747456978271,
+      "inflation_pct": -35.96006813067488
+    },
+    "Random Forest": {
+      "d_noncausal": 0.4370350288798941,
+      "d_causal": 0.4370350288798941,
+      "inflation_pct": 0.0
+    }
+  },
+  "2015_china": {
+    "Berry Phase Rate": {
+      "d_noncausal": 1.7187794242307894,
+      "d_causal": 0.684993197699163,
+      "inflation_pct": 150.91919598676762
+    },
+    "QFI Determinant": {
+      "d_noncausal": 0.700179633586436,
+      "d_causal": 1.1934622494134606,
+      "inflation_pct": -41.33206693965003
+    },
+    "Multi-Lag Fidelity": {
+      "d_noncausal": 0.44827463812549334,
+      "d_causal": 1.0616041221875658,
+      "inflation_pct": -57.77384160851143
+    },
+    "Random Forest": {
+      "d_noncausal": 1.794766473691088,
+      "d_causal": 1.794766473691088,
+      "inflation_pct": 0.0
+    }
+  },
+  "2016_brexit": {
+    "Berry Phase Rate": {
+      "d_noncausal": 0.5033143963361754,
+      "d_causal": 3.295411137299142,
+      "inflation_pct": -84.72681024108321
+    },
+    "QFI Determinant": {
+      "d_noncausal": 1.1712659777458863,
+      "d_causal": 0.29678111808501234,
+      "inflation_pct": 294.6565014996606
+    },
+    "Multi-Lag Fidelity": {
+      "d_noncausal": 0.9963966836246767,
+      "d_causal": 3.2857014953246573,
+      "inflation_pct": -69.6747654939901
+    },
+    "Random Forest": {
+      "d_noncausal": 1.976040425303643,
+      "d_causal": 1.976040425303643,
+      "inflation_pct": 0.0
+    }
+  },
+  "2018_volmageddon": {
+    "Berry Phase Rate": {
+      "d_noncausal": 0.8902265367122215,
+      "d_causal": 1.8416646055227262,
+      "inflation_pct": -51.66185341008139
+    },
+    "QFI Determinant": {
+      "d_noncausal": 0.20944649768347987,
+      "d_causal": 0.00957211661621143,
+      "inflation_pct": null
+    },
+    "Multi-Lag Fidelity": {
+      "d_noncausal": 0.927435441037521,
+      "d_causal": 1.55805719400487,
+      "inflation_pct": -40.47487829033945
+    },
+    "Random Forest": {
+      "d_noncausal": 0.1933011412492686,
+      "d_causal": 0.1933011412492686,
+      "inflation_pct": 0.0
+    }
+  },
+  "2018_fed_selloff": {
+    "Berry Phase Rate": {
+      "d_noncausal": 0.23403613461250436,
+      "d_causal": 0.6216690553641262,
+      "inflation_pct": -62.35358144448353
+    },
+    "QFI Determinant": {
+      "d_noncausal": 1.1027018548283343,
+      "d_causal": 0.4662336996298878,
+      "inflation_pct": 136.51268788671786
+    },
+    "Multi-Lag Fidelity": {
+      "d_noncausal": 0.17267239073783494,
+      "d_causal": 1.1119977420154696,
+      "inflation_pct": -84.47187577693546
+    },
+    "Random Forest": {
+      "d_noncausal": 0.12394204166759507,
+      "d_causal": 0.12394204166759507,
+      "inflation_pct": 0.0
+    }
+  },
+  "2019_repo_crisis": {
+    "Berry Phase Rate": {
+      "d_noncausal": 0.4374042005670265,
+      "d_causal": 0.6490472833768857,
+      "inflation_pct": -32.60826880111341
+    },
+    "QFI Determinant": {
+      "d_noncausal": 1.1731057790140695,
+      "d_causal": 0.984448881712927,
+      "inflation_pct": 19.163706801401638
+    },
+    "Multi-Lag Fidelity": {
+      "d_noncausal": 1.0941496631933068,
+      "d_causal": 2.0911521402173125,
+      "inflation_pct": -47.67718511960575
+    },
+    "Random Forest": {
+      "d_noncausal": 1.0787275185381426,
+      "d_causal": 1.0787275185381426,
+      "inflation_pct": 0.0
+    }
+  },
+  "2020_covid": {
+    "Berry Phase Rate": {
+      "d_noncausal": 7.081233705898063,
+      "d_causal": 0.38907985552007107,
+      "inflation_pct": 1719.9949458788594
+    },
+    "QFI Determinant": {
+      "d_noncausal": 2.0349381089960117,
+      "d_causal": 0.7334280026578801,
+      "inflation_pct": 177.45574229802662
+    },
+    "Multi-Lag Fidelity": {
+      "d_noncausal": 4.846492343796519,
+      "d_causal": 1.364135421330145,
+      "inflation_pct": 255.27941493307074
+    },
+    "Random Forest": {
+      "d_noncausal": 1.2430725462953305,
+      "d_causal": 1.2430725462953305,
+      "inflation_pct": 0.0
+    }
+  },
+  "2022_rates": {
+    "Berry Phase Rate": {
+      "d_noncausal": 0.6815753407155268,
+      "d_causal": 0.7563622303928157,
+      "inflation_pct": -9.887708120809839
+    },
+    "QFI Determinant": {
+      "d_noncausal": 1.0444446998449954,
+      "d_causal": 1.9180226421315523,
+      "inflation_pct": -45.545757547247995
+    },
+    "Multi-Lag Fidelity": {
+      "d_noncausal": 1.272831075757541,
+      "d_causal": 1.4599048057526849,
+      "inflation_pct": -12.814104677098731
+    },
+    "Random Forest": {
+      "d_noncausal": 1.4250340868450337,
+      "d_causal": 1.4250340868450337,
+      "inflation_pct": 0.0
+    }
+  },
+  "2023_svb": {
+    "Berry Phase Rate": {
+      "d_noncausal": 0.17697190300305873,
+      "d_causal": 1.4845436174805673,
+      "inflation_pct": -88.07903648507146
+    },
+    "QFI Determinant": {
+      "d_noncausal": 3.1337367068177473,
+      "d_causal": 1.3301812729419829,
+      "inflation_pct": 135.58719180332562
+    },
+    "Multi-Lag Fidelity": {
+      "d_noncausal": 1.9047813960073035,
+      "d_causal": 1.9685387815804005,
+      "inflation_pct": -3.2388178566596886
+    },
+    "Random Forest": {
+      "d_noncausal": 0.1494819710353141,
+      "d_causal": 0.1494819710353141,
+      "inflation_pct": 0.0
+    }
+  }
+}

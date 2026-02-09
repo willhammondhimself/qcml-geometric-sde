@@ -18,13 +18,9 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import numpy as np
 import matplotlib.pyplot as plt
-from qcml import (
-    QCMLGeometry,
-    TopologicalRegimeDetector,
-    TopologicalTradingStrategy,
-    generate_synthetic_market_data,
-    backtest_topological_strategy
-)
+from qcml_geometry import QCMLGeometry
+from qcml_geometry.topology import TopologicalRegimeDetector
+# TopologicalTradingStrategy, generate_synthetic_market_data, backtest_topological_strategy archived
 
 
 def main():

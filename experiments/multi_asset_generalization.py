@@ -46,14 +46,14 @@ from dotenv import load_dotenv
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
-from qcml.data import PolygonDataSource, MinimalFeatureEngine
-from qcml.regime.classical_baselines import (
+from experiments.data import PolygonDataSource, MinimalFeatureEngine
+from qcml_geometry import (
     BaseRegimeDetector,
     BerryPhaseRateDetector,
     QFIDeterminantDetector,
     MultiLagFidelityDetector,
-    RandomForestRegimeDetector,
 )
+from experiments.baselines import RandomForestRegimeDetector
 from experiments.crisis_config import (
     CrisisDefinition,
     CrisisType,

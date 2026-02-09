@@ -45,9 +45,25 @@ from dotenv import load_dotenv
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
-from qcml.qcml_geometry import QCMLGeometry
-from qcml.topological_regime import TopologicalRegimeDetector
-from qcml.data import QCMLDataset, PolygonDataSource, MinimalFeatureEngine
+from qcml_geometry import QCMLGeometry
+from qcml_geometry.topology import TopologicalRegimeDetector
+from experiments.data import PolygonDataSource, MinimalFeatureEngine
+# Minimal QCMLDataset replacement (original archived in archive/data_pipeline/)
+from dataclasses import dataclass
+from typing import Any
+
+@dataclass
+class QCMLDataset:
+    """Minimal dataset wrapper for QCML experiments."""
+    features: Any  # pd.DataFrame
+    prices: Any     # pd.Series or pd.DataFrame
+    times: Any      # pd.DatetimeIndex
+    metadata: dict
+
+    @property
+    def X(self):
+        """Feature matrix as numpy array."""
+        return self.features.values if hasattr(self.features, 'values') else self.features
 
 from experiments.crisis_config import (
     CrisisDefinition,
