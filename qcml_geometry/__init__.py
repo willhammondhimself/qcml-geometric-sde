@@ -1,10 +1,12 @@
 """
-qcml_geometry - Quantum Cognition-inspired Metric Learning for Geometric Structure Discovery
+qcml_geometry - Spectral Metric Learning for Geometric Structure Discovery
 
-Core library for QCML-induced market geometry: error Hamiltonian, quantum metric tensor,
-Berry curvature, Chern numbers, QFI susceptibility, and spectral gap computations.
+Core library for learned market geometry: error Hamiltonian, Fubini-Study metric tensor,
+Berry curvature, Chern numbers, Fisher information susceptibility, and spectral gap
+computations.  Uses mathematical tools from spectral theory (Hilbert spaces, Hermitian
+operators) as a structured nonlinear embedding---no quantum physics involved.
 
-Paper 1: "Quantum Geometric Observables for Financial Regime Detection"
+Paper 1: "Geometric Observables for Financial Regime Detection"
 """
 
 __version__ = "1.0.0"

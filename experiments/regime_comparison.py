@@ -2,7 +2,7 @@
 """
 Head-to-Head Regime Detection Method Comparison
 
-Runs 16 regime detection methods on up to 15 historical crises using the SAME
+Runs 18 regime detection methods on up to 15 historical crises using the SAME
 statistical pipeline (Welch's t-test, bootstrap CI, permutation test,
 Bayes factor, Cohen's d raw + rank-normalized, F1/precision/recall) for an
 apples-to-apples comparison.
@@ -15,15 +15,16 @@ Methods:
   5. Random Forest — supervised ML baseline (leave-one-crisis-out)
   6. Oracle RF — supervised oracle trained on ALL crises (in-sample)
   7. Multi-Scale Chern — multi-scale consensus (unsupervised)
-  8. Quantum Ensemble — 4 quantum indicators combined (unsupervised)
-  9. QFI Susceptibility — tr(quantum metric tensor) z-scored (unsupervised)
- 10. Scalar Curvature — Ricci scalar of quantum metric manifold (unsupervised)
+  8. Geometric Ensemble — 4 geometric indicators combined (unsupervised)
+  9. QFI Susceptibility — tr(metric tensor) z-scored (unsupervised)
+ 10. Scalar Curvature — Ricci scalar of metric manifold (unsupervised)
  11. Geometric Consensus — persistence + voting across 4 geometric methods (unsupervised)
- 12. Adaptive Ensemble — crisis-type classifier + Fast/Slow/Shock detectors (unsupervised)
- 13. QFI Determinant — log(det(quantum Fisher info matrix)) (unsupervised)
- 14. Berry Phase Rate — rate of change of Berry curvature (unsupervised)
- 15. Multi-Lag Fidelity — weighted fidelity across lags [1,3,5,10] (unsupervised)
- 16. Metric Condition Number — anisotropy of quantum metric tensor (unsupervised)
+ 12. BOCPD — Bayesian Online Changepoint Detection (unsupervised)
+ 13. Isolation Forest — sklearn anomaly detector (unsupervised)
+ 14. QFI Determinant — log(det(Fisher info matrix)) (unsupervised)
+ 15. Berry Phase Rate — rate of change of Berry curvature (unsupervised)
+ 16. Multi-Lag Fidelity — weighted fidelity across lags [1,3,5,10] (unsupervised)
+ 17. Metric Condition Number — anisotropy of metric tensor (unsupervised)
 
 Usage:
     python experiments/regime_comparison.py --crises all --seed 42
@@ -65,6 +66,8 @@ from experiments.baselines import (
     CUSUMDetector,
     HMMRegimeDetector,
     RandomForestRegimeDetector,
+    BOCPDDetector,
+    IsolationForestDetector,
 )
 from experiments.additional_detectors import (
     QCMLChernDetector,
@@ -75,7 +78,6 @@ from experiments.additional_detectors import (
     GeometricConsensusDetector,
     MetricConditionNumberDetector,
 )
-# from qcml.regime.adaptive_ensemble import AdaptiveRegimeEnsemble  # archived
 from experiments.crisis_config import (
     CrisisDefinition,
     ValidationConfig,
@@ -534,7 +536,7 @@ def run_full_comparison(
     n_permutations: int = 5000,
     seed: int = 42,
 ) -> Dict[str, List[Dict]]:
-    """Run all 11 methods on all crises.
+    """Run all 17 methods on all crises.
 
     Methods:
       1. QCML Chern (unsupervised, single-scale)
@@ -544,10 +546,16 @@ def run_full_comparison(
       5. Random Forest - LOCO (supervised, leave-one-crisis-out)
       6. Oracle RF (supervised, trained on ALL crises - in-sample)
       7. Multi-Scale Chern (unsupervised, 5 scales: 10-100 days)
-      8. Quantum Ensemble (unsupervised, 4 indicators combined)
-      9. QFI Susceptibility (unsupervised, tr(quantum metric tensor))
-     10. Scalar Curvature (unsupervised, Ricci scalar of quantum metric manifold)
-     11. Geometric Consensus (unsupervised, persistence + voting across 4 geometric methods)
+      8. Geometric Ensemble (unsupervised, 4 indicators combined)
+      9. QFI Susceptibility (unsupervised, tr(metric tensor))
+     10. Scalar Curvature (unsupervised, Ricci scalar of metric manifold)
+     11. Geometric Consensus (unsupervised, persistence + voting)
+     12. BOCPD (unsupervised, online changepoint detection)
+     13. Isolation Forest (unsupervised, anomaly detection)
+     14. QFI Determinant (unsupervised, log det Fisher info)
+     15. Berry Phase Rate (unsupervised, Berry curvature rate)
+     16. Multi-Lag Fidelity (unsupervised, weighted fidelity)
+     17. Metric Condition Number (unsupervised, metric anisotropy)
 
     Returns dict mapping crisis name -> list of per-method result dicts.
     """
@@ -784,40 +792,35 @@ def run_full_comparison(
             logger.error(f"  Geometric Consensus failed for {crisis.name}: {e}")
             crisis_results.append(_empty_result("Geometric Consensus"))
 
-        # 12. Adaptive Ensemble (uses enriched features)
-        print(f"  Running Adaptive Ensemble...")
-        n_pca_adaptive = min(20, X_enriched.shape[1])
-        det_adaptive = AdaptiveRegimeEnsemble(
-            hilbert_dim=config.hilbert_dim,
-            n_pca_components=n_pca_adaptive,
-            n_curvature_components=8,
-            operator_method=config.operator_method,
-            seed=seed,
-        )
+        # 12. BOCPD (online, unsupervised)
+        print(f"  Running BOCPD...")
+        det_bocpd = BOCPDDetector(hazard_rate=200, cp_threshold=20)
         try:
-            # Fetch prices for crisis classification
-            try:
-                dataset = fetch_real_crisis_data(crisis)
-                prices = dataset.prices
-                if isinstance(prices, pd.DataFrame):
-                    prices = prices.iloc[:, 0]
-            except Exception as price_err:
-                logger.warning(f"  Could not fetch prices for {crisis.name}: {price_err}")
-                prices = None
-
-            det_adaptive.fit(X_enriched, prices=prices)
+            det_bocpd.fit(X)
             crisis_results.append(evaluate_method(
-                det_adaptive, X_enriched, times_enriched,
-                crisis_idx_enriched, crisis, config,
+                det_bocpd, X, times, crisis_idx, crisis, config,
                 n_bootstrap, n_permutations, seed,
             ))
         except Exception as e:
-            import traceback
-            logger.error(f"  Adaptive Ensemble failed for {crisis.name}: {e}")
-            traceback.print_exc()
-            crisis_results.append(_empty_result("Adaptive Ensemble"))
+            logger.error(f"  BOCPD failed for {crisis.name}: {e}")
+            crisis_results.append(_empty_result("BOCPD"))
 
-        # 13. QFI Determinant (uses enriched features)
+        # 13. Isolation Forest (unsupervised)
+        print(f"  Running Isolation Forest...")
+        det_iforest = IsolationForestDetector(
+            n_estimators=200, contamination=0.05, seed=seed,
+        )
+        try:
+            det_iforest.fit(X)
+            crisis_results.append(evaluate_method(
+                det_iforest, X, times, crisis_idx, crisis, config,
+                n_bootstrap, n_permutations, seed,
+            ))
+        except Exception as e:
+            logger.error(f"  Isolation Forest failed for {crisis.name}: {e}")
+            crisis_results.append(_empty_result("Isolation Forest"))
+
+        # 14. QFI Determinant (uses enriched features)
         print(f"  Running QFI Determinant...")
         det_qfi_det = QFIDeterminantDetector(
             hilbert_dim=config.hilbert_dim,
@@ -836,7 +839,7 @@ def run_full_comparison(
             logger.error(f"  QFI Determinant failed for {crisis.name}: {e}")
             crisis_results.append(_empty_result("QFI Determinant"))
 
-        # 14. Berry Phase Rate (uses enriched features)
+        # 15. Berry Phase Rate (uses enriched features)
         print(f"  Running Berry Phase Rate...")
         det_berry = BerryPhaseRateDetector(
             hilbert_dim=config.hilbert_dim,
@@ -855,7 +858,7 @@ def run_full_comparison(
             logger.error(f"  Berry Phase Rate failed for {crisis.name}: {e}")
             crisis_results.append(_empty_result("Berry Phase Rate"))
 
-        # 15. Multi-Lag Fidelity (uses enriched features)
+        # 16. Multi-Lag Fidelity (uses enriched features)
         print(f"  Running Multi-Lag Fidelity...")
         det_fidelity = MultiLagFidelityDetector(
             hilbert_dim=config.hilbert_dim,
@@ -874,7 +877,7 @@ def run_full_comparison(
             logger.error(f"  Multi-Lag Fidelity failed for {crisis.name}: {e}")
             crisis_results.append(_empty_result("Multi-Lag Fidelity"))
 
-        # 16. Metric Condition Number (uses enriched features)
+        # 17. Metric Condition Number (uses enriched features)
         print(f"  Running Metric Condition Number...")
         det_kappa = MetricConditionNumberDetector(
             hilbert_dim=config.hilbert_dim,
@@ -1079,7 +1082,7 @@ def main():
     print("HEAD-TO-HEAD REGIME DETECTION COMPARISON")
     print("=" * 90)
     print(f"Crises: {[c.name for c in crises]}")
-    print(f"Methods: QCML Chern, Vol Z, CUSUM, HMM, RF(LOCO), Oracle RF, MultiScale, Ensemble, QFI, Scalar Curvature, Geometric Consensus")
+    print(f"Methods: 17 detectors (11 geometric + BOCPD + IsoForest + Vol Z + CUSUM + HMM + RF)")
     print(f"Bootstrap: n={args.n_bootstrap}, Permutations: n={args.n_permutations}")
     print(f"Seed: {args.seed}")
     print("=" * 90)

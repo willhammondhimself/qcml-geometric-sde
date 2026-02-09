@@ -1,17 +1,17 @@
 """
-Additional QCML-based Regime Detectors
+Additional Geometric Regime Detectors
 
-These detectors wrap the core QCML geometry with various derived observables:
+These detectors wrap the core geometry with various derived observables:
 1. QCMLChernDetector — rolling Chern number
 2. QFISusceptibilityDetector — Fubini-Study distance
 3. ScalarCurvatureDetector — Ricci scalar curvature
 4. MultiScaleChernDetector — multi-scale Chern consensus
-5. QuantumEnsembleDetector — ensemble of all quantum indicators
+5. QuantumEnsembleDetector — ensemble of all indicators
 6. GeometricConsensusDetector — persistence + voting across geometric methods
 7. FastGeometricConsensusDetector — tuned for sudden transitions
 8. SlowGeometricConsensusDetector — tuned for gradual transitions
 9. ShockMagnitudeDetector — V-shaped crisis detection
-10. MetricConditionNumberDetector — condition number of quantum metric
+10. MetricConditionNumberDetector — condition number of metric tensor
 """
 
 import logging
@@ -22,12 +22,13 @@ from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 
 from qcml_geometry import BaseRegimeDetector
+from qcml_geometry.observables import _transform_array
 
 logger = logging.getLogger(__name__)
 
 
 class QCMLChernDetector(BaseRegimeDetector):
-    """Regime detection via rolling Chern number from QCML geometry.
+    """Regime detection via rolling Chern number from geometry.
 
     Args:
         hilbert_dim: Hilbert space dimension.
@@ -51,6 +52,8 @@ class QCMLChernDetector(BaseRegimeDetector):
         self.seed = seed
         self._geometry = None
         self._detector = None
+        self._scaler = None
+        self._pca = None
 
     @property
     def name(self) -> str:
@@ -63,13 +66,14 @@ class QCMLChernDetector(BaseRegimeDetector):
         np.random.seed(self.seed)
         n_components = min(self.n_pca_components, X.shape[1])
 
-        scaler = StandardScaler()
-        X_scaled = scaler.fit_transform(X)
-        pca = PCA(n_components=n_components)
-        X_pca = pca.fit_transform(X_scaled)
+        self._scaler = StandardScaler()
+        self._scaler.fit(X)
+        self._pca = PCA(n_components=n_components)
+        X_scaled = self._scaler.transform(X)
+        self._pca.fit(X_scaled)
+        X_pca = self._pca.transform(X_scaled)
         X_pca = X_pca / (np.linalg.norm(X_pca, axis=1, keepdims=True) + 1e-8)
 
-        self._X_transformed = X_pca
         self._geometry = QCMLGeometry(
             n_features=X_pca.shape[1], hilbert_dim=self.hilbert_dim
         )
@@ -82,18 +86,19 @@ class QCMLChernDetector(BaseRegimeDetector):
     def compute_regime_scores(self, X: np.ndarray) -> np.ndarray:
         if self._detector is None:
             raise RuntimeError("Call fit() before compute_regime_scores().")
+        X_pca = _transform_array(X, self._scaler, self._pca)
         chern = self._detector.rolling_chern_number(
-            self._X_transformed, window=self.window_size
+            X_pca, window=self.window_size
         )
-        pad = np.full(len(self._X_transformed) - len(chern), np.nan)
+        pad = np.full(len(X_pca) - len(chern), np.nan)
         return np.concatenate([pad, chern])
 
 
 class QFISusceptibilityDetector(BaseRegimeDetector):
-    """Regime detection via Quantum Fisher Information susceptibility.
+    """Regime detection via Fisher Information susceptibility.
 
     Measures the realized QFI through the Fubini-Study distance between
-    consecutive quantum states.
+    consecutive states.
 
     Args:
         hilbert_dim: Hilbert space dimension.
@@ -120,7 +125,8 @@ class QFISusceptibilityDetector(BaseRegimeDetector):
         self.min_expanding = min_expanding
         self.seed = seed
         self._geometry = None
-        self._X_transformed = None
+        self._scaler = None
+        self._pca = None
 
     @property
     def name(self) -> str:
@@ -132,13 +138,14 @@ class QFISusceptibilityDetector(BaseRegimeDetector):
         np.random.seed(self.seed)
         n_components = min(self.n_pca_components, X.shape[1])
 
-        scaler = StandardScaler()
-        X_scaled = scaler.fit_transform(X)
-        pca = PCA(n_components=n_components)
-        X_pca = pca.fit_transform(X_scaled)
+        self._scaler = StandardScaler()
+        self._scaler.fit(X)
+        self._pca = PCA(n_components=n_components)
+        X_scaled = self._scaler.transform(X)
+        self._pca.fit(X_scaled)
+        X_pca = self._pca.transform(X_scaled)
         X_pca = X_pca / (np.linalg.norm(X_pca, axis=1, keepdims=True) + 1e-8)
 
-        self._X_transformed = X_pca
         self._geometry = QCMLGeometry(
             n_features=X_pca.shape[1], hilbert_dim=self.hilbert_dim
         )
@@ -151,7 +158,7 @@ class QFISusceptibilityDetector(BaseRegimeDetector):
 
         import pandas as pd
 
-        Xt = self._X_transformed
+        Xt = _transform_array(X, self._scaler, self._pca)
         T = len(Xt)
 
         raw_dist = np.empty(T - 1)
@@ -179,7 +186,7 @@ class QFISusceptibilityDetector(BaseRegimeDetector):
 
 
 class ScalarCurvatureDetector(BaseRegimeDetector):
-    """Ricci scalar curvature of the quantum metric manifold.
+    """Ricci scalar curvature of the metric manifold.
 
     Computes R(t) at each time point. Large |R| indicates regions where the
     data manifold is highly curved (nonlinear, unstable dynamics).
@@ -209,7 +216,8 @@ class ScalarCurvatureDetector(BaseRegimeDetector):
         self.min_expanding = min_expanding
         self.seed = seed
         self._geometry = None
-        self._X_transformed = None
+        self._scaler = None
+        self._pca = None
 
     @property
     def name(self) -> str:
@@ -221,13 +229,14 @@ class ScalarCurvatureDetector(BaseRegimeDetector):
         np.random.seed(self.seed)
         n_components = min(self.n_curvature_components, X.shape[1])
 
-        scaler = StandardScaler()
-        X_scaled = scaler.fit_transform(X)
-        pca = PCA(n_components=n_components)
-        X_pca = pca.fit_transform(X_scaled)
+        self._scaler = StandardScaler()
+        self._scaler.fit(X)
+        self._pca = PCA(n_components=n_components)
+        X_scaled = self._scaler.transform(X)
+        self._pca.fit(X_scaled)
+        X_pca = self._pca.transform(X_scaled)
         X_pca = X_pca / (np.linalg.norm(X_pca, axis=1, keepdims=True) + 1e-8)
 
-        self._X_transformed = X_pca
         self._geometry = QCMLGeometry(
             n_features=X_pca.shape[1], hilbert_dim=self.hilbert_dim
         )
@@ -240,7 +249,7 @@ class ScalarCurvatureDetector(BaseRegimeDetector):
 
         import pandas as pd
 
-        Xt = self._X_transformed
+        Xt = _transform_array(X, self._scaler, self._pca)
         T = len(Xt)
 
         raw_R = np.empty(T)
@@ -308,6 +317,8 @@ class MultiScaleChernDetector(BaseRegimeDetector):
         self.seed = seed
         self._geometry = None
         self._consensus = None
+        self._scaler = None
+        self._pca = None
 
     @property
     def name(self) -> str:
@@ -320,14 +331,14 @@ class MultiScaleChernDetector(BaseRegimeDetector):
         np.random.seed(self.seed)
         n_components = min(self.n_pca_components, X.shape[1])
 
-        scaler = StandardScaler()
-        X_scaled = scaler.fit_transform(X)
-
-        pca = PCA(n_components=n_components)
-        X_pca = pca.fit_transform(X_scaled)
+        self._scaler = StandardScaler()
+        self._scaler.fit(X)
+        self._pca = PCA(n_components=n_components)
+        X_scaled = self._scaler.transform(X)
+        self._pca.fit(X_scaled)
+        X_pca = self._pca.transform(X_scaled)
         X_pca = X_pca / (np.linalg.norm(X_pca, axis=1, keepdims=True) + 1e-8)
 
-        self._X_transformed = X_pca
         self._geometry = QCMLGeometry(
             n_features=X_pca.shape[1],
             hilbert_dim=self.hilbert_dim,
@@ -349,7 +360,8 @@ class MultiScaleChernDetector(BaseRegimeDetector):
         if self._geometry is None or self._consensus is None:
             raise RuntimeError("Call fit() before compute_regime_scores().")
 
-        result = self._consensus.compute_consensus(self._X_transformed)
+        X_pca = _transform_array(X, self._scaler, self._pca)
+        result = self._consensus.compute_consensus(X_pca)
         consensus_scores = result.values
 
         pad_len = len(X) - len(consensus_scores)
@@ -360,7 +372,7 @@ class MultiScaleChernDetector(BaseRegimeDetector):
 
 
 class QuantumEnsembleDetector(BaseRegimeDetector):
-    """Ensemble of all quantum indicators.
+    """Ensemble of all geometric indicators.
 
     Combines spectral gap, ground state energy, fidelity decay, and
     multi-scale Chern consensus into a single composite score.
@@ -388,6 +400,8 @@ class QuantumEnsembleDetector(BaseRegimeDetector):
         self.seed = seed
         self._geometry = None
         self._suite = None
+        self._scaler = None
+        self._pca = None
 
     @property
     def name(self) -> str:
@@ -400,14 +414,14 @@ class QuantumEnsembleDetector(BaseRegimeDetector):
         np.random.seed(self.seed)
         n_components = min(self.n_pca_components, X.shape[1])
 
-        scaler = StandardScaler()
-        X_scaled = scaler.fit_transform(X)
-
-        pca = PCA(n_components=n_components)
-        X_pca = pca.fit_transform(X_scaled)
+        self._scaler = StandardScaler()
+        self._scaler.fit(X)
+        self._pca = PCA(n_components=n_components)
+        X_scaled = self._scaler.transform(X)
+        self._pca.fit(X_scaled)
+        X_pca = self._pca.transform(X_scaled)
         X_pca = X_pca / (np.linalg.norm(X_pca, axis=1, keepdims=True) + 1e-8)
 
-        self._X_transformed = X_pca
         self._geometry = QCMLGeometry(
             n_features=X_pca.shape[1],
             hilbert_dim=self.hilbert_dim,
@@ -425,7 +439,8 @@ class QuantumEnsembleDetector(BaseRegimeDetector):
         if self._geometry is None or self._suite is None:
             raise RuntimeError("Call fit() before compute_regime_scores().")
 
-        composite, _ = self._suite.compute_composite_score(self._X_transformed)
+        X_pca = _transform_array(X, self._scaler, self._pca)
+        composite, _ = self._suite.compute_composite_score(X_pca)
 
         pad_len = len(X) - len(composite)
         if pad_len > 0:
@@ -689,7 +704,7 @@ class ShockMagnitudeDetector(BaseRegimeDetector):
 
 
 class MetricConditionNumberDetector(BaseRegimeDetector):
-    """Regime detection via condition number of the quantum metric tensor.
+    """Regime detection via condition number of the metric tensor.
 
     kappa(g) = lambda_max / lambda_min. High condition number = anisotropic
     manifold = regime transition. Score = log(kappa) smoothed and z-scored.
@@ -711,7 +726,8 @@ class MetricConditionNumberDetector(BaseRegimeDetector):
         self.min_expanding = min_expanding
         self.seed = seed
         self._geometry = None
-        self._X_transformed = None
+        self._scaler = None
+        self._pca = None
 
     @property
     def name(self) -> str:
@@ -723,13 +739,14 @@ class MetricConditionNumberDetector(BaseRegimeDetector):
         np.random.seed(self.seed)
         n_components = min(self.n_pca_components, X.shape[1])
 
-        scaler = StandardScaler()
-        X_scaled = scaler.fit_transform(X)
-        pca = PCA(n_components=n_components)
-        X_pca = pca.fit_transform(X_scaled)
+        self._scaler = StandardScaler()
+        self._scaler.fit(X)
+        self._pca = PCA(n_components=n_components)
+        X_scaled = self._scaler.transform(X)
+        self._pca.fit(X_scaled)
+        X_pca = self._pca.transform(X_scaled)
         X_pca = X_pca / (np.linalg.norm(X_pca, axis=1, keepdims=True) + 1e-8)
 
-        self._X_transformed = X_pca
         self._geometry = QCMLGeometry(
             n_features=X_pca.shape[1], hilbert_dim=self.hilbert_dim
         )
@@ -742,7 +759,7 @@ class MetricConditionNumberDetector(BaseRegimeDetector):
 
         import pandas as pd
 
-        Xt = self._X_transformed
+        Xt = _transform_array(X, self._scaler, self._pca)
         T = len(Xt)
 
         raw_logkappa = np.empty(T)

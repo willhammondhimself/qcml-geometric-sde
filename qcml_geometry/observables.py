@@ -1,11 +1,11 @@
 """
-Core Quantum Geometric Observables for Regime Detection
+Core Geometric Observables for Regime Detection
 
-Three novel unsupervised observables derived from the QCML quantum metric tensor:
+Three novel unsupervised observables derived from the metric tensor geometry:
 
 1. BerryPhaseRateDetector - Rate of change of Berry curvature
-2. QFIDeterminantDetector - Quantum metric pseudo-determinant
-3. MultiLagFidelityDetector - Multi-lag quantum fidelity
+2. QFIDeterminantDetector - Metric pseudo-determinant
+3. MultiLagFidelityDetector - Multi-lag fidelity
 
 Also provides the BaseRegimeDetector ABC and ExpandingWindowMixin.
 """
@@ -70,17 +70,56 @@ class BaseRegimeDetector(ABC):
         ...
 
 
+def _transform_point(x: np.ndarray, scaler: StandardScaler, pca: PCA) -> np.ndarray:
+    """Transform a single data point through stored scaler and PCA.
+
+    Args:
+        x: Raw feature vector (n_features,).
+        scaler: Fitted StandardScaler.
+        pca: Fitted PCA.
+
+    Returns:
+        Normalized PCA-transformed vector.
+    """
+    x_scaled = scaler.transform(x.reshape(1, -1))
+    x_pca = pca.transform(x_scaled).ravel()
+    norm = np.linalg.norm(x_pca)
+    return x_pca / (norm + 1e-8)
+
+
+def _transform_array(X: np.ndarray, scaler: StandardScaler, pca: PCA) -> np.ndarray:
+    """Transform an array through stored scaler and PCA.
+
+    Args:
+        X: Raw feature matrix (T, n_features).
+        scaler: Fitted StandardScaler.
+        pca: Fitted PCA.
+
+    Returns:
+        Normalized PCA-transformed matrix (T, n_components).
+    """
+    X_scaled = scaler.transform(X)
+    X_pca = pca.transform(X_scaled)
+    norms = np.linalg.norm(X_pca, axis=1, keepdims=True)
+    return X_pca / (norms + 1e-8)
+
+
 class ExpandingWindowMixin:
     """Mixin that periodically refits scaler/PCA/operators on expanding windows.
 
     When ``expanding_refit_interval`` is set, the mixin builds a sequence of
     snapshots during ``fit()``, each fitted on an expanding prefix of the data.
     During ``compute_regime_scores()``, the detector uses the most recent
-    snapshot that precedes each time point.
+    snapshot that precedes each time point and transforms data on-the-fly
+    using only past-fitted preprocessing.
     """
 
     def _fit_expanding(self, X: np.ndarray) -> 'ExpandingWindowMixin':
-        """Build expanding-window snapshots for periodic refitting."""
+        """Build expanding-window snapshots for periodic refitting.
+
+        Each snapshot stores its own scaler, PCA, and geometry fitted only on
+        data up to refit_idx. No future data is transformed during fit.
+        """
         from .core import QCMLGeometry
 
         T = X.shape[0]
@@ -98,55 +137,64 @@ class ExpandingWindowMixin:
 
             scaler = StandardScaler()
             scaler.fit(X[:refit_idx])
-            X_scaled = scaler.transform(X)
 
             pca = PCA(n_components=n_components)
-            pca.fit(X_scaled[:refit_idx])
-            X_pca = pca.transform(X_scaled)
-            X_pca = X_pca / (np.linalg.norm(X_pca, axis=1, keepdims=True) + 1e-8)
+            X_scaled_prefix = scaler.transform(X[:refit_idx])
+            pca.fit(X_scaled_prefix)
+
+            X_pca_prefix = pca.transform(X_scaled_prefix)
+            X_pca_prefix = X_pca_prefix / (
+                np.linalg.norm(X_pca_prefix, axis=1, keepdims=True) + 1e-8
+            )
 
             geometry = QCMLGeometry(
-                n_features=X_pca.shape[1], hilbert_dim=self.hilbert_dim
+                n_features=X_pca_prefix.shape[1], hilbert_dim=self.hilbert_dim
             )
-            geometry.fit_operators(X_pca[:refit_idx], method=self.operator_method)
+            geometry.fit_operators(X_pca_prefix, method=self.operator_method)
 
             self._snapshots.append({
                 'refit_idx': refit_idx,
                 'geometry': geometry,
-                'X_transformed': X_pca,
+                'scaler': scaler,
+                'pca': pca,
             })
 
         last = self._snapshots[-1]
         self._geometry = last['geometry']
-        self._X_transformed = last['X_transformed']
+        self._scaler = last['scaler']
+        self._pca = last['pca']
 
         return self
 
     def _get_snapshot_at(self, t: int):
-        """Return (geometry, x_point) for time t using the most recent snapshot."""
+        """Return the most recent snapshot that precedes time t."""
         best_snap = self._snapshots[0]
         for snap in self._snapshots:
             if snap['refit_idx'] <= t:
                 best_snap = snap
             else:
                 break
+        return best_snap
 
-        return best_snap['geometry'], best_snap['X_transformed'][t]
+    def _transform_point_at(self, x_raw: np.ndarray, t: int) -> tuple:
+        """Transform a single raw point using the appropriate snapshot.
+
+        Returns (geometry, x_transformed) for time t.
+        """
+        snap = self._get_snapshot_at(t)
+        x_t = _transform_point(x_raw, snap['scaler'], snap['pca'])
+        return snap['geometry'], x_t
 
 
 class QFIDeterminantDetector(ExpandingWindowMixin, BaseRegimeDetector):
-    """Regime detection via quantum metric determinant det(g_ab).
+    """Regime detection via metric determinant det(g_ab).
 
-    The determinant of the quantum metric tensor is the volume element of
+    The determinant of the metric tensor is the volume element of
     the data manifold. Collapsing volume indicates approaching a phase
     boundary; diverging volume indicates rapid expansion of accessible
     state space.
 
     Score = abs(z-score of log(|det(g)|)) smoothed over a rolling window.
-
-    Args:
-        expanding_refit_interval: If set, periodically refit scaler/PCA/operators
-            on expanding windows at this interval. Default None (single-shot fit).
     """
 
     def __init__(
@@ -169,7 +217,8 @@ class QFIDeterminantDetector(ExpandingWindowMixin, BaseRegimeDetector):
         self.causal_fit_length = causal_fit_length
         self.expanding_refit_interval = expanding_refit_interval
         self._geometry = None
-        self._X_transformed = None
+        self._scaler = None
+        self._pca = None
         self._snapshots = None
 
     @property
@@ -186,26 +235,27 @@ class QFIDeterminantDetector(ExpandingWindowMixin, BaseRegimeDetector):
         n_components = min(self.n_pca_components, X.shape[1])
         fit_end = self.causal_fit_length or X.shape[0]
 
-        scaler = StandardScaler()
-        scaler.fit(X[:fit_end])
-        X_scaled = scaler.transform(X)
-        pca = PCA(n_components=n_components)
-        pca.fit(X_scaled[:fit_end])
-        X_pca = pca.transform(X_scaled)
-        X_pca = X_pca / (np.linalg.norm(X_pca, axis=1, keepdims=True) + 1e-8)
+        self._scaler = StandardScaler()
+        self._scaler.fit(X[:fit_end])
 
-        self._X_transformed = X_pca
+        self._pca = PCA(n_components=n_components)
+        X_scaled_fit = self._scaler.transform(X[:fit_end])
+        self._pca.fit(X_scaled_fit)
+
+        X_pca_fit = self._pca.transform(X_scaled_fit)
+        X_pca_fit = X_pca_fit / (np.linalg.norm(X_pca_fit, axis=1, keepdims=True) + 1e-8)
+
         self._geometry = QCMLGeometry(
-            n_features=X_pca.shape[1], hilbert_dim=self.hilbert_dim
+            n_features=X_pca_fit.shape[1], hilbert_dim=self.hilbert_dim
         )
-        self._geometry.fit_operators(X_pca[:fit_end], method=self.operator_method)
+        self._geometry.fit_operators(X_pca_fit, method=self.operator_method)
         return self
 
     def compute_regime_scores(self, X: np.ndarray) -> np.ndarray:
         if self._geometry is None:
             raise RuntimeError("Call fit() before compute_regime_scores().")
 
-        Xt = self._X_transformed
+        Xt = _transform_array(X, self._scaler, self._pca)
         T = len(Xt)
 
         import pandas as pd
@@ -215,7 +265,7 @@ class QFIDeterminantDetector(ExpandingWindowMixin, BaseRegimeDetector):
 
         for t in range(T):
             if self._snapshots is not None:
-                geo, xt = self._get_snapshot_at(t)
+                geo, xt = self._transform_point_at(X[t], t)
                 g_ij = geo.quantum_metric(xt)
             else:
                 g_ij = self._geometry.quantum_metric(Xt[t])
@@ -250,14 +300,10 @@ class QFIDeterminantDetector(ExpandingWindowMixin, BaseRegimeDetector):
 class BerryPhaseRateDetector(ExpandingWindowMixin, BaseRegimeDetector):
     """Regime detection via rate of change of Berry curvature.
 
-    Measures topological transition speed: rapid changes in Berry curvature
+    Measures geometric transition speed: rapid changes in Berry curvature
     indicate the system is crossing a phase boundary.
 
     Score = abs(diff(Berry_curvature)) smoothed and z-scored.
-
-    Args:
-        expanding_refit_interval: If set, periodically refit scaler/PCA/operators
-            on expanding windows at this interval. Default None (single-shot fit).
     """
 
     def __init__(
@@ -280,7 +326,8 @@ class BerryPhaseRateDetector(ExpandingWindowMixin, BaseRegimeDetector):
         self.causal_fit_length = causal_fit_length
         self.expanding_refit_interval = expanding_refit_interval
         self._geometry = None
-        self._X_transformed = None
+        self._scaler = None
+        self._pca = None
         self._snapshots = None
 
     @property
@@ -297,26 +344,27 @@ class BerryPhaseRateDetector(ExpandingWindowMixin, BaseRegimeDetector):
         n_components = min(self.n_pca_components, X.shape[1])
         fit_end = self.causal_fit_length or X.shape[0]
 
-        scaler = StandardScaler()
-        scaler.fit(X[:fit_end])
-        X_scaled = scaler.transform(X)
-        pca = PCA(n_components=n_components)
-        pca.fit(X_scaled[:fit_end])
-        X_pca = pca.transform(X_scaled)
-        X_pca = X_pca / (np.linalg.norm(X_pca, axis=1, keepdims=True) + 1e-8)
+        self._scaler = StandardScaler()
+        self._scaler.fit(X[:fit_end])
 
-        self._X_transformed = X_pca
+        self._pca = PCA(n_components=n_components)
+        X_scaled_fit = self._scaler.transform(X[:fit_end])
+        self._pca.fit(X_scaled_fit)
+
+        X_pca_fit = self._pca.transform(X_scaled_fit)
+        X_pca_fit = X_pca_fit / (np.linalg.norm(X_pca_fit, axis=1, keepdims=True) + 1e-8)
+
         self._geometry = QCMLGeometry(
-            n_features=X_pca.shape[1], hilbert_dim=self.hilbert_dim
+            n_features=X_pca_fit.shape[1], hilbert_dim=self.hilbert_dim
         )
-        self._geometry.fit_operators(X_pca[:fit_end], method=self.operator_method)
+        self._geometry.fit_operators(X_pca_fit, method=self.operator_method)
         return self
 
     def compute_regime_scores(self, X: np.ndarray) -> np.ndarray:
         if self._geometry is None:
             raise RuntimeError("Call fit() before compute_regime_scores().")
 
-        Xt = self._X_transformed
+        Xt = _transform_array(X, self._scaler, self._pca)
         T = len(Xt)
 
         import pandas as pd
@@ -324,7 +372,7 @@ class BerryPhaseRateDetector(ExpandingWindowMixin, BaseRegimeDetector):
         berry = np.empty(T)
         for t in range(T):
             if self._snapshots is not None:
-                geo, xt = self._get_snapshot_at(t)
+                geo, xt = self._transform_point_at(X[t], t)
                 berry[t] = geo.berry_curvature_2d(xt, indices=(0, 1))
             else:
                 berry[t] = self._geometry.berry_curvature_2d(Xt[t], indices=(0, 1))
@@ -352,15 +400,11 @@ class BerryPhaseRateDetector(ExpandingWindowMixin, BaseRegimeDetector):
 
 
 class MultiLagFidelityDetector(ExpandingWindowMixin, BaseRegimeDetector):
-    """Regime detection via multi-lag quantum fidelity.
+    """Regime detection via multi-lag fidelity.
 
     Fidelity at lags [1, 3, 5, 10] provides multi-scale sensitivity:
     short lags detect fast crises, long lags detect gradual transitions.
     Score = weighted average infidelity (1-F), z-scored.
-
-    Args:
-        expanding_refit_interval: If set, periodically refit scaler/PCA/operators
-            on expanding windows at this interval. Default None (single-shot fit).
     """
 
     def __init__(
@@ -387,7 +431,8 @@ class MultiLagFidelityDetector(ExpandingWindowMixin, BaseRegimeDetector):
         self.causal_fit_length = causal_fit_length
         self.expanding_refit_interval = expanding_refit_interval
         self._geometry = None
-        self._X_transformed = None
+        self._scaler = None
+        self._pca = None
         self._snapshots = None
 
     @property
@@ -404,26 +449,27 @@ class MultiLagFidelityDetector(ExpandingWindowMixin, BaseRegimeDetector):
         n_components = min(self.n_pca_components, X.shape[1])
         fit_end = self.causal_fit_length or X.shape[0]
 
-        scaler = StandardScaler()
-        scaler.fit(X[:fit_end])
-        X_scaled = scaler.transform(X)
-        pca = PCA(n_components=n_components)
-        pca.fit(X_scaled[:fit_end])
-        X_pca = pca.transform(X_scaled)
-        X_pca = X_pca / (np.linalg.norm(X_pca, axis=1, keepdims=True) + 1e-8)
+        self._scaler = StandardScaler()
+        self._scaler.fit(X[:fit_end])
 
-        self._X_transformed = X_pca
+        self._pca = PCA(n_components=n_components)
+        X_scaled_fit = self._scaler.transform(X[:fit_end])
+        self._pca.fit(X_scaled_fit)
+
+        X_pca_fit = self._pca.transform(X_scaled_fit)
+        X_pca_fit = X_pca_fit / (np.linalg.norm(X_pca_fit, axis=1, keepdims=True) + 1e-8)
+
         self._geometry = QCMLGeometry(
-            n_features=X_pca.shape[1], hilbert_dim=self.hilbert_dim
+            n_features=X_pca_fit.shape[1], hilbert_dim=self.hilbert_dim
         )
-        self._geometry.fit_operators(X_pca[:fit_end], method=self.operator_method)
+        self._geometry.fit_operators(X_pca_fit, method=self.operator_method)
         return self
 
     def compute_regime_scores(self, X: np.ndarray) -> np.ndarray:
         if self._geometry is None:
             raise RuntimeError("Call fit() before compute_regime_scores().")
 
-        Xt = self._X_transformed
+        Xt = _transform_array(X, self._scaler, self._pca)
         T = len(Xt)
         max_lag = max(self.lags)
 
@@ -432,7 +478,7 @@ class MultiLagFidelityDetector(ExpandingWindowMixin, BaseRegimeDetector):
         states = []
         for t in range(T):
             if self._snapshots is not None:
-                geo, xt = self._get_snapshot_at(t)
+                geo, xt = self._transform_point_at(X[t], t)
                 psi = geo.quasi_coherent_state(xt)
             else:
                 psi = self._geometry.quasi_coherent_state(Xt[t])
