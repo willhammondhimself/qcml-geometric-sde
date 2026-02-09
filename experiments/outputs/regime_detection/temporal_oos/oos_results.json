@@ -1,5 +1,5 @@
 {
-  "timestamp": "20260207_124504",
+  "timestamp": "20260209_114314",
   "experiment": "temporal_oos_validation",
   "calibration_cutoff": "2020-01-01",
   "training_crises": [
@@ -24,29 +24,29 @@
   "oos_results": {
     "2020_covid": {
       "QCML Chern": {
-        "effect_size_d": 0.9172750872684594,
-        "p_value": 0.00014279735805205825,
-        "t_stat": 4.58794419920578
+        "effect_size_d": 0.9172750874178346,
+        "p_value": 0.0001427973582286158,
+        "t_stat": 4.587944198775271
       },
       "Multi-Scale Chern": {
-        "effect_size_d": 0.2981056105131147,
-        "p_value": 0.26186445433361255,
-        "t_stat": 1.1530385143397877
+        "effect_size_d": 0.2624397788351261,
+        "p_value": 0.3106747803538442,
+        "t_stat": 1.0389333014505535
       },
       "Quantum Ensemble": {
-        "effect_size_d": 0.1652358876914781,
-        "p_value": 0.3837239307284813,
-        "t_stat": 0.8870785714472461
+        "effect_size_d": 0.22981811769064023,
+        "p_value": 0.22203575221027141,
+        "t_stat": 1.253575024360868
       },
       "QFI Susceptibility": {
-        "effect_size_d": 0.5460250490383889,
-        "p_value": 9.94417626174525e-05,
-        "t_stat": 4.454827818011145
+        "effect_size_d": 0.5460250490393757,
+        "p_value": 9.94417626155648e-05,
+        "t_stat": 4.454827818018001
       },
       "Scalar Curvature": {
-        "effect_size_d": 0.05844959175905198,
-        "p_value": 0.3169954189128817,
-        "t_stat": 1.0022637055440526
+        "effect_size_d": 0.05844841603999008,
+        "p_value": 0.3170051378600165,
+        "t_stat": 1.0022435449149227
       },
       "Geometric Consensus": {
         "effect_size_d": 0.0,
@@ -54,24 +54,24 @@
         "t_stat": NaN
       },
       "QFI Determinant": {
-        "effect_size_d": 0.694740772559121,
-        "p_value": 0.00877246858076833,
-        "t_stat": 2.885686717587776
+        "effect_size_d": 0.694740773194567,
+        "p_value": 0.008772468539320623,
+        "t_stat": 2.8856867196826874
       },
       "Berry Phase Rate": {
-        "effect_size_d": 0.20192325520428986,
-        "p_value": 0.09192638632447955,
-        "t_stat": 1.7350973073557376
+        "effect_size_d": 0.20213006265403274,
+        "p_value": 0.09159461778483625,
+        "t_stat": 1.7369458738638923
       },
       "Multi-Lag Fidelity": {
-        "effect_size_d": 0.9863931519676699,
-        "p_value": 1.2266288990027962e-08,
-        "t_stat": 7.7393183521682225
+        "effect_size_d": 0.9863931519677088,
+        "p_value": 1.2266288990028202e-08,
+        "t_stat": 7.739318352168296
       },
       "Metric Condition Number": {
-        "effect_size_d": 0.15351389268799778,
-        "p_value": 0.15924562561462297,
-        "t_stat": 1.4359328165391585
+        "effect_size_d": 0.15351389186636305,
+        "p_value": 0.15924562788314617,
+        "t_stat": 1.435932808530068
       },
       "Rolling Vol Z": {
         "effect_size_d": 0.09094668615344333,
@@ -101,14 +101,14 @@
         "t_stat": 2.902641513076593
       },
       "Multi-Scale Chern": {
-        "effect_size_d": 0.01173178168245919,
-        "p_value": 0.9270206232912472,
-        "t_stat": 0.09263195004031892
+        "effect_size_d": 0.0028981031104007575,
+        "p_value": 0.9818847274830117,
+        "t_stat": 0.022962047871767047
       },
       "Quantum Ensemble": {
-        "effect_size_d": 0.9928507470065651,
-        "p_value": 5.271775699063934e-10,
-        "t_stat": 9.742245856219466
+        "effect_size_d": 0.9912064538655444,
+        "p_value": 4.745673379657171e-10,
+        "t_stat": 9.806300428860183
       },
       "QFI Susceptibility": {
         "effect_size_d": 0.4168618599819395,
@@ -173,14 +173,14 @@
         "t_stat": 10.370906008065077
       },
       "Multi-Scale Chern": {
-        "effect_size_d": 0.11424219355627077,
-        "p_value": 0.08301348570799436,
-        "t_stat": 1.7884561835322277
+        "effect_size_d": 0.11329837312132639,
+        "p_value": 0.08660673566470035,
+        "t_stat": 1.7678140219822895
       },
       "Quantum Ensemble": {
-        "effect_size_d": 0.16499933955737642,
-        "p_value": 0.06685027502992424,
-        "t_stat": 1.9145358162819155
+        "effect_size_d": 0.16076068034343138,
+        "p_value": 0.074730827334977,
+        "t_stat": 1.8588886735325816
       },
       "QFI Susceptibility": {
         "effect_size_d": 0.2614460292118808,
@@ -241,8 +241,8 @@
   },
   "degradation": {},
   "summary": {
-    "qcml_mean_oos_d": 0.38565216181314277,
-    "qcml_std_oos_d": 0.33178024346907137,
+    "qcml_mean_oos_d": 0.3861008811016127,
+    "qcml_std_oos_d": 0.33128901328730326,
     "rf_mean_oos_d": 0.3101453091951322,
     "rf_std_oos_d": 0.0834271275793492,
     "n_qcml_above_08": 5,

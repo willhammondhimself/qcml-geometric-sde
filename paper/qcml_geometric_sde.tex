@@ -934,7 +934,7 @@ Table~\ref{tab:timing} reports wall-clock times for each method on a
 standardized dataset ($T=3{,}447$ trading days, 4~symbols, 15~PCA
 components, single CPU core).  Berry Phase Rate and Multi-Lag Fidelity
 are \emph{faster} than Random Forest; only QFI Determinant incurs
-meaningful overhead (${\approx}6\times$ RF).
+meaningful overhead (${\approx}5\times$ RF).
 
 \begin{table}[htb]
 \centering
@@ -946,13 +946,13 @@ meaningful overhead (${\approx}6\times$ RF).
 \toprule
 Method & Time (s) & vs.\ RF & Category \\
 \midrule
-CUSUM                      & 0.002 & $0.002\times$ & Classical \\
-HMM 2-state                & 0.10  & $0.09\times$  & Classical \\
-Multi-Lag Fidelity ($n{=}8$) & 0.26  & $0.24\times$  & QCML \\
-Berry Phase Rate ($n{=}8$)   & 0.77  & $0.72\times$  & QCML \\
-Random Forest              & 1.07  & $1.0\times$   & Classical \\
-QFI Determinant ($n{=}8$)   & 5.95  & $5.5\times$   & QCML \\
-QFI Determinant ($n{=}12$)  & 7.04  & $6.6\times$   & QCML \\
+CUSUM                      & 0.002 & $0.001\times$ & Classical \\
+HMM 2-state                & 0.59  & $0.47\times$  & Classical \\
+Multi-Lag Fidelity ($n{=}8$) & 0.37  & $0.30\times$  & QCML \\
+Berry Phase Rate ($n{=}8$)   & 0.93  & $0.74\times$  & QCML \\
+Random Forest              & 1.25  & $1.0\times$   & Classical \\
+QFI Determinant ($n{=}8$)   & 6.70  & $5.4\times$   & QCML \\
+QFI Determinant ($n{=}12$)  & 7.17  & $5.7\times$   & QCML \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -1066,19 +1066,23 @@ Random Forest & 0.20 & 0.40 & 0.33 & 0.31 \\
 \end{table}
 
 \paragraph{Lead time.}
-QCML methods fire closer to the crisis date (mean 11.7 days) with
-higher precision, while RF fires with more advance warning (30.7 days)
+QCML methods fire closer to the crisis date (mean 9.8 days) with
+higher precision, while RF fires with more advance warning (34.8 days)
 but only on crises resembling its training data.  On novel crises, QCML
-fires at 14.2 days---providing timely signal where RF has no labeled
+fires at 11.0 days---providing timely signal where RF has no labeled
 precedent.
 
 \paragraph{Hybrid ensemble.}
 We combine QCML and RF via three strategies (simple average, optimized
-weights, dynamic switch), all calibrated on pre-2020 data.  The
-Simple Average ($d = 0.60$ OOS) nearly doubles RF alone ($d = 0.31$),
-confirming non-redundant information content.  The Dynamic Switch
-($d = 1.16$ across all 12 crises) achieves robust performance by routing
-to QCML when its z-score exceeds 1.5 and deferring to RF otherwise.
+weights, dynamic switch), all calibrated on pre-2020 data.  On the three
+\emph{out-of-sample} crises (2020--2023), the Simple Average achieves
+$d = 0.60$, nearly doubling RF alone ($d = 0.31$), confirming
+non-redundant information content on novel crises.  However, across all
+12~crises the hybrid approaches do not beat RF (which achieves $d > 3$
+on its training crises), and the optimized-weights strategy collapses to
+100\% RF weight---correctly reflecting RF's dominance on in-sample data.
+The hybrid value therefore lies specifically in out-of-sample
+generalization to structurally novel events.
 
 \subsection{Multi-Observable Geometric Fusion}\label{subsec:fusion}
 
@@ -1462,10 +1466,12 @@ evidence support this thesis:
   from in-sample to OOS performance, while RF degrades substantially
   on structurally novel test crises.
 
-\item \textbf{Ensemble improvement}: The hybrid ensemble
-  (Section~\ref{subsec:oos}) achieves higher mean $d$ than either
-  QCML or RF alone, confirming that the two signal types carry
-  non-redundant information about regime transitions.
+\item \textbf{Ensemble improvement on novel crises}: On the three
+  out-of-sample crises, the hybrid simple-average ensemble achieves
+  $d = 0.60$ vs.\ RF $d = 0.31$, confirming that geometric and
+  supervised signals carry non-redundant information---though this
+  advantage is limited to structurally novel events where RF lacks
+  training precedent.
 \end{enumerate}
 
 This complementarity has a natural geometric interpretation.  Random
@@ -1509,12 +1515,12 @@ is $O(T)$, HMM fitting is $O(KT)$ for $K$ EM iterations, and Random
 Forest is $O(BdT\log T)$ for $B$ trees and $d$ features.
 
 Table~\ref{tab:timing} provides empirical wall-clock comparisons on
-$T=3{,}447$ trading days.  At $n=8$, Berry Phase Rate (0.77\,s) and
-Multi-Lag Fidelity (0.26\,s) are \emph{faster} than Random Forest
-(1.07\,s) because the per-point eigendecomposition of an
+$T=3{,}447$ trading days.  At $n=8$, Berry Phase Rate (0.93\,s) and
+Multi-Lag Fidelity (0.37\,s) are \emph{faster} than Random Forest
+(1.25\,s) because the per-point eigendecomposition of an
 $8\times 8$ matrix is cheaper than evaluating 200 decision trees.
-The most expensive QCML observable, QFI Determinant, requires 5.95\,s
-($5.5\times$ RF) at $n=8$ and 7.04\,s at $n=12$, owing to the
+The most expensive QCML observable, QFI Determinant, requires 6.70\,s
+($5.4\times$ RF) at $n=8$ and 7.17\,s at $n=12$, owing to the
 additional metric-tensor and determinant computations.
 
 In practice, the QCML pipeline decomposes into a one-time
@@ -2103,7 +2109,7 @@ Multi-Scale Chern      & 0.22 & 10 \\
 We evaluate specificity using four calm periods (2005--06, 2012--13,
 2017H1, 2021H1) where VIX~$<15$ and drawdown~$<5\%$.  HMM achieves
 the highest ROC-AUC (0.975) due to its latent-state partition.
-Among QCML methods, Multi-Scale Chern (0.864) and QCML Chern (0.748)
+Among QCML methods, Multi-Scale Chern (0.859) and QCML Chern (0.748)
 have the best specificity.  Berry Phase Rate shows moderate
 specificity (0.461), reflecting a sensitivity--specificity trade-off:
 methods that fire early register as false positives under strict
@@ -2119,7 +2125,7 @@ labeling.
 Method & ROC-AUC & PR-AUC & F1 \\
 \midrule
 HMM 2-state          & 0.975 & 0.735 & 0.928 \\
-Multi-Scale Chern     & 0.864 & 0.451 & 0.671 \\
+Multi-Scale Chern     & 0.859 & 0.425 & 0.639 \\
 QCML Chern           & 0.748 & 0.276 & 0.595 \\
 Metric Cond.\ No.    & 0.745 & 0.313 & 0.538 \\
 Berry Phase Rate      & 0.461 & 0.189 & 0.341 \\
@@ -2130,10 +2136,12 @@ QFI Determinant       & 0.300 & 0.138 & 0.339 \\
 
 \subsection{Method Correlation}
 
-PCA of the 11 QCML score time series reveals three independent signals
-(58.8\% variance in first three components).  Berry Phase Rate and QFI
-Determinant are the least redundant pair (Spearman $\rho < 0.3$),
-supporting their joint use in ensemble methods.
+PCA of the 10 geometric score time series reveals that 8~components are
+needed for 90\% variance (PC1 explains 32.1\%, first three: 57.3\%),
+indicating high-dimensional structure.  Berry Phase Rate and QFI
+Determinant are negatively correlated (Spearman $\rho = -0.25$),
+confirming they capture distinct geometric signals and supporting
+their joint use in fusion architectures.
 
 
 \end{document}
