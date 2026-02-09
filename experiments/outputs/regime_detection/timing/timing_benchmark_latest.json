@@ -1,0 +1,162 @@
+{
+  "timestamp": "20260208_234037",
+  "n_repeats": 3,
+  "results": [
+    {
+      "name": "Rolling Vol Z",
+      "times_s": [
+        34.51306725000177,
+        34.68066333400202,
+        34.08606724999845
+      ],
+      "median_s": 34.51306725000177,
+      "mean_s": 34.426599278000744,
+      "std_s": 0.25032466706868517,
+      "category": "Classical",
+      "T": 3447,
+      "relative_cost": 1.0,
+      "time_per_point_ms": 10.012
+    },
+    {
+      "name": "CUSUM",
+      "times_s": [
+        0.0016973749952740036,
+        0.001687208001385443,
+        0.00180312500015134
+      ],
+      "median_s": 0.0016973749952740036,
+      "mean_s": 0.0017292359989369288,
+      "std_s": 5.241202353487186e-05,
+      "category": "Classical",
+      "T": 3447,
+      "relative_cost": 0.0,
+      "time_per_point_ms": 0.0
+    },
+    {
+      "name": "HMM 2-state",
+      "times_s": [
+        0.18205491700064158,
+        0.08226470899535343,
+        0.09669729199958965
+      ],
+      "median_s": 0.09669729199958965,
+      "mean_s": 0.12033897266519489,
+      "std_s": 0.044035729447465026,
+      "category": "Classical",
+      "T": 3447,
+      "relative_cost": 0.0,
+      "time_per_point_ms": 0.028
+    },
+    {
+      "name": "Random Forest",
+      "times_s": [
+        1.1462354169998434,
+        1.0731576659964048,
+        1.0688213339963113
+      ],
+      "median_s": 1.0731576659964048,
+      "mean_s": 1.0960714723308531,
+      "std_s": 0.03551541404675718,
+      "category": "Classical",
+      "T": 3447,
+      "relative_cost": 0.0,
+      "time_per_point_ms": 0.311
+    },
+    {
+      "name": "Berry Phase Rate (h=8)",
+      "times_s": [
+        0.8036581669948646,
+        0.7582139170044684,
+        0.7740017919932143
+      ],
+      "median_s": 0.7740017919932143,
+      "mean_s": 0.7786246253308491,
+      "std_s": 0.018838310351480873,
+      "category": "QCML",
+      "hilbert_dim": 8,
+      "T": 3447,
+      "relative_cost": 0.0,
+      "time_per_point_ms": 0.225
+    },
+    {
+      "name": "QFI Determinant (h=8)",
+      "times_s": [
+        5.949085250002099,
+        5.93021766700258,
+        6.051992667002196
+      ],
+      "median_s": 5.949085250002099,
+      "mean_s": 5.9770985280022915,
+      "std_s": 0.053515390088357845,
+      "category": "QCML",
+      "hilbert_dim": 8,
+      "T": 3447,
+      "relative_cost": 0.2,
+      "time_per_point_ms": 1.726
+    },
+    {
+      "name": "Multi-Lag Fidelity (h=8)",
+      "times_s": [
+        0.2963707910021185,
+        0.22830787500424776,
+        0.256870124998386
+      ],
+      "median_s": 0.256870124998386,
+      "mean_s": 0.26051626366825076,
+      "std_s": 0.027905923850599826,
+      "category": "QCML",
+      "hilbert_dim": 8,
+      "T": 3447,
+      "relative_cost": 0.0,
+      "time_per_point_ms": 0.075
+    },
+    {
+      "name": "Berry Phase Rate (h=12)",
+      "times_s": [
+        0.9267385829953128,
+        0.889696707999974,
+        0.923570999999356
+      ],
+      "median_s": 0.923570999999356,
+      "mean_s": 0.9133354303315476,
+      "std_s": 0.016765048774379687,
+      "category": "QCML",
+      "hilbert_dim": 12,
+      "T": 3447,
+      "relative_cost": 0.0,
+      "time_per_point_ms": 0.268
+    },
+    {
+      "name": "QFI Determinant (h=12)",
+      "times_s": [
+        7.072731166997983,
+        7.044566500000656,
+        7.0440660000022035
+      ],
+      "median_s": 7.044566500000656,
+      "mean_s": 7.05378788900028,
+      "std_s": 0.013396478667564837,
+      "category": "QCML",
+      "hilbert_dim": 12,
+      "T": 3447,
+      "relative_cost": 0.2,
+      "time_per_point_ms": 2.044
+    },
+    {
+      "name": "Multi-Lag Fidelity (h=12)",
+      "times_s": [
+        0.3090662499962491,
+        0.3099303329945542,
+        0.32631962499726797
+      ],
+      "median_s": 0.3099303329945542,
+      "mean_s": 0.31510540266269044,
+      "std_s": 0.007937495271767342,
+      "category": "QCML",
+      "hilbert_dim": 12,
+      "T": 3447,
+      "relative_cost": 0.0,
+      "time_per_point_ms": 0.09
+    }
+  ]
+}

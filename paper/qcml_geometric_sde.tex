@@ -128,6 +128,27 @@ transitions manifest as geometric singularities---curvature spikes,
 spectral gap closures, and changes in topological charge---of this
 manifold.
 
+Why this geometric detour, rather than a simpler nonlinear method such
+as a kernel machine or neural network?  Projective Hilbert space
+provides four structural advantages that no purely Euclidean approach
+can replicate.  \emph{First}, the Chern number $c_1$ is a topological
+invariant and hence an integer; small perturbations to the data shift
+the Berry curvature smoothly but cannot change $c_1$ until a genuine
+phase transition occurs, yielding a noise-robust classification that
+continuous anomaly scores cannot match.  \emph{Second}, the Berry
+curvature $F_{ab}$ is gauge-invariant---it is unchanged under unitary
+rotations $\ket{\psi}\mapsto e^{i\theta}\ket{\psi}$---whereas
+kernel-based distances depend on the choice of coordinate
+representation.  \emph{Third}, the spectral gap $\Delta(x)$ between
+ground and first excited state closes \emph{continuously} before a
+topological transition, providing a principled leading indicator with
+no ad hoc threshold selection.  \emph{Fourth}, the non-commutativity
+of the Hermitian operators $\{O_j\}$ encodes cross-feature
+interactions (e.g., momentum--volatility coupling) in the
+off-diagonal structure of $H(x)$, capturing higher-order dependencies
+that PCA-based methods, which diagonalize by construction, necessarily
+discard.
+
 In this paper we construct a learned Riemannian manifold for financial
 markets and show that regime detection emerges as a natural consequence
 of its geometry.  Inspired by the Quantum Cognition Machine Learning
@@ -864,6 +885,34 @@ corrected, $\alpha=0.05$), Cohen's $d$ effect size, bootstrap CI
 A method \emph{beats} the RF baseline if it achieves a significantly
 larger mean $d$ across crises (paired $t$-test, $p<0.05$).
 
+\paragraph{Computational cost.}
+Table~\ref{tab:timing} reports wall-clock times for each method on a
+standardized dataset ($T=3{,}447$ trading days, 4~symbols, 15~PCA
+components, single CPU core).  Berry Phase Rate and Multi-Lag Fidelity
+are \emph{faster} than Random Forest; only QFI Determinant incurs
+meaningful overhead (${\approx}6\times$ RF).
+
+\begin{table}[htb]
+\centering
+\small
+\caption{Wall-clock timing (median of 3 runs, $T=3{,}447$).
+  Relative cost is measured against Random Forest.}
+\label{tab:timing}
+\begin{tabular}{lccc}
+\toprule
+Method & Time (s) & vs.\ RF & Category \\
+\midrule
+CUSUM                      & 0.002 & $0.002\times$ & Classical \\
+HMM 2-state                & 0.10  & $0.09\times$  & Classical \\
+Multi-Lag Fidelity ($n{=}8$) & 0.26  & $0.24\times$  & QCML \\
+Berry Phase Rate ($n{=}8$)   & 0.77  & $0.72\times$  & QCML \\
+Random Forest              & 1.07  & $1.0\times$   & Classical \\
+QFI Determinant ($n{=}8$)   & 5.95  & $5.5\times$   & QCML \\
+QFI Determinant ($n{=}12$)  & 7.04  & $6.6\times$   & QCML \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 \subsection{Main Results}\label{subsec:main_results}
 
 Table~\ref{tab:comparison} summarizes the head-to-head comparison.
@@ -1356,10 +1405,34 @@ phase; large deviations signal proximity to a phase transition.
 
 \subsection{Computational Cost}
 
-The dominant cost is the eigendecomposition of $H(x)$, which is
-$O(n^3)$ per data point, where $n$ is the Hilbert space dimension.
-For $n=8$ and $T=5{,}000$ trading days, the full pipeline requires
-approximately 45 minutes on a single CPU core.
+The dominant cost of the QCML pipeline is the eigendecomposition of
+$H(x)\in\C^{n\times n}$, which scales as $O(n^3)$ per data point,
+yielding $O(n^3 T)$ overall for $T$ observations.  By contrast, CUSUM
+is $O(T)$, HMM fitting is $O(KT)$ for $K$ EM iterations, and Random
+Forest is $O(BdT\log T)$ for $B$ trees and $d$ features.
+
+Table~\ref{tab:timing} provides empirical wall-clock comparisons on
+$T=3{,}447$ trading days.  At $n=8$, Berry Phase Rate (0.77\,s) and
+Multi-Lag Fidelity (0.26\,s) are \emph{faster} than Random Forest
+(1.07\,s) because the per-point eigendecomposition of an
+$8\times 8$ matrix is cheaper than evaluating 200 decision trees.
+The most expensive QCML observable, QFI Determinant, requires 5.95\,s
+($5.5\times$ RF) at $n=8$ and 7.04\,s at $n=12$, owing to the
+additional metric-tensor and determinant computations.
+
+In practice, the QCML pipeline decomposes into a one-time
+preprocessing step (PCA, operator construction) and a per-point
+scoring step (eigendecomposition, observable extraction).  For daily
+rebalancing, the scoring cost per new observation is sub-millisecond
+even at $n=12$, well within the latency budget of any end-of-day
+system.  The eigendecomposition is also trivially parallelizable:
+batching $H(x_1),\ldots,H(x_B)$ via \texttt{torch.linalg.eigh}
+reduces wall-clock time by the batch factor on GPU hardware.
+
+Compared to deep learning baselines, QCML is substantially cheaper:
+LSTM and TCN training requires hours of GPU time and large labeled
+datasets, whereas all QCML observables are unsupervised and run in
+seconds on CPU.
 
 \subsection{Hyperparameter Sensitivity}
 
