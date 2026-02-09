@@ -1,5 +1,5 @@
 % =============================================================================
-% Geometric Observables for Financial Regime Detection
+% Quantum Cognition Machine Learning for Financial Regime Detection
 % =============================================================================
 \documentclass[11pt]{article}
 
@@ -42,11 +42,9 @@
 \newcommand{\calF}{\mathcal{F}}
 \DeclareMathOperator*{\argmin}{arg\,min}
 
-% --- Placeholder macro -------------------------------------------------------
-\newcommand{\placeholder}[1]{\textcolor{red}{\textbf{[#1]}}}
-
 % =============================================================================
-\title{Geometric Observables for Financial Regime Detection:\\A Spectral Metric Learning Approach}
+\title{Quantum Cognition Machine Learning for Financial Regime Detection:\\
+A Geometric Observable Approach}
 
 \author{
   Will Hammond\\
@@ -64,303 +62,186 @@
 % ABSTRACT
 % =============================================================================
 \begin{abstract}
-Classical regime detection methods operate in flat Euclidean feature
-spaces, relying on distributional assumptions that are violated during
-the very transitions they seek to detect.  We construct a learned
-Riemannian manifold for financial markets by lifting time series into a
-projective Hilbert space $\CP^{n-1}$ via a parameterized error
-Hamiltonian and extracting the induced geometric structure: Fubini--Study
-metric tensor, Berry curvature, spectral gap, and Fisher information
-matrix.  This geometry induces a family of scalar
-observables---Berry phase rate, Fisher information pseudo-determinant,
-rolling curvature integrals, multi-lag fidelity, and metric condition
-number---that summarize the local and global structure of the market
-manifold at each point in time.
-
-In a head-to-head comparison of 17~methods across 12~historical crises
-(2007--2023), the three best geometric observables---Berry Phase Rate
-($d = 0.93$), QFI Determinant ($d = 0.93$), and Multi-Lag Fidelity
-($d = 0.84$)---are \emph{competitive with but do not individually
-exceed} the supervised Random Forest baseline ($d = 1.13$) after
-Holm--Bonferroni correction.  The geometric methods are, however,
-fully \emph{unsupervised} and require no labeled crisis data.
-They also substantially outperform two standard unsupervised baselines:
-BOCPD ($d = 0.59$) and Isolation Forest ($d = 0.46$).
-
-Our central finding is \emph{complementarity}: the geometric and
-supervised signals detect structurally different crisis types.
-\textbf{(i)}~On crises where RF underperforms (Volmageddon, SVB,
-Fed Selloff), geometric methods achieve $d > 1.0$ while RF scores
-$d < 0.2$.  \textbf{(ii)}~A simple hybrid ensemble nearly doubles
-out-of-sample effect size relative to RF alone ($d = 0.60$ vs.\
-$d = 0.31$).  \textbf{(iii)}~Geometric observables generalize across
-five broad-market ETFs (SPY, QQQ, IWM, EFA, DIA) with Multi-Lag
-Fidelity $d = 1.44$ vs.\ RF $d = 0.88$ (Friedman $p < 0.0001$).
-\textbf{(iv)}~Optimized multi-observable fusion achieves
-median $d = 1.67$, though nested leave-one-crisis-out validation
-reveals an overfitting gap (held-out $d = 1.09$), underscoring
-the importance of unbiased evaluation.
-
-These findings establish the learned market manifold as a principled
-geometric framework that complements supervised approaches, with
-greatest value precisely where pattern-matching methods lack
-historical precedent.
+Quantum Cognition Machine Learning (QCML) encodes data as quantum
+states in a Hilbert space and represents features as Hermitian
+operators, inducing a rich geometric and topological structure over
+the data manifold.  While QCML has been applied to intrinsic dimension
+estimation, financial forecasting, and supervised similarity learning,
+extracting geometric observables for time-series regime detection
+remains unexplored.  We construct an error Hamiltonian from financial
+features, compute the quasi-coherent ground states, and extract three
+scalar observables from the induced quantum geometry: the Berry phase
+rate, the quantum Fisher information (QFI) determinant, and a
+multi-lag fidelity measure.  In a comparison of 17~methods across
+12~historical crises, these QCML observables---fully
+unsupervised---achieve effect sizes competitive with a supervised
+Random Forest baseline ($d \approx 0.93$ vs.\ $d = 1.13$) and
+substantially outperform standard unsupervised methods (BOCPD
+$d = 0.59$, Isolation Forest $d = 0.46$).  Our central finding is
+\emph{complementarity}: QCML observables excel on structurally novel
+crises where supervised methods lack training precedent, and a hybrid
+ensemble nearly doubles out-of-sample performance ($d = 0.60$ vs.\
+$d = 0.31$).  Across five equity ETFs, Multi-Lag Fidelity achieves
+$d = 1.44$ vs.\ RF $d = 0.88$ (Friedman $p < 0.0001$), demonstrating
+cross-asset generalization.
 \end{abstract}
 
 \medskip
-\noindent\textbf{Keywords:} regime detection, spectral geometry,
-Riemannian metric, Berry curvature, Chern number, Fisher information,
-financial crises, metric learning.
+\noindent\textbf{Keywords:} QCML, quantum cognition, regime detection,
+Berry curvature, quantum metric, Fisher information, financial crises,
+geometric observables.
 
 % =============================================================================
 % 1. INTRODUCTION
 % =============================================================================
 \section{Introduction}\label{sec:intro}
 
-Detecting regime transitions is a central problem in quantitative
-finance.  Market dynamics alternate between qualitatively different
-states---low-volatility trends, high-volatility drawdowns, liquidity
-crises---and the ability to identify transitions in real time has
-implications for risk management, portfolio construction, and hedging.
+% --- 1.1 Background and Motivation ---
+\subsection{Background and Motivation}\label{subsec:background}
 
-Classical approaches include Hidden Markov Models (HMMs)
-\cite{hamilton1989}, cumulative-sum (CUSUM) statistics
-\cite{page1954}, rolling volatility breakpoints, and supervised
-classifiers such as Random Forests.  While effective in specific
-settings, these methods share a common limitation: they operate entirely
-within a Euclidean feature space and rely on distributional assumptions
-(Gaussian mixtures, stationarity within regimes) that are frequently
-violated during the very transitions they seek to detect.
+Quantum Cognition Machine Learning (QCML) is a framework in which data
+points are represented as quantum states---unit vectors in a
+finite-dimensional Hilbert space---and features or variables are
+represented by Hermitian operators acting on those
+states~\cite{musaelian2024,candelori2025}.  The key innovation is that
+observables are operators rather than numbers: the expected value of a
+Hermitian operator $A$ on a state $\ket{\psi}$ is
+$\bra{\psi}A\ket{\psi}$, a number with uncertainty around it, and the
+non-commutativity of operators encodes context-dependent relationships
+among features~\cite{musaelian2024}.  This ``quantum encoding'' enables
+QCML to learn broad abstractions from small amounts of data, achieving
+a logarithmic economy of representation that overcomes the curse of
+dimensionality inherent in classical statistical
+approaches~\cite{musaelian2024,candelori2025}.
 
-Our central thesis is that financial regimes leave distinct geometric
-signatures on a learned data manifold, and that regime transitions
-manifest as geometric singularities---curvature spikes, spectral gap
-closures, and rapid changes in curvature integrals---of this manifold.
+Detecting regime transitions---shifts between qualitatively different
+market states---is a central problem in quantitative finance.  Markets
+alternate between low-volatility trends, high-volatility drawdowns,
+and liquidity crises, and the ability to identify transitions in real
+time has implications for risk management, portfolio construction, and
+hedging.  Classical approaches include Hidden Markov Models
+(HMMs)~\cite{hamilton1989}, Bayesian Online Changepoint Detection
+(BOCPD)~\cite{adams_mackay2007}, and supervised classifiers such as
+Random Forests.  While effective in specific settings, these methods
+operate in flat Euclidean feature spaces and struggle with structurally
+novel crises that differ from training data.
 
-Why lift data into a curved space, rather than applying a simpler
-nonlinear method such as a kernel machine or neural network?  The
-projective Hilbert space embedding provides several structural
-advantages.  \emph{First}, the Berry curvature $F_{ab}$ is
-gauge-invariant---unchanged under unitary rotations
-$\ket{\psi}\mapsto e^{i\theta}\ket{\psi}$---whereas kernel-based
-distances depend on the choice of coordinate representation.
-\emph{Second}, the spectral gap $\Delta(x)$ between the ground and
-first excited state closes \emph{continuously} before a geometric
-transition, providing a principled leading indicator with no ad hoc
-threshold selection.  \emph{Third}, the non-commutativity of the
-Hermitian operators $\{O_j\}$ encodes cross-feature interactions
-(e.g., momentum--volatility coupling) in the off-diagonal structure
-of $H(x)$, capturing higher-order dependencies that PCA-based
-methods, which diagonalize by construction, necessarily discard.
-\emph{Fourth}, for closed parameter surfaces the integral of Berry
-curvature yields a Chern number $c_1\in\mathbb{Z}$, a topological
-invariant; however, as we discuss in Section~\ref{sec:discussion},
-our rolling-window estimates are computed over open domains and are
-therefore non-integer, limiting the strength of topological protection
-arguments in practice.
+Our central idea is that QCML induces quantum geometry over the data
+manifold, and that this geometry changes when market regimes shift.
+Specifically, the error Hamiltonian of QCML~\cite{candelori2025}
+defines a smooth map from feature space to projective Hilbert space
+$\CP^{n-1}$, endowing the data with a Fubini--Study metric, Berry
+curvature, spectral gap, and quantum Fisher information.  These
+geometric objects provide a family of scalar observables that respond
+to structural changes in the market state space without requiring
+labeled crisis data.
 
-In this paper we construct a learned Riemannian manifold for financial
-markets and show that regime detection emerges as a natural consequence
-of its geometry.  Inspired by the Quantum Cognition Machine Learning
-(QCML) framework \cite{qcml_ref}, we \emph{lift} the feature space
-$\R^d$ into a projective Hilbert space $\CP^{n-1}$ via a family of
-Hermitian operators.  We emphasize that this construction uses the
-\emph{mathematical machinery} of Hilbert spaces and spectral
-theory---not quantum mechanics proper.  There is no quantum
-superposition, entanglement, or quantum computing involved; the
-connection to physics is purely formal.  The ground state
-$\ket{\psi(x)}$ of an error Hamiltonian $H(x)$ defines a smooth map
-whose differential geometry provides a rich set of observables:
+% --- 1.2 Prior Work ---
+\subsection{Prior Work}\label{subsec:prior_work}
 
+QCML was introduced by Musaelian et al.~\cite{musaelian2024} as a
+practical machine learning framework inspired by quantum cognition, the
+hypothesis that human decision-making follows quantum probability
+rather than classical probability~\cite{busemeyer2012}.  Candelori et
+al.~\cite{candelori2025} demonstrated that QCML encodes data as
+quantum geometry, showing that the quantum metric tensor captures the
+intrinsic dimension of datasets robustly even under noise.  Abanov et
+al.~\cite{abanov2025} developed the mathematical theory of this
+quantum geometry, including Berry curvature, Chern numbers, and the
+matrix Laplacian, providing the formal tools we employ.
+
+In the financial domain, Samson et al.~\cite{samson2024} applied QCML
+to financial forecasting, demonstrating its ability to accommodate
+large numbers of features with logarithmic scaling.  Rosaler et
+al.~\cite{rosaler2025} applied QCML to supervised similarity learning
+for corporate bonds, showing advantages over tree-based methods in
+high-yield markets.  Samson et al.~\cite{samson2025} extended QCML
+similarity to firm linkages, constructing profitable momentum spillover
+strategies.  Di~Caro et al.~\cite{dicaro2025} applied QCML to
+biomedical prediction, demonstrating superior performance in
+high-dimensional, low-sample-size settings.
+
+Classical regime detection originates with Hamilton's Markov-switching
+autoregression~\cite{hamilton1989}, and Adams and
+MacKay~\cite{adams_mackay2007} introduced BOCPD for online changepoint
+detection.  Supervised classifiers achieve high in-sample accuracy but
+require labeled data and are prone to overfitting on rare events.
+
+The gap we address is that no prior work has extracted geometric
+observables from QCML-induced quantum geometry for time-series regime
+detection.
+
+% --- 1.3 Problem Statement ---
+\subsection{Problem Statement and Goals}\label{subsec:problem}
+
+\paragraph{Research question.}  Can geometric observables derived from
+QCML-induced quantum geometry detect financial regime transitions
+without labeled data?
+
+\paragraph{Objectives.}
 \begin{enumerate}
-\item The \emph{Fubini--Study metric tensor} $g_{ab}$ (the real part of
-  the Fubini--Study metric pulled back to $\R^d$) endows the data
-  manifold with a natural Riemannian structure, replacing the ad hoc
-  Euclidean metric.
-\item The \emph{Berry curvature} $F_{ab}$ (the antisymmetric,
-  imaginary part) \cite{wilczek_shapere1989} encodes information about
-  the non-trivial geometry of the ground-state bundle over parameter
-  space.  For closed surfaces, its integral yields integer-valued Chern
-  numbers; for rolling windows over open domains, it provides a
-  continuous curvature signal.
-\item The \emph{spectral gap}, \emph{fidelity}, and \emph{Fisher
-  information} observables probe different aspects of the manifold's
-  local and global structure, providing complementary detection
-  channels.
+\item[\textbf{O1.}] Construct a Riemannian geometry over financial time
+  series via the QCML error Hamiltonian framework.
+\item[\textbf{O2.}] Derive scalar observables (Berry curvature rate,
+  QFI determinant, multi-lag fidelity) from this geometry.
+\item[\textbf{O3.}] Validate against classical and supervised baselines
+  on 12 historical crises across multiple assets.
 \end{enumerate}
 
-\paragraph{Contributions.}
+% --- 1.4 Contributions ---
+\subsection{Contributions}\label{subsec:contributions}
+
 \begin{enumerate}
-\item \textbf{The geometry.}  We construct the full Riemannian
-  geometry of a financial data manifold via a parameterized error
-  Hamiltonian, including the Fubini--Study metric, Berry curvature,
-  Christoffel symbols, Ricci scalar, spectral gap, and Fubini--Study
-  distances (Section~\ref{sec:geometry}).
-\item \textbf{Geometric observables.}  The geometry induces a family of
-  scalar observables---Berry phase rate, Fisher information
-  pseudo-determinant, curvature integrals, multi-lag fidelity---that
-  summarize local and global manifold structure at each point in time
-  (Section~\ref{sec:observables}).
-\item \textbf{Empirical validation.}  In a comparison of 16~methods
-  across 12~historical crises, the best geometric observables are
-  competitive with---though do not individually exceed---the supervised
-  Random Forest baseline.  Our key finding is
-  \emph{complementarity}: geometric and supervised methods detect
-  structurally different crisis types, and a simple hybrid ensemble
-  nearly doubles out-of-sample performance relative to either approach
-  alone (Section~\ref{sec:experiments}).
+\item \textbf{First application of QCML geometric observables to
+  financial regime detection.}  We extract Berry curvature, quantum
+  metric, and spectral gap from QCML-induced geometry and show they
+  carry rich information about market regime structure.
+
+\item \textbf{Three novel observables.}  Berry Phase Rate, QFI
+  Determinant, and Multi-Lag Fidelity probe distinct geometric aspects
+  of regime transitions (curvature change, manifold volume, state
+  stability).
+
+\item \textbf{Empirical evidence of complementarity.}  QCML observables
+  and supervised methods detect structurally different crisis types; a
+  hybrid ensemble nearly doubles out-of-sample performance.
+
+\item \textbf{Cross-asset generalization.}  QCML observables
+  generalize across five equity ETFs, with Multi-Lag Fidelity
+  significantly outperforming Random Forest ($d = 1.44$ vs.\
+  $d = 0.88$, Friedman $p < 0.0001$).
 \end{enumerate}
 
 
 % =============================================================================
-% 2. BACKGROUND AND RELATED WORK
+% 2. THEORETICAL FRAMEWORK
 % =============================================================================
-\section{Background and Related Work}\label{sec:background}
+\section{Theoretical Framework}\label{sec:theory}
 
-\subsection{Classical Regime Detection}\label{subsec:classical_rd}
+% --- 2.1 Quantum Foundations in QCML ---
+\subsection{Quantum Foundations in QCML}\label{subsec:qcml_foundations}
 
-The regime-switching framework originates with Hamilton's Markov-switching
-autoregression \cite{hamilton1989}, in which a latent discrete state
-governs the parameters of an observed process.  The two-state Gaussian
-HMM remains a workhorse, estimating $P(\text{high-vol state}\,|\,r_t)$
-via the Baum--Welch algorithm.  CUSUM statistics \cite{page1954} provide
-a nonparametric alternative, accumulating deviations
-$S_t = \max(0,\, S_{t-1}+|r_t|-k)$ and flagging $S_t>h$ as a
-changepoint.  Rolling volatility z-scores are perhaps the simplest
-approach: one computes
-$z_t = (\sigma^{\text{short}}_t - \mu^{\text{long}}_t)/\sigma^{\text{long}}_t$
-and applies a threshold.  Supervised classifiers (Random Forest,
-gradient-boosted trees) can achieve high in-sample accuracy but require
-labeled data and are prone to overfitting on rare events
-\cite{gu2020_ml_finance}.
+We work in a finite-dimensional Hilbert space
+$\calH \cong \C^n$~\cite{candelori2025,abanov2025}.  A \emph{state}
+is a unit vector $\ket{\psi}\in\calH$ with $\braket{\psi}{\psi}=1$,
+and an \emph{observable} is a Hermitian operator $A = A^\dagger$ acting
+on $\calH$.  The expectation value
+$\langle A \rangle = \bra{\psi}A\ket{\psi}$ is a real number, but
+unlike classical statistics, the outcome carries intrinsic uncertainty
+governed by the operator's spectrum.
 
-\paragraph{Bayesian online changepoint detection.}
-Adams and MacKay \cite{adams_mackay2007} introduced Bayesian Online
-Changepoint Detection (BOCPD), which maintains a posterior distribution
-over the \emph{run length}---the time since the last changepoint---and
-updates it recursively as new observations arrive.  Extensions to
-multivariate settings and non-exponential-family likelihoods have been
-explored by Knoblauch and Damoulas \cite{knoblauch2018}.  While BOCPD
-provides principled uncertainty quantification over changepoint timing,
-it remains a distributional method operating in flat Euclidean space.
-
-All of these methods treat features as elements of a flat Euclidean
-space.  Our approach differs by constructing a learned Riemannian
-manifold whose curvature and topology encode structural information
-about the market state---and whose geometric observables, as we show,
-change sharply at regime boundaries.
-
-\subsection{Spectral Metric Learning}\label{subsec:qiml}
-
-The QCML framework \cite{qcml_ref} embeds classical data into the
-mathematical structures of spectral theory.  Each data point
-$x\in\R^d$ is associated with a Hermitian matrix $H(x)$ whose
-eigenvector $\ket{\psi(x)}$ serves as a nonlinear feature map
-$\R^d \to \CP^{n-1}$.  This is conceptually analogous to kernel
-methods---the Fubini--Study metric induces a positive-definite kernel
-$K(x,y) = |\braket{\psi(x)}{\psi(y)}|^2$---but additionally provides
-geometric structure (metric tensor, curvature, topological invariants)
-absent from standard kernel machines.  We stress that this construction
-is purely mathematical: while we borrow notation and terminology from
-quantum mechanics for historical reasons ($\ket{\psi}$, ``Hamiltonian'',
-``ground state''), the framework involves no quantum physics.
-
-\subsection{Topological Data Analysis in Finance}\label{subsec:tda}
-
-Topological data analysis (TDA) uses persistent homology to detect
-early warning signals of market crashes.  Gidea and Katz
-\cite{gidea_katz2018} computed Betti numbers from sliding-window
-point clouds of daily returns, showing that persistent homology norms
-spike $\sim$5 trading days before crashes.  Gidea \cite{gidea2017}
-extended this to financial correlation networks.  Our approach differs
-in that we extract topology from a \emph{learned} spectral
-structure (Berry curvature and Chern numbers of a parameterized
-eigenproblem) rather than from point-cloud pairwise distances,
-providing a richer geometric structure (metric tensor, curvature,
-spectral gap) beyond topology alone.
-
-\subsection{Deep Learning Approaches to Regime Detection}\label{subsec:dl_rd}
-
-Deep learning methods---including LSTMs \cite{hochreiter1997}, Temporal
-Convolutional Networks \cite{bai2018}, Transformer-based architectures,
-and autoencoder-based anomaly detection \cite{sakurada2014}---have been
-applied to regime detection.  While attention mechanisms can capture
-long-range dependencies, these approaches remain fundamentally
-supervised, requiring labeled data and tending to overfit on the small
-number of historical crises available.  Our geometric observables are
-unsupervised, detecting regime transitions as intrinsic geometric
-singularities without labeled training data.
-
-\subsection{Geometric Methods in Finance}\label{subsec:geom_finance}
-
-Information geometry \cite{amari_nagaoka2000} studies the differential
-geometry of statistical models.  The Fisher information metric on the
-space of probability distributions has been applied to financial time
-series analysis \cite{brody_hughston2001}, where geodesic distances
-between estimated distributions measure regime dissimilarity.  Our metric $g_{ab}$ is the natural generalization of the Fisher
-metric to the projective Hilbert space setting: when the parametric
-family $\ket{\psi(x)}$ is interpreted as a statistical model (via
-Born's rule), $g_{ab}$ reduces to $\frac{1}{4}$ times the Fisher
-information matrix \cite{zanardi2007}.
-
-\paragraph{Rough paths and path signatures.}
-The theory of rough paths \cite{lyons1998} provides a coordinate-free
-description of irregular paths, and the \emph{path signature}---the
-iterated integrals of a path---serves as a universal nonlinear feature
-map.  Chevyrev and Kormilitzin \cite{chevyrev2016} applied signatures to
-sequential data classification, and Lyons et al.\ \cite{lyons2020}
-demonstrated their effectiveness for financial time series analysis.  The
-path signature captures order-dependent information (lead-lag
-relationships) that Euclidean features miss.  Our approach is
-complementary: while signatures characterize the path in a feature space,
-our geometry characterizes the \emph{manifold structure} induced by
-projecting into Hilbert space.
-
-\subsection{Spectral Methods in Finance}\label{subsec:quantum_finance}
-
-Several authors have applied mathematical structures from quantum theory
-to finance, including path-integral option pricing \cite{baaquie2004}
-and quantum probability models for decision-making
-\cite{haven_khrennikov2013}.  Our work is distinct from these in that
-we make no claim about quantum mechanics governing markets.  We use the
-\emph{mathematical machinery} of Hilbert spaces, Hermitian operators,
-and Berry phases purely as a structured nonlinear embedding that
-provides geometric tools (metric tensor, curvature, spectral gap)
-unavailable in flat feature spaces.  The term ``quantum'' in our
-framework name (QCML) is a historical artifact reflecting the origin
-of these mathematical tools; the method itself is entirely classical.
-
-% =============================================================================
-% 3. QCML-INDUCED MARKET GEOMETRY
-% =============================================================================
-\section{Learned Market Geometry}\label{sec:geometry}
-
-The central mathematical object of this paper is a Riemannian manifold
-learned from financial data.  We construct it by lifting the feature
-space into a projective Hilbert space via a parameterized error
-Hamiltonian, and then extracting the induced geometric
-structure---Fubini--Study metric, Berry curvature, spectral gap, and
-higher invariants---as properties of the market state space.  All
-constructions are implemented in the \texttt{QCMLGeometry} class; we
-include code-level references for reproducibility.
-
-\subsection{Error Hamiltonian and Quasi-Coherent States}
-
-Let $\{A_k\}_{k=1}^d$ be a family of $n\times n$ Hermitian operators
-(observables) learned from data.  Given a data point $x\in\R^d$, we
-define the \emph{error Hamiltonian}:
-
+Given a data point $x = (x_1,\ldots,x_d)\in\R^d$ and a set of learned
+Hermitian operators $\{A_k\}_{k=1}^d$, the QCML \emph{error
+Hamiltonian}~\cite{candelori2025,musaelian2024} is:
 \begin{equation}\label{eq:hamiltonian}
   H(x) = \frac{1}{2}\sum_{k=1}^{d} (A_k - x_k\, I)^2\,,
 \end{equation}
-where $I$ is the $n\times n$ identity matrix.  The Hamiltonian
-$H(x)$ is Hermitian and positive semi-definite by construction.
-Intuitively, $H(x)$ measures the collective ``error'' between the
-observables $\{A_k\}$ and the target eigenvalues $\{x_k\}$: a data
-point $x$ that is well-represented by the operators yields a small
-ground state energy.
+where $I$ is the identity.  The Hamiltonian $H(x)$ is Hermitian and
+positive semi-definite, measuring the collective ``error'' between the
+operators $\{A_k\}$ and the target values $\{x_k\}$.
 
-\begin{definition}[Quasi-coherent state]\label{def:qcs}
+\begin{definition}[Quasi-coherent state~\cite{candelori2025}]
+\label{def:qcs}
 The \emph{quasi-coherent state} at $x$ is the ground state of $H(x)$:
 \begin{equation}\label{eq:ground_state}
   \ket{\psi(x)} = \argmin_{\ket{\phi},\,\|\phi\|=1}
@@ -369,520 +250,236 @@ The \emph{quasi-coherent state} at $x$ is the ground state of $H(x)$:
 \end{definition}
 
 The map $x\mapsto\ket{\psi(x)}$ is a smooth embedding
-$\R^d\hookrightarrow\CP^{n-1}$ wherever the ground state is
-non-degenerate (i.e., the spectral gap $\Delta(x)>0$).  This map lifts
-each market observation into the projective Hilbert space, endowing the
-data manifold with Riemannian and topological geometry.
+$\R^d\hookrightarrow\CP^{n-1}$ wherever the spectral gap
+$\Delta(x) = E_1(x) - E_0(x) > 0$~\cite{candelori2025,abanov2025}.
+This QCML embedding lifts each data point into projective Hilbert
+space, endowing the data manifold with quantum geometry.
 
-\begin{theorem}[Smoothness of the QCML embedding]\label{thm:smoothness}
-Let $\{A_k\}_{k=1}^d$ be Hermitian operators and let $H(x)$ be the error
-Hamiltonian \eqref{eq:hamiltonian}.  If the spectral gap
-$\Delta(x) = E_1(x) - E_0(x) > 0$ for all $x$ in an open set
-$U\subset\R^d$, then:
-\begin{enumerate}
-\item The ground state map $x \mapsto \ket{\psi(x)} \in \CP^{n-1}$ is
-  $C^\infty$ on $U$.
-\item The metric tensor $g_{ab}(x)$ and Berry curvature
-  $F_{ab}(x)$ are $C^\infty$ on $U$.
-\item All geometric observables derived from $g_{ab}$ and $F_{ab}$
-  (Christoffel symbols, Ricci scalar, Chern numbers) are $C^\infty$ on
-  $U$.
-\end{enumerate}
-\end{theorem}
-
-\noindent The proof follows from the implicit function theorem applied to
-the eigenvalue equation $H(x)\ket{\psi(x)} = E_0(x)\ket{\psi(x)}$: the
-non-degeneracy condition $\Delta>0$ ensures that the ground state depends
-smoothly on parameters.  See Appendix~\ref{sec:proofs} for details.
-
-\paragraph{Operator learning.}  The operators $\{A_k\}$ are constructed
-from the data covariance structure.  In the \emph{PCA-inspired} method,
-we compute the principal components of the data matrix $X$, then scale
-Pauli-basis operators by the corresponding eigenvalues:
-$A_k = \sqrt{\lambda_k}\,\sigma_k$, where $\sigma_k$ are tensor
-products of Pauli matrices (for $n=4$, the two-qubit basis
-$\{I\otimes I, I\otimes X, \ldots, Z\otimes Z\}$).  Alternative
-methods include random Hermitian matrices and pure Pauli bases.
-
-\subsection{Fubini--Study Metric Tensor}
-
-The pullback of the Fubini--Study metric \cite{provost_vallee1980} to $\R^d$ defines the
-\emph{metric tensor}:
-
+The pullback of the Fubini--Study metric~\cite{provost_vallee1980} to
+$\R^d$ defines the \emph{quantum metric tensor} (the quantum analogue
+of the classical Fisher information metric~\cite{amari_nagaoka2000}):
 \begin{equation}\label{eq:metric}
   g_{ab}(x) = \mathrm{Re}\,\braket{\partial_a\psi}{\partial_b\psi}
   - \braket{\partial_a\psi}{\psi}\braket{\psi}{\partial_b\psi}\,,
 \end{equation}
-where $\partial_a\equiv\partial/\partial x^a$.  This is a real,
-symmetric, positive semi-definite tensor that generalizes the Fisher
-information metric to the Hilbert space setting.  It measures the
-sensitivity of the ground state to infinitesimal changes in the
-data coordinates: large $g_{ab}$ indicates that nearby data points map
-to distant states in $\CP^{n-1}$.
-
-Partial derivatives are computed numerically via central finite
-differences:
-\begin{equation}\label{eq:central_diff}
-  \ket{\partial_a\psi(x)} \approx
-  \frac{\ket{\psi(x+\epsilon\, e_a)}-\ket{\psi(x-\epsilon\, e_a)}}{2\epsilon}\,,
-\end{equation}
-with $\epsilon=10^{-5}$.
-
-\subsection{Berry Curvature}
-
-The antisymmetric part of the geometric tensor defines the
-\emph{Berry curvature} \cite{berry1984,simon1983}:
-
+and the \emph{Berry curvature}~\cite{berry1984,abanov2025}:
 \begin{equation}\label{eq:berry}
   F_{ab}(x) = -2\,\mathrm{Im}\,\braket{\partial_a\psi}{\partial_b\psi}\,.
 \end{equation}
-This is a closed 2-form on $\R^d$ that encodes topological information.
-While the metric tensor $g_{ab}$ is sensitive to parameterization, the
-integral of $F_{ab}$ over closed surfaces yields topological invariants
-(Chern numbers) that are integers \cite{nakahara2003} and therefore robust to smooth
-deformations.
+Together, $g_{ab}$ and $F_{ab}$ form the real and imaginary parts of
+the quantum geometric tensor, the central mathematical object of
+QCML geometry~\cite{abanov2025}.  Candelori et
+al.~\cite{candelori2025} showed that the rank of $g_{ab}$ at a point
+$x$ equals the local intrinsic dimension of the data manifold, and
+that the spectral gap of $g_{ab}$ robustly estimates global intrinsic
+dimension even under noise.
 
-For two-dimensional subspaces, we also implement a \emph{plaquette}
-(Wilson loop) method that is more numerically stable for computing Chern
-numbers.  The Berry phase around a plaquette with corners
-$x_{00}, x_{10}, x_{11}, x_{01}$ is:
-\begin{equation}\label{eq:plaquette}
-  \gamma = \mathrm{Im}\,\log\!\bigl(
-  \braket{\psi_{00}}{\psi_{10}}
-  \braket{\psi_{10}}{\psi_{11}}
-  \braket{\psi_{11}}{\psi_{01}}
-  \braket{\psi_{01}}{\psi_{00}}
-  \bigr)\,,
-\end{equation}
-where the argument of the logarithm is the Wilson loop operator.  The
-Berry curvature is then $F_{ab}\approx\gamma/\epsilon^2$.
+% --- 2.2 Quantum Cognition and QCML ---
+\subsection{Quantum Cognition and QCML}\label{subsec:qcml_cognition}
 
-\begin{theorem}[Chern number quantization]\label{thm:chern}
-Let $S\subset\R^d$ be a closed, oriented 2-surface in parameter space
-over which the ground state is non-degenerate ($\Delta>0$ on $S$).
-Then the first Chern number
-\begin{equation}\label{eq:chern_thm}
-  C_1 = \frac{1}{2\pi}\oint_S F_{ab}\, dx^a \wedge dx^b \;\in\; \mathbb{Z}
-\end{equation}
-is an integer.  In particular, $C_1$ is invariant under smooth
-deformations of the Hamiltonian parameters that preserve $\Delta>0$.
+The intellectual foundation of QCML lies in quantum cognition: the
+hypothesis that states of knowledge are naturally represented as
+vectors in a Hilbert space, with questions and observables as
+operators~\cite{busemeyer2012,musaelian2024}.  Unlike classical
+probability, where concepts are represented by sets and the complexity
+of their description grows exponentially with the number of features,
+quantum representations achieve a logarithmic economy---the number of
+parameters in a QCML model scales quadratically with the number of
+features, not exponentially~\cite{musaelian2024}.
+
+This has practical consequences.  Classical machine learning requires
+exponentially more data as features increase (the curse of
+dimensionality).  QCML, by encoding features as non-commuting
+operators rather than as coordinates in a probability simplex, captures
+interactions between features in the off-diagonal structure of the
+Hermitian operators without explicitly enumerating all
+combinations~\cite{musaelian2024,candelori2025}.  The ``uncertainty''
+inherent in quantum representations is not a bug but a feature: it
+enables abstraction, generalization, and the formation of concepts
+from limited data~\cite{musaelian2024}.
+
+Training a QCML model involves learning the operators $\{A_k\}$ by
+iteratively computing the ground state $\ket{\psi(x)}$ of the error
+Hamiltonian and updating $A_k$ via gradient descent to reduce the
+ground state energy~\cite{musaelian2024,samson2024}.
+
+% --- 2.3 QCML Perspective on Regime Detection ---
+\subsection{QCML Perspective on Regime Detection}%
+\label{subsec:qcml_regime}
+
+In our application, financial features are embedded as Hermitian
+operators in a Hilbert space via the error Hamiltonian~\eqref{eq:hamiltonian}.
+The resulting quasi-coherent states $\ket{\psi(x_t)}$ trace a path
+through $\CP^{n-1}$ as market conditions evolve.  We interpret regime
+detection through the lens of QCML geometry:
+
+\begin{itemize}
+\item A \textbf{regime} is a region of feature space where the quantum
+  geometric properties (metric, curvature, spectral gap) are
+  approximately stationary.
+
+\item A \textbf{regime transition} is a geometric phase change:
+  Berry curvature spikes, the spectral gap collapses, or state
+  fidelity drops rapidly---analogous to quantum phase transitions in
+  condensed matter~\cite{sachdev2011}.
+\end{itemize}
+
+The following formal results establish the mathematical foundations.
+
+\begin{theorem}[Smoothness of the QCML embedding]\label{thm:smoothness}
+Let $\{A_k\}_{k=1}^d$ be Hermitian operators and let $H(x)$ be the
+error Hamiltonian~\eqref{eq:hamiltonian}.  If the spectral gap
+$\Delta(x) > 0$ for all $x$ in an open set $U\subset\R^d$, then:
+\begin{enumerate}
+\item The ground state map
+  $x \mapsto \ket{\psi(x)} \in \CP^{n-1}$ is $C^\infty$ on $U$.
+\item The quantum metric tensor $g_{ab}(x)$ and Berry curvature
+  $F_{ab}(x)$ are $C^\infty$ on $U$.
+\item All geometric observables derived from $g_{ab}$ and $F_{ab}$
+  are $C^\infty$ on $U$.
+\end{enumerate}
 \end{theorem}
+\noindent\emph{Proof.}  By the implicit function theorem applied to
+the eigenvalue equation; see Appendix~\ref{sec:proofs}.
 
-\noindent This is a consequence of the Chern--Weil theorem applied to
-the $U(1)$ line bundle over $S$ defined by the ground state
-$\ket{\psi(x)}$; see Appendix~\ref{sec:proofs} for the proof.
-
-\paragraph{Important caveat: open windows.}
-The quantization theorem requires integration over a \emph{closed}
-surface $S$.  In our empirical application, we compute curvature
-integrals over \emph{rolling windows}---open subsets of parameter
-space---yielding \emph{non-integer} values (e.g., 0.82, 1.15).  The
-topological protection argument therefore does not strictly apply to
-our rolling estimates.  Nevertheless, the curvature integrals remain
-informative: their magnitude reflects the degree of geometric change
-within each window, and sharp transitions between windows are
-empirically associated with regime boundaries.  We use the term
-``Chern number'' loosely to refer to these curvature integrals,
-acknowledging that strict topological quantization holds only in the
-closed-surface limit.
-
-\subsection{Spectral Gap}
-
-The \emph{spectral gap} at $x$ is the difference between the two lowest
-eigenvalues of the error Hamiltonian:
-\begin{equation}\label{eq:gap}
-  \Delta(x) = E_1(x) - E_0(x)\,.
+\begin{theorem}[Chern number quantization~\cite{abanov2025}]%
+\label{thm:chern}
+Let $S\subset\R^d$ be a closed, oriented 2-surface over which
+$\Delta > 0$.  Then the first Chern number
+\begin{equation}\label{eq:chern_thm}
+  C_1 = \frac{1}{2\pi}\oint_S F_{ab}\, dx^a \wedge dx^b
+  \;\in\; \mathbb{Z}
 \end{equation}
-A large gap indicates a well-defined, non-degenerate ground state and
-hence stable geometry.  A closing gap signals the approach to a
-\emph{critical point}---in our financial analogy, a regime
-transition \cite{sachdev2011}.  The spectral gap also controls the
-accuracy of the adiabatic approximation: when $\Delta\to 0$, the system
-is susceptible to non-adiabatic transitions between eigenstates.
+is an integer, invariant under smooth deformations preserving
+$\Delta > 0$.
+\end{theorem}
+\noindent\emph{Proof.}  Chern--Weil theorem applied to the $U(1)$
+line bundle; see Appendix~\ref{sec:proofs}.
+
+\paragraph{Important caveat.}
+In our empirical application, we compute curvature integrals over
+\emph{rolling windows}---open subsets of parameter space---yielding
+non-integer values.  The topological protection argument (noise cannot
+change an integer) does not strictly apply.  Nevertheless, the
+magnitude of these curvature integrals is empirically informative, and
+sharp changes between windows are associated with regime boundaries.
 
 \begin{theorem}[Curvature--gap bound]\label{thm:curvature_gap}
-For any pair of indices $(a,b)$ with $a\neq b$, the Berry curvature is
-bounded by the spectral gap:
+For any pair of indices $(a,b)$ with $a\neq b$:
 \begin{equation}\label{eq:curvature_gap_bound}
   |F_{ab}(x)| \;\leq\; \frac{K}{\Delta(x)^2}\,,
 \end{equation}
-where $K = 2\sum_{n\neq 0}
-\bigl|\dbraket{n}{\partial_a H}{0}\bigr|\,
-\bigl|\dbraket{n}{\partial_b H}{0}\bigr|$
-depends on the Hamiltonian derivatives but not on the gap.
+where $K$ depends on the Hamiltonian derivatives but not on the gap.
 \end{theorem}
-
-\noindent This bound follows from first-order perturbation theory for the
-Berry connection (see Appendix~\ref{sec:proofs}).  It formalizes the
-mechanism underlying curvature-based regime detection: as the spectral
-gap $\Delta\to 0$ at a phase boundary, the Berry curvature can diverge
-as $\Delta^{-2}$, producing the sharp spikes that our detectors identify.
-The converse also holds qualitatively: in stable regimes where $\Delta$
-is large, curvature fluctuations are suppressed.
-
-\subsection{Fisher Information Susceptibility}
-
-The \emph{Fisher information susceptibility} is defined as the trace
-of the metric tensor:
-\begin{equation}\label{eq:qfi}
-  \chi(x) = \tr\bigl(g_{ab}(x)\bigr) = \sum_a g_{aa}(x)\,.
-\end{equation}
-This scalar quantity equals $\frac{1}{4}$ times the total Fisher
-information and measures the aggregate sensitivity of the ground state
-to parameter changes.  Near regime transitions, the market state becomes
-maximally sensitive to perturbations, causing $\chi$ to spike---analogous
-to divergent susceptibility at critical points in statistical mechanics
-\cite{zanardi2007}.
-
-We further define the \emph{QFI pseudo-determinant} as
-\begin{equation}\label{eq:qfi_det}
-  \det^+(g) = \prod_{\lambda_i > \epsilon} \lambda_i\,,
-\end{equation}
-where $\{\lambda_i\}$ are the eigenvalues of $g_{ab}$ and
-$\epsilon=10^{-10}$ filters near-zero eigenvalues for numerical
-stability.  The pseudo-determinant measures the volume element of the
-non-degenerate subspace of the data manifold: a collapsing
-pseudo-determinant indicates that the effective dimensionality of the
-market state is decreasing (approaching a phase boundary), while a
-diverging pseudo-determinant indicates rapid expansion of the accessible
-state space.
+\noindent This bound formalizes the detection mechanism: as the
+spectral gap $\Delta\to 0$ at a regime boundary, Berry curvature can
+diverge as $\Delta^{-2}$, producing the spikes our detectors
+identify.  See Appendix~\ref{sec:proofs} for the proof.
 
 \begin{proposition}[QFI volume interpretation]\label{prop:qfi_volume}
-The pseudo-determinant $\det^+(g)$ equals the squared Riemannian volume
-element of the non-degenerate subspace of the data manifold.
-Specifically, if $g_{ab}$ has $r$ positive eigenvalues
-$\lambda_1\geq\cdots\geq\lambda_r > 0$, then
-\begin{equation}
-  \det^+(g) = \prod_{i=1}^r \lambda_i = \bigl(\mathrm{vol}_r\bigr)^2\,,
-\end{equation}
-where $\mathrm{vol}_r$ is the $r$-dimensional volume form induced by
-the metric restricted to the non-degenerate subspace.  Thus:
+The pseudo-determinant $\det^+(g) = \prod_{\lambda_i > \epsilon}
+\lambda_i$ equals the squared Riemannian volume element of the
+non-degenerate subspace of the quantum metric.  Thus:
 \begin{enumerate}
-\item $\det^+(g) \to 0$ indicates dimensional collapse of the accessible
-  state space (approaching a phase boundary).
-\item Large $\det^+(g)$ indicates the market state is exploring a
-  high-dimensional region of state space (stable, multi-factor
-  regime).
+\item $\det^+(g) \to 0$ indicates dimensional collapse
+  (approaching a phase boundary).
+\item Large $\det^+(g)$ indicates the state is exploring a
+  high-dimensional region of state space (stable regime).
 \end{enumerate}
 \end{proposition}
-
-\noindent The proof is a direct consequence of the relationship between
-the determinant of a metric tensor and the Riemannian volume element;
-see Appendix~\ref{sec:proofs}.
-
-\subsection{Fubini--Study Distances}
-
-The \emph{Fubini--Study distance} between two data points is:
-\begin{equation}\label{eq:fs_distance}
-  d_{\text{FS}}(x_1, x_2) = \arccos\!\bigl(|\braket{\psi(x_1)}{\psi(x_2)}|\bigr)\,.
-\end{equation}
-This gives a natural distance on the data manifold that respects the
-Riemannian geometry: data points in the same regime have high fidelity
-$|\braket{\psi(x_1)}{\psi(x_2)}|^2\approx 1$ and small $d_{\text{FS}}$,
-while points in different regimes have low fidelity and large
-$d_{\text{FS}}$.
-
-\subsection{Higher Geometry: Christoffel Symbols and Ricci Scalar}
-
-From the metric tensor $g_{ab}$, we compute the Levi-Civita connection
-(Christoffel symbols):
-\begin{equation}\label{eq:christoffel}
-  \Gamma^\sigma_{\mu\nu}(x) = \frac{1}{2}\, g^{\sigma\rho}\!\left(
-  \partial_\mu g_{\rho\nu} + \partial_\nu g_{\rho\mu}
-  - \partial_\rho g_{\mu\nu}\right),
-\end{equation}
-and the Ricci scalar curvature:
-\begin{equation}\label{eq:ricci}
-  R(x) = g^{\mu\nu} R_{\mu\nu}\,,
-\end{equation}
-where $R_{\mu\nu}=R^\sigma{}_{\mu\sigma\nu}$ is the Ricci tensor
-obtained by contracting the Riemann curvature tensor.  We employ a
-\emph{hierarchical finite difference} scheme with three levels of
-step size ($\epsilon_{\text{metric}}=10^{-5}$,
-$\epsilon_{\text{Christoffel}}=10^{-4}$,
-$\epsilon_{\text{Ricci}}=10^{-3}$) to avoid differentiating numerical
-noise.
-
-Large $|R|$ indicates regions of high intrinsic curvature on the data
-manifold, corresponding to nonlinear, unstable dynamics.
-
-The geometric objects defined above---metric tensor $g_{ab}$, Berry
-curvature $F_{ab}$, spectral gap $\Delta$, Ricci scalar $R$, Fisher
-information matrix $\calF$---constitute a complete
-differential-geometric description of the learned market manifold.  In
-subsequent sections, we show that the observables
-(Section~\ref{sec:observables}) derived from this geometry carry rich
-information about market regime structure.
+\noindent\emph{Proof.}  Direct from the relationship between the
+metric determinant and Riemannian volume; see
+Appendix~\ref{sec:proofs}.
 
 
 % =============================================================================
-% 4. GEOMETRIC OBSERVABLES
+% 3. MODEL AND METHODS
 % =============================================================================
-\section{Geometric Observables}\label{sec:observables}
+\section{Model and Methods}\label{sec:methods}
 
-The geometry defined in Section~\ref{sec:geometry}
-induces a family of scalar observables that summarize the local and
-global structure of the market manifold at each point in time.  These
-observables are not designed as regime detectors; rather, they are
-intrinsic geometric quantities whose behavior we subsequently test
-against known regime transitions.
+% --- 3.1 Model Description ---
+\subsection{Model Description}\label{subsec:model}
 
-\subsection{Curvature Integrals (Rolling Chern Numbers)}
+\paragraph{Inputs.}
+Daily OHLCV data for equity ETFs are transformed into five normalized
+features (log returns, 20-day rolling volatility, z-scored volume,
+relative strength, momentum), reduced to $p = 15$ principal components,
+and $L^2$-normalized.
 
-The \emph{first Chern number} of the line bundle associated with the
-ground state $\ket{\psi(x)}$ over a closed 2-surface $\Sigma$ is:
-\begin{equation}\label{eq:chern}
-  C = \frac{1}{2\pi}\int_\Sigma F_{ab}\, dx^a\wedge dx^b\,.
-\end{equation}
-For a \emph{closed} surface, $C$ is an integer---a topological
-invariant insensitive to smooth deformations.  In practice, however,
-we compute curvature integrals over \emph{rolling windows} of market
-data using either the plaquette (Wilson loop) method
-(Equation~\ref{eq:plaquette}) or trapezoidal integration of the Berry
-curvature.  Since rolling windows are open domains, the resulting
-values are non-integer (see the caveat in
-Section~\ref{sec:geometry}).  We retain the ``Chern number''
-terminology for convenience but emphasize that these are curvature
-integrals, not topological invariants in the strict sense.
+\paragraph{QCML embedding.}
+The $p$-dimensional feature vector $x_t$ at each time step is fed to
+the error Hamiltonian~\eqref{eq:hamiltonian} with $n \times n$
+Hermitian operators $\{A_k\}_{k=1}^p$ ($n = 8$ by default).  The
+ground state $\ket{\psi(x_t)}$ is computed via eigendecomposition
+of $H(x_t)$.
 
-A sharp change in the rolling curvature integral between consecutive
-windows empirically correlates with regime transitions, though the
-topological protection argument (noise cannot change an integer) does
-not strictly apply.
+\paragraph{Operator construction.}
+We use \emph{PCA-inspired} operators: Pauli-basis matrices (tensor
+products of Pauli matrices for $n = 2^q$) scaled by the PCA
+eigenvalues, $A_k = \sqrt{\lambda_k}\,\sigma_k$.  This approximates
+the data covariance structure in the QCML operator
+space~\cite{candelori2025}.  Full gradient-descent training of
+operators~\cite{musaelian2024,samson2024} is left for future work.
 
-\subsection{Curvature and Metric Observables}
+\paragraph{Outputs.}
+Three geometric observables are computed from the quantum geometry at
+each time step and converted to regime signals via adaptive
+thresholding.
+
+% --- 3.2 Observable Extraction ---
+\subsection{Observable Extraction}\label{subsec:observables}
+
+The QCML embedding induces a family of scalar observables that probe
+distinct aspects of the quantum geometry.
 
 \subsubsection{Berry Phase Rate}
-
-The \emph{Berry phase rate} measures the speed at which the system
-traverses topological phase boundaries:
-\begin{equation}
+The rate of Berry curvature change between consecutive time steps:
+\begin{equation}\label{eq:berry_rate}
   \dot{\gamma}(t) = |F_{01}(x_t) - F_{01}(x_{t-1})|\,,
 \end{equation}
-where $F_{01}$ is the Berry curvature in the first two principal
-component directions.  Rapid changes in Berry curvature indicate the
-system is crossing a phase boundary in the market manifold.
+where $F_{01}$ is the Berry curvature in the first two PCA directions.
+A spike in $\dot{\gamma}$ indicates the QCML state is crossing a
+geometric phase boundary.
 
-\subsubsection{Metric Condition Number}
-
-The condition number of the metric tensor,
-\begin{equation}
-  \kappa(g) = \frac{\lambda_{\max}(g)}{\lambda_{\min}(g)}\,,
+\subsubsection{QFI Determinant}
+The pseudo-determinant of the quantum metric tensor:
+\begin{equation}\label{eq:qfi_det}
+  \det^+(g(x_t)) = \prod_{\lambda_i > \epsilon} \lambda_i\,,
 \end{equation}
-measures the anisotropy of the data manifold.  High $\kappa$ indicates
-the manifold is anisotropically stretched---a geometric signature of
-regime transitions, which typically affect some market factors more than
-others.
-
-\subsection{Spectral Observables}
-
-\subsubsection{Spectral Gap}
-
-By analogy with phase transitions in statistical mechanics, where the
-spectral gap $\Delta=E_1-E_0$ closes at critical points
-\cite{sachdev2011}, we hypothesize that $\Delta(t)$ narrows before
-financial regime transitions.  A \emph{gap collapse} is detected when
-\begin{equation}
-  \Delta(t) < \bar{\Delta}_t - k\,\hat{\sigma}_{\Delta,t}\,,
-\end{equation}
-where $\bar{\Delta}_t$ and $\hat{\sigma}_{\Delta,t}$ are the rolling
-mean and standard deviation over a window of size $W$, and $k=2$
-is the collapse threshold in standard deviations.  A closing spectral
-gap signals the approach to a critical point of the market
-manifold---a regime boundary where the ground state becomes
-ill-defined.
-
-\subsubsection{Ground State Energy}
-
-The ground state energy $E_0(t)$ measures the ``distance'' of the
-current market state from the ideal configuration encoded by the
-operators.  We detect stress events when
-\begin{equation}
-  E_0(t) > \bar{E}_{0,t} + k\,\hat{\sigma}_{E_0,t}\,.
-\end{equation}
-Higher $E_0$ indicates that the market has moved to a region of feature
-space poorly represented by the learned operators---a geometric analog
-of distributional shift, reflecting departure from the manifold's
-low-energy basin.
-
-\subsubsection{Fidelity Decay Rate}
-
-The \emph{state fidelity} between consecutive states,
-\begin{equation}\label{eq:fidelity}
-  \mathcal{F}(t, t+\delta) = \bigl|\braket{\psi(x_t)}{\psi(x_{t+\delta})}\bigr|^2\,,
-\end{equation}
-measures the rate of state evolution.  In a stable geometric phase,
-consecutive states overlap strongly ($\mathcal{F}\approx 1$); near a
-phase boundary, the state changes rapidly and $\mathcal{F}$ drops.
-Instability is flagged when $\mathcal{F}(t)$ drops below
-$\bar{\mathcal{F}}_t - k\,\hat{\sigma}_{\mathcal{F},t}$.
+where $\epsilon = 10^{-10}$.  By Proposition~\ref{prop:qfi_volume},
+this measures the Riemannian volume element of the QCML data
+manifold.  Collapse signals approaching a phase boundary; expansion
+signals rapid state-space exploration.
 
 \subsubsection{Multi-Lag Fidelity}
-
-Rather than a single lag $\delta$, we compute fidelity at multiple lags
-$\delta\in\{1,3,5,10\}$ and form a weighted average infidelity:
-\begin{equation}
+Weighted average infidelity across multiple time lags:
+\begin{equation}\label{eq:multilag}
   \bar{\mathcal{I}}(t) = \sum_j w_j\,
   \bigl(1-|\braket{\psi(x_t)}{\psi(x_{t-\delta_j})}|^2\bigr)\,,
 \end{equation}
-with weights $[0.4, 0.3, 0.2, 0.1]$ favoring short lags.  Short lags
-detect fast crises; long lags detect gradual transitions.  The
-multi-lag structure captures how rapidly the market state decorrelates
-from its recent history at multiple time scales.
+with $\delta \in \{1,3,5,10\}$ days and weights
+$[0.4, 0.3, 0.2, 0.1]$.  Short lags detect fast crises; long lags
+detect gradual regime drift.  The multi-lag structure captures how
+rapidly the QCML state decorrelates from its recent history.
 
-\subsection{Information-Theoretic Observables}
+\subsubsection{Spectral Gap}
+The energy difference $\Delta(t) = E_1(t) - E_0(t)$ between the
+two lowest eigenvalues.  By analogy with quantum phase
+transitions~\cite{sachdev2011}, a closing gap signals the approach to
+a critical point where the ground state becomes ill-defined.
 
-The Fisher information susceptibility $\chi(x)=\tr(g_{ab}(x))$ and
-pseudo-determinant $\det^+(g)$ (defined in Section~\ref{sec:geometry})
-are information-theoretic summaries of the metric tensor.  The
-susceptibility measures aggregate state sensitivity to parameter
-changes, spiking near regime transitions analogously to divergent
-susceptibility at critical points \cite{zanardi2007}.  The
-pseudo-determinant measures the effective dimensionality of the
-state; its collapse signals that fewer market factors are actively
-driving dynamics---a hallmark of crisis contagion.
-
-\subsection{Multi-Scale Consensus and Composite Score}
-
-\subsubsection{Multi-Scale Chern Consensus}
-
-We compute Chern numbers at scales $w\in\{10,20,30,50,100\}$ and form a
-weighted consensus signal:
-\begin{equation}
-  S_{\text{cons}}(t) = \sum_{i} w_i\,
-  \frac{|\Delta C_t^{(w_i)}|}{\hat{\sigma}_{\Delta C}^{(w_i)}+\epsilon}\,,
-\end{equation}
-where $w_i$ are normalized scale weights.
-
-\subsubsection{Composite Score}
-
-All indicators are combined into a composite regime stress score.  Each
-indicator's time series is z-scored and combined with equal weights
-(default) or optimized weights:
-\begin{equation}
-  Z_{\text{comp}}(t) = \sum_i w_i\, \tilde{z}_i(t)\,,
-\end{equation}
-where $\tilde{z}_i$ is the z-scored indicator (with sign flip for
-spectral gap and fidelity, where lower values indicate more stress).
-
-
-% =============================================================================
-% 6. REGIME DETECTION AS GEOMETRIC PHASE CHANGE
-% =============================================================================
-\section{Regime Detection as Geometric Phase Change}\label{sec:detection}
-
-A \emph{regime}, in our geometric framework, is a connected region of
-the data manifold with approximately constant metric spectrum
-and topological charge.  A \emph{regime transition} is a trajectory
-$x(t)$ that crosses between regions with distinct curvature signatures
-or Chern numbers.  The observables defined in
-Section~\ref{sec:observables} are direct probes of this geometric
-change; in this section, we formalize how they are used for detection.
-
-\subsection{Rolling Chern Number and Transition Detection}
-
-\begin{criterion}[Regime transition]\label{crit:transition}
-A topological regime transition is declared at time $t$ if the rolling
-Chern number satisfies
-\begin{equation}\label{eq:transition_criterion}
-  |\Delta C_t| = |C_{[t-w,t]} - C_{[t-2w,t-w]}| > \tau\,,
-\end{equation}
-where $w$ is the window size and $\tau$ is an adaptive threshold.
-Events satisfying this criterion are classified as
-\textsf{REGIME\_CHANGE}; events with $|\Delta C_t|\leq\tau$ but
-$\max|F_{ab}|>3\sigma$ are classified as \textsf{EXTREME\_EVENT}; all
-others are \textsf{NORMAL\_FLUCTUATION}.
-\end{criterion}
-
-\subsection{Adaptive Thresholds and Confirmation}
-
-The raw Chern transition criterion can produce false positives during
-sustained high-volatility periods.  We implement several improvements:
-
-\begin{enumerate}
-\item \textbf{Adaptive thresholds.}  The threshold $\tau$ is modulated
-  by the ratio of short-term to long-term volatility of
-  $\Delta C$:
-  \[
-    \tau_t = \tau_0\,\bigl(1+\alpha\,
-    \max(0,\,\sigma^{\text{short}}_t/\sigma^{\text{long}}_t - 1)\bigr)
-    \cdot\sigma^{\text{long}}_t\,.
-  \]
-  In high-volatility regimes, $\tau_t$ increases, reducing false
-  positives.
-
-\item \textbf{Quantile thresholds.}  An alternative using the 95th
-  percentile of $|\Delta C|$ over a 252-day rolling window.
-
-\item \textbf{Multi-scale consensus.}  Chern numbers are computed at
-  multiple window sizes $w\in\{10,20,30,50\}$.  A regime transition is
-  confirmed only when at least 2 of 4 scales agree.  Scale weights are
-  dynamically adjusted, with default allocation
-  $[0.15, 0.30, 0.30, 0.25]$ favoring medium time scales.
-
-\item \textbf{Spike confirmation (persistence filter).}  Raw spike
-  detections must persist for $\geq 2$ consecutive days before
-  confirmation, filtering single-day noise.
-
-\item \textbf{Quantization.}  Since $C$ is theoretically an integer for
-  closed surfaces, we apply soft quantization
-  $\tilde{C} = (1-s)\,C + s\,\mathrm{round}(C)$ with strength
-  $s\in[0,1]$ to reduce estimation noise.
-\end{enumerate}
-
-\subsection{Detection Algorithm}
-
-Algorithm~\ref{alg:detection} summarizes the full detection pipeline.
-
-\begin{algorithm}[htb]
-\caption{Geometric Regime Detection Pipeline}\label{alg:detection}
-\begin{algorithmic}[1]
-\Require Feature matrix $X\in\R^{T\times d}$, Hilbert dimension $n$,
-  window sizes $\{w_i\}$, threshold $\tau$
-\Ensure Regime transition list $\mathcal{T}$, composite scores $Z(t)$
-\State \textbf{Preprocessing:} Standardize $X$; PCA to $p$
-  components; $L^2$-normalize rows
-\State \textbf{Operator learning:} Fit $\{A_k\}_{k=1}^p$ from
-  covariance eigenstructure
-\For{each time point $t=1,\ldots,T$}
-  \State Compute $H(x_t)$ via Equation~\ref{eq:hamiltonian}
-  \State Solve $\ket{\psi(x_t)}=$ ground state of $H(x_t)$
-  \State Record $E_0(t)$, $\Delta(t)$, $\mathcal{F}(t,t-1)$
-\EndFor
-\For{each window size $w_i$}
-  \State Compute rolling Chern $C^{(w_i)}(t)$ via plaquette method
-\EndFor
-\State Compute Berry phase rate $\dot{\gamma}(t)$
-\State Compute QFI susceptibility $\chi(t)=\tr(g_{ab}(x_t))$
-\State Compute QFI pseudo-determinant $\det^+(g(x_t))$
-\State Compute metric condition number $\kappa(g(x_t))$
-\State Form composite score $Z_{\text{comp}}(t)$ from z-scored
-  indicators
-\State Detect transitions $\mathcal{T}=\{t: |\Delta C_t|>\tau
-  \text{ and persistence} \geq 2\}$
-\State \Return $\mathcal{T}$, $Z_{\text{comp}}(t)$
-\end{algorithmic}
-\end{algorithm}
-
-
-% =============================================================================
-% 6. EMPIRICAL VALIDATION
-% =============================================================================
-\section{Empirical Validation}\label{sec:experiments}
-
+% --- 3.3 Experimental Setup ---
 \subsection{Experimental Setup}\label{subsec:setup}
 
 \paragraph{Data.}
-We use daily OHLCV data for SPY obtained from the Polygon API.  Five
-normalized features (log returns, 20-day rolling volatility, z-scored
-volume, relative strength, momentum) are reduced to 15 principal
-components, $L^2$-normalized, and fed to the QCML operator pipeline.
+Daily OHLCV data for SPY obtained from the Polygon API
+(2005--2024).  Multi-asset validation uses five ETFs: SPY, QQQ, IWM,
+EFA, and DIA, each analyzed independently.
 
 \paragraph{Crises.}
-We evaluate on 12 historical crises (2007--2023) spanning financial
-(GFC, Quant Meltdown, SVB), geopolitical (Downgrade, China, Brexit),
-flash crash (2010, Volmageddon), monetary (Fed Selloff, Repo, Rate
-Hikes), and pandemic (COVID) categories (Table~\ref{tab:crises}).
+We evaluate on 12 historical crises (2007--2023) spanning financial,
+geopolitical, flash crash, monetary, and pandemic categories
+(Table~\ref{tab:crises}).
 
 \begin{table}[htb]
 \centering
@@ -910,37 +507,28 @@ Crisis & Date & Type & Description \\
 \end{table}
 
 \paragraph{Methods.}
-We compare 17 methods: 7 classical/unsupervised baselines (Rolling Vol~Z,
-CUSUM, HMM, BOCPD~\cite{adams_mackay2007}, Isolation
-Forest~\cite{liu2008isolation}, Random Forest, Oracle RF) and 10
-geometry-induced observables (Chern, Berry Phase Rate, QFI Determinant,
-Multi-Lag Fidelity, Metric Condition Number, and five additional
-geometric observables).  BOCPD and Isolation Forest are unsupervised
-baselines from the changepoint and anomaly detection literature,
-respectively, providing a fairer comparison for our unsupervised geometric
-methods than the supervised RF.  All implement a common
-\texttt{BaseRegimeDetector} interface.  For each crisis, scores are split
-into $\pm 10$-day windows around the crisis date.
+We compare 17 methods: 7 classical/supervised baselines (Rolling Vol~Z,
+CUSUM, HMM, BOCPD~\cite{adams_mackay2007}, Isolation Forest, Random
+Forest, Oracle RF) and 10 QCML observables.  All implement a common
+detector interface.  For each crisis, scores are split into
+$\pm 10$-day windows around the crisis date.
 
 \paragraph{Statistical protocol.}
-Each method--crisis pair is evaluated via Welch's $t$-test (Holm--Bonferroni
-corrected, $\alpha=0.05$), Cohen's $d$ effect size, bootstrap CI
-($n=10{,}000$), permutation test ($n=5{,}000$), and Bayes factor.
-A method \emph{beats} the RF baseline if it achieves a significantly
-larger mean $d$ across crises (paired $t$-test, $p<0.05$).
+Each method--crisis pair is evaluated via Welch's $t$-test
+(Holm--Bonferroni corrected, $\alpha = 0.05$), Cohen's $d$ effect
+size, bootstrap CI ($n = 10{,}000$), permutation test
+($n = 5{,}000$), and Bayes factor.
 
 \paragraph{Computational cost.}
-Table~\ref{tab:timing} reports wall-clock times for each method on a
-standardized dataset ($T=3{,}447$ trading days, 4~symbols, 15~PCA
-components, single CPU core).  Berry Phase Rate and Multi-Lag Fidelity
-are \emph{faster} than Random Forest; only QFI Determinant incurs
-meaningful overhead (${\approx}5\times$ RF).
+Table~\ref{tab:timing} reports wall-clock times ($T = 3{,}447$ trading
+days, 4~symbols, 15~PCA components, single CPU).  Berry Phase Rate and
+Multi-Lag Fidelity are \emph{faster} than Random Forest; only QFI
+Determinant incurs meaningful overhead (${\approx}5\times$ RF).
 
 \begin{table}[htb]
 \centering
 \small
-\caption{Wall-clock timing (median of 3 runs, $T=3{,}447$).
-  Relative cost is measured against Random Forest.}
+\caption{Wall-clock timing (median of 3 runs, $T=3{,}447$).}
 \label{tab:timing}
 \begin{tabular}{lccc}
 \toprule
@@ -952,28 +540,78 @@ Multi-Lag Fidelity ($n{=}8$) & 0.37  & $0.30\times$  & QCML \\
 Berry Phase Rate ($n{=}8$)   & 0.93  & $0.74\times$  & QCML \\
 Random Forest              & 1.25  & $1.0\times$   & Classical \\
 QFI Determinant ($n{=}8$)   & 6.70  & $5.4\times$   & QCML \\
-QFI Determinant ($n{=}12$)  & 7.17  & $5.7\times$   & QCML \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\subsection{Main Results}\label{subsec:main_results}
+% --- 3.4 Implementation Details ---
+\subsection{Implementation Details}\label{subsec:implementation}
 
-Table~\ref{tab:comparison} summarizes the head-to-head comparison.
-Three of 10 geometry-induced observables achieve large effect sizes
-($d>0.8$): Berry Phase Rate ($d=0.93$), QFI Determinant ($d=0.93$),
-and Multi-Lag Fidelity ($d=0.84$)---competitive with the supervised
-RF baseline ($d=1.13$) despite being fully unsupervised.  Crucially,
-these top QCML methods substantially outperform both unsupervised
-baselines: BOCPD ($d=0.59$) and Isolation Forest ($d=0.46$).
-However, \emph{none} of the geometric methods individually exceeds
-RF after Holm--Bonferroni correction.
+The pipeline is implemented in Python using NumPy and SciPy.  Market
+data are obtained via the Polygon.io API.  The error
+Hamiltonian~\eqref{eq:hamiltonian} is constructed for each time step,
+and eigendecomposition is performed via \texttt{numpy.linalg.eigh}.
+Partial derivatives for the quantum metric and Berry curvature are
+computed via central finite differences with $\epsilon = 10^{-5}$.
+Hyperparameter optimization uses Optuna TPE with leave-one-crisis-out
+cross-validation.
+
+Default hyperparameters: Hilbert dimension $n = 8$, PCA components
+$p = 15$, PCA-inspired operators, rolling window $w = 20$ days,
+fidelity lags $\{1, 3, 5, 10\}$ with weights
+$[0.4, 0.3, 0.2, 0.1]$.
+
+Algorithm~\ref{alg:detection} summarizes the detection pipeline.
+
+\begin{algorithm}[htb]
+\caption{QCML Geometric Regime Detection Pipeline}\label{alg:detection}
+\begin{algorithmic}[1]
+\Require Feature matrix $X\in\R^{T\times d}$, Hilbert dimension $n$,
+  operators $\{A_k\}$
+\Ensure Geometric observable time series, regime signals
+\State \textbf{Preprocessing:} Standardize $X$; PCA to $p$
+  components; $L^2$-normalize rows
+\State \textbf{Operator construction:} Fit $\{A_k\}_{k=1}^p$ via
+  PCA-inspired method
+\For{each time point $t=1,\ldots,T$}
+  \State Compute $H(x_t)$ via Equation~\ref{eq:hamiltonian}
+  \State Solve $\ket{\psi(x_t)}=$ ground state of $H(x_t)$
+  \State Record $E_0(t)$, $\Delta(t)$,
+    $\mathcal{F}(t,t-\delta)$ for each lag $\delta$
+\EndFor
+\State Compute Berry phase rate $\dot{\gamma}(t)$
+  via Equation~\ref{eq:berry_rate}
+\State Compute QFI pseudo-determinant $\det^+(g(x_t))$
+  via Equation~\ref{eq:qfi_det}
+\State Compute multi-lag infidelity $\bar{\mathcal{I}}(t)$
+  via Equation~\ref{eq:multilag}
+\State Apply adaptive thresholds to generate regime signals
+\end{algorithmic}
+\end{algorithm}
+
+
+% =============================================================================
+% 4. RESULTS
+% =============================================================================
+\section{Results}\label{sec:results}
+
+% --- 4.1 Quantitative Performance ---
+\subsection{Quantitative Performance}\label{subsec:main_results}
+
+Table~\ref{tab:comparison} summarizes the 17-method comparison across
+12~crises.  Three QCML observables achieve large effect sizes
+($d > 0.8$): Berry Phase Rate ($d = 0.93$), QFI Determinant
+($d = 0.93$), and Multi-Lag Fidelity ($d = 0.84$)---competitive with
+the supervised RF baseline ($d = 1.13$) despite being fully
+unsupervised.  These QCML methods substantially outperform both
+unsupervised baselines: BOCPD ($d = 0.59$, +58\%) and Isolation
+Forest ($d = 0.46$, +102\%).  However, \emph{none} of the QCML
+methods individually exceeds RF after Holm--Bonferroni correction.
 
 \begin{table}[htb]
 \centering
-\caption{Regime detection methods across 12 crises.  Effect sizes
-(Cohen's $d$) averaged across crises; Holm--Bonferroni corrected
-$p$-values vs.\ RF baseline.  Methods ranked by mean~$d$.}
+\caption{Regime detection: 17 methods across 12 crises.  Effect sizes
+(Cohen's $d$) averaged across crises.}
 \label{tab:comparison}
 \small
 \begin{tabular}{lcccc}
@@ -1001,21 +639,20 @@ CUSUM                & 0.43 & 1/12 & --- & Classical \\
 \end{table}
 
 Table~\ref{tab:crisis_breakdown} reveals complementary detection
-profiles.  QFI Determinant produces the largest single-crisis
-effect on financial crises ($d=2.20$ on 2008 GFC, $d=1.39$ on Flash Crash),
-while Multi-Lag Fidelity excels on gradual transitions ($d=1.82$ on 2015 China,
-$d=1.53$ on 2022 Rate Hikes) and Berry Phase Rate on flash events ($d=1.73$ on
-Volmageddon, $d=1.65$ on Fed Selloff).  Notably, QCML methods
-outperform RF on crises where RF is weakest: Volmageddon
-(Berry $d=1.73$ vs RF $d=0.19$), Fed Selloff (Berry $d=1.65$ vs RF
-$d=0.12$), and SVB (QFI $d=1.38$ vs RF $d=0.15$).  This
-complementarity---different observables probing distinct geometric
-aspects of transitions---motivates the fusion approach in
-Section~\ref{subsec:fusion}.
+profiles across individual crises.  QFI Determinant produces the
+largest single-crisis effect on financial crises ($d = 2.20$ on 2008
+GFC), while Multi-Lag Fidelity excels on gradual transitions
+($d = 1.82$ on 2015 China, $d = 1.53$ on 2022 Rate Hikes) and Berry
+Phase Rate on flash events ($d = 1.73$ on Volmageddon, $d = 1.65$ on
+Fed Selloff).  Notably, QCML methods outperform RF on crises where RF
+is weakest: Volmageddon (Berry $d = 1.73$ vs RF $d = 0.19$), Fed
+Selloff (Berry $d = 1.65$ vs RF $d = 0.12$), and SVB (QFI $d = 1.38$
+vs RF $d = 0.15$).
 
 \begin{table}[htb]
 \centering
-\caption{Cohen's $d$ for the top three QCML methods across individual crises.}
+\caption{Cohen's $d$ for the top three QCML methods across individual
+crises.}
 \label{tab:crisis_breakdown}
 \begin{tabular}{lcccc}
 \toprule
@@ -1039,12 +676,75 @@ Mean                  & 0.93 & 0.93 & 0.84 & 1.13 \\
 \end{tabular}
 \end{table}
 
-\subsection{Temporal Robustness}\label{subsec:oos}
 
-To eliminate temporal look-ahead, we partition data at January~1, 2020:
-RF is trained on nine pre-2020 crises; QCML detectors and PCA are
-frozen at the calibration boundary.  Table~\ref{tab:oos} shows that
-QCML methods maintain detection power on novel crises (mean OOS
+% --- 4.2 Geometric Patterns in Crises ---
+\subsection{Geometric Patterns in Crises}\label{subsec:narratives}
+
+The quantitative results are enriched by visual case studies of three
+representative crises, illustrating what QCML geometry looks like
+during regime transitions.
+
+\paragraph{2008 Global Financial Crisis (fast crash).}
+Figure~\ref{fig:narrative_2008} shows the geometric anatomy of the
+2008 crisis.  Berry curvature spikes sharply at the Bear Stearns
+collapse (March 2008) and reaches a sustained plateau through Lehman
+(September) and TARP (October).  The QFI determinant shows a
+characteristic collapse--expansion pattern: manifold volume contracts
+as the crisis approaches (reduced dimensionality of accessible QCML
+states) then expands violently during the crash.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.85\textwidth,height=0.85\textheight,keepaspectratio]{../experiments/outputs/regime_detection/narratives/narrative_2008_gfc.pdf}
+\caption{QCML geometric crisis anatomy: 2008 Global Financial Crisis.
+Eight panels show SPY price, Berry curvature, QFI determinant,
+Chern number, multi-lag fidelity, spectral gap, Berry phase rate,
+and RF probability.}
+\label{fig:narrative_2008}
+\end{figure}
+
+\paragraph{2020 COVID-19 (V-shape).}
+The COVID crash (Figure~\ref{fig:narrative_2020}) presents a sharp
+V-shaped pattern.  QCML indicators fire early---Berry curvature
+elevates during Italy's outbreak (late February) before the market
+crash on March 16.  The spectral gap narrows dramatically,
+indicating near-degeneracy of the ground state.  Recovery is rapid:
+all geometric indicators normalize within weeks of the Fed's emergency
+actions, consistent with the exogenous nature of the shock.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.85\textwidth,height=0.85\textheight,keepaspectratio]{../experiments/outputs/regime_detection/narratives/narrative_2020_covid.pdf}
+\caption{QCML geometric crisis anatomy: 2020 COVID-19 pandemic crash.}
+\label{fig:narrative_2020}
+\end{figure}
+
+\paragraph{2022 Rate Hikes (slow shift).}
+The 2022 rate cycle (Figure~\ref{fig:narrative_2022}) is qualitatively
+different: a slow regime shift.  Multi-lag fidelity and spectral gap
+are the most informative indicators, showing sustained elevation
+throughout the tightening cycle.  Berry curvature fluctuates but does
+not reach the extreme values of acute crises.  This illustrates the
+value of multi-observable QCML monitoring: different crises activate
+different geometric signatures.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.85\textwidth,height=0.85\textheight,keepaspectratio]{../experiments/outputs/regime_detection/narratives/narrative_2022_rates.pdf}
+\caption{QCML geometric crisis anatomy: 2022 Federal Reserve rate
+hike regime.}
+\label{fig:narrative_2022}
+\end{figure}
+
+
+% --- 4.3 Sensitivity and Robustness ---
+\subsection{Sensitivity and Robustness}\label{subsec:robustness}
+
+\paragraph{Temporal out-of-sample.}
+To eliminate temporal look-ahead, we partition data at January~1,
+2020: RF is trained on nine pre-2020 crises; QCML operators and PCA
+are frozen at the calibration boundary.  Table~\ref{tab:oos} shows
+that QCML methods maintain detection power on novel crises (mean OOS
 $d = 0.52$) while RF degrades ($d = 0.31$).
 
 \begin{table}[htb]
@@ -1065,210 +765,20 @@ Random Forest & 0.20 & 0.40 & 0.33 & 0.31 \\
 \end{tabular}
 \end{table}
 
-\paragraph{Lead time.}
-QCML methods fire closer to the crisis date (mean 9.8 days) with
-higher precision, while RF fires with more advance warning (34.8 days)
-but only on crises resembling its training data.  On novel crises, QCML
-fires at 11.0 days---providing timely signal where RF has no labeled
-precedent.
-
 \paragraph{Hybrid ensemble.}
-We combine QCML and RF via three strategies (simple average, optimized
-weights, dynamic switch), all calibrated on pre-2020 data.  On the three
-\emph{out-of-sample} crises (2020--2023), the Simple Average achieves
+We combine QCML and RF via simple averaging, calibrated on pre-2020
+data.  On the three out-of-sample crises, the hybrid achieves
 $d = 0.60$, nearly doubling RF alone ($d = 0.31$), confirming
-non-redundant information content on novel crises.  However, across all
-12~crises the hybrid approaches do not beat RF (which achieves $d > 3$
-on its training crises), and the optimized-weights strategy collapses to
-100\% RF weight---correctly reflecting RF's dominance on in-sample data.
-The hybrid value therefore lies specifically in out-of-sample
-generalization to structurally novel events.
+non-redundant information content on novel crises.
 
-\subsection{Multi-Observable Geometric Fusion}\label{subsec:fusion}
-
-The top three geometric observables exhibit low mutual correlation
-(Spearman $\rho = 0.18$--$0.46$), suggesting that score-level
-fusion should capture complementary geometric information.  We test
-two architectures, both optimized via Optuna TPE (200 trials each)
-with leave-one-crisis-out cross-validation.  We caution that the
-calibration-set numbers below are optimistic; the unbiased nested
-LOCO estimates in Section~\ref{sec:overfitting} are substantially
-lower.
-
-\paragraph{Phase A: Score-level fusion.}
-The \textbf{FusedQCMLDetector} combines causal z-scores via weighted
-mean with Optuna-optimized weights: $w_{\mathrm{MultiLag}} = 0.47$,
-$w_{\mathrm{QFI}} = 0.43$, $w_{\mathrm{Berry}} = 0.09$ (Hilbert dim
-$h=12$, PCA-inspired operators).  This achieves \textbf{median
-$d = 1.67$}---48\% above RF ($d = 1.13$)---without crisis labels at
-inference time.
-
-\paragraph{Phase B: Operator-optimized fusion.}
-The \textbf{GeometryOptimizedDetector} introduces per-operator scale
-factors $\alpha_k \in [0.1, 5.0]$ that reshape the error Hamiltonian:
-$H(\mathbf{x}) = \frac{1}{2} \sum_k (\alpha_k A_k - x_k I)^2$.
-From this optimized geometry, five observables (Berry rate, QFI
-determinant, multi-lag fidelity, inverse gap, condition number) are
-z-scored and fused via learned weights (14 parameters total).
-Phase~B achieves \textbf{median $d = 1.79$}, with learned operator
-scales concentrating curvature in PCA dimensions~0 and~2.  Phase~B
-wins on 8 of 12~crises vs.\ RF, including 2008~GFC ($d = 2.09$) and
-COVID ($d = 2.11$).
-
-\begin{table}[htb]
-\centering
-\caption{Per-crisis Cohen's $d$ for fused QCML detectors vs.\ RF.
-Bold indicates best per crisis.}
-\label{tab:fusion_comparison}
-\small
-\begin{tabular}{lccc}
-\hline
-Crisis & RF & Phase A & Phase B \\
-\hline
-2007 Quant Meltdown & 1.02 & \textbf{1.92} & 1.88 \\
-2008 GFC            & 1.74 & 0.84 & \textbf{2.09} \\
-2010 Flash Crash    & \textbf{1.54} & 1.13 & 0.08 \\
-2011 Debt Downgrade & 0.74 & 1.73 & \textbf{1.99} \\
-2015 China          & \textbf{1.49} & 1.32 & 0.43 \\
-2016 Brexit         & \textbf{2.00} & 1.87 & 0.34 \\
-2018 Volmageddon    & 0.03 & 1.83 & \textbf{2.02} \\
-2018 Fed Selloff    & 0.22 & 0.11 & \textbf{1.09} \\
-2019 Repo Crisis    & 1.11 & 0.43 & \textbf{1.84} \\
-2020 COVID          & 1.20 & 1.66 & \textbf{2.11} \\
-2022 Rate Hike      & 1.34 & \textbf{1.81} & 0.48 \\
-2023 SVB            & 0.09 & \textbf{1.69} & 1.74 \\
-\hline
-Median              & 1.15 & 1.67 & \textbf{1.79} \\
-\hline
-\end{tabular}
-\end{table}
-
-On the three post-2020 crises, Phase~A achieves mean $d = 1.72$
-vs.\ RF $d = 0.88$ ($1.96\times$).  Bootstrap: $P(\text{Phase A} >
-\text{RF}) = 89.6\%$, $P(\text{Phase B} > \text{RF}) = 80.8\%$.
-Phase~A dominates on gradual crises (Rate Hike, SVB) while Phase~B
-excels on rapid crashes (GFC, COVID, Volmageddon).
-
-
-% =============================================================================
-% 6.7 OVERFITTING & ROBUSTNESS
-% =============================================================================
-\subsection{Overfitting and Robustness}\label{sec:overfitting}
-
-\paragraph{Nested leave-one-crisis-out.}
-For each of the 12 crises, we hold it out, re-run Phase~A Optuna
-optimization (30 trials) on the remaining 11, and evaluate on the
-held-out crisis.  The unbiased held-out median $d = 1.09$ represents
-a 35.6\% reduction from the calibration estimate ($d = 1.69$),
-confirming moderate overfitting.  Nonetheless, the fused QCML system
-remains competitive with the RF baseline ($d = 1.15$).
-
-\paragraph{Temporal re-optimization.}
-Re-optimizing Phase~A using only nine pre-2020 crises and evaluating
-on post-2020 events yields median $d = 1.82$---\emph{better} than
-pre-2020 training performance ($d = 1.70$), with a negative
-overfitting gap of $-0.12$.  Per-crisis: COVID $d = 1.82$, Rate Hikes
-$d = 1.95$, SVB $d = 1.79$.
-
-\paragraph{Improved individual baselines.}
-With PCA-inspired operators and tuned rolling windows, all three
-individual QCML methods exceed the RF baseline \emph{without}
-fusion: QFI Determinant $d = 1.42$ (+52\%), Berry Phase Rate
-$d = 1.31$ (+41\%), Multi-Lag Fidelity $d = 1.26$ (+49\%), all
-above RF $d = 1.13$.  The \texttt{pca\_inspired} operator method
-accounts for the largest improvement (+0.23 mean $d$ over random).
-
-\subsection{Causal Regime Detection}\label{subsec:causal_hpo}
-
-The preceding analyses risk lookahead bias: hyperparameters were
-optimized using full crisis data.  To validate causal performance, we
-re-optimize all three QCML methods under a strict constraint: PCA,
-scaling, and operators are fitted \emph{only} on pre-crisis data
-($t < t_{\text{crisis}}$).  Optuna TPE searches over
-$h \in \{4,8,12,16\}$, PCA components $\in \{8,10,15,20\}$, operator
-method $\in \{\text{random}, \text{pca\_inspired}\}$, and rolling
-window $\in \{10,20,30\}$, maximizing median $d$ across 12 crises
-under leave-one-crisis-out validation (200 trials per method).
-
-\paragraph{Results.}
-All three methods converge to $h=8$, rolling window~30, and
-\texttt{pca\_inspired} operators under causal optimization.
-Phase~A achieves \textbf{median $d > 2.0$} for all three methods:
-QFI Determinant (mean $d = 2.30$, Wilcoxon $p = 0.011^*$),
-Multi-Lag Fidelity (mean $d = 2.29$, $p = 0.005^{**}$), and
-Berry Phase Rate (mean $d = 1.96$, $p = 0.065^\dagger$).  Both
-QFI and Multi-Lag \emph{statistically exceed} the RF baseline.
-Friedman ranking confirms significant differences ($\chi^2 = 20.8$,
-$p = 0.001$; Figure~\ref{fig:optuna_6condition}).
-
-\paragraph{Expanding window trade-off.}
-Phase~B (periodic refitting) marginally improves Berry (+0.09
-mean~$d$) but severely degrades QFI ($-1.40$) and Multi-Lag
-($-0.34$), reflecting differential sensitivity to operator
-recalibration.  Single-shot causal fitting outperforms adaptive
-approaches (Figure~\ref{fig:optuna_phase_ab}).
-
-\paragraph{Independent grid-search confirmation.}
-An exhaustive grid search over 96 configurations ($4 \times 4 \times 2
-\times 3$) with two-stage validation (4 calibration crises, then all
-12) independently confirms the Optuna findings.  Best causal
-configurations achieve mean $d = 1.63$ (Berry), $1.35$ (QFI), and
-$1.41$ (Multi-Lag) across all 12 crises.  Crucially, causal-optimal
-hyperparameters \emph{differ} from non-causal optima for all three
-methods, validating that the causal protocol identifies genuinely
-different operating points.
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.95\textwidth]{../experiments/outputs/regime_detection/optuna_causal/figures/optuna_6condition_comparison.pdf}
-\caption{Causal optimization: mean Cohen's $d$ across 12 crises under
-six conditions.  Stars: $^{**}p<0.01$, $^*p<0.05$, $^\dagger p<0.1$
-vs.\ RF.  QFI and Multi-Lag (Phase~A) significantly beat RF.}
-\label{fig:optuna_6condition}
-\end{figure}
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.95\textwidth]{../experiments/outputs/regime_detection/optuna_causal/figures/optuna_crisis_heatmap.pdf}
-\caption{Per-crisis heatmap: QCML excels in fast crashes (2008, 2020);
-RF dominates slow-building events (2018 Vol Spike).}
-\label{fig:optuna_heatmap}
-\end{figure}
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.95\textwidth]{../experiments/outputs/regime_detection/optuna_causal/figures/optuna_phase_a_vs_b.pdf}
-\caption{Phase~A vs.\ Phase~B: single-shot causal fitting outperforms
-expanding window for QFI and Multi-Lag methods.}
-\label{fig:optuna_phase_ab}
-\end{figure}
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.85\textwidth]{../experiments/outputs/regime_detection/optuna_causal/figures/optuna_method_ranking.pdf}
-\caption{Friedman ranking: QFI Determinant (Phase~A) ranks highest
-among unsupervised methods.}
-\label{fig:optuna_ranking}
-\end{figure}
-
-% =============================================================================
-% 6.8 MULTI-ASSET GENERALIZATION
-% =============================================================================
-\subsection{Multi-Asset Generalization}\label{subsec:multi_asset}
-
-We test whether geometric observables detect crises in five broad-market
-ETFs (SPY, QQQ, IWM, EFA, DIA)---each analyzed independently using its
-own feature matrix with causal-optimized hyperparameters.  No cross-asset
-information is used.
-
-All three QCML methods maintain large effect sizes across assets
-(Table~\ref{tab:multi_asset}).  Multi-Lag Fidelity achieves mean
-$d = 1.44$ across 19 asset--crisis pairs, Berry Phase Rate $d = 1.19$,
-and QFI Determinant $d = 1.14$---all above RF ($d = 0.88$).  Friedman
-test: $\chi^2 = 35.0$, $p < 0.0001$.  Notably, QCML methods often
-perform \emph{better} on non-SPY assets (Berry $d = 1.53$ on DIA)
-while RF degrades (QQQ $d = 0.30$), suggesting the geometric
-framework captures universal regime structure.
+\paragraph{Multi-asset generalization.}
+We test QCML observables on five broad-market ETFs (SPY, QQQ, IWM,
+EFA, DIA), each analyzed independently with causal-optimized
+hyperparameters.  Table~\ref{tab:multi_asset} shows that all three
+QCML methods maintain large effect sizes across assets.  Multi-Lag
+Fidelity achieves mean $d = 1.44$---significantly above RF
+($d = 0.88$; Wilcoxon $p = 0.0023$; Friedman $\chi^2 = 35.0$,
+$p < 0.0001$).
 
 \begin{table}[htb]
 \centering
@@ -1276,437 +786,218 @@ framework captures universal regime structure.
 \label{tab:multi_asset}
 \small
 \begin{tabular}{lcccc}
-\hline
+\toprule
 Asset & Berry & QFI Det. & Multi-Lag & RF \\
-\hline
+\midrule
 SPY & 0.86 & \textbf{1.75} & 1.84 & 0.69 \\
 QQQ & 1.59 & 1.44 & \textbf{1.70} & 0.30 \\
 IWM & \textbf{1.30} & 1.01 & 1.05 & 1.01 \\
 EFA & 0.75 & 0.95 & \textbf{1.34} & 1.22 \\
 DIA & \textbf{1.53} & 0.63 & 1.33 & 1.03 \\
-\hline
+\midrule
 Overall & 1.19 & 1.14 & \textbf{1.44} & 0.88 \\
-\hline
+\bottomrule
 \end{tabular}
 \end{table}
 
-\subsection{Granger Causality Analysis}\label{subsec:granger}
+\paragraph{Multi-observable fusion.}
+Fusing the top three observables via Optuna-optimized weights
+($w_{\mathrm{MultiLag}} = 0.47$, $w_{\mathrm{QFI}} = 0.43$,
+$w_{\mathrm{Berry}} = 0.09$) achieves median $d = 1.67$---48\%
+above RF.  However, nested leave-one-crisis-out validation reveals
+an overfitting gap: unbiased held-out median $d = 1.09$ (35.6\%
+below calibration), underscoring the importance of honest evaluation.
 
-A natural question is whether geometric observables \emph{lead} market
-stress or merely co-move with it.  We test Granger causality~\cite{granger1969} in both
-directions: forward (QCML observable $\to$ market target) and reverse
-(market target $\to$ QCML observable), using a 4-symbol universe
-(SPY, XLF, QQQ, TLT) over 2011--2024 ($T = 3{,}428$ trading days).
-Three target variables are tested: 20-day realized volatility,
-absolute returns, and a VIX proxy (rolling 20-day standard deviation
-of returns, annualized).  We test lags 1, 2, 3, 5, and 10 for each
-of 3 observables $\times$ 3 targets $\times$ 2 directions $= 90$ tests,
-with Bonferroni correction ($\alpha = 0.05/90 \approx 0.0006$).
+\paragraph{Granger causality.}
+We test Granger causality~\cite{granger1969} in both directions
+using 3 observables $\times$ 3 market targets $\times$ 5 lags
+(90 tests, Bonferroni corrected).  QFI Determinant Granger-causes
+absolute returns at lag~1 ($F = 9.5$, $p = 0.0004$,
+Bonferroni-significant).  However, reverse causality (market
+$\to$ QCML) is substantially stronger (17/45 nominally significant
+vs.\ 6/45 forward), indicating that most observables react to
+rather than predict market stress---consistent with their
+construction from contemporaneous data.
 
-Results are mixed but informative.  In the forward direction (QCML
-$\to$ market), QFI Determinant Granger-causes absolute returns at
-lag~1 ($F = 9.5$, $p = 0.0004$, Bonferroni-significant) and
-Granger-causes VIX proxy at lag~2 ($p = 0.0002$, Bonferroni-significant).
-Berry Phase Rate shows nominal significance ($p = 0.002$) for absolute
-returns at lag~1 but does not survive Bonferroni.  Multi-Lag Fidelity
-shows no significant forward causality.
-
-However, reverse causality (market $\to$ QCML) is substantially
-stronger: 2/45 Bonferroni-significant and 17/45 nominally significant,
-indicating that most geometric observables \emph{react to} rather
-than \emph{predict} market stress.  This is consistent with their
-construction from contemporaneous market data: Berry curvature and
-QFI are functions of the current state manifold, so they naturally
-respond to realized volatility changes.
-
-The partial forward evidence for QFI Determinant is notable---the
-Fisher information determinant captures a distinct geometric signal
-(manifold volume change) that partially anticipates volatility, though
-the effect is modest ($F \approx 10$).  This supports our
-complementarity thesis: geometric observables capture structural
-information that is partially orthogonal to, but not independent of,
-realized market variables.
-
-% =============================================================================
-% 8. CRISIS NARRATIVE CASE STUDIES
-% =============================================================================
-\section{Crisis Narrative Case Studies}\label{sec:narratives}
-
-The preceding sections are quantitative; here we provide visual case
-studies of three representative crises to illustrate \emph{what the
-geometry looks like} during a regime transition.
-
-\subsection{2008 Global Financial Crisis (Fast Crash)}
-
-The 2008 GFC represents a rapid systemic crisis with identifiable trigger
-events.  We plot 8 panels showing SPY price, Berry curvature, QFI
-determinant, Chern number, multi-lag fidelity, spectral gap, Berry phase
-rate, and RF probability, annotated with key events (Bear Stearns
-collapse, Fannie/Freddie seizure, Lehman bankruptcy, TARP signing).
-
-Figure~\ref{fig:narrative_2008} shows the geometric anatomy of the 2008 crisis.
-Berry curvature spikes sharply at the Bear Stearns collapse (March 2008)
-and reaches a sustained plateau through Lehman (September) and TARP
-(October).  The QFI determinant shows a characteristic collapse--expansion
-pattern: manifold volume contracts as the crisis approaches (reduced
-dimensionality of accessible states) then expands violently during the
-crash (rapid exploration of new state space).  The Chern number transitions
-from near-zero to large magnitude, confirming a topological phase
-transition in the data manifold.
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.85\textwidth,height=0.85\textheight,keepaspectratio]{../experiments/outputs/regime_detection/narratives/narrative_2008_crisis.pdf}
-\caption{Geometric crisis anatomy: 2008 Global Financial Crisis.
-Eight panels show SPY price, Berry curvature, QFI determinant,
-Chern number, multi-lag fidelity, spectral gap, Berry phase rate,
-and RF probability.}
-\label{fig:narrative_2008}
-\end{figure}
-
-\subsection{2020 COVID-19 Pandemic (V-Shape)}
-
-The COVID crash represents an exogenous shock with rapid recovery.
-Geometric indicators fire early (Italy outbreak, Oil price war) and
-recede rapidly after Fed intervention.
-
-The COVID crash (Figure~\ref{fig:narrative_2020}) presents a sharp
-V-shaped pattern.  Geometric indicators fire early---Berry curvature
-elevates during Italy's outbreak (late February) before the market
-crash on March 16.  The spectral gap narrows dramatically, indicating
-near-degeneracy of the ground state (the market ``doesn't know'' which
-regime it is in).  Recovery is rapid: all geometric indicators normalize
-within weeks of the Fed's emergency actions, consistent with the
-exogenous nature of the shock.
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.85\textwidth,height=0.85\textheight,keepaspectratio]{../experiments/outputs/regime_detection/narratives/narrative_2020_covid.pdf}
-\caption{Geometric crisis anatomy: 2020 COVID-19 pandemic crash.}
-\label{fig:narrative_2020}
-\end{figure}
-
-\subsection{2022 Federal Reserve Rate Hike Regime (Slow Shift)}
-
-The 2022 rate cycle represents a gradual regime shift rather than a sharp
-crash.  Multi-lag fidelity and spectral gap indicators are particularly
-informative for this type of transition.
-
-The 2022 rate cycle (Figure~\ref{fig:narrative_2022}) is qualitatively
-different: a slow regime shift rather than a crash.  Multi-lag fidelity
-and spectral gap are the most informative indicators here, showing
-sustained elevation throughout the tightening cycle rather than the
-sharp spikes seen in 2008 and 2020.  Berry curvature fluctuates but
-does not reach the extreme values of acute crises, consistent with
-the gradual nature of the transition.  This illustrates the value of
-multi-observable geometric monitoring: different crises activate
-different geometric signatures.
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.85\textwidth,height=0.85\textheight,keepaspectratio]{../experiments/outputs/regime_detection/narratives/narrative_2022_rates.pdf}
-\caption{Geometric crisis anatomy: 2022 Federal Reserve rate hike regime.}
-\label{fig:narrative_2022}
-\end{figure}
+\paragraph{Hyperparameter sensitivity.}
+Berry Phase Rate and QFI Determinant peak at $n = 8$; both degrade at
+$n = 16$.  Multi-Lag Fidelity is the most robust (CV~24.6\%).
+PCA-inspired operators consistently outperform random initialization
+(+0.06 to +0.23 mean~$d$).
 
 
 % =============================================================================
-% DISCUSSION
+% 5. DISCUSSION
 % =============================================================================
 \section{Discussion}\label{sec:discussion}
 
-\subsection{Conventional vs.\ Novel Crises}
+% --- 5.1 Interpretation ---
+\subsection{Interpretation}\label{subsec:interpretation}
 
-The most striking pattern in our results is the systematic interaction
-between method type and crisis type.  We classify crises into two
-categories based on their structural signature:
+The most striking finding is the systematic interaction between method
+type and crisis type.  We classify crises into two categories:
 
 \begin{itemize}
-\item \textbf{Conventional crises}: credit events and correlation
-  breakdowns that resemble prior episodes in the training set (2007
-  Quant Meltdown, 2008 GFC, 2010 Flash Crash, 2011 Downgrade, 2015
-  China, 2016 Brexit, 2020 COVID).  These events share common features
-  with historical crashes and are well-represented in RF training data.
+\item \textbf{Conventional crises}: events resembling prior episodes
+  in the training set (2007, 2008, 2010, 2011, 2015, 2016, 2020).
+  RF leverages pattern similarity with labeled data for strong
+  detection.
 
-\item \textbf{Novel crises}: structurally unfamiliar events
-  involving new market mechanisms (2018 Volmageddon short-vol blowup,
-  2018 Fed Selloff, 2019 Repo rate spike, 2022 rate regime shift, 2023
-  SVB bank run).  These events have few or no historical precedents in
-  the training set.
+\item \textbf{Novel crises}: structurally unfamiliar events involving
+  new market mechanisms (2018 Volmageddon, 2018 Fed Selloff, 2019
+  Repo, 2022 Rate Hikes, 2023 SVB).  QCML methods detect geometric
+  deformations of the state space regardless of whether such changes
+  have been observed before.
 \end{itemize}
 
-On conventional crises, Random Forest's supervised approach leverages
-pattern similarity with labeled training data to achieve strong
-detection.  On novel crises, the lack of similar training examples
-degrades RF performance, while QCML methods---detecting geometric and
-topological deformations of the market state space---respond to the
-\emph{structural novelty itself} rather than pattern similarity.
+This complementarity has a natural interpretation within the QCML
+framework.  Random Forest detects crises by pattern matching in flat
+feature space.  QCML observables detect crises by measuring curvature,
+topology, and metric deformation of the quantum data
+manifold~\cite{abanov2025}---a fundamentally different signal that
+responds to structural change in the curved QCML state space.
 
-The temporal out-of-sample validation (Section~\ref{subsec:oos})
-provides direct evidence: when RF is trained exclusively on pre-2020
-crises and tested on post-2020 events, its performance degrades on
-structurally dissimilar crises while QCML methods maintain their
-detection power.
+Three lines of evidence support the complementarity thesis:
+\textbf{(i)}~bimodal performance (QCML dominates on novel crises while
+RF dominates on conventional ones); \textbf{(ii)}~temporal robustness
+(QCML shows minimal OOS degradation while RF degrades on novel
+crises); \textbf{(iii)}~ensemble improvement (hybrid doubles OOS
+performance, confirming non-redundant information content).
 
-\subsection{The Complementarity Thesis}
+% --- 5.2 Relation to QCML Literature ---
+\subsection{Relation to QCML}\label{subsec:relation_qcml}
 
-Our central finding is that topological and supervised detectors are
-\emph{complementary} rather than competing approaches.  Three lines of
-evidence support this thesis:
+Our work validates and extends QCML in several directions:
 
 \begin{enumerate}
-\item \textbf{Bimodal performance}: QCML dominates on novel crises
-  (e.g., QFI Determinant $d=2.21$ on SVB vs.\ RF $d=0.14$), while RF
-  dominates on conventional ones (e.g., RF $d=2.09$ on 2008 vs.\ QCML
-  Chern $d=0.25$).  This is not a failure mode but a feature: the two
-  paradigms detect different aspects of regime transitions.
+\item \textbf{Geometry carries meaningful signal.}  Candelori et
+  al.~\cite{candelori2025} showed that the quantum metric captures
+  intrinsic dimension; we show that the \emph{dynamics} of this
+  geometry---how it changes over time---carries rich information about
+  regime structure.
 
-\item \textbf{Temporal robustness}: In the out-of-sample validation
-  (Section~\ref{subsec:oos}), QCML methods show minimal degradation
-  from in-sample to OOS performance, while RF degrades substantially
-  on structurally novel test crises.
+\item \textbf{New application domain.}  Prior QCML finance work
+  focused on forecasting~\cite{samson2024} and
+  similarity~\cite{rosaler2025,samson2025}; we extend to
+  anomaly/regime detection, demonstrating the versatility of QCML
+  geometric observables.
 
-\item \textbf{Ensemble improvement on novel crises}: On the three
-  out-of-sample crises, the hybrid simple-average ensemble achieves
-  $d = 0.60$ vs.\ RF $d = 0.31$, confirming that geometric and
-  supervised signals carry non-redundant information---though this
-  advantage is limited to structurally novel events where RF lacks
-  training precedent.
+\item \textbf{Berry curvature as a practical tool.}  Abanov et
+  al.~\cite{abanov2025} developed the theory of Berry curvature and
+  Chern numbers in QCML; we provide the first empirical application,
+  showing that Berry curvature spikes correspond to genuine market
+  regime transitions.
+
+\item \textbf{Analogy with quantum phase transitions.}  The spectral
+  gap closure near regime boundaries mirrors the phenomenology of
+  quantum phase transitions~\cite{sachdev2011}.  While the analogy is
+  formal (our system is not quantum), the mathematical structure
+  provides powerful detection tools via
+  Theorem~\ref{thm:curvature_gap}.
 \end{enumerate}
 
-This complementarity has a natural geometric interpretation.  Random
-Forest detects crises by \emph{pattern matching} against known crisis
-signatures in \emph{flat} feature space---projecting each window into
-$\R^d$ and comparing it to labeled training examples.  The
-geometry-induced observables detect crises by measuring
-\emph{curvature, topology, and metric deformation} of the learned
-manifold---a fundamentally different signal that responds to structural
-change in the \emph{curved} market state space regardless of whether
-such change has been observed before.
-
-\subsection{Numerical Considerations}
-
-All geometric quantities involve finite-difference derivatives of
-ground states.  We employ a hierarchical step-size scheme
-($\epsilon_{\text{metric}}=10^{-5}$,
-$\epsilon_{\text{Christoffel}}=10^{-4}$,
-$\epsilon_{\text{Ricci}}=10^{-3}$) to avoid differentiating numerical
-noise.  When $\Delta(x)\to 0$, the ground state becomes ill-defined;
-we regularize via eigenvalue clamping and exclude regions with
-$\Delta<10^{-8}$ from Chern integration.
-
-Our curvature integrals (``Chern numbers'') are computed over
-\emph{open} rolling windows and are therefore non-integer, ranging
-continuously (e.g., values of 0.82, 1.15 are typical).  The strict
-topological protection argument---that noise cannot change an
-integer---does not apply in this setting.  Nevertheless, the
-deviation from integrality is itself informative: small deviations
-indicate a well-defined geometric phase; large deviations signal
-proximity to a phase transition.  Future work could explore whether
-periodic boundary conditions on the parameter domain yield integer
-Chern numbers with genuine topological protection.
-
-\subsection{Computational Cost}
-
-The dominant cost of the QCML pipeline is the eigendecomposition of
-$H(x)\in\C^{n\times n}$, which scales as $O(n^3)$ per data point,
-yielding $O(n^3 T)$ overall for $T$ observations.  By contrast, CUSUM
-is $O(T)$, HMM fitting is $O(KT)$ for $K$ EM iterations, and Random
-Forest is $O(BdT\log T)$ for $B$ trees and $d$ features.
-
-Table~\ref{tab:timing} provides empirical wall-clock comparisons on
-$T=3{,}447$ trading days.  At $n=8$, Berry Phase Rate (0.93\,s) and
-Multi-Lag Fidelity (0.37\,s) are \emph{faster} than Random Forest
-(1.25\,s) because the per-point eigendecomposition of an
-$8\times 8$ matrix is cheaper than evaluating 200 decision trees.
-The most expensive QCML observable, QFI Determinant, requires 6.70\,s
-($5.4\times$ RF) at $n=8$ and 7.17\,s at $n=12$, owing to the
-additional metric-tensor and determinant computations.
-
-In practice, the QCML pipeline decomposes into a one-time
-preprocessing step (PCA, operator construction) and a per-point
-scoring step (eigendecomposition, observable extraction).  For daily
-rebalancing, the scoring cost per new observation is sub-millisecond
-even at $n=12$, well within the latency budget of any end-of-day
-system.  The eigendecomposition is also trivially parallelizable:
-batching $H(x_1),\ldots,H(x_B)$ via \texttt{torch.linalg.eigh}
-reduces wall-clock time by the batch factor on GPU hardware.
-
-Compared to deep learning baselines, QCML is substantially cheaper:
-LSTM and TCN training requires hours of GPU time and large labeled
-datasets, whereas all QCML observables are unsupervised and run in
-seconds on CPU.
-
-\subsection{Hyperparameter Sensitivity}
-
-Figure~\ref{fig:sensitivity} shows sensitivity to Hilbert dimension
-$n$ and PCA components $d$.  Berry phase rate and QFI determinant peak
-at $n=8$; both degrade at $n=16$, suggesting the larger state space
-overfits.  Multi-lag fidelity is the most robust (CV~24.6\%).
-Extending the grid to include operator method and rolling window (96
-configurations), PCA-inspired operators consistently outperform random
-initialization.
-
-\begin{figure}[htb]
-\centering
-\includegraphics[width=\textwidth]{../experiments/outputs/regime_detection/sensitivity/figures/sensitivity_heatmap.pdf}
-\caption{Hyperparameter sensitivity: mean Cohen's~$d$ across four
-crises.  $n=8$ is optimal for Berry and QFI; multi-lag fidelity is
-most robust.}
-\label{fig:sensitivity}
-\end{figure}
-
+% --- 5.3 Limitations ---
 \subsection{Limitations}\label{subsec:limitations}
 
-Several limitations should be noted.
-
 \begin{enumerate}
-\item \textbf{No individual method beats RF.}  After Holm--Bonferroni
-  correction, none of the 11 geometric observables individually
-  achieves a statistically significant advantage over the supervised
-  RF baseline on mean effect size across 12 crises.  The geometric
-  methods are competitive ($d \approx 0.84$--$0.99$) but not
-  superior.
+\item \textbf{Heuristic operators.}  We use PCA-inspired operator
+  construction rather than full QCML gradient-descent
+  training~\cite{musaelian2024,samson2024}.  While this approximation
+  is effective (PCA-inspired outperforms random by +0.23 mean~$d$),
+  learned operators should further improve performance.
 
-\item \textbf{Overfitting in fusion.}  Optimized fusion achieves
-  $d = 1.67$ on the calibration set but only $d = 1.09$ in nested
-  LOCO validation---a 35.6\% gap.  Fusion weights are unstable across
-  folds (CV~74--86\%), suggesting sensitivity to the crisis mix.
+\item \textbf{No individual method beats RF.}  After Holm--Bonferroni
+  correction, none of the QCML observables individually achieves a
+  statistically significant advantage over the supervised RF baseline.
 
 \item \textbf{Non-integer Chern numbers.}  Rolling-window curvature
-  integrals are computed over open domains and are therefore
-  non-integer, invalidating the topological protection argument that
-  motivates the ``Chern number'' framing.
+  integrals are non-integer, invalidating strict topological
+  protection arguments~\cite{abanov2025}.
 
-\item \textbf{Unfair baseline comparison.}  RF is supervised (trained
-  on labeled crisis data); geometric methods are unsupervised.  This
-  asymmetry complicates direct comparison.  Adding unsupervised
-  baselines (BOCPD, Isolation Forest) would strengthen the evaluation.
-
-\item \textbf{Heuristic operators.}  The framework requires choosing
-  a Hilbert space dimension $n$ and operator construction method;
-  while PCA-inspired operators at $n=8$ are robust defaults, these
-  remain heuristic.
+\item \textbf{Fusion overfitting.}  Optimized fusion achieves
+  $d = 1.67$ on the calibration set but $d = 1.09$ in nested LOCO
+  validation---a 35.6\% gap.
 
 \item \textbf{Asset class coverage.}  All validation uses equity ETFs;
-  whether the geometric signal persists in fixed income, commodities,
-  or FX markets remains untested.
+  whether the geometric signal persists in fixed income~\cite{rosaler2025},
+  commodities, or FX remains untested.
 
-\item \textbf{``Quantum'' terminology.}  The framework uses
-  mathematical tools from quantum mechanics (Hilbert spaces, Berry
-  curvature) but involves no actual quantum physics.  The ``quantum''
-  label in QCML is a historical artifact that may create confusion
-  about the nature of the contribution.
-\end{enumerate}
-
-\subsection{Open Problems}
-
-\begin{enumerate}
-\item \textbf{Operator learning.}  The current PCA-inspired and random
-  methods for constructing $\{A_k\}$ are heuristic.  A principled
-  approach would learn operators that maximize the discriminative power
-  of the geometric observables for regime detection.
-
-\item \textbf{Real-time streaming.}  Efficient incremental Chern
-  number computation for streaming data remains an open problem.
-
-\item \textbf{Higher-dimensional topology.}  Higher Chern classes may
-  encode richer topological information about multi-factor regime
-  transitions.
-
-\item \textbf{Cross-asset-class generalization.}  Our multi-asset
-  validation (Section~\ref{subsec:multi_asset}) demonstrates
-  generalization across equity ETFs, but whether the topological signal
-  persists across asset classes (fixed income, commodities, FX)
-  remains to be established.
-
-\item \textbf{Real-time hybrid deployment.}  The complementarity
-  thesis motivates a production system combining QCML and supervised
-  detectors, with the dynamic switching mechanism
-  (Section~\ref{subsec:oos}) as a starting point.
+\item \textbf{Reverse Granger causality.}  Market $\to$ QCML
+  causality is stronger than QCML $\to$ market, indicating the
+  observables largely react to rather than predict stress.
 \end{enumerate}
 
 
 % =============================================================================
-% 9. CONCLUSION
+% 6. FUTURE WORK
+% =============================================================================
+\section{Future Work}\label{sec:future}
+
+\begin{enumerate}
+\item \textbf{Full QCML operator training.}  Replace PCA-inspired
+  operators with gradient-descent-trained operators, optimizing the
+  error Hamiltonian on financial data as
+  in~\cite{musaelian2024,samson2024}.  This should improve geometric
+  observable quality.
+
+\item \textbf{Supervised QCML regime detection.}  Train operators to
+  maximize regime detection performance directly, combining the QCML
+  geometry with labeled crisis data.
+
+\item \textbf{Cross-asset QCML geometry.}  Apply QCML geometric
+  observables to corporate bonds~\cite{rosaler2025} and equity
+  firm linkages~\cite{samson2025} for regime detection in those
+  markets.
+
+\item \textbf{QCML POVM for probabilistic forecasts.}  Di~Caro et
+  al.~\cite{dicaro2025} introduced QCML POVM for probabilistic
+  prediction; adapting this for regime probability estimation would
+  extend our binary detection framework.
+
+\item \textbf{Real-time streaming deployment.}  Efficient incremental
+  computation of QCML observables for streaming financial data.
+\end{enumerate}
+
+
+% =============================================================================
+% 7. CONCLUSION
 % =============================================================================
 \section{Conclusion}\label{sec:conclusion}
 
-The central contribution of this paper is the construction of a learned
-Riemannian manifold for financial markets whose geometric properties
-encode regime structure.  We lift financial time series into a
-projective Hilbert space via a parameterized error Hamiltonian and
-extract a family of scalar observables---Berry phase rate, Fisher
-information pseudo-determinant, curvature integrals, multi-lag
-fidelity---that summarize the manifold's local and global structure at
-each point in time.
+We have shown that the quantum geometry induced by QCML's error
+Hamiltonian provides a principled framework for unsupervised financial
+regime detection.  Three observables---Berry Phase Rate, QFI
+Determinant, and Multi-Lag Fidelity---derived from the quantum metric
+tensor and Berry curvature of the QCML data manifold, achieve large
+effect sizes competitive with supervised methods and substantially
+outperform standard unsupervised baselines.
 
-Our findings paint a nuanced picture:
+Our central finding is complementarity: QCML observables and
+supervised classifiers detect structurally different crisis types.  On
+novel crises where supervised methods lack training precedent, QCML
+observables maintain detection power, and a hybrid ensemble nearly
+doubles out-of-sample performance.  Across five equity ETFs, Multi-Lag
+Fidelity significantly outperforms Random Forest, demonstrating that
+QCML geometry captures universal features of regime transitions.
 
-\begin{enumerate}
-\item \textbf{Competitive but not individually superior.}
-  In a head-to-head comparison of 17~methods across 12~crises, the
-  three best geometric observables---Berry Phase Rate ($d = 0.93$),
-  QFI Determinant ($d = 0.93$), and Multi-Lag Fidelity
-  ($d = 0.84$)---achieve large unsupervised effect sizes that are
-  competitive with, but do not statistically exceed, the supervised
-  Random Forest baseline ($d = 1.13$) after Holm--Bonferroni
-  correction.  They substantially outperform both unsupervised
-  baselines: BOCPD ($d = 0.59$) and Isolation Forest ($d = 0.46$)
-  (Section~\ref{subsec:main_results}).
+These results position QCML geometric observables as a complement to
+existing regime detection methods, with greatest value precisely where
+pattern-matching approaches fail.  Full QCML operator training via
+gradient descent---replacing the PCA-inspired approximation used
+here---should further improve performance and represents the natural
+next step toward a complete QCML-based regime detection system.
 
-\item \textbf{Complementarity is the central finding.}
-  Geometric and supervised methods detect structurally different
-  crisis types.  On crises where RF underperforms (Volmageddon, SVB,
-  Fed Selloff), geometric methods achieve $d > 1.0$ where RF scores
-  $d < 0.2$.  A simple hybrid ensemble nearly doubles
-  out-of-sample effect size relative to RF alone ($d = 0.60$ vs.\
-  $d = 0.31$), confirming non-redundant information content
-  (Section~\ref{subsec:oos}).
 
-\item \textbf{Multi-asset generalization.}
-  All three geometric methods maintain $d > 1.0$ on five broad-market
-  ETFs (SPY, QQQ, IWM, EFA, DIA) with Multi-Lag Fidelity achieving
-  $d = 1.44$ vs.\ RF $d = 0.88$ (Friedman $p < 0.0001$),
-  suggesting the geometric framework captures structural features of
-  regime transitions beyond SPY-specific patterns
-  (Section~\ref{subsec:multi_asset}).
-
-\item \textbf{Fusion improves performance but overfits.}
-  Optimized multi-observable fusion achieves median $d = 1.67$
-  across 12~crises, but nested leave-one-crisis-out validation
-  reveals a 35.6\% overfitting gap (held-out $d = 1.09$),
-  underscoring the need for careful cross-validation when combining
-  geometric signals (Section~\ref{sec:overfitting}).
-
-\item \textbf{Honest framing of ``topological protection.''}
-  While the mathematical framework guarantees integer Chern numbers
-  for closed surfaces, our rolling-window estimates are non-integer
-  curvature integrals.  The topological protection argument does not
-  strictly apply to our empirical setting, though the curvature
-  integrals remain informative regime indicators.
-\end{enumerate}
-
-The practical implication is that the learned market manifold provides
-a principled geometric framework whose curvature and metric properties
-\emph{complement} supervised pattern matching on regime detection.
-The geometric signal carries greatest value where supervised
-approaches lack historical precedent---precisely the novel crises
-where risk management matters most.  Granger causality analysis
-(Section~\ref{subsec:granger}) provides partial evidence for temporal
-precedence of QFI Determinant over market volatility, though reverse
-causality dominates.  Future work will pursue real-time hybrid
-deployment, cross-asset-class geometry (fixed income, commodities,
-FX), and learned operators via end-to-end optimization.
-
+% =============================================================================
+% FIGURES (effect sizes, bootstrap, Bayesian)
+% =============================================================================
 
 \begin{figure}[htb]
 \centering
 \includegraphics[width=\textwidth]{../experiments/outputs/regime_detection/superiority_publication/figures/effect_sizes.pdf}
-\caption{Violin plot of Cohen's $d$ effect size distributions across 12
-crises for all 16 methods.  QCML methods shown in blue; classical
-baselines in gray.  Horizontal dashed line at $d=0.8$ marks the ``large
-effect'' threshold.}
+\caption{Violin plot of Cohen's $d$ distributions across 12 crises for
+all methods.  QCML methods in blue; classical baselines in gray.
+Dashed line at $d=0.8$ marks ``large effect'' threshold.}
 \label{fig:effect_sizes}
 \end{figure}
 
@@ -1714,43 +1005,9 @@ effect'' threshold.}
 \centering
 \includegraphics[width=\textwidth]{../experiments/outputs/regime_detection/superiority_publication/figures/bootstrap_ranks.pdf}
 \caption{Bootstrap ranking distribution ($n=10{,}000$) for all methods.
-Lower rank is better.  Violin widths show posterior uncertainty.}
+Lower rank is better.}
 \label{fig:bootstrap_ranks}
 \end{figure}
-
-\begin{figure}[htb]
-\centering
-\includegraphics[width=\textwidth]{../experiments/outputs/regime_detection/superiority_publication/figures/bayesian_posterior.pdf}
-\caption{Bayesian posterior probability of each method being the best
-performer, estimated via bootstrap resampling of crises.}
-\label{fig:bayesian_posterior}
-\end{figure}
-
-\begin{table}[htb]
-\centering
-\caption{Default hyperparameters for the QCML regime detection pipeline.}
-\label{tab:hyperparams}
-\begin{tabular}{llc}
-\toprule
-Parameter & Description & Default \\
-\midrule
-$n$ & Hilbert space dimension & 8 \\
-$d$ & Number of PCA components & 15 \\
-$w$ & Chern rolling window & 20 days \\
-$\tau$ & Chern transition threshold & 0.1 \\
-$k$ & Indicator collapse threshold ($\sigma$) & 2.0 \\
-$W$ & Indicator rolling window & 20 days \\
-$\delta$ & Fidelity lag & 1 day \\
-Operator method & Hermitian operator construction & random \\
-Normalization & Feature standardization & z-score + $L^2$ \\
-Multi-scale windows & Consensus Chern scales & $\{10,20,30,50\}$ \\
-Scale weights & Consensus weights & $[0.15,0.30,0.30,0.25]$ \\
-Persistence filter & Minimum consecutive spike days & 2 \\
-Fidelity lags & Multi-lag infidelity & $\{1,3,5,10\}$ \\
-Fidelity weights & Lag weights & $[0.4,0.3,0.2,0.1]$ \\
-\bottomrule
-\end{tabular}
-\end{table}
 
 
 % =============================================================================
@@ -1759,60 +1016,70 @@ Fidelity weights & Lag weights & $[0.4,0.3,0.2,0.1]$ \\
 \section*{Data and Code Availability}
 
 Market data were obtained from the Polygon.io API under a paid
-subscription.  The geometry library (\texttt{qcml\_geometry/}) and all
-experiment scripts (\texttt{experiments/}) are available at
+subscription.  The QCML geometry library (\texttt{qcml\_geometry/}) and
+all experiment scripts (\texttt{experiments/}) are available at
 \texttt{[repository URL upon acceptance]}.  Crisis period definitions,
 hyperparameter configurations, and result JSON files are included for
 full reproducibility.
+
 
 % =============================================================================
 % REFERENCES
 % =============================================================================
 \begin{thebibliography}{99}
 
-\bibitem{hamilton1989}
-J.~D. Hamilton,
-``A new approach to the economic analysis of nonstationary time series
-and the business cycle,''
-\emph{Econometrica}, vol.~57, no.~2, pp.~357--384, 1989.
+% --- QCML Primary (7 papers) ---
 
-\bibitem{page1954}
-E.~S. Page,
-``Continuous inspection schemes,''
-\emph{Biometrika}, vol.~41, no.~1/2, pp.~100--115, 1954.
+\bibitem{candelori2025}
+L.~Candelori, A.~G. Abanov, J.~Berger, C.~J. Hogan,
+V.~Kirakosyan, K.~Musaelian, R.~Samson, J.~E.~T. Smith,
+D.~Villani, M.~T. Wells, and M.~Xu,
+``Robust estimation of the intrinsic dimension of data sets with
+quantum cognition machine learning,''
+\emph{Scientific Reports}, vol.~15, no.~6933, 2025.
 
-\bibitem{qcml_ref}
-W.~Hammond,
-``QCML: Spectral metric learning for financial data analysis,''
-Working paper, 2026.
+\bibitem{abanov2025}
+A.~G. Abanov, L.~Candelori, H.~C. Steinacker, M.~T. Wells,
+J.~R. Busemeyer, V.~Kirakosyan, N.~Marzari, S.~Pinnamaneni,
+D.~Villani, M.~Xu, and K.~Musaelian,
+``Quantum geometry of data,''
+arXiv preprint arXiv:2507.21135, 2025.
 
-\bibitem{gu2020_ml_finance}
-S.~Gu, B.~Kelly, and D.~Xiu,
-``Empirical asset pricing via machine learning,''
-\emph{The Review of Financial Studies}, vol.~33, no.~5,
-pp.~2223--2273, 2020.
+\bibitem{musaelian2024}
+K.~Musaelian, A.~Abanov, J.~Berger, L.~Candelori, V.~Kirakosyan,
+R.~Samson, J.~Smith, and D.~Villani,
+``Quantum cognition machine learning: AI needs quantum,''
+Qognitive, Inc., 2024.
 
-\bibitem{sachdev2011}
-S.~Sachdev,
-\emph{Quantum Phase Transitions}, 2nd ed.
-Cambridge University Press, 2011.
+\bibitem{samson2024}
+R.~Samson, J.~Berger, L.~Candelori, V.~Kirakosyan, K.~Musaelian,
+and D.~Villani,
+``Quantum cognition machine learning: Financial forecasting,''
+Qognitive, Inc., 2024.
 
-\bibitem{zanardi2007}
-P.~Zanardi, P.~Giorda, and M.~Cozzini,
-``Information-theoretic differential geometry of quantum phase
-transitions,''
-\emph{Physical Review Letters}, vol.~99, no.~10, p.~100603, 2007.
+\bibitem{rosaler2025}
+J.~Rosaler, L.~Candelori, V.~Kirakosyan, K.~Musaelian,
+R.~Samson, M.~T. Wells, D.~Mehta, and S.~Pasquali,
+``Supervised similarity for high-yield corporate bonds with quantum
+cognition machine learning,''
+arXiv preprint arXiv:2502.01495, 2025.
 
-\bibitem{amari_nagaoka2000}
-S.~Amari and H.~Nagaoka,
-\emph{Methods of Information Geometry}.
-American Mathematical Society, 2000.
+\bibitem{samson2025}
+R.~Samson, A.~Banner, L.~Candelori, S.~Cottrell, T.~Di~Matteo,
+P.~Duchnowski, V.~Kirakosyan, J.~Marques, K.~Musaelian,
+S.~Pasquali, R.~Stever, and D.~Villani,
+``Supervised similarity for firm linkages,''
+arXiv preprint arXiv:2506.19856, 2025.
 
-\bibitem{brody_hughston2001}
-D.~C. Brody and L.~P. Hughston,
-``Interest rates and information geometry,''
-\emph{Proceedings of the Royal Society A}, vol.~457, pp.~1343--1363,
-2001.
+\bibitem{dicaro2025}
+G.~Di~Caro, V.~Kirakosyan, A.~G. Abanov, J.~R. Busemeyer,
+L.~Candelori, N.~Hartmann, E.~T. Lam, K.~Musaelian, R.~Samson,
+H.~Steinacker, D.~Villani, M.~T. Wells, R.~J. Wenstrup, and M.~Xu,
+``Quantum cognition machine learning for forecasting chromosomal
+instability,''
+arXiv preprint arXiv:2506.03199, 2025.
+
+% --- Essential Externals (8 papers) ---
 
 \bibitem{berry1984}
 M.~V. Berry,
@@ -1820,15 +1087,31 @@ M.~V. Berry,
 \emph{Proceedings of the Royal Society A}, vol.~392, no.~1802,
 pp.~45--57, 1984.
 
+\bibitem{hamilton1989}
+J.~D. Hamilton,
+``A new approach to the economic analysis of nonstationary time series
+and the business cycle,''
+\emph{Econometrica}, vol.~57, no.~2, pp.~357--384, 1989.
+
+\bibitem{adams_mackay2007}
+R.~P. Adams and D.~J.~C. MacKay,
+``Bayesian online changepoint detection,''
+arXiv preprint arXiv:0710.3742, 2007.
+
+\bibitem{busemeyer2012}
+J.~R. Busemeyer and P.~D. Bruza,
+\emph{Quantum Models of Cognition and Decision}.
+Cambridge University Press, 2012.
+
 \bibitem{nakahara2003}
 M.~Nakahara,
 \emph{Geometry, Topology and Physics}, 2nd ed.
 Taylor \& Francis, 2003.
 
-\bibitem{simon1983}
-B.~Simon,
-``Holonomy, the quantum adiabatic theorem, and Berry's phase,''
-\emph{Physical Review Letters}, vol.~51, no.~24, pp.~2167--2170, 1983.
+\bibitem{sachdev2011}
+S.~Sachdev,
+\emph{Quantum Phase Transitions}, 2nd ed.
+Cambridge University Press, 2011.
 
 \bibitem{provost_vallee1980}
 J.~P. Provost and G.~Vallee,
@@ -1836,93 +1119,16 @@ J.~P. Provost and G.~Vallee,
 \emph{Communications in Mathematical Physics}, vol.~76, no.~3,
 pp.~289--301, 1980.
 
-\bibitem{wilczek_shapere1989}
-A.~Shapere and F.~Wilczek, eds.,
-\emph{Geometric Phases in Physics}.
-World Scientific, 1989.
-
-\bibitem{adams_mackay2007}
-R.~P. Adams and D.~J.~C. MacKay,
-``Bayesian online changepoint detection,''
-arXiv preprint arXiv:0710.3742, 2007.
-
-\bibitem{liu2008isolation}
-F.~T. Liu, K.~M. Ting, and Z.-H. Zhou,
-``Isolation forest,''
-in \emph{2008 Eighth IEEE International Conference on Data Mining},
-pp.~413--422, IEEE, 2008.
+\bibitem{amari_nagaoka2000}
+S.~Amari and H.~Nagaoka,
+\emph{Methods of Information Geometry}.
+American Mathematical Society, 2000.
 
 \bibitem{granger1969}
 C.~W.~J. Granger,
-``Investigating causal relations by econometric models and cross-spectral
-methods,''
+``Investigating causal relations by econometric models and
+cross-spectral methods,''
 \emph{Econometrica}, vol.~37, no.~3, pp.~424--438, 1969.
-
-\bibitem{knoblauch2018}
-J.~Knoblauch and T.~Damoulas,
-``Spatio-temporal Bayesian on-line changepoint detection with model
-selection,''
-in \emph{Proceedings of the 35th International Conference on Machine
-Learning}, pp.~2718--2727, 2018.
-
-\bibitem{gidea_katz2018}
-M.~Gidea and Y.~Katz,
-``Topological data analysis of financial time series: Landscapes of
-crashes,''
-\emph{Physica A: Statistical Mechanics and its Applications}, vol.~491,
-pp.~820--834, 2018.
-
-\bibitem{gidea2017}
-M.~Gidea,
-``Topological data analysis of critical transitions in financial
-networks,''
-in \emph{International Conference on Innovative Security Solutions for
-Information Technology and Communications}, pp.~77--84, Springer, 2017.
-
-\bibitem{hochreiter1997}
-S.~Hochreiter and J.~Schmidhuber,
-``Long short-term memory,''
-\emph{Neural Computation}, vol.~9, no.~8, pp.~1735--1780, 1997.
-
-\bibitem{bai2018}
-S.~Bai, J.~Z. Kolter, and V.~Koltun,
-``An empirical evaluation of generic convolutional and recurrent networks
-for sequence modeling,''
-arXiv preprint arXiv:1803.01271, 2018.
-
-\bibitem{sakurada2014}
-M.~Sakurada and T.~Yairi,
-``Anomaly detection using autoencoders with nonlinear dimensionality
-reduction,''
-in \emph{Proceedings of the MLSDA 2nd Workshop on Machine Learning for
-Sensory Data Analysis}, pp.~4--11, ACM, 2014.
-
-\bibitem{lyons1998}
-T.~J. Lyons,
-``Differential equations driven by rough signals,''
-\emph{Revista Matem\'atica Iberoamericana}, vol.~14, no.~2,
-pp.~215--310, 1998.
-
-\bibitem{chevyrev2016}
-I.~Chevyrev and A.~Kormilitzin,
-``A primer on the signature method in machine learning,''
-arXiv preprint arXiv:1603.03788, 2016.
-
-\bibitem{lyons2020}
-T.~Lyons, S.~Ni, and H.~Oberhauser,
-``Non-parametric pricing and hedging of exotic derivatives,''
-\emph{Applied Mathematical Finance}, vol.~27, no.~6, pp.~457--494, 2020.
-
-\bibitem{baaquie2004}
-B.~E. Baaquie,
-\emph{Quantum Finance: Path Integrals and Hamiltonians for Options and
-Interest Rates}.
-Cambridge University Press, 2004.
-
-\bibitem{haven_khrennikov2013}
-E.~Haven and A.~Khrennikov,
-\emph{Quantum Social Science}.
-Cambridge University Press, 2013.
 
 \bibitem{kato1966}
 T.~Kato,
@@ -1938,95 +1144,56 @@ S.-S.~Chern,
 
 
 % =============================================================================
-% APPENDIX A: PROOFS OF FORMAL RESULTS
+% APPENDICES
 % =============================================================================
 \appendix
+
+% =============================================================================
+% APPENDIX A: PROOFS
+% =============================================================================
 \section{Proofs of Formal Results}\label{sec:proofs}
 
 \begin{proof}[Proof of Theorem~\ref{thm:smoothness}]
-Consider the eigenvalue equation $H(x)\ket{\psi(x)} = E_0(x)\ket{\psi(x)}$
-subject to the normalization constraint $\braket{\psi}{\psi}=1$.  Define
-the map $\Phi\colon\R^d\times\C^n\times\R\to\C^n\times\R$ by
-\[
-  \Phi(x,\psi,E) = \bigl(H(x)\psi - E\psi,\; \|\psi\|^2-1\bigr)\,.
-\]
-We have $\Phi(x_0,\psi_0,E_0)=0$ at any point where $\ket{\psi_0}$ is
-the normalized ground state with eigenvalue $E_0$.  The Jacobian of
-$\Phi$ with respect to $(\psi,E)$ at $(x_0,\psi_0,E_0)$ is
+Consider the eigenvalue equation
+$H(x)\ket{\psi(x)} = E_0(x)\ket{\psi(x)}$ subject to
+$\braket{\psi}{\psi}=1$.  Define
+$\Phi(x,\psi,E) = (H(x)\psi - E\psi,\; \|\psi\|^2-1)$.  We have
+$\Phi(x_0,\psi_0,E_0)=0$.  The Jacobian with respect to $(\psi,E)$ is
 \[
   D_{(\psi,E)}\Phi = \begin{pmatrix}
     H(x_0)-E_0\,I & -\psi_0 \\
     2\psi_0^\dagger & 0
   \end{pmatrix}\,.
 \]
-The operator $H(x_0)-E_0\,I$ restricted to the orthogonal complement
-$\psi_0^\perp$ is invertible with smallest singular value $\Delta(x_0)>0$
-(the spectral gap).  The full Jacobian is therefore invertible whenever
-$\Delta>0$.  By the implicit function theorem \cite{kato1966},
-$(x\mapsto\psi(x), x\mapsto E_0(x))$ are $C^\infty$ functions of $x$ on
-any open set where $\Delta>0$.
-
-Since $H(x)$ depends polynomially on $x$ (it is a sum of squares of
-affine functions), $\Phi$ is $C^\infty$ in all arguments.  The regularity
-of $g_{ab}$ and $F_{ab}$ follows immediately from their definitions as
-derivatives of $\ket{\psi(x)}$, and all higher geometric quantities
-(Christoffel symbols, Ricci scalar, Chern numbers) are smooth as
-compositions of smooth functions.
+The operator $H(x_0)-E_0\,I$ restricted to $\psi_0^\perp$ is
+invertible with smallest singular value $\Delta(x_0)>0$.  By the
+implicit function theorem~\cite{kato1966}, $x\mapsto(\psi(x), E_0(x))$
+is $C^\infty$ wherever $\Delta>0$.  Since $H(x)$ is polynomial in $x$,
+$\Phi$ is $C^\infty$ in all arguments.  Smoothness of $g_{ab}$ and
+$F_{ab}$ follows from their definitions as derivatives of
+$\ket{\psi(x)}$.
 \end{proof}
 
 \begin{proof}[Proof of Theorem~\ref{thm:chern}]
-The ground state $\ket{\psi(x)}$ defines a $U(1)$ principal bundle (or
-equivalently, a complex line bundle $\mathcal{L}$) over the parameter
-surface $S$.  The Berry connection is the natural $U(1)$ connection on
-$\mathcal{L}$:
+The ground state $\ket{\psi(x)}$ defines a $U(1)$ line bundle
+$\mathcal{L}$ over $S$.  The Berry connection
+$\mathcal{A}_a = i\braket{\psi}{\partial_a\psi}$ has curvature
+$F_{ab}$.  By the Chern--Weil theorem~\cite{chern1946,nakahara2003}:
 \[
-  \mathcal{A}_a(x) = i\braket{\psi(x)}{\partial_a\psi(x)}\,,
+  \oint_S \frac{F}{2\pi} = c_1(\mathcal{L}) \in \mathbb{Z}\,.
 \]
-and the Berry curvature $F_{ab} = \partial_a\mathcal{A}_b -
-\partial_b\mathcal{A}_a$ is its curvature 2-form.
-
-By the Chern--Weil theorem \cite{chern1946,nakahara2003}, the integral of
-the curvature 2-form over any closed oriented surface equals $2\pi$ times
-an integer:
-\[
-  \oint_S \frac{F}{2\pi} = c_1(\mathcal{L}) \in \mathbb{Z}\,,
-\]
-where $c_1(\mathcal{L})$ is the first Chern class of the line bundle
-$\mathcal{L}\to S$.  This integer classifies the topological type of
-$\mathcal{L}$: line bundles with different Chern numbers are
-topologically inequivalent and cannot be smoothly deformed into each
-other.
-
-The invariance under smooth deformations follows from the fact that
-$c_1\in H^2(S;\mathbb{Z})$ is a topological (cohomological) invariant:
-any smooth family of Hamiltonians $H_s(x)$ that maintains $\Delta>0$
-along $S$ defines a smooth family of line bundles with the same Chern
-class.
+The invariance under smooth deformations follows from
+$c_1 \in H^2(S;\mathbb{Z})$ being a cohomological invariant.
 \end{proof}
 
 \begin{proof}[Proof of Theorem~\ref{thm:curvature_gap}]
-Using first-order perturbation theory, the Berry connection can be
-written as:
+First-order perturbation theory gives:
 \[
-  \mathcal{A}_a = i\braket{\psi_0}{\partial_a\psi_0}
-  = i\sum_{n\neq 0} \frac{\dbraket{\psi_n}{\partial_a H}{\psi_0}}{E_0-E_n}
-  \braket{\psi_0}{\psi_n}\,,
-\]
-where $\ket{\psi_n}$ and $E_n$ are the eigenstates and eigenvalues of
-$H(x)$.  Taking the curl:
-\[
-  F_{ab} = \partial_a\mathcal{A}_b - \partial_b\mathcal{A}_a
-  = -2\,\mathrm{Im}\sum_{n\neq 0}
+  F_{ab} = -2\,\mathrm{Im}\sum_{n\neq 0}
   \frac{\dbraket{\psi_0}{\partial_a H}{\psi_n}
         \dbraket{\psi_n}{\partial_b H}{\psi_0}}{(E_n-E_0)^2}\,.
 \]
-Taking absolute values and using the triangle inequality:
-\[
-  |F_{ab}| \leq 2\sum_{n\neq 0}
-  \frac{|\dbraket{\psi_0}{\partial_a H}{\psi_n}|\,
-        |\dbraket{\psi_n}{\partial_b H}{\psi_0}|}{(E_n-E_0)^2}\,.
-\]
-Since $E_n-E_0\geq\Delta$ for all $n\neq 0$:
+Since $E_n - E_0 \geq \Delta$ for all $n \neq 0$:
 \[
   |F_{ab}| \leq \frac{1}{\Delta^2}\;
   2\sum_{n\neq 0}
@@ -2034,35 +1201,17 @@ Since $E_n-E_0\geq\Delta$ for all $n\neq 0$:
   |\dbraket{\psi_n}{\partial_b H}{\psi_0}|
   = \frac{K}{\Delta^2}\,,
 \]
-where $K$ depends only on the matrix elements of $\partial_a H$ and
-$\partial_b H$ between eigenstates, not on the gap.  This completes
-the proof.
+where $K$ depends on matrix elements of $\partial_a H$ between
+eigenstates but not on the gap.
 \end{proof}
 
 \begin{proof}[Proof of Proposition~\ref{prop:qfi_volume}]
-Let $g_{ab}$ have eigendecomposition $g = V\,\mathrm{diag}(\lambda_1,
-\ldots,\lambda_d)\,V^T$ with $\lambda_1\geq\cdots\geq\lambda_r > 0 =
-\lambda_{r+1}=\cdots=\lambda_d$.  The Riemannian volume element on the
-non-degenerate $r$-dimensional subspace is
-$\mathrm{vol}_r = \sqrt{\det(g|_r)}$, where $g|_r$ is the restriction
-of $g$ to the span of the first $r$ eigenvectors.  Then
-\[
-  \det(g|_r) = \prod_{i=1}^r \lambda_i = \det^+(g)\,.
-\]
-Thus $\det^+(g) = (\mathrm{vol}_r)^2$.
-
-The interpretation follows directly:
-\begin{enumerate}
-\item When $\det^+(g)\to 0$, either the effective rank $r$ decreases
-  (eigenvalues crossing zero) or some eigenvalues approach zero,
-  indicating dimensional collapse of the state space---the
-  market state is confined to a lower-dimensional subspace,
-  characteristic of phase boundaries where correlations increase.
-\item Large $\det^+(g)$ indicates that the metric has full rank
-  with large eigenvalues: the market state is sensitive to perturbations
-  in all directions, characteristic of a stable, multi-factor regime
-  where diverse risk factors are active.  \qedhere
-\end{enumerate}
+Let $g_{ab}$ have eigenvalues
+$\lambda_1\geq\cdots\geq\lambda_r > 0 = \lambda_{r+1}=\cdots$.
+The Riemannian volume element on the non-degenerate $r$-dimensional
+subspace is $\mathrm{vol}_r = \sqrt{\det(g|_r)}$, and
+$\det(g|_r) = \prod_{i=1}^r \lambda_i = \det^+(g)$.  Thus
+$\det^+(g) = (\mathrm{vol}_r)^2$.
 \end{proof}
 
 
@@ -2071,19 +1220,68 @@ The interpretation follows directly:
 % =============================================================================
 \section{Supporting Analyses}\label{sec:supporting}
 
-\subsection{Ablation Study}
-
-Table~\ref{tab:ablation} ranks all 10 geometry-induced observables as
-standalone detectors.  The top three (Berry Phase Rate $d=0.93$, QFI
-Determinant $d=0.93$, Multi-Lag Fidelity $d=0.84$) are used throughout
-the paper for fusion and multi-asset experiments.  Ensemble methods
-(mean $d=0.73$) perform comparably to the best single indicators,
-indicating that individual observables capture distinct aspects of
-regime transitions.
+\subsection{Default Hyperparameters}
 
 \begin{table}[htb]
 \centering
-\caption{Individual geometric indicator contributions.}
+\caption{Default hyperparameters for the QCML regime detection
+pipeline.}
+\label{tab:hyperparams}
+\begin{tabular}{llc}
+\toprule
+Parameter & Description & Default \\
+\midrule
+$n$ & Hilbert space dimension & 8 \\
+$p$ & Number of PCA components & 15 \\
+$w$ & Rolling window & 20 days \\
+$k$ & Collapse threshold ($\sigma$) & 2.0 \\
+Operator method & Hermitian operator construction & PCA-inspired \\
+Normalization & Feature standardization & z-score + $L^2$ \\
+Fidelity lags & Multi-lag infidelity & $\{1,3,5,10\}$ \\
+Fidelity weights & Lag weights & $[0.4,0.3,0.2,0.1]$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Fusion Per-Crisis Results}
+
+\begin{table}[htb]
+\centering
+\caption{Per-crisis Cohen's $d$ for fused QCML detectors vs.\ RF.
+Bold indicates best per crisis.}
+\label{tab:fusion_comparison}
+\small
+\begin{tabular}{lccc}
+\toprule
+Crisis & RF & Phase A & Phase B \\
+\midrule
+2007 Quant Meltdown & 1.02 & \textbf{1.92} & 1.88 \\
+2008 GFC            & 1.74 & 0.84 & \textbf{2.09} \\
+2010 Flash Crash    & \textbf{1.54} & 1.13 & 0.08 \\
+2011 Debt Downgrade & 0.74 & 1.73 & \textbf{1.99} \\
+2015 China          & \textbf{1.49} & 1.32 & 0.43 \\
+2016 Brexit         & \textbf{2.00} & 1.87 & 0.34 \\
+2018 Volmageddon    & 0.03 & 1.83 & \textbf{2.02} \\
+2018 Fed Selloff    & 0.22 & 0.11 & \textbf{1.09} \\
+2019 Repo Crisis    & 1.11 & 0.43 & \textbf{1.84} \\
+2020 COVID          & 1.20 & 1.66 & \textbf{2.11} \\
+2022 Rate Hike      & 1.34 & \textbf{1.81} & 0.48 \\
+2023 SVB            & 0.09 & \textbf{1.69} & 1.74 \\
+\midrule
+Median              & 1.15 & 1.67 & \textbf{1.79} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Ablation Study}
+
+Table~\ref{tab:ablation} ranks all QCML observables as standalone
+detectors.
+
+\begin{table}[htb]
+\centering
+\caption{Individual QCML observable contributions (mean Cohen's $d$
+across 12 crises).}
 \label{tab:ablation}
 \small
 \begin{tabular}{lcc}
@@ -2094,54 +1292,15 @@ Berry Phase Rate       & 0.99 & 1 \\
 QFI Determinant        & 0.86 & 2 \\
 Multi-Lag Fidelity     & 0.84 & 3 \\
 Metric Condition No.   & 0.77 & 4 \\
-Geometric Ensemble       & 0.77 & 5 \\
+Geometric Ensemble     & 0.77 & 5 \\
 Scalar Curvature       & 0.75 & 6 \\
-QCML Chern             & 0.75 & 7 \\
-Geometric Consensus    & 0.66 & 8 \\
-QFI Susceptibility     & 0.49 & 9 \\
-Multi-Scale Chern      & 0.22 & 10 \\
+QCML Chern             & 0.65 & 7 \\
+QFI Susceptibility     & 0.54 & 8 \\
+Fidelity Decay Rate    & 0.45 & 9 \\
+Spectral Gap           & 0.32 & 10 \\
 \bottomrule
 \end{tabular}
 \end{table}
-
-\subsection{False Positive Rate Analysis}
-
-We evaluate specificity using four calm periods (2005--06, 2012--13,
-2017H1, 2021H1) where VIX~$<15$ and drawdown~$<5\%$.  HMM achieves
-the highest ROC-AUC (0.975) due to its latent-state partition.
-Among QCML methods, Multi-Scale Chern (0.859) and QCML Chern (0.748)
-have the best specificity.  Berry Phase Rate shows moderate
-specificity (0.461), reflecting a sensitivity--specificity trade-off:
-methods that fire early register as false positives under strict
-labeling.
-
-\begin{table}[htb]
-\centering
-\caption{False positive analysis: crisis vs.\ calm discrimination.}
-\label{tab:fpr}
-\small
-\begin{tabular}{lccc}
-\toprule
-Method & ROC-AUC & PR-AUC & F1 \\
-\midrule
-HMM 2-state          & 0.975 & 0.735 & 0.928 \\
-Multi-Scale Chern     & 0.859 & 0.425 & 0.639 \\
-QCML Chern           & 0.748 & 0.276 & 0.595 \\
-Metric Cond.\ No.    & 0.745 & 0.313 & 0.538 \\
-Berry Phase Rate      & 0.461 & 0.189 & 0.341 \\
-QFI Determinant       & 0.300 & 0.138 & 0.339 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\subsection{Method Correlation}
-
-PCA of the 10 geometric score time series reveals that 8~components are
-needed for 90\% variance (PC1 explains 32.1\%, first three: 57.3\%),
-indicating high-dimensional structure.  Berry Phase Rate and QFI
-Determinant are negatively correlated (Spearman $\rho = -0.25$),
-confirming they capture distinct geometric signals and supporting
-their joint use in fusion architectures.
 
 
 \end{document}

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.3.8)  9 FEB 2026 01:28
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.3.8)  9 FEB 2026 12:33
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -433,24 +433,24 @@ File: l3backend-pdftex.def 2024-05-08 L3 backend support: PDF output (pdfTeX)
 (./qcml_geometric_sde.aux)
 \openout1 = `qcml_geometric_sde.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 60.
-LaTeX Font Info:    ... okay on input line 60.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 60.
-LaTeX Font Info:    ... okay on input line 60.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 60.
-LaTeX Font Info:    ... okay on input line 60.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 60.
-LaTeX Font Info:    ... okay on input line 60.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 60.
-LaTeX Font Info:    ... okay on input line 60.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 60.
-LaTeX Font Info:    ... okay on input line 60.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 60.
-LaTeX Font Info:    ... okay on input line 60.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 60.
-LaTeX Font Info:    ... okay on input line 60.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 60.
-LaTeX Font Info:    ... okay on input line 60.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
 
 (/usr/local/texlive/2025/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
@@ -474,7 +474,7 @@ Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
 File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
-Package hyperref Info: Link coloring OFF on input line 60.
+Package hyperref Info: Link coloring OFF on input line 58.
 
 (./qcml_geometric_sde.out) (./qcml_geometric_sde.out)
 \@outlinefile=\write3
@@ -517,12 +517,12 @@ Package hyperref Info: Link coloring OFF on input line 60.
 
 Package caption Info: Begin \AtBeginDocument code.
 Package caption Info: End \AtBeginDocument code.
-LaTeX Font Info:    Trying to load font information for U+msa on input line 62.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 60.
 
 (/usr/local/texlive/2025/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 62.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 60.
 
 
 (/usr/local/texlive/2025/texmf-dist/tex/latex/amsfonts/umsb.fd
@@ -537,271 +537,157 @@ al/texlive/2025/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc}]
 [2]
 
 [3]
-Overfull \hbox (1.8939pt too wide) in paragraph at lines 284--293
-\T1/cmr/m/n/10.95 Deep learn-ing methods---including LSTMs [[]], Tem-po-ral Con
--vo-lu-tional Net-works [[]], Transformer-
- []
 
-
-
-[4]
-Overfull \hbox (3.06413pt too wide) in paragraph at lines 393--397
-\T1/cmr/m/n/10.95 The proof fol-lows from the im-plicit func-tion the-o-rem ap-
-plied to the eigen-value equa-tion $\OML/cmm/m/it/10.95 H\OT1/cmr/m/n/10.95 (\O
-ML/cmm/m/it/10.95 x\OT1/cmr/m/n/10.95 )\OMS/cmsy/m/n/10.95 j\OML/cmm/m/it/10.95
-  \OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 x\OT1/cmr/m/n/10.95 )\OMS/cmsy/m/n/10
-.95 i \OT1/cmr/m/n/10.95 =
- []
-
-
+[4{/usr/local/texlive/2025/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc
+}]
 
 [5]
 
 [6]
+Package hyperref Info: bookmark level for unknown algorithm defaults to 0 on in
+put line 567.
+
 
 [7]
 
 [8]
+<../experiments/outputs/regime_detection/narratives/narrative_2008_gfc.pdf, id=
+313, 1000.87236pt x 853.13506pt>
+File: ../experiments/outputs/regime_detection/narratives/narrative_2008_gfc.pdf
+ Graphic file (type pdf)
+<use ../experiments/outputs/regime_detection/narratives/narrative_2008_gfc.pdf>
 
-[9]
-
-[10]
-Overfull \hbox (31.72395pt too wide) in paragraph at lines 817--822
-[]\T1/cmr/bx/n/10.95 Multi-scale con-sen-sus. \T1/cmr/m/n/10.95 Chern num-bers 
-are com-puted at mul-ti-ple win-dow sizes $\OML/cmm/m/it/10.95 w \OMS/cmsy/m/n/
-10.95 2 f\OT1/cmr/m/n/10.95 10\OML/cmm/m/it/10.95 ; \OT1/cmr/m/n/10.95 20\OML/c
-mm/m/it/10.95 ; \OT1/cmr/m/n/10.95 30\OML/cmm/m/it/10.95 ; \OT1/cmr/m/n/10.95 5
-0\OMS/cmsy/m/n/10.95 g$\T1/cmr/m/n/10.95 .
- []
-
-Package hyperref Info: bookmark level for unknown algorithm defaults to 0 on in
-put line 838.
-
-
-[11]
-
-[12]
-
-[13]
-
-[14]
-Overfull \hbox (3.83458pt too wide) in paragraph at lines 1095--1101
- []\T1/cmr/bx/n/10.95 Phase A: Score-level fu-sion.[] \T1/cmr/m/n/10.95 The \T1
-/cmr/bx/n/10.95 FusedQCMLDe-tec-tor \T1/cmr/m/n/10.95 com-bines causal z-scores
- via weighted
- []
-
-
-
-[15]
-
-[16]
-<../experiments/outputs/regime_detection/optuna_causal/figures/optuna_6conditio
-n_comparison.pdf, id=503, 1004.5166pt x 382.12764pt>
-File: ../experiments/outputs/regime_detection/optuna_causal/figures/optuna_6con
-dition_comparison.pdf Graphic file (type pdf)
-<use ../experiments/outputs/regime_detection/optuna_causal/figures/optuna_6cond
-ition_comparison.pdf>
-Package pdftex.def Info: ../experiments/outputs/regime_detection/optuna_causal/
-figures/optuna_6condition_comparison.pdf  used on input line 1219.
-(pdftex.def)             Requested size: 446.26582pt x 169.76346pt.
-<../experiments/outputs/regime_detection/optuna_causal/figures/optuna_crisis_he
-atmap.pdf, id=504, 857.98975pt x 570.90517pt>
-File: ../experiments/outputs/regime_detection/optuna_causal/figures/optuna_cris
-is_heatmap.pdf Graphic file (type pdf)
-<use ../experiments/outputs/regime_detection/optuna_causal/figures/optuna_crisi
-s_heatmap.pdf>
-Package pdftex.def Info: ../experiments/outputs/regime_detection/optuna_causal/
-figures/optuna_crisis_heatmap.pdf  used on input line 1228.
-(pdftex.def)             Requested size: 446.26582pt x 296.95079pt.
-<../experiments/outputs/regime_detection/optuna_causal/figures/optuna_phase_a_v
-s_b.pdf, id=505, 1004.51788pt x 357.77953pt>
-File: ../experiments/outputs/regime_detection/optuna_causal/figures/optuna_phas
-e_a_vs_b.pdf Graphic file (type pdf)
-<use ../experiments/outputs/regime_detection/optuna_causal/figures/optuna_phase
-_a_vs_b.pdf>
-Package pdftex.def Info: ../experiments/outputs/regime_detection/optuna_causal/
-figures/optuna_phase_a_vs_b.pdf  used on input line 1236.
-(pdftex.def)             Requested size: 446.26582pt x 158.94661pt.
-<../experiments/outputs/regime_detection/optuna_causal/figures/optuna_method_ra
-nking.pdf, id=506, 715.39458pt x 426.28146pt>
-File: ../experiments/outputs/regime_detection/optuna_causal/figures/optuna_meth
-od_ranking.pdf Graphic file (type pdf)
-<use ../experiments/outputs/regime_detection/optuna_causal/figures/optuna_metho
-d_ranking.pdf>
-Package pdftex.def Info: ../experiments/outputs/regime_detection/optuna_causal/
-figures/optuna_method_ranking.pdf  used on input line 1244.
-(pdftex.def)             Requested size: 399.29463pt x 237.92894pt.
-
-
-[17 <../experiments/outputs/regime_detection/optuna_causal/figures/optuna_6cond
-ition_comparison.pdf>]
-
-[18 <../experiments/outputs/regime_detection/optuna_causal/figures/optuna_crisi
-s_heatmap.pdf> <../experiments/outputs/regime_detection/optuna_causal/figures/o
-ptuna_phase_a_vs_b.pdf>]
-Overfull \hbox (10.74544pt too wide) in paragraph at lines 1310--1317
-[]\T1/cmr/m/n/10.95 However, re-verse causal-ity (mar-ket $\OMS/cmsy/m/n/10.95 
-!$ \T1/cmr/m/n/10.95 QCML) is sub-stan-tially stronger: 2/45 Bonferroni-signifi
-cant
- []
-
-
-
-[19 <../experiments/outputs/regime_detection/optuna_causal/figures/optuna_metho
-d_ranking.pdf>]
-<../experiments/outputs/regime_detection/narratives/narrative_2008_crisis.pdf, 
-id=916, 867.49786pt x 1267.08746pt>
-File: ../experiments/outputs/regime_detection/narratives/narrative_2008_crisis.
-pdf Graphic file (type pdf)
-<use ../experiments/outputs/regime_detection/narratives/narrative_2008_crisis.p
-df>
 Package pdftex.def Info: ../experiments/outputs/regime_detection/narratives/nar
-rative_2008_crisis.pdf  used on input line 1355.
-(pdftex.def)             Requested size: 378.51015pt x 552.86067pt.
+rative_2008_gfc.pdf  used on input line 698.
+(pdftex.def)             Requested size: 399.30334pt x 340.36276pt.
 <../experiments/outputs/regime_detection/narratives/narrative_2020_covid.pdf, i
-d=918, 867.5411pt x 1267.08746pt>
+d=315, 1005.08813pt x 853.13506pt>
 File: ../experiments/outputs/regime_detection/narratives/narrative_2020_covid.p
 df Graphic file (type pdf)
 <use ../experiments/outputs/regime_detection/narratives/narrative_2020_covid.pd
 f>
 Package pdftex.def Info: ../experiments/outputs/regime_detection/narratives/nar
-rative_2020_covid.pdf  used on input line 1380.
-(pdftex.def)             Requested size: 378.529pt x 552.86067pt.
+rative_2020_covid.pdf  used on input line 717.
+(pdftex.def)             Requested size: 399.29826pt x 338.9308pt.
 <../experiments/outputs/regime_detection/narratives/narrative_2022_rates.pdf, i
-d=920, 863.07129pt x 1267.08746pt>
+d=317, 1000.87236pt x 853.13506pt>
 File: ../experiments/outputs/regime_detection/narratives/narrative_2022_rates.p
 df Graphic file (type pdf)
 <use ../experiments/outputs/regime_detection/narratives/narrative_2022_rates.pd
 f>
 Package pdftex.def Info: ../experiments/outputs/regime_detection/narratives/nar
-rative_2022_rates.pdf  used on input line 1403.
-(pdftex.def)             Requested size: 376.57872pt x 552.86067pt.
+rative_2022_rates.pdf  used on input line 733.
+(pdftex.def)             Requested size: 399.30334pt x 340.36276pt.
 
 
-[20]
+[9]
 
-[21 <../experiments/outputs/regime_detection/narratives/narrative_2008_crisis.p
-df>]
+[10 <../experiments/outputs/regime_detection/narratives/narrative_2008_gfc.pdf>
+]
 
-[22 <../experiments/outputs/regime_detection/narratives/narrative_2020_covid.pd
+[11 <../experiments/outputs/regime_detection/narratives/narrative_2020_covid.pd
 f>]
 
-[23 <../experiments/outputs/regime_detection/narratives/narrative_2022_rates.pd
+[12 <../experiments/outputs/regime_detection/narratives/narrative_2022_rates.pd
 f>]
-
-[24{/usr/local/texlive/2025/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.en
-c}]
-<../experiments/outputs/regime_detection/sensitivity/figures/sensitivity_heatma
-p.pdf, id=1215, 1308.81158pt x 297.511pt>
-File: ../experiments/outputs/regime_detection/sensitivity/figures/sensitivity_h
-eatmap.pdf Graphic file (type pdf)
-<use ../experiments/outputs/regime_detection/sensitivity/figures/sensitivity_he
-atmap.pdf>
-Package pdftex.def Info: ../experiments/outputs/regime_detection/sensitivity/fi
-gures/sensitivity_heatmap.pdf  used on input line 1546.
-(pdftex.def)             Requested size: 469.75502pt x 106.78156pt.
+Overfull \hbox (25.28024pt too wide) in paragraph at lines 804--810
+ []\T1/cmr/bx/n/10.95 Multi-observable fu-sion.[] \T1/cmr/m/n/10.95 Fus-ing the
+ top three ob-serv-ables via Optuna-optimized weights ($\OML/cmm/m/it/10.95 w[]
+ \OT1/cmr/m/n/10.95 =
+ []
 
 
-[25]
 
-[26 <../experiments/outputs/regime_detection/sensitivity/figures/sensitivity_he
-atmap.pdf>]
+[13]
 
-[27]
+[14]
+
+[15]
 <../experiments/outputs/regime_detection/superiority_publication/figures/effect
-_sizes.pdf, id=1351, 857.66235pt x 426.23912pt>
+_sizes.pdf, id=704, 715.49309pt x 354.12746pt>
 File: ../experiments/outputs/regime_detection/superiority_publication/figures/e
 ffect_sizes.pdf Graphic file (type pdf)
 <use ../experiments/outputs/regime_detection/superiority_publication/figures/ef
 fect_sizes.pdf>
 Package pdftex.def Info: ../experiments/outputs/regime_detection/superiority_pu
-blication/figures/effect_sizes.pdf  used on input line 1699.
-(pdftex.def)             Requested size: 469.75502pt x 233.45665pt.
+blication/figures/effect_sizes.pdf  used on input line 997.
+(pdftex.def)             Requested size: 469.75502pt x 232.50363pt.
 <../experiments/outputs/regime_detection/superiority_publication/figures/bootst
-rap_ranks.pdf, id=1352, 715.17188pt x 571.15887pt>
+rap_ranks.pdf, id=705, 716.12233pt x 353.66318pt>
 File: ../experiments/outputs/regime_detection/superiority_publication/figures/b
 ootstrap_ranks.pdf Graphic file (type pdf)
 <use ../experiments/outputs/regime_detection/superiority_publication/figures/bo
 otstrap_ranks.pdf>
 Package pdftex.def Info: ../experiments/outputs/regime_detection/superiority_pu
-blication/figures/bootstrap_ranks.pdf  used on input line 1709.
-(pdftex.def)             Requested size: 469.75502pt x 375.16199pt.
-<../experiments/outputs/regime_detection/superiority_publication/figures/bayesi
-an_posterior.pdf, id=1353, 715.14241pt x 571.15887pt>
-File: ../experiments/outputs/regime_detection/superiority_publication/figures/b
-ayesian_posterior.pdf Graphic file (type pdf)
-<use ../experiments/outputs/regime_detection/superiority_publication/figures/ba
-yesian_posterior.pdf>
-Package pdftex.def Info: ../experiments/outputs/regime_detection/superiority_pu
-blication/figures/bayesian_posterior.pdf  used on input line 1717.
-(pdftex.def)             Requested size: 469.75502pt x 375.17941pt.
+blication/figures/bootstrap_ranks.pdf  used on input line 1006.
+(pdftex.def)             Requested size: 469.75502pt x 231.99915pt.
 
 
-[28 <../experiments/outputs/regime_detection/superiority_publication/figures/ef
+[16 <../experiments/outputs/regime_detection/superiority_publication/figures/ef
 fect_sizes.pdf>]
 
-[29 <../experiments/outputs/regime_detection/superiority_publication/figures/bo
+[17 <../experiments/outputs/regime_detection/superiority_publication/figures/bo
 otstrap_ranks.pdf>]
+Overfull \hbox (3.01674pt too wide) in paragraph at lines 1157--1162
+[]\T1/cmr/m/n/10.95 Consider the eigen-value equa-tion $\OML/cmm/m/it/10.95 H\O
+T1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 x\OT1/cmr/m/n/10.95 )\OMS/cmsy/m/n/10.95 
+j\OML/cmm/m/it/10.95  \OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 x\OT1/cmr/m/n/10.
+95 )\OMS/cmsy/m/n/10.95 i \OT1/cmr/m/n/10.95 = \OML/cmm/m/it/10.95 E[]\OT1/cmr/
+m/n/10.95 (\OML/cmm/m/it/10.95 x\OT1/cmr/m/n/10.95 )\OMS/cmsy/m/n/10.95 j\OML/c
+mm/m/it/10.95  \OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 x\OT1/cmr/m/n/10.95 )\OM
+S/cmsy/m/n/10.95 i$ \T1/cmr/m/n/10.95 sub-ject to $\OMS/cmsy/m/n/10.95 h\OML/cm
+m/m/it/10.95  \OMS/cmsy/m/n/10.95 j\OML/cmm/m/it/10.95  \OMS/cmsy/m/n/10.95 i \
+OT1/cmr/m/n/10.95 =
+ []
 
-[30 <../experiments/outputs/regime_detection/superiority_publication/figures/ba
-yesian_posterior.pdf>]
 
-[31]
 
-[32]
+[18]
 
-[33]
+[19]
 
-[34] (./qcml_geometric_sde.aux)
+[20] (./qcml_geometric_sde.aux)
  ***********
 LaTeX2e <2024-11-01> patch level 2
 L3 programming layer <2025-01-18>
  ***********
 Package rerunfilecheck Info: File `qcml_geometric_sde.out' has not changed.
-(rerunfilecheck)             Checksum: 6F4041FAC4B21078D3954203D7208FEC;11668.
+(rerunfilecheck)             Checksum: 83F3C613FB2A23B87F2C2DD62EC48876;5034.
  ) 
 Here is how much of TeX's memory you used:
- 14188 strings out of 473190
- 225350 string characters out of 5715801
- 635499 words of memory out of 5000000
- 37004 multiletter control sequences out of 15000+600000
- 585583 words of font info for 107 fonts, out of 8000000 for 9000
+ 13970 strings out of 473190
+ 218572 string characters out of 5715801
+ 631544 words of memory out of 5000000
+ 36879 multiletter control sequences out of 15000+600000
+ 583226 words of font info for 104 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,10n,79p,555b,658s stack positions out of 10000i,1000n,20000p,200000b,200000s
-</usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb
-></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb>
-</usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb><
-/usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></u
-sr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr
-/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/l
-ocal/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/loc
-al/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/local/
-texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/local/tex
-live/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texliv
-e/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive
-/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/local/texlive/2
-025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/202
-5/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/local/texlive
-/2025/texmf-dist/fonts/type1/public/cm-super/sfbx1000.pfb></usr/local/texlive/2
-025/texmf-dist/fonts/type1/public/cm-super/sfbx1095.pfb></usr/local/texlive/202
-5/texmf-dist/fonts/type1/public/cm-super/sfbx1200.pfb></usr/local/texlive/2025/
-texmf-dist/fonts/type1/public/cm-super/sfbx1440.pfb></usr/local/texlive/2025/te
-xmf-dist/fonts/type1/public/cm-super/sfrm0800.pfb></usr/local/texlive/2025/texm
-f-dist/fonts/type1/public/cm-super/sfrm0900.pfb></usr/local/texlive/2025/texmf-
-dist/fonts/type1/public/cm-super/sfrm1000.pfb></usr/local/texlive/2025/texmf-di
-st/fonts/type1/public/cm-super/sfrm1095.pfb></usr/local/texlive/2025/texmf-dist
-/fonts/type1/public/cm-super/sfrm1200.pfb></usr/local/texlive/2025/texmf-dist/f
-onts/type1/public/cm-super/sfrm1728.pfb></usr/local/texlive/2025/texmf-dist/fon
-ts/type1/public/cm-super/sfsi1095.pfb></usr/local/texlive/2025/texmf-dist/fonts
-/type1/public/cm-super/sfti1000.pfb></usr/local/texlive/2025/texmf-dist/fonts/t
-ype1/public/cm-super/sfti1095.pfb></usr/local/texlive/2025/texmf-dist/fonts/typ
-e1/public/cm-super/sftt1095.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1
-/public/cm-super/sftt1200.pfb>
-Output written on qcml_geometric_sde.pdf (34 pages, 1052104 bytes).
+ 75i,10n,79p,555b,610s stack positions out of 10000i,1000n,20000p,200000b,200000s
+</usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb
+></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb>
+</usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></
+usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></us
+r/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/
+local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/loc
+al/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/loca
+l/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/
+texlive/2025/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/lo
+cal/texlive/2025/texmf-dist/fonts/type1/public/cm-super/sfbx1000.pfb></usr/loca
+l/texlive/2025/texmf-dist/fonts/type1/public/cm-super/sfbx1095.pfb></usr/local/
+texlive/2025/texmf-dist/fonts/type1/public/cm-super/sfbx1200.pfb></usr/local/te
+xlive/2025/texmf-dist/fonts/type1/public/cm-super/sfbx1440.pfb></usr/local/texl
+ive/2025/texmf-dist/fonts/type1/public/cm-super/sfrm0900.pfb></usr/local/texliv
+e/2025/texmf-dist/fonts/type1/public/cm-super/sfrm1000.pfb></usr/local/texlive/
+2025/texmf-dist/fonts/type1/public/cm-super/sfrm1095.pfb></usr/local/texlive/20
+25/texmf-dist/fonts/type1/public/cm-super/sfrm1200.pfb></usr/local/texlive/2025
+/texmf-dist/fonts/type1/public/cm-super/sfrm1728.pfb></usr/local/texlive/2025/t
+exmf-dist/fonts/type1/public/cm-super/sfti1000.pfb></usr/local/texlive/2025/tex
+mf-dist/fonts/type1/public/cm-super/sfti1095.pfb></usr/local/texlive/2025/texmf
+-dist/fonts/type1/public/cm-super/sftt1095.pfb></usr/local/texlive/2025/texmf-d
+ist/fonts/type1/public/cm-super/sftt1200.pfb>
+Output written on qcml_geometric_sde.pdf (20 pages, 740655 bytes).
 PDF statistics:
- 1815 PDF objects out of 2073 (max. 8388607)
- 842 compressed objects within 9 object streams
- 238 named destinations out of 1000 (max. 500000)
- 544 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 991 PDF objects out of 1000 (max. 8388607)
+ 565 compressed objects within 6 object streams
+ 148 named destinations out of 1000 (max. 500000)
+ 290 words of extra memory for PDF output out of 10000 (max. 10000000)
 
