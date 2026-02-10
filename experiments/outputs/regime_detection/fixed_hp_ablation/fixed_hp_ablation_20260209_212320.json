@@ -1,0 +1,264 @@
+{
+  "timestamp": "20260209_212320",
+  "config": {
+    "hilbert_dim": 8,
+    "n_pca_components": 15,
+    "operator_method": "pca_inspired",
+    "rolling_window": 20,
+    "seed": 42
+  },
+  "results": {
+    "Berry Phase Rate|2007_quant": {
+      "method": "Berry Phase Rate",
+      "crisis": "2007_quant",
+      "d": 0.467,
+      "ci_lo": 0.428,
+      "ci_hi": 0.512
+    },
+    "Berry Phase Rate|2008_gfc": {
+      "method": "Berry Phase Rate",
+      "crisis": "2008_gfc",
+      "d": 0.364,
+      "ci_lo": 0.336,
+      "ci_hi": 0.396
+    },
+    "Berry Phase Rate|2010_flash": {
+      "method": "Berry Phase Rate",
+      "crisis": "2010_flash",
+      "d": 0.195,
+      "ci_lo": 0.162,
+      "ci_hi": 0.229
+    },
+    "Berry Phase Rate|2011_euro": {
+      "method": "Berry Phase Rate",
+      "crisis": "2011_euro",
+      "d": 0.283,
+      "ci_lo": 0.259,
+      "ci_hi": 0.308
+    },
+    "Berry Phase Rate|2015_china": {
+      "method": "Berry Phase Rate",
+      "crisis": "2015_china",
+      "d": 0.267,
+      "ci_lo": 0.246,
+      "ci_hi": 0.289
+    },
+    "Berry Phase Rate|2018_volmageddon": {
+      "method": "Berry Phase Rate",
+      "crisis": "2018_volmageddon",
+      "d": 0.157,
+      "ci_lo": 0.095,
+      "ci_hi": 0.212
+    },
+    "Berry Phase Rate|2018_q4": {
+      "method": "Berry Phase Rate",
+      "crisis": "2018_q4",
+      "d": 0.237,
+      "ci_lo": 0.21,
+      "ci_hi": 0.265
+    },
+    "Berry Phase Rate|2019_repo": {
+      "method": "Berry Phase Rate",
+      "crisis": "2019_repo",
+      "d": 0.879,
+      "ci_lo": 0.345,
+      "ci_hi": 1.532
+    },
+    "Berry Phase Rate|2020_covid": {
+      "method": "Berry Phase Rate",
+      "crisis": "2020_covid",
+      "d": 0.192,
+      "ci_lo": 0.133,
+      "ci_hi": 0.245
+    },
+    "Berry Phase Rate|2022_rates": {
+      "method": "Berry Phase Rate",
+      "crisis": "2022_rates",
+      "d": 0.319,
+      "ci_lo": 0.293,
+      "ci_hi": 0.346
+    },
+    "Berry Phase Rate|2023_svb": {
+      "method": "Berry Phase Rate",
+      "crisis": "2023_svb",
+      "d": 0.297,
+      "ci_lo": 0.273,
+      "ci_hi": 0.322
+    },
+    "Berry Phase Rate|2024_carry": {
+      "method": "Berry Phase Rate",
+      "crisis": "2024_carry",
+      "d": 0.226,
+      "ci_lo": 0.202,
+      "ci_hi": 0.252
+    },
+    "QFI Determinant|2007_quant": {
+      "method": "QFI Determinant",
+      "crisis": "2007_quant",
+      "d": 1.585,
+      "ci_lo": 1.233,
+      "ci_hi": 1.952
+    },
+    "QFI Determinant|2008_gfc": {
+      "method": "QFI Determinant",
+      "crisis": "2008_gfc",
+      "d": 1.226,
+      "ci_lo": 1.165,
+      "ci_hi": 1.291
+    },
+    "QFI Determinant|2010_flash": {
+      "method": "QFI Determinant",
+      "crisis": "2010_flash",
+      "d": 0.209,
+      "ci_lo": 0.026,
+      "ci_hi": 0.409
+    },
+    "QFI Determinant|2011_euro": {
+      "method": "QFI Determinant",
+      "crisis": "2011_euro",
+      "d": 0.196,
+      "ci_lo": 0.044,
+      "ci_hi": 0.351
+    },
+    "QFI Determinant|2015_china": {
+      "method": "QFI Determinant",
+      "crisis": "2015_china",
+      "d": 0.754,
+      "ci_lo": 0.562,
+      "ci_hi": 0.936
+    },
+    "QFI Determinant|2018_volmageddon": {
+      "method": "QFI Determinant",
+      "crisis": "2018_volmageddon",
+      "d": 0.289,
+      "ci_lo": 0.123,
+      "ci_hi": 0.443
+    },
+    "QFI Determinant|2018_q4": {
+      "method": "QFI Determinant",
+      "crisis": "2018_q4",
+      "d": 0.102,
+      "ci_lo": 0.005,
+      "ci_hi": 0.278
+    },
+    "QFI Determinant|2019_repo": {
+      "method": "QFI Determinant",
+      "crisis": "2019_repo",
+      "d": 0.861,
+      "ci_lo": 0.743,
+      "ci_hi": 0.981
+    },
+    "QFI Determinant|2020_covid": {
+      "method": "QFI Determinant",
+      "crisis": "2020_covid",
+      "d": 0.678,
+      "ci_lo": 0.462,
+      "ci_hi": 0.886
+    },
+    "QFI Determinant|2022_rates": {
+      "method": "QFI Determinant",
+      "crisis": "2022_rates",
+      "d": 0.784,
+      "ci_lo": 0.653,
+      "ci_hi": 0.913
+    },
+    "QFI Determinant|2023_svb": {
+      "method": "QFI Determinant",
+      "crisis": "2023_svb",
+      "d": 0.668,
+      "ci_lo": 0.501,
+      "ci_hi": 0.838
+    },
+    "QFI Determinant|2024_carry": {
+      "method": "QFI Determinant",
+      "crisis": "2024_carry",
+      "d": 0.248,
+      "ci_lo": 0.053,
+      "ci_hi": 0.438
+    },
+    "Multi-Lag Fidelity|2007_quant": {
+      "method": "Multi-Lag Fidelity",
+      "crisis": "2007_quant",
+      "d": 0.603,
+      "ci_lo": 0.482,
+      "ci_hi": 0.728
+    },
+    "Multi-Lag Fidelity|2008_gfc": {
+      "method": "Multi-Lag Fidelity",
+      "crisis": "2008_gfc",
+      "d": 1.081,
+      "ci_lo": 1.053,
+      "ci_hi": 1.112
+    },
+    "Multi-Lag Fidelity|2010_flash": {
+      "method": "Multi-Lag Fidelity",
+      "crisis": "2010_flash",
+      "d": 0.136,
+      "ci_lo": 0.007,
+      "ci_hi": 0.439
+    },
+    "Multi-Lag Fidelity|2011_euro": {
+      "method": "Multi-Lag Fidelity",
+      "crisis": "2011_euro",
+      "d": 0.621,
+      "ci_lo": 0.53,
+      "ci_hi": 0.712
+    },
+    "Multi-Lag Fidelity|2015_china": {
+      "method": "Multi-Lag Fidelity",
+      "crisis": "2015_china",
+      "d": 0.523,
+      "ci_lo": 0.411,
+      "ci_hi": 0.63
+    },
+    "Multi-Lag Fidelity|2018_volmageddon": {
+      "method": "Multi-Lag Fidelity",
+      "crisis": "2018_volmageddon",
+      "d": 0.208,
+      "ci_lo": 0.014,
+      "ci_hi": 0.438
+    },
+    "Multi-Lag Fidelity|2018_q4": {
+      "method": "Multi-Lag Fidelity",
+      "crisis": "2018_q4",
+      "d": 0.18,
+      "ci_lo": 0.016,
+      "ci_hi": 0.374
+    },
+    "Multi-Lag Fidelity|2019_repo": {
+      "method": "Multi-Lag Fidelity",
+      "crisis": "2019_repo",
+      "d": 1.099,
+      "ci_lo": 0.802,
+      "ci_hi": 1.373
+    },
+    "Multi-Lag Fidelity|2020_covid": {
+      "method": "Multi-Lag Fidelity",
+      "crisis": "2020_covid",
+      "d": 0.109,
+      "ci_lo": 0.006,
+      "ci_hi": 0.372
+    },
+    "Multi-Lag Fidelity|2022_rates": {
+      "method": "Multi-Lag Fidelity",
+      "crisis": "2022_rates",
+      "d": 0.817,
+      "ci_lo": 0.747,
+      "ci_hi": 0.885
+    },
+    "Multi-Lag Fidelity|2023_svb": {
+      "method": "Multi-Lag Fidelity",
+      "crisis": "2023_svb",
+      "d": 0.016,
+      "ci_lo": 0.002,
+      "ci_hi": 0.185
+    },
+    "Multi-Lag Fidelity|2024_carry": {
+      "method": "Multi-Lag Fidelity",
+      "crisis": "2024_carry",
+      "d": 0.018,
+      "ci_lo": 0.004,
+      "ci_hi": 0.301
+    }
+  }
+}

@@ -74,6 +74,8 @@
 \newlabel{subsec:zscore}{{3.4}{5}{Z-Score Thresholding (Algorithm~\ref {alg:zscore})}{subsection.3.4}{}}
 \@writefile{loa}{\contentsline {algorithm}{\numberline {1}{\ignorespaces Causal Expanding-Window Z-Score}}{5}{algorithm.1}\protected@file@percent }
 \newlabel{alg:zscore}{{1}{5}{Causal Expanding-Window Z-Score}{algorithm.1}{}}
+\@writefile{loa}{\contentsline {algorithm}{\numberline {2}{\ignorespaces FAR-Calibrated Threshold}}{6}{algorithm.2}\protected@file@percent }
+\newlabel{alg:far}{{2}{6}{FAR-Calibrated Threshold}{algorithm.2}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {4}Experimental Protocol}{6}{section.4}\protected@file@percent }
 \newlabel{sec:protocol}{{4}{6}{Experimental Protocol}{section.4}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Data and Crisis Definitions}{6}{subsection.4.1}\protected@file@percent }
@@ -84,49 +86,56 @@
 \newlabel{subsec:methods_protocol}{{4.2}{6}{Methods and HPO Protocol}{subsection.4.2}{}}
 \@writefile{toc}{\contentsline {paragraph}{Random Forest protocol.}{6}{section*.16}\protected@file@percent }
 \@writefile{toc}{\contentsline {paragraph}{Causal preprocessing.}{6}{section*.17}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Statistical evaluation.}{6}{section*.18}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Detection Pipeline}{6}{subsection.4.3}\protected@file@percent }
-\newlabel{subsec:pipeline}{{4.3}{6}{Detection Pipeline}{subsection.4.3}{}}
-\@writefile{toc}{\contentsline {paragraph}{Computational cost.}{6}{section*.19}\protected@file@percent }
+\citation{silverman1986}
 \@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Hyperparameter protocol. All methods: 50 Optuna TPE trials, LOCO CV. Enriched features (4$d$ rolling stats) for all.}}{7}{table.caption.15}\protected@file@percent }
 \newlabel{tab:protocol}{{3}{7}{Hyperparameter protocol. All methods: 50 Optuna TPE trials, LOCO CV. Enriched features (4$d$ rolling stats) for all}{table.caption.15}{}}
-\@writefile{loa}{\contentsline {algorithm}{\numberline {2}{\ignorespaces QCML Geometric Regime Detection}}{7}{algorithm.2}\protected@file@percent }
-\newlabel{alg:detection}{{2}{7}{QCML Geometric Regime Detection}{algorithm.2}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {5}Results}{7}{section.5}\protected@file@percent }
-\newlabel{sec:results}{{5}{7}{Results}{section.5}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Crisis-Window Separability}{7}{subsection.5.1}\protected@file@percent }
-\newlabel{subsec:separability}{{5.1}{7}{Crisis-Window Separability}{subsection.5.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Temporal Out-of-Sample}{7}{subsection.5.2}\protected@file@percent }
-\newlabel{subsec:temporal_oos}{{5.2}{7}{Temporal Out-of-Sample}{subsection.5.2}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Crisis-window separability: 12 methods across 12 crises. Cohen's $d$ [95\% bootstrap CI] averaged across crises.}}{8}{table.caption.20}\protected@file@percent }
-\newlabel{tab:comparison}{{4}{8}{Crisis-window separability: 12 methods across 12 crises. Cohen's $d$ [95\% bootstrap CI] averaged across crises}{table.caption.20}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces Per-crisis Cohen's $d$ [bootstrap CI].}}{8}{table.caption.21}\protected@file@percent }
-\newlabel{tab:crisis_breakdown}{{5}{8}{Per-crisis Cohen's $d$ [bootstrap CI]}{table.caption.21}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Multi-Asset Generalization}{8}{subsection.5.3}\protected@file@percent }
-\newlabel{subsec:multi_asset}{{5.3}{8}{Multi-Asset Generalization}{subsection.5.3}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.4}Walk-Forward Detection}{8}{subsection.5.4}\protected@file@percent }
-\newlabel{subsec:walkforward}{{5.4}{8}{Walk-Forward Detection}{subsection.5.4}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces Temporal OOS Cohen's $d$. Calibration frozen at 2020-01-01.}}{9}{table.caption.22}\protected@file@percent }
-\newlabel{tab:oos}{{6}{9}{Temporal OOS Cohen's $d$. Calibration frozen at 2020-01-01}{table.caption.22}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces Mean Cohen's $d$ by asset across 4 representative crises.}}{9}{table.caption.23}\protected@file@percent }
-\newlabel{tab:multi_asset}{{7}{9}{Mean Cohen's $d$ by asset across 4 representative crises}{table.caption.23}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {8}{\ignorespaces Walk-forward detection summary (expanding window, starting 2005). Median across 9~crisis--window pairs. Delay is days from crisis start to first $z > 2.0$; ``---'' = never detected. Det.\ Rate = fraction of crises detected.}}{9}{table.caption.24}\protected@file@percent }
-\newlabel{tab:walkforward}{{8}{9}{Walk-forward detection summary (expanding window, starting 2005). Median across 9~crisis--window pairs. Delay is days from crisis start to first $z > 2.0$; ``---'' = never detected. Det.\ Rate = fraction of crises detected}{table.caption.24}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.5}Interaction Test: Complementarity}{9}{subsection.5.5}\protected@file@percent }
-\newlabel{subsec:interaction}{{5.5}{9}{Interaction Test: Complementarity}{subsection.5.5}{}}
+\@writefile{toc}{\contentsline {paragraph}{Statistical evaluation.}{7}{section*.18}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{On supervised hyperparameter selection for unsupervised scores.}{7}{section*.19}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Detection Pipeline}{7}{subsection.4.3}\protected@file@percent }
+\newlabel{subsec:pipeline}{{4.3}{7}{Detection Pipeline}{subsection.4.3}{}}
+\@writefile{loa}{\contentsline {algorithm}{\numberline {3}{\ignorespaces QCML Geometric Regime Detection}}{7}{algorithm.3}\protected@file@percent }
+\newlabel{alg:detection}{{3}{7}{QCML Geometric Regime Detection}{algorithm.3}{}}
+\@writefile{toc}{\contentsline {paragraph}{Computational cost.}{7}{section*.20}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {5}Results}{8}{section.5}\protected@file@percent }
+\newlabel{sec:results}{{5}{8}{Results}{section.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Crisis-Window Separability}{8}{subsection.5.1}\protected@file@percent }
+\newlabel{subsec:separability}{{5.1}{8}{Crisis-Window Separability}{subsection.5.1}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Crisis-window separability: 12 methods across 12 crises. Cohen's $d$ [95\% bootstrap CI] averaged across crises.}}{8}{table.caption.21}\protected@file@percent }
+\newlabel{tab:comparison}{{4}{8}{Crisis-window separability: 12 methods across 12 crises. Cohen's $d$ [95\% bootstrap CI] averaged across crises}{table.caption.21}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces Per-crisis Cohen's $d$ [bootstrap CI].}}{8}{table.caption.22}\protected@file@percent }
+\newlabel{tab:crisis_breakdown}{{5}{8}{Per-crisis Cohen's $d$ [bootstrap CI]}{table.caption.22}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Temporal Out-of-Sample}{9}{subsection.5.2}\protected@file@percent }
+\newlabel{subsec:temporal_oos}{{5.2}{9}{Temporal Out-of-Sample}{subsection.5.2}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces Temporal OOS Cohen's $d$. Calibration frozen at 2020-01-01.}}{9}{table.caption.23}\protected@file@percent }
+\newlabel{tab:oos}{{6}{9}{Temporal OOS Cohen's $d$. Calibration frozen at 2020-01-01}{table.caption.23}{}}
+\@writefile{toc}{\contentsline {paragraph}{Per-crisis wins.}{9}{section*.24}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Multi-Asset Generalization}{9}{subsection.5.3}\protected@file@percent }
+\newlabel{subsec:multi_asset}{{5.3}{9}{Multi-Asset Generalization}{subsection.5.3}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces Mean Cohen's $d$ by asset across 4 representative crises.}}{9}{table.caption.25}\protected@file@percent }
+\newlabel{tab:multi_asset}{{7}{9}{Mean Cohen's $d$ by asset across 4 representative crises}{table.caption.25}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.4}Walk-Forward Detection}{9}{subsection.5.4}\protected@file@percent }
+\newlabel{subsec:walkforward}{{5.4}{9}{Walk-Forward Detection}{subsection.5.4}{}}
+\citation{bates_granger1969}
+\@writefile{lot}{\contentsline {table}{\numberline {8}{\ignorespaces Walk-forward detection summary (expanding window, starting 2005). Median across crisis--window pairs. ``FAR-cal.''\ uses Algorithm~\ref {alg:far} ($\alpha = 1$/yr); ``$z > 2$'' uses a fixed threshold. Delay is days from crisis start to first alarm; ``---'' = never detected.}}{10}{table.caption.26}\protected@file@percent }
+\newlabel{tab:walkforward}{{8}{10}{Walk-forward detection summary (expanding window, starting 2005). Median across crisis--window pairs. ``FAR-cal.''\ uses Algorithm~\ref {alg:far} ($\alpha = 1$/yr); ``$z > 2$'' uses a fixed threshold. Delay is days from crisis start to first alarm; ``---'' = never detected}{table.caption.26}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.5}Interaction Test}{10}{subsection.5.5}\protected@file@percent }
+\newlabel{subsec:interaction}{{5.5}{10}{Interaction Test}{subsection.5.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.6}Operator Ablation}{10}{subsection.5.6}\protected@file@percent }
+\newlabel{subsec:operator_ablation}{{5.6}{10}{Operator Ablation}{subsection.5.6}{}}
 \citation{rapach2010,timmermann2006}
 \citation{tartakovsky2014}
 \citation{bendavid2010}
 \citation{bates_granger1969,makridakis2020,stock_watson2004}
-\citation{provost_vallee1980}
-\citation{chern1946,nakahara2003}
+\@writefile{lot}{\contentsline {table}{\numberline {9}{\ignorespaces Operator ablation: mean Cohen's $d$ across crises by construction method.}}{11}{table.caption.27}\protected@file@percent }
+\newlabel{tab:operator_ablation}{{9}{11}{Operator ablation: mean Cohen's $d$ across crises by construction method}{table.caption.27}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {6}Discussion}{11}{section.6}\protected@file@percent }
+\newlabel{sec:discussion}{{6}{11}{Discussion}{section.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.1}Interpretation}{11}{subsection.6.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.2}Computational Cost}{11}{subsection.6.2}\protected@file@percent }
 \citation{pancharatnam1956}
 \citation{simon1983}
-\@writefile{toc}{\contentsline {section}{\numberline {6}Discussion}{10}{section.6}\protected@file@percent }
-\newlabel{sec:discussion}{{6}{10}{Discussion}{section.6}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.1}Interpretation}{10}{subsection.6.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.2}Computational Cost}{10}{subsection.6.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.3}On the ``Quantum'' Label}{10}{subsection.6.3}\protected@file@percent }
+\citation{provost_vallee1980}
+\citation{chern1946,nakahara2003}
 \citation{hopfield1982}
 \citation{stoudenmire_schwab2016}
 \citation{bronstein2021}
@@ -134,28 +143,32 @@
 \citation{sornette2003}
 \citation{schuld_killoran2019,busemeyer2012}
 \citation{timmermann2006}
+\citation{musaelian2024,samson2024}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.3}On the ``Quantum'' Label}{12}{subsection.6.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.4}Limitations}{12}{subsection.6.4}\protected@file@percent }
 \citation{abanov2025}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.4}Limitations}{11}{subsection.6.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {7}Conclusion}{11}{section.7}\protected@file@percent }
-\newlabel{sec:conclusion}{{7}{11}{Conclusion}{section.7}{}}
 \citation{bates_granger1969,timmermann2006}
 \citation{makridakis2020}
 \citation{rapach2010,stock_watson2004}
 \bibcite{candelori2025}{{1}{}{{}}{{}}}
+\@writefile{toc}{\contentsline {section}{\numberline {7}Conclusion}{13}{section.7}\protected@file@percent }
+\newlabel{sec:conclusion}{{7}{13}{Conclusion}{section.7}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Geometric crisis anatomy: 2008 GFC. Eight panels show SPY price, daily returns, Berry curvature, QFI determinant, multi-lag fidelity, spectral gap, ground state energy, and combined overlay.}}{14}{figure.caption.28}\protected@file@percent }
+\newlabel{fig:narrative_2008}{{1}{14}{Geometric crisis anatomy: 2008 GFC. Eight panels show SPY price, daily returns, Berry curvature, QFI determinant, multi-lag fidelity, spectral gap, ground state energy, and combined overlay}{figure.caption.28}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Geometric crisis anatomy: 2020 COVID-19.}}{15}{figure.caption.29}\protected@file@percent }
+\newlabel{fig:narrative_2020}{{2}{15}{Geometric crisis anatomy: 2020 COVID-19}{figure.caption.29}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Geometric crisis anatomy: 2022 rate hikes.}}{16}{figure.caption.30}\protected@file@percent }
+\newlabel{fig:narrative_2022}{{3}{16}{Geometric crisis anatomy: 2022 rate hikes}{figure.caption.30}{}}
 \bibcite{abanov2025}{{2}{}{{}}{{}}}
 \bibcite{musaelian2024}{{3}{}{{}}{{}}}
 \bibcite{samson2024}{{4}{}{{}}{{}}}
 \bibcite{rosaler2025}{{5}{}{{}}{{}}}
 \bibcite{samson2025}{{6}{}{{}}{{}}}
-\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Geometric crisis anatomy: 2008 GFC. Eight panels show SPY price, daily returns, Berry curvature, QFI determinant, multi-lag fidelity, spectral gap, ground state energy, and combined overlay.}}{13}{figure.caption.25}\protected@file@percent }
-\newlabel{fig:narrative_2008}{{1}{13}{Geometric crisis anatomy: 2008 GFC. Eight panels show SPY price, daily returns, Berry curvature, QFI determinant, multi-lag fidelity, spectral gap, ground state energy, and combined overlay}{figure.caption.25}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Geometric crisis anatomy: 2020 COVID-19.}}{14}{figure.caption.26}\protected@file@percent }
-\newlabel{fig:narrative_2020}{{2}{14}{Geometric crisis anatomy: 2020 COVID-19}{figure.caption.26}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Geometric crisis anatomy: 2022 rate hikes.}}{15}{figure.caption.27}\protected@file@percent }
-\newlabel{fig:narrative_2022}{{3}{15}{Geometric crisis anatomy: 2022 rate hikes}{figure.caption.27}{}}
 \bibcite{dicaro2025}{{7}{}{{}}{{}}}
 \bibcite{berry1984}{{8}{}{{}}{{}}}
 \bibcite{hamilton1989}{{9}{}{{}}{{}}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Cohen's $d$ distributions across 12 crises. Dashed line: $d = 0.8$ (large effect); dotted: RF baseline $d = 1.13$.}}{17}{figure.caption.31}\protected@file@percent }
+\newlabel{fig:effect_sizes}{{4}{17}{Cohen's $d$ distributions across 12 crises. Dashed line: $d = 0.8$ (large effect); dotted: RF baseline $d = 1.13$}{figure.caption.31}{}}
 \bibcite{adams_mackay2007}{{10}{}{{}}{{}}}
 \bibcite{busemeyer2012}{{11}{}{{}}{{}}}
 \bibcite{nakahara2003}{{12}{}{{}}{{}}}
@@ -163,8 +176,6 @@
 \bibcite{provost_vallee1980}{{14}{}{{}}{{}}}
 \bibcite{amari_nagaoka2000}{{15}{}{{}}{{}}}
 \bibcite{granger1969}{{16}{}{{}}{{}}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Cohen's $d$ distributions across 12 crises. Dashed line: $d = 0.8$ (large effect); dotted: RF baseline $d = 1.13$.}}{16}{figure.caption.28}\protected@file@percent }
-\newlabel{fig:effect_sizes}{{4}{16}{Cohen's $d$ distributions across 12 crises. Dashed line: $d = 0.8$ (large effect); dotted: RF baseline $d = 1.13$}{figure.caption.28}{}}
 \bibcite{kato1966}{{17}{}{{}}{{}}}
 \bibcite{chern1946}{{18}{}{{}}{{}}}
 \bibcite{bates_granger1969}{{19}{}{{}}{{}}}
@@ -191,33 +202,38 @@
 \bibcite{schuld_killoran2019}{{40}{}{{}}{{}}}
 \bibcite{pancharatnam1956}{{41}{}{{}}{{}}}
 \bibcite{simon1983}{{42}{}{{}}{{}}}
+\bibcite{silverman1986}{{43}{}{{}}{{}}}
 \citation{kato1966}
 \citation{abanov2025}
-\@writefile{toc}{\contentsline {section}{\numberline {A}Proofs of Formal Results}{18}{appendix.A}\protected@file@percent }
-\newlabel{sec:proofs}{{A}{18}{Proofs of Formal Results}{appendix.A}{}}
 \citation{chern1946,nakahara2003}
+\@writefile{toc}{\contentsline {section}{\numberline {A}Proofs of Formal Results}{20}{appendix.A}\protected@file@percent }
+\newlabel{sec:proofs}{{A}{20}{Proofs of Formal Results}{appendix.A}{}}
+\newlabel{thm:chern}{{3}{20}{Chern number quantization~\cite {abanov2025}}{theorem.3}{}}
+\newlabel{eq:chern}{{8}{20}{Chern number quantization~\cite {abanov2025}}{equation.8}{}}
+\@writefile{toc}{\contentsline {paragraph}{Caveat.}{20}{section*.34}\protected@file@percent }
+\newlabel{thm:curvature_gap}{{4}{20}{Curvature--gap bound}{theorem.4}{}}
+\newlabel{eq:curv_gap_bound}{{9}{20}{Curvature--gap bound}{equation.9}{}}
+\newlabel{eq:berry_perturbation}{{10}{20}{Caveat}{equation.10}{}}
 \citation{amari_nagaoka2000}
-\newlabel{thm:chern}{{3}{19}{Chern number quantization~\cite {abanov2025}}{theorem.3}{}}
-\newlabel{eq:chern}{{8}{19}{Chern number quantization~\cite {abanov2025}}{equation.8}{}}
-\@writefile{toc}{\contentsline {paragraph}{Caveat.}{19}{section*.31}\protected@file@percent }
-\newlabel{thm:curvature_gap}{{4}{19}{Curvature--gap bound}{theorem.4}{}}
-\newlabel{eq:curv_gap_bound}{{9}{19}{Curvature--gap bound}{equation.9}{}}
-\newlabel{eq:berry_perturbation}{{10}{19}{Caveat}{equation.10}{}}
-\newlabel{prop:qfi_volume}{{5}{19}{QFI volume}{theorem.5}{}}
-\newlabel{eq:pseudodet}{{11}{19}{QFI volume}{equation.11}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {B}Granger Causality}{20}{appendix.B}\protected@file@percent }
-\newlabel{sec:granger}{{B}{20}{Granger Causality}{appendix.B}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {C}Default Hyperparameters}{20}{appendix.C}\protected@file@percent }
-\newlabel{sec:hyperparams}{{C}{20}{Default Hyperparameters}{appendix.C}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {9}{\ignorespaces Default hyperparameters.}}{20}{table.caption.32}\protected@file@percent }
-\newlabel{tab:hyperparams}{{9}{20}{Default hyperparameters}{table.caption.32}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {D}Numerical Stability Ablation}{20}{appendix.D}\protected@file@percent }
-\newlabel{sec:stability}{{D}{20}{Numerical Stability Ablation}{appendix.D}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {E}Window-Size Sensitivity}{20}{appendix.E}\protected@file@percent }
-\newlabel{sec:window_sensitivity}{{E}{20}{Window-Size Sensitivity}{appendix.E}{}}
+\newlabel{prop:qfi_volume}{{5}{21}{QFI volume}{theorem.5}{}}
+\newlabel{eq:pseudodet}{{11}{21}{QFI volume}{equation.11}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {B}Granger Causality}{21}{appendix.B}\protected@file@percent }
+\newlabel{sec:granger}{{B}{21}{Granger Causality}{appendix.B}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {C}Default Hyperparameters}{21}{appendix.C}\protected@file@percent }
+\newlabel{sec:hyperparams}{{C}{21}{Default Hyperparameters}{appendix.C}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {D}Numerical Stability Ablation}{21}{appendix.D}\protected@file@percent }
+\newlabel{sec:stability}{{D}{21}{Numerical Stability Ablation}{appendix.D}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {10}{\ignorespaces Default hyperparameters.}}{22}{table.caption.35}\protected@file@percent }
+\newlabel{tab:hyperparams}{{10}{22}{Default hyperparameters}{table.caption.35}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {11}{\ignorespaces Numerical stability: median Cohen's $d$ across 4 crises. Multi-Lag Fidelity does not use $\epsilon $ (no finite differences).}}{22}{table.caption.36}\protected@file@percent }
+\newlabel{tab:stability}{{11}{22}{Numerical stability: median Cohen's $d$ across 4 crises. Multi-Lag Fidelity does not use $\epsilon $ (no finite differences)}{table.caption.36}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {E}Window-Size Sensitivity}{22}{appendix.E}\protected@file@percent }
+\newlabel{sec:window_sensitivity}{{E}{22}{Window-Size Sensitivity}{appendix.E}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {12}{\ignorespaces Median Cohen's $d$ by crisis window size (12 crises).}}{22}{table.caption.37}\protected@file@percent }
+\newlabel{tab:window}{{12}{22}{Median Cohen's $d$ by crisis window size (12 crises)}{table.caption.37}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {F}Hyperparameter Sensitivity: Fixed vs.\ Tuned}{22}{appendix.F}\protected@file@percent }
+\newlabel{sec:fixed_hp_ablation}{{F}{22}{Hyperparameter Sensitivity: Fixed vs.\ Tuned}{appendix.F}{}}
 \providecommand\NAT@force@numbers{}\NAT@force@numbers
-\@writefile{lot}{\contentsline {table}{\numberline {10}{\ignorespaces Numerical stability: median Cohen's $d$ across 4 crises. Multi-Lag Fidelity does not use $\epsilon $ (no finite differences).}}{21}{table.caption.33}\protected@file@percent }
-\newlabel{tab:stability}{{10}{21}{Numerical stability: median Cohen's $d$ across 4 crises. Multi-Lag Fidelity does not use $\epsilon $ (no finite differences)}{table.caption.33}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {11}{\ignorespaces Median Cohen's $d$ by crisis window size (12 crises).}}{21}{table.caption.34}\protected@file@percent }
-\newlabel{tab:window}{{11}{21}{Median Cohen's $d$ by crisis window size (12 crises)}{table.caption.34}{}}
-\gdef \@abspage@last{21}
+\@writefile{lot}{\contentsline {table}{\numberline {13}{\ignorespaces Fixed defaults vs.\ LOCO-tuned: mean Cohen's $d$ across 12~crises.}}{23}{table.caption.38}\protected@file@percent }
+\newlabel{tab:fixed_hp}{{13}{23}{Fixed defaults vs.\ LOCO-tuned: mean Cohen's $d$ across 12~crises}{table.caption.38}{}}
+\gdef \@abspage@last{23}

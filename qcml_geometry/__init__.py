@@ -31,9 +31,12 @@ from .indicators import (
     EnergyEvolutionIndicator,
     FidelityDecayIndicator,
     MultiScaleChernConsensus,
-    QuantumIndicatorSuite,
+    GeometricIndicatorSuite,
     IndicatorResult,
 )
+
+# Deprecated alias for backward compatibility
+QuantumIndicatorSuite = GeometricIndicatorSuite
 
 __all__ = [
     "QCMLGeometry",
@@ -53,6 +56,7 @@ __all__ = [
     "EnergyEvolutionIndicator",
     "FidelityDecayIndicator",
     "MultiScaleChernConsensus",
-    "QuantumIndicatorSuite",
+    "GeometricIndicatorSuite",
+    "QuantumIndicatorSuite",  # deprecated alias
     "IndicatorResult",
 ]

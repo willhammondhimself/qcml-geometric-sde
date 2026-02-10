@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.3.8)  9 FEB 2026 20:25
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.3.8)  9 FEB 2026 21:43
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -558,7 +558,7 @@ ent, QFI de-ter-mi-nant, multi-lag fidelity---
 [2]
 
 [3]
-Overfull \hbox (43.95703pt too wide) in paragraph at lines 357--360
+Overfull \hbox (43.95703pt too wide) in paragraph at lines 358--361
  []\T1/cmr/bx/n/10.95 Hyperparameters.[] \T1/cmr/m/n/10.95 Hilbert di-men-sion 
 $\OML/cmm/m/it/10.95 n$\T1/cmr/m/n/10.95 , PCA com-po-nents $\OML/cmm/m/it/10.9
 5 p$\T1/cmr/m/n/10.95 , op-er-a-tor method $\OMS/cmsy/m/n/10.95 2 f[]\OML/cmm/m
@@ -569,11 +569,11 @@ $\OML/cmm/m/it/10.95 n$\T1/cmr/m/n/10.95 , PCA com-po-nents $\OML/cmm/m/it/10.9
 
 [4]
 Package hyperref Info: bookmark level for unknown algorithm defaults to 0 on in
-put line 399.
+put line 400.
 
 
 [5]
-Overfull \hbox (68.71873pt too wide) in paragraph at lines 478--505
+Overfull \hbox (68.71873pt too wide) in paragraph at lines 498--525
  [][] 
  []
 
@@ -590,59 +590,59 @@ Overfull \hbox (68.71873pt too wide) in paragraph at lines 478--505
 [10]
 
 [11]
+
+[12]
 <../experiments/outputs/regime_detection/narratives/narrative_2008_gfc.pdf, id=
-393, 1000.87236pt x 853.13506pt>
+423, 1000.87236pt x 853.13506pt>
 File: ../experiments/outputs/regime_detection/narratives/narrative_2008_gfc.pdf
  Graphic file (type pdf)
 <use ../experiments/outputs/regime_detection/narratives/narrative_2008_gfc.pdf>
 
 Package pdftex.def Info: ../experiments/outputs/regime_detection/narratives/nar
-rative_2008_gfc.pdf  used on input line 942.
+rative_2008_gfc.pdf  used on input line 1053.
 (pdftex.def)             Requested size: 399.29463pt x 340.36276pt.
 <../experiments/outputs/regime_detection/narratives/narrative_2020_covid.pdf, i
-d=394, 1005.08813pt x 853.13506pt>
+d=424, 1005.08813pt x 853.13506pt>
 File: ../experiments/outputs/regime_detection/narratives/narrative_2020_covid.p
 df Graphic file (type pdf)
 <use ../experiments/outputs/regime_detection/narratives/narrative_2020_covid.pd
 f>
 Package pdftex.def Info: ../experiments/outputs/regime_detection/narratives/nar
-rative_2020_covid.pdf  used on input line 951.
+rative_2020_covid.pdf  used on input line 1062.
 (pdftex.def)             Requested size: 399.29463pt x 338.9308pt.
 <../experiments/outputs/regime_detection/narratives/narrative_2022_rates.pdf, i
-d=395, 1000.87236pt x 853.13506pt>
+d=425, 1000.87236pt x 853.13506pt>
 File: ../experiments/outputs/regime_detection/narratives/narrative_2022_rates.p
 df Graphic file (type pdf)
 <use ../experiments/outputs/regime_detection/narratives/narrative_2022_rates.pd
 f>
 Package pdftex.def Info: ../experiments/outputs/regime_detection/narratives/nar
-rative_2022_rates.pdf  used on input line 958.
+rative_2022_rates.pdf  used on input line 1069.
 (pdftex.def)             Requested size: 399.29463pt x 340.36276pt.
 <../experiments/outputs/regime_detection/superiority_publication/figures/effect
-_sizes.pdf, id=396, 715.49309pt x 354.12746pt>
+_sizes.pdf, id=426, 715.49309pt x 354.12746pt>
 File: ../experiments/outputs/regime_detection/superiority_publication/figures/e
 ffect_sizes.pdf Graphic file (type pdf)
 <use ../experiments/outputs/regime_detection/superiority_publication/figures/ef
 fect_sizes.pdf>
 Package pdftex.def Info: ../experiments/outputs/regime_detection/superiority_pu
-blication/figures/effect_sizes.pdf  used on input line 965.
+blication/figures/effect_sizes.pdf  used on input line 1076.
 (pdftex.def)             Requested size: 469.75502pt x 232.50363pt.
 
 
-[12]
+[13]
 
-[13 <../experiments/outputs/regime_detection/narratives/narrative_2008_gfc.pdf>
+[14 <../experiments/outputs/regime_detection/narratives/narrative_2008_gfc.pdf>
 ]
 
-[14 <../experiments/outputs/regime_detection/narratives/narrative_2020_covid.pd
+[15 <../experiments/outputs/regime_detection/narratives/narrative_2020_covid.pd
 f>]
 
-[15 <../experiments/outputs/regime_detection/narratives/narrative_2022_rates.pd
+[16 <../experiments/outputs/regime_detection/narratives/narrative_2022_rates.pd
 f>]
 
-[16 <../experiments/outputs/regime_detection/superiority_publication/figures/ef
+[17 <../experiments/outputs/regime_detection/superiority_publication/figures/ef
 fect_sizes.pdf>]
-
-[17]
 
 [18]
 
@@ -650,54 +650,61 @@ fect_sizes.pdf>]
 
 [20]
 
-[21] (./qcml_geometric_sde.aux)
+[21]
+
+[22]
+
+[23] (./qcml_geometric_sde.aux)
  ***********
 LaTeX2e <2024-11-01> patch level 2
 L3 programming layer <2025-01-18>
  ***********
 Package rerunfilecheck Info: File `qcml_geometric_sde.out' has not changed.
-(rerunfilecheck)             Checksum: 056C3306DB2DB013EDD51284D7412AB0;4519.
+(rerunfilecheck)             Checksum: E583337B543521B0CE9DAA9562AD249F;4849.
  ) 
 Here is how much of TeX's memory you used:
- 14121 strings out of 473190
- 220845 string characters out of 5715801
- 641774 words of memory out of 5000000
- 37011 multiletter control sequences out of 15000+600000
- 587649 words of font info for 115 fonts, out of 8000000 for 9000
+ 14143 strings out of 473190
+ 221173 string characters out of 5715801
+ 636181 words of memory out of 5000000
+ 37022 multiletter control sequences out of 15000+600000
+ 587962 words of font info for 116 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,14n,79p,555b,688s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 75i,14n,79p,555b,668s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb
 ></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb>
 </usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb><
 /usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></u
 sr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr
-/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmib10.pfb></usr
-/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/l
-ocal/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/loca
-l/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/local/t
-exlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texl
-ive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texli
-ve/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb></usr/local/texlive
-/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/local/texlive/2
-025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/202
-5/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/local/texlive
-/2025/texmf-dist/fonts/type1/public/cm-super/sfbx1000.pfb></usr/local/texlive/2
-025/texmf-dist/fonts/type1/public/cm-super/sfbx1095.pfb></usr/local/texlive/202
-5/texmf-dist/fonts/type1/public/cm-super/sfbx1200.pfb></usr/local/texlive/2025/
-texmf-dist/fonts/type1/public/cm-super/sfbx1440.pfb></usr/local/texlive/2025/te
-xmf-dist/fonts/type1/public/cm-super/sfrm0900.pfb></usr/local/texlive/2025/texm
-f-dist/fonts/type1/public/cm-super/sfrm1000.pfb></usr/local/texlive/2025/texmf-
-dist/fonts/type1/public/cm-super/sfrm1095.pfb></usr/local/texlive/2025/texmf-di
-st/fonts/type1/public/cm-super/sfrm1200.pfb></usr/local/texlive/2025/texmf-dist
-/fonts/type1/public/cm-super/sfrm1728.pfb></usr/local/texlive/2025/texmf-dist/f
-onts/type1/public/cm-super/sfti1000.pfb></usr/local/texlive/2025/texmf-dist/fon
-ts/type1/public/cm-super/sfti1095.pfb></usr/local/texlive/2025/texmf-dist/fonts
-/type1/public/cm-super/sftt1095.pfb></usr/local/texlive/2025/texmf-dist/fonts/t
-ype1/public/cm-super/sftt1200.pfb>
-Output written on qcml_geometric_sde.pdf (21 pages, 804578 bytes).
+/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi9.pfb></usr/l
+ocal/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmib10.pfb></usr/l
+ocal/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/loc
+al/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/local/
+texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/local/tex
+live/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texliv
+e/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/local/texlive/2
+025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/20
+25/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb></usr/local/texlive/2025
+/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/local/texlive/2025/t
+exmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2025/tex
+mf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/local/texlive/2025
+/texmf-dist/fonts/type1/public/cm-super/sfbx1000.pfb></usr/local/texlive/2025/t
+exmf-dist/fonts/type1/public/cm-super/sfbx1095.pfb></usr/local/texlive/2025/tex
+mf-dist/fonts/type1/public/cm-super/sfbx1200.pfb></usr/local/texlive/2025/texmf
+-dist/fonts/type1/public/cm-super/sfbx1440.pfb></usr/local/texlive/2025/texmf-d
+ist/fonts/type1/public/cm-super/sfrm0900.pfb></usr/local/texlive/2025/texmf-dis
+t/fonts/type1/public/cm-super/sfrm1000.pfb></usr/local/texlive/2025/texmf-dist/
+fonts/type1/public/cm-super/sfrm1095.pfb></usr/local/texlive/2025/texmf-dist/fo
+nts/type1/public/cm-super/sfrm1200.pfb></usr/local/texlive/2025/texmf-dist/font
+s/type1/public/cm-super/sfrm1728.pfb></usr/local/texlive/2025/texmf-dist/fonts/
+type1/public/cm-super/sfti1000.pfb></usr/local/texlive/2025/texmf-dist/fonts/ty
+pe1/public/cm-super/sfti1095.pfb></usr/local/texlive/2025/texmf-dist/fonts/type
+1/public/cm-super/sftt0900.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/
+public/cm-super/sftt1095.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/pu
+blic/cm-super/sftt1200.pfb>
+Output written on qcml_geometric_sde.pdf (23 pages, 855865 bytes).
 PDF statistics:
- 989 PDF objects out of 1000 (max. 8388607)
- 595 compressed objects within 6 object streams
- 155 named destinations out of 1000 (max. 500000)
- 253 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 1047 PDF objects out of 1200 (max. 8388607)
+ 643 compressed objects within 7 object streams
+ 165 named destinations out of 1000 (max. 500000)
+ 269 words of extra memory for PDF output out of 10000 (max. 10000000)
 

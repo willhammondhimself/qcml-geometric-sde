@@ -10,7 +10,7 @@ Tested indicators:
 - EnergyEvolutionIndicator: Ground state energy regime classification
 - FidelityDecayIndicator: Stability index via fidelity decay
 - MultiScaleChernConsensus: Weighted cross-scale consensus
-- QuantumIndicatorSuite: Composite score combining all indicators
+- GeometricIndicatorSuite: Composite score combining all indicators
 """
 
 import numpy as np
@@ -32,7 +32,7 @@ from qcml_geometry.indicators import (
     EnergyEvolutionIndicator,
     FidelityDecayIndicator,
     MultiScaleChernConsensus,
-    QuantumIndicatorSuite,
+    GeometricIndicatorSuite,
 )
 
 
@@ -328,17 +328,17 @@ class TestMultiScaleChernConsensus:
 
 
 # ---------------------------------------------------------------------------
-# QuantumIndicatorSuite tests
+# GeometricIndicatorSuite tests
 # ---------------------------------------------------------------------------
 
 
-class TestQuantumIndicatorSuite:
+class TestGeometricIndicatorSuite:
     """Tests for the unified indicator suite."""
 
     def test_compute_all_returns_four_indicators(self, geometry_and_features):
         """compute_all must return exactly 4 named indicator results."""
         geometry, X = geometry_and_features
-        suite = QuantumIndicatorSuite(
+        suite = GeometricIndicatorSuite(
             geometry, window_size=10, scales=[10, 20]
         )
         results = suite.compute_all(X)
@@ -359,7 +359,7 @@ class TestQuantumIndicatorSuite:
     def test_composite_score_shape(self, geometry_and_features):
         """Composite score length equals minimum indicator length."""
         geometry, X = geometry_and_features
-        suite = QuantumIndicatorSuite(
+        suite = GeometricIndicatorSuite(
             geometry, window_size=10, scales=[10, 20]
         )
         composite, results = suite.compute_composite_score(X)
@@ -370,7 +370,7 @@ class TestQuantumIndicatorSuite:
     def test_composite_score_finite(self, geometry_and_features):
         """Composite score values must be finite."""
         geometry, X = geometry_and_features
-        suite = QuantumIndicatorSuite(
+        suite = GeometricIndicatorSuite(
             geometry, window_size=10, scales=[10, 20]
         )
         composite, _ = suite.compute_composite_score(X)
@@ -380,7 +380,7 @@ class TestQuantumIndicatorSuite:
     def test_composite_with_custom_weights(self, geometry_and_features):
         """Custom weights should change the composite score."""
         geometry, X = geometry_and_features
-        suite = QuantumIndicatorSuite(
+        suite = GeometricIndicatorSuite(
             geometry, window_size=10, scales=[10, 20]
         )
 
@@ -403,7 +403,7 @@ class TestQuantumIndicatorSuite:
     def test_suite_sub_indicators_accessible(self, geometry_and_features):
         """Suite should expose its sub-indicator instances."""
         geometry, X = geometry_and_features
-        suite = QuantumIndicatorSuite(
+        suite = GeometricIndicatorSuite(
             geometry, window_size=10, scales=[10, 20]
         )
 

@@ -1,0 +1,816 @@
+{
+  "timestamp": "20260209_212441",
+  "config": {
+    "hilbert_dim": 8,
+    "n_pca_components": 15,
+    "rolling_window": 20,
+    "seed": 42
+  },
+  "crisis_keys": [
+    "2007_quant",
+    "2008_gfc",
+    "2010_flash",
+    "2011_euro",
+    "2015_china",
+    "2018_volmageddon",
+    "2018_q4",
+    "2019_repo",
+    "2020_covid",
+    "2022_rates",
+    "2023_svb"
+  ],
+  "results": {
+    "Berry Phase Rate|random|2007_quant": {
+      "method": "Berry Phase Rate",
+      "condition": "random",
+      "crisis": "2007_quant",
+      "d": 0.18174807207539798,
+      "ci_lo": 0.01139336664236845,
+      "ci_hi": 0.437198752180568
+    },
+    "Berry Phase Rate|pca_inspired|2007_quant": {
+      "method": "Berry Phase Rate",
+      "condition": "pca_inspired",
+      "crisis": "2007_quant",
+      "d": 0.4672801206084541,
+      "ci_lo": 0.42810292941641664,
+      "ci_hi": 0.5117570644107646
+    },
+    "Berry Phase Rate|learned_scaling|2007_quant": {
+      "method": "Berry Phase Rate",
+      "condition": "learned_scaling",
+      "crisis": "2007_quant",
+      "d": 0.4636119204848666,
+      "ci_lo": 0.42490299525781755,
+      "ci_hi": 0.5077594618358962
+    },
+    "Berry Phase Rate|random|2008_gfc": {
+      "method": "Berry Phase Rate",
+      "condition": "random",
+      "crisis": "2008_gfc",
+      "d": 1.3291393078380376,
+      "ci_lo": 1.2829133659534073,
+      "ci_hi": 1.3759811718790573
+    },
+    "Berry Phase Rate|pca_inspired|2008_gfc": {
+      "method": "Berry Phase Rate",
+      "condition": "pca_inspired",
+      "crisis": "2008_gfc",
+      "d": 0.36441009208135067,
+      "ci_lo": 0.33613924692661823,
+      "ci_hi": 0.39582434112631004
+    },
+    "Berry Phase Rate|learned_scaling|2008_gfc": {
+      "method": "Berry Phase Rate",
+      "condition": "learned_scaling",
+      "crisis": "2008_gfc",
+      "d": 0.3618254364173772,
+      "ci_lo": 0.33386653157263374,
+      "ci_hi": 0.39298870831575494
+    },
+    "Berry Phase Rate|random|2010_flash": {
+      "method": "Berry Phase Rate",
+      "condition": "random",
+      "crisis": "2010_flash",
+      "d": 0.38688632968937964,
+      "ci_lo": 0.049809467131752626,
+      "ci_hi": 0.7564501339716745
+    },
+    "Berry Phase Rate|pca_inspired|2010_flash": {
+      "method": "Berry Phase Rate",
+      "condition": "pca_inspired",
+      "crisis": "2010_flash",
+      "d": 0.1951067537234578,
+      "ci_lo": 0.1623261309663922,
+      "ci_hi": 0.22889754134886495
+    },
+    "Berry Phase Rate|learned_scaling|2010_flash": {
+      "method": "Berry Phase Rate",
+      "condition": "learned_scaling",
+      "crisis": "2010_flash",
+      "d": 0.19485647798663325,
+      "ci_lo": 0.16257587103294954,
+      "ci_hi": 0.22813708612892095
+    },
+    "Berry Phase Rate|random|2011_euro": {
+      "method": "Berry Phase Rate",
+      "condition": "random",
+      "crisis": "2011_euro",
+      "d": 0.739576553680466,
+      "ci_lo": 0.6209431025929055,
+      "ci_hi": 0.8515237770137948
+    },
+    "Berry Phase Rate|pca_inspired|2011_euro": {
+      "method": "Berry Phase Rate",
+      "condition": "pca_inspired",
+      "crisis": "2011_euro",
+      "d": 0.2830975413131501,
+      "ci_lo": 0.25932680414354464,
+      "ci_hi": 0.3075139688448597
+    },
+    "Berry Phase Rate|learned_scaling|2011_euro": {
+      "method": "Berry Phase Rate",
+      "condition": "learned_scaling",
+      "crisis": "2011_euro",
+      "d": 0.2812728215416824,
+      "ci_lo": 0.25760190527459603,
+      "ci_hi": 0.3056117470820838
+    },
+    "Berry Phase Rate|random|2015_china": {
+      "method": "Berry Phase Rate",
+      "condition": "random",
+      "crisis": "2015_china",
+      "d": 0.557405998154983,
+      "ci_lo": 0.4792869193896439,
+      "ci_hi": 0.6341930875540511
+    },
+    "Berry Phase Rate|pca_inspired|2015_china": {
+      "method": "Berry Phase Rate",
+      "condition": "pca_inspired",
+      "crisis": "2015_china",
+      "d": 0.267292761487123,
+      "ci_lo": 0.24648325022830658,
+      "ci_hi": 0.2886691171117438
+    },
+    "Berry Phase Rate|learned_scaling|2015_china": {
+      "method": "Berry Phase Rate",
+      "condition": "learned_scaling",
+      "crisis": "2015_china",
+      "d": 0.2656630631979911,
+      "ci_lo": 0.24522771189741616,
+      "ci_hi": 0.2867312902262458
+    },
+    "Berry Phase Rate|random|2018_volmageddon": {
+      "method": "Berry Phase Rate",
+      "condition": "random",
+      "crisis": "2018_volmageddon",
+      "d": 0.08674536201900224,
+      "ci_lo": 0.005627888450972702,
+      "ci_hi": 0.27442675409673106
+    },
+    "Berry Phase Rate|pca_inspired|2018_volmageddon": {
+      "method": "Berry Phase Rate",
+      "condition": "pca_inspired",
+      "crisis": "2018_volmageddon",
+      "d": 0.15699283558522525,
+      "ci_lo": 0.09523747510250222,
+      "ci_hi": 0.2124799610129851
+    },
+    "Berry Phase Rate|learned_scaling|2018_volmageddon": {
+      "method": "Berry Phase Rate",
+      "condition": "learned_scaling",
+      "crisis": "2018_volmageddon",
+      "d": 0.15664865528652436,
+      "ci_lo": 0.0956927669017876,
+      "ci_hi": 0.2111962727461774
+    },
+    "Berry Phase Rate|random|2018_q4": {
+      "method": "Berry Phase Rate",
+      "condition": "random",
+      "crisis": "2018_q4",
+      "d": 0.3455657973799187,
+      "ci_lo": 0.18017182526860231,
+      "ci_hi": 0.5029224645857012
+    },
+    "Berry Phase Rate|pca_inspired|2018_q4": {
+      "method": "Berry Phase Rate",
+      "condition": "pca_inspired",
+      "crisis": "2018_q4",
+      "d": 0.23682060254316903,
+      "ci_lo": 0.2098364525716993,
+      "ci_hi": 0.2650101479274779
+    },
+    "Berry Phase Rate|learned_scaling|2018_q4": {
+      "method": "Berry Phase Rate",
+      "condition": "learned_scaling",
+      "crisis": "2018_q4",
+      "d": 0.23542768327300298,
+      "ci_lo": 0.20876458574474105,
+      "ci_hi": 0.2633086210397476
+    },
+    "Berry Phase Rate|random|2019_repo": {
+      "method": "Berry Phase Rate",
+      "condition": "random",
+      "crisis": "2019_repo",
+      "d": 0.6434580998378794,
+      "ci_lo": 0.4695706590803218,
+      "ci_hi": 0.8195891431637665
+    },
+    "Berry Phase Rate|pca_inspired|2019_repo": {
+      "method": "Berry Phase Rate",
+      "condition": "pca_inspired",
+      "crisis": "2019_repo",
+      "d": 0.8785192898288637,
+      "ci_lo": 0.3454987308138078,
+      "ci_hi": 1.532360571943295
+    },
+    "Berry Phase Rate|learned_scaling|2019_repo": {
+      "method": "Berry Phase Rate",
+      "condition": "learned_scaling",
+      "crisis": "2019_repo",
+      "d": 0.9025943983185286,
+      "ci_lo": 0.35551285592699644,
+      "ci_hi": 1.57236308307372
+    },
+    "Berry Phase Rate|random|2020_covid": {
+      "method": "Berry Phase Rate",
+      "condition": "random",
+      "crisis": "2020_covid",
+      "d": 0.6558629449069188,
+      "ci_lo": 0.4674961811710747,
+      "ci_hi": 0.8433437302952387
+    },
+    "Berry Phase Rate|pca_inspired|2020_covid": {
+      "method": "Berry Phase Rate",
+      "condition": "pca_inspired",
+      "crisis": "2020_covid",
+      "d": 0.19216935140640948,
+      "ci_lo": 0.13323830793359523,
+      "ci_hi": 0.24493023484949278
+    },
+    "Berry Phase Rate|learned_scaling|2020_covid": {
+      "method": "Berry Phase Rate",
+      "condition": "learned_scaling",
+      "crisis": "2020_covid",
+      "d": 0.19049731985767923,
+      "ci_lo": 0.13265687031703582,
+      "ci_hi": 0.24218879918962985
+    },
+    "Berry Phase Rate|random|2022_rates": {
+      "method": "Berry Phase Rate",
+      "condition": "random",
+      "crisis": "2022_rates",
+      "d": 0.7349326757719995,
+      "ci_lo": 0.6359818363973542,
+      "ci_hi": 0.8294583980129043
+    },
+    "Berry Phase Rate|pca_inspired|2022_rates": {
+      "method": "Berry Phase Rate",
+      "condition": "pca_inspired",
+      "crisis": "2022_rates",
+      "d": 0.31897414811621555,
+      "ci_lo": 0.29334205315540063,
+      "ci_hi": 0.34593264562913373
+    },
+    "Berry Phase Rate|learned_scaling|2022_rates": {
+      "method": "Berry Phase Rate",
+      "condition": "learned_scaling",
+      "crisis": "2022_rates",
+      "d": 0.31493673944893846,
+      "ci_lo": 0.2899279868850048,
+      "ci_hi": 0.34134513451323273
+    },
+    "Berry Phase Rate|random|2023_svb": {
+      "method": "Berry Phase Rate",
+      "condition": "random",
+      "crisis": "2023_svb",
+      "d": 0.7399383213637256,
+      "ci_lo": 0.3477034578381858,
+      "ci_hi": 1.1476017848177649
+    },
+    "Berry Phase Rate|pca_inspired|2023_svb": {
+      "method": "Berry Phase Rate",
+      "condition": "pca_inspired",
+      "crisis": "2023_svb",
+      "d": 0.29699958181767433,
+      "ci_lo": 0.27316003991553284,
+      "ci_hi": 0.32238050052938744
+    },
+    "Berry Phase Rate|learned_scaling|2023_svb": {
+      "method": "Berry Phase Rate",
+      "condition": "learned_scaling",
+      "crisis": "2023_svb",
+      "d": 0.29330501901234984,
+      "ci_lo": 0.26988747473403596,
+      "ci_hi": 0.31804804012806526
+    },
+    "QFI Determinant|random|2007_quant": {
+      "method": "QFI Determinant",
+      "condition": "random",
+      "crisis": "2007_quant",
+      "d": 2.1217399544968645,
+      "ci_lo": 1.7363951523377923,
+      "ci_hi": 2.5312373633446774
+    },
+    "QFI Determinant|pca_inspired|2007_quant": {
+      "method": "QFI Determinant",
+      "condition": "pca_inspired",
+      "crisis": "2007_quant",
+      "d": 1.5848768602132064,
+      "ci_lo": 1.233385709215867,
+      "ci_hi": 1.9516240628683323
+    },
+    "QFI Determinant|learned_scaling|2007_quant": {
+      "method": "QFI Determinant",
+      "condition": "learned_scaling",
+      "crisis": "2007_quant",
+      "d": 1.589285475027868,
+      "ci_lo": 1.2369672235374485,
+      "ci_hi": 1.9568032675441152
+    },
+    "QFI Determinant|random|2008_gfc": {
+      "method": "QFI Determinant",
+      "condition": "random",
+      "crisis": "2008_gfc",
+      "d": 1.0889151538469748,
+      "ci_lo": 1.0089972049381288,
+      "ci_hi": 1.1714196819654212
+    },
+    "QFI Determinant|pca_inspired|2008_gfc": {
+      "method": "QFI Determinant",
+      "condition": "pca_inspired",
+      "crisis": "2008_gfc",
+      "d": 1.2261630734799895,
+      "ci_lo": 1.1650308940740361,
+      "ci_hi": 1.2907502877017132
+    },
+    "QFI Determinant|learned_scaling|2008_gfc": {
+      "method": "QFI Determinant",
+      "condition": "learned_scaling",
+      "crisis": "2008_gfc",
+      "d": 1.2303721822671878,
+      "ci_lo": 1.1689935351014873,
+      "ci_hi": 1.294906992072132
+    },
+    "QFI Determinant|random|2010_flash": {
+      "method": "QFI Determinant",
+      "condition": "random",
+      "crisis": "2010_flash",
+      "d": 0.4551052045911356,
+      "ci_lo": 0.22796999912198546,
+      "ci_hi": 0.6831009365489304
+    },
+    "QFI Determinant|pca_inspired|2010_flash": {
+      "method": "QFI Determinant",
+      "condition": "pca_inspired",
+      "crisis": "2010_flash",
+      "d": 0.20864729168447288,
+      "ci_lo": 0.0255413138749108,
+      "ci_hi": 0.40887238348196686
+    },
+    "QFI Determinant|learned_scaling|2010_flash": {
+      "method": "QFI Determinant",
+      "condition": "learned_scaling",
+      "crisis": "2010_flash",
+      "d": 0.21101360205056627,
+      "ci_lo": 0.026416288557692,
+      "ci_hi": 0.4110667694710605
+    },
+    "QFI Determinant|random|2011_euro": {
+      "method": "QFI Determinant",
+      "condition": "random",
+      "crisis": "2011_euro",
+      "d": 0.1457079938041503,
+      "ci_lo": 0.013345487607943775,
+      "ci_hi": 0.3201994843216852
+    },
+    "QFI Determinant|pca_inspired|2011_euro": {
+      "method": "QFI Determinant",
+      "condition": "pca_inspired",
+      "crisis": "2011_euro",
+      "d": 0.1964082308779643,
+      "ci_lo": 0.043631884832800706,
+      "ci_hi": 0.35073210895500845
+    },
+    "QFI Determinant|learned_scaling|2011_euro": {
+      "method": "QFI Determinant",
+      "condition": "learned_scaling",
+      "crisis": "2011_euro",
+      "d": 0.19947260344846354,
+      "ci_lo": 0.04640542089297826,
+      "ci_hi": 0.3533141789859642
+    },
+    "QFI Determinant|random|2015_china": {
+      "method": "QFI Determinant",
+      "condition": "random",
+      "crisis": "2015_china",
+      "d": 0.5196971614841951,
+      "ci_lo": 0.35401447090817495,
+      "ci_hi": 0.6804834748785545
+    },
+    "QFI Determinant|pca_inspired|2015_china": {
+      "method": "QFI Determinant",
+      "condition": "pca_inspired",
+      "crisis": "2015_china",
+      "d": 0.7542033336205347,
+      "ci_lo": 0.5615005386536467,
+      "ci_hi": 0.9360137923839844
+    },
+    "QFI Determinant|learned_scaling|2015_china": {
+      "method": "QFI Determinant",
+      "condition": "learned_scaling",
+      "crisis": "2015_china",
+      "d": 0.750137124118865,
+      "ci_lo": 0.5569951338287398,
+      "ci_hi": 0.9323257806345379
+    },
+    "QFI Determinant|random|2018_volmageddon": {
+      "method": "QFI Determinant",
+      "condition": "random",
+      "crisis": "2018_volmageddon",
+      "d": 0.34710259509429214,
+      "ci_lo": 0.19544676389078416,
+      "ci_hi": 0.490096288960051
+    },
+    "QFI Determinant|pca_inspired|2018_volmageddon": {
+      "method": "QFI Determinant",
+      "condition": "pca_inspired",
+      "crisis": "2018_volmageddon",
+      "d": 0.28873054882347626,
+      "ci_lo": 0.12341501758796565,
+      "ci_hi": 0.4427305204559675
+    },
+    "QFI Determinant|learned_scaling|2018_volmageddon": {
+      "method": "QFI Determinant",
+      "condition": "learned_scaling",
+      "crisis": "2018_volmageddon",
+      "d": 0.29290277913826523,
+      "ci_lo": 0.12823357548534414,
+      "ci_hi": 0.44729825689172953
+    },
+    "QFI Determinant|random|2018_q4": {
+      "method": "QFI Determinant",
+      "condition": "random",
+      "crisis": "2018_q4",
+      "d": 0.11052533165618689,
+      "ci_lo": 0.005054444331202721,
+      "ci_hi": 0.31047949340110914
+    },
+    "QFI Determinant|pca_inspired|2018_q4": {
+      "method": "QFI Determinant",
+      "condition": "pca_inspired",
+      "crisis": "2018_q4",
+      "d": 0.10172433068209377,
+      "ci_lo": 0.0050676438343314695,
+      "ci_hi": 0.2777239002378091
+    },
+    "QFI Determinant|learned_scaling|2018_q4": {
+      "method": "QFI Determinant",
+      "condition": "learned_scaling",
+      "crisis": "2018_q4",
+      "d": 0.09846629667876979,
+      "ci_lo": 0.004669270029896811,
+      "ci_hi": 0.2747658012614797
+    },
+    "QFI Determinant|random|2019_repo": {
+      "method": "QFI Determinant",
+      "condition": "random",
+      "crisis": "2019_repo",
+      "d": 0.7738876200520394,
+      "ci_lo": 0.6340579753234143,
+      "ci_hi": 0.9091789708625372
+    },
+    "QFI Determinant|pca_inspired|2019_repo": {
+      "method": "QFI Determinant",
+      "condition": "pca_inspired",
+      "crisis": "2019_repo",
+      "d": 0.8613210155526408,
+      "ci_lo": 0.7428270584362552,
+      "ci_hi": 0.9807967063018633
+    },
+    "QFI Determinant|learned_scaling|2019_repo": {
+      "method": "QFI Determinant",
+      "condition": "learned_scaling",
+      "crisis": "2019_repo",
+      "d": 0.8578178620613305,
+      "ci_lo": 0.7393478626814927,
+      "ci_hi": 0.9781721945159315
+    },
+    "QFI Determinant|random|2020_covid": {
+      "method": "QFI Determinant",
+      "condition": "random",
+      "crisis": "2020_covid",
+      "d": 0.3505991617970382,
+      "ci_lo": 0.11350018995471853,
+      "ci_hi": 0.5934585250521669
+    },
+    "QFI Determinant|pca_inspired|2020_covid": {
+      "method": "QFI Determinant",
+      "condition": "pca_inspired",
+      "crisis": "2020_covid",
+      "d": 0.6780447584624603,
+      "ci_lo": 0.4619296969441008,
+      "ci_hi": 0.8855259034017863
+    },
+    "QFI Determinant|learned_scaling|2020_covid": {
+      "method": "QFI Determinant",
+      "condition": "learned_scaling",
+      "crisis": "2020_covid",
+      "d": 0.4589777661316292,
+      "ci_lo": 0.23009317742181462,
+      "ci_hi": 0.6860630605373805
+    },
+    "QFI Determinant|random|2022_rates": {
+      "method": "QFI Determinant",
+      "condition": "random",
+      "crisis": "2022_rates",
+      "d": 0.6866112151993026,
+      "ci_lo": 0.547981196328513,
+      "ci_hi": 0.8286038889651994
+    },
+    "QFI Determinant|pca_inspired|2022_rates": {
+      "method": "QFI Determinant",
+      "condition": "pca_inspired",
+      "crisis": "2022_rates",
+      "d": 0.7840135151292053,
+      "ci_lo": 0.6528152867623501,
+      "ci_hi": 0.9130815530729014
+    },
+    "QFI Determinant|learned_scaling|2022_rates": {
+      "method": "QFI Determinant",
+      "condition": "learned_scaling",
+      "crisis": "2022_rates",
+      "d": 0.7898451828618591,
+      "ci_lo": 0.6585868237726712,
+      "ci_hi": 0.9198590538564442
+    },
+    "QFI Determinant|random|2023_svb": {
+      "method": "QFI Determinant",
+      "condition": "random",
+      "crisis": "2023_svb",
+      "d": 0.5972837444218704,
+      "ci_lo": 0.3997939492749191,
+      "ci_hi": 0.7978583202758021
+    },
+    "QFI Determinant|pca_inspired|2023_svb": {
+      "method": "QFI Determinant",
+      "condition": "pca_inspired",
+      "crisis": "2023_svb",
+      "d": 0.6678938213542215,
+      "ci_lo": 0.5009658028945959,
+      "ci_hi": 0.8378398781324969
+    },
+    "QFI Determinant|learned_scaling|2023_svb": {
+      "method": "QFI Determinant",
+      "condition": "learned_scaling",
+      "crisis": "2023_svb",
+      "d": 0.6663709306320236,
+      "ci_lo": 0.4994018543262864,
+      "ci_hi": 0.8364470730579147
+    },
+    "Multi-Lag Fidelity|random|2007_quant": {
+      "method": "Multi-Lag Fidelity",
+      "condition": "random",
+      "crisis": "2007_quant",
+      "d": 0.609572174031349,
+      "ci_lo": 0.37845641389602397,
+      "ci_hi": 0.8477929975309999
+    },
+    "Multi-Lag Fidelity|pca_inspired|2007_quant": {
+      "method": "Multi-Lag Fidelity",
+      "condition": "pca_inspired",
+      "crisis": "2007_quant",
+      "d": 0.6031165124769216,
+      "ci_lo": 0.4815190317856471,
+      "ci_hi": 0.7279293259596489
+    },
+    "Multi-Lag Fidelity|learned_scaling|2007_quant": {
+      "method": "Multi-Lag Fidelity",
+      "condition": "learned_scaling",
+      "crisis": "2007_quant",
+      "d": 0.6032302191435235,
+      "ci_lo": 0.48164769785345396,
+      "ci_hi": 0.7280289820599554
+    },
+    "Multi-Lag Fidelity|random|2008_gfc": {
+      "method": "Multi-Lag Fidelity",
+      "condition": "random",
+      "crisis": "2008_gfc",
+      "d": 0.9459092732318715,
+      "ci_lo": 0.894337336105716,
+      "ci_hi": 0.9991968437867513
+    },
+    "Multi-Lag Fidelity|pca_inspired|2008_gfc": {
+      "method": "Multi-Lag Fidelity",
+      "condition": "pca_inspired",
+      "crisis": "2008_gfc",
+      "d": 1.0813678626316736,
+      "ci_lo": 1.052850370733825,
+      "ci_hi": 1.1121279449998143
+    },
+    "Multi-Lag Fidelity|learned_scaling|2008_gfc": {
+      "method": "Multi-Lag Fidelity",
+      "condition": "learned_scaling",
+      "crisis": "2008_gfc",
+      "d": 1.0814186167377515,
+      "ci_lo": 1.0528975802565745,
+      "ci_hi": 1.1121838854560915
+    },
+    "Multi-Lag Fidelity|random|2010_flash": {
+      "method": "Multi-Lag Fidelity",
+      "condition": "random",
+      "crisis": "2010_flash",
+      "d": 0.03852109746990527,
+      "ci_lo": 0.00373459304000131,
+      "ci_hi": 0.2938448535537179
+    },
+    "Multi-Lag Fidelity|pca_inspired|2010_flash": {
+      "method": "Multi-Lag Fidelity",
+      "condition": "pca_inspired",
+      "crisis": "2010_flash",
+      "d": 0.1357469741256633,
+      "ci_lo": 0.007291576569276443,
+      "ci_hi": 0.43912625925953
+    },
+    "Multi-Lag Fidelity|learned_scaling|2010_flash": {
+      "method": "Multi-Lag Fidelity",
+      "condition": "learned_scaling",
+      "crisis": "2010_flash",
+      "d": 0.1357042326907151,
+      "ci_lo": 0.007258582348287662,
+      "ci_hi": 0.4390775365280026
+    },
+    "Multi-Lag Fidelity|random|2011_euro": {
+      "method": "Multi-Lag Fidelity",
+      "condition": "random",
+      "crisis": "2011_euro",
+      "d": 0.1770721517116839,
+      "ci_lo": 0.012980834874835664,
+      "ci_hi": 0.37546646653650745
+    },
+    "Multi-Lag Fidelity|pca_inspired|2011_euro": {
+      "method": "Multi-Lag Fidelity",
+      "condition": "pca_inspired",
+      "crisis": "2011_euro",
+      "d": 0.6213453268622534,
+      "ci_lo": 0.529629792133128,
+      "ci_hi": 0.7120718570375438
+    },
+    "Multi-Lag Fidelity|learned_scaling|2011_euro": {
+      "method": "Multi-Lag Fidelity",
+      "condition": "learned_scaling",
+      "crisis": "2011_euro",
+      "d": 0.6213582920708572,
+      "ci_lo": 0.5296521798039737,
+      "ci_hi": 0.7120841245886281
+    },
+    "Multi-Lag Fidelity|random|2015_china": {
+      "method": "Multi-Lag Fidelity",
+      "condition": "random",
+      "crisis": "2015_china",
+      "d": 0.14168705074521187,
+      "ci_lo": 0.010527442905397394,
+      "ci_hi": 0.30134211521033694
+    },
+    "Multi-Lag Fidelity|pca_inspired|2015_china": {
+      "method": "Multi-Lag Fidelity",
+      "condition": "pca_inspired",
+      "crisis": "2015_china",
+      "d": 0.5226780693818153,
+      "ci_lo": 0.41128238044626536,
+      "ci_hi": 0.6300141034309165
+    },
+    "Multi-Lag Fidelity|learned_scaling|2015_china": {
+      "method": "Multi-Lag Fidelity",
+      "condition": "learned_scaling",
+      "crisis": "2015_china",
+      "d": 0.5226432855918296,
+      "ci_lo": 0.41125499864557563,
+      "ci_hi": 0.6299689801229176
+    },
+    "Multi-Lag Fidelity|random|2018_volmageddon": {
+      "method": "Multi-Lag Fidelity",
+      "condition": "random",
+      "crisis": "2018_volmageddon",
+      "d": 0.2265810864924016,
+      "ci_lo": 0.07966200707369435,
+      "ci_hi": 0.378041899215461
+    },
+    "Multi-Lag Fidelity|pca_inspired|2018_volmageddon": {
+      "method": "Multi-Lag Fidelity",
+      "condition": "pca_inspired",
+      "crisis": "2018_volmageddon",
+      "d": 0.20770349203934518,
+      "ci_lo": 0.013779417453533904,
+      "ci_hi": 0.43787568801085064
+    },
+    "Multi-Lag Fidelity|learned_scaling|2018_volmageddon": {
+      "method": "Multi-Lag Fidelity",
+      "condition": "learned_scaling",
+      "crisis": "2018_volmageddon",
+      "d": 0.2077915922996854,
+      "ci_lo": 0.013736746225944497,
+      "ci_hi": 0.4380000138067778
+    },
+    "Multi-Lag Fidelity|random|2018_q4": {
+      "method": "Multi-Lag Fidelity",
+      "condition": "random",
+      "crisis": "2018_q4",
+      "d": 0.08001603420315265,
+      "ci_lo": 0.004782842003273466,
+      "ci_hi": 0.20534398022931455
+    },
+    "Multi-Lag Fidelity|pca_inspired|2018_q4": {
+      "method": "Multi-Lag Fidelity",
+      "condition": "pca_inspired",
+      "crisis": "2018_q4",
+      "d": 0.18036807651134734,
+      "ci_lo": 0.015703110049056116,
+      "ci_hi": 0.37409726329836435
+    },
+    "Multi-Lag Fidelity|learned_scaling|2018_q4": {
+      "method": "Multi-Lag Fidelity",
+      "condition": "learned_scaling",
+      "crisis": "2018_q4",
+      "d": 0.180343977028607,
+      "ci_lo": 0.015693623173172883,
+      "ci_hi": 0.3740927200807238
+    },
+    "Multi-Lag Fidelity|random|2019_repo": {
+      "method": "Multi-Lag Fidelity",
+      "condition": "random",
+      "crisis": "2019_repo",
+      "d": 0.8638152879494431,
+      "ci_lo": 0.760731697314474,
+      "ci_hi": 0.9662433435394487
+    },
+    "Multi-Lag Fidelity|pca_inspired|2019_repo": {
+      "method": "Multi-Lag Fidelity",
+      "condition": "pca_inspired",
+      "crisis": "2019_repo",
+      "d": 1.0986167789208845,
+      "ci_lo": 0.8024552519918957,
+      "ci_hi": 1.373075758828434
+    },
+    "Multi-Lag Fidelity|learned_scaling|2019_repo": {
+      "method": "Multi-Lag Fidelity",
+      "condition": "learned_scaling",
+      "crisis": "2019_repo",
+      "d": 1.098673289609253,
+      "ci_lo": 0.8024695783988642,
+      "ci_hi": 1.3731145828530356
+    },
+    "Multi-Lag Fidelity|random|2020_covid": {
+      "method": "Multi-Lag Fidelity",
+      "condition": "random",
+      "crisis": "2020_covid",
+      "d": 0.495512107045219,
+      "ci_lo": 0.33393407531837993,
+      "ci_hi": 0.6535214924119519
+    },
+    "Multi-Lag Fidelity|pca_inspired|2020_covid": {
+      "method": "Multi-Lag Fidelity",
+      "condition": "pca_inspired",
+      "crisis": "2020_covid",
+      "d": 0.10924217292699677,
+      "ci_lo": 0.0059670686572476685,
+      "ci_hi": 0.37238055735946474
+    },
+    "Multi-Lag Fidelity|learned_scaling|2020_covid": {
+      "method": "Multi-Lag Fidelity",
+      "condition": "learned_scaling",
+      "crisis": "2020_covid",
+      "d": 0.1093091366902526,
+      "ci_lo": 0.005984248411513855,
+      "ci_hi": 0.37245133971489414
+    },
+    "Multi-Lag Fidelity|random|2022_rates": {
+      "method": "Multi-Lag Fidelity",
+      "condition": "random",
+      "crisis": "2022_rates",
+      "d": 0.33908663418253177,
+      "ci_lo": 0.18791517249789086,
+      "ci_hi": 0.4842493592298814
+    },
+    "Multi-Lag Fidelity|pca_inspired|2022_rates": {
+      "method": "Multi-Lag Fidelity",
+      "condition": "pca_inspired",
+      "crisis": "2022_rates",
+      "d": 0.816693507098593,
+      "ci_lo": 0.7471991686585556,
+      "ci_hi": 0.8850238719799531
+    },
+    "Multi-Lag Fidelity|learned_scaling|2022_rates": {
+      "method": "Multi-Lag Fidelity",
+      "condition": "learned_scaling",
+      "crisis": "2022_rates",
+      "d": 0.8167438204875604,
+      "ci_lo": 0.7472586354213226,
+      "ci_hi": 0.8850697778067329
+    },
+    "Multi-Lag Fidelity|random|2023_svb": {
+      "method": "Multi-Lag Fidelity",
+      "condition": "random",
+      "crisis": "2023_svb",
+      "d": 0.09185596005676508,
+      "ci_lo": 0.004922465443168395,
+      "ci_hi": 0.3012443618765683
+    },
+    "Multi-Lag Fidelity|pca_inspired|2023_svb": {
+      "method": "Multi-Lag Fidelity",
+      "condition": "pca_inspired",
+      "crisis": "2023_svb",
+      "d": 0.016070056917025503,
+      "ci_lo": 0.002434547869032555,
+      "ci_hi": 0.1854941734057144
+    },
+    "Multi-Lag Fidelity|learned_scaling|2023_svb": {
+      "method": "Multi-Lag Fidelity",
+      "condition": "learned_scaling",
+      "crisis": "2023_svb",
+      "d": 0.0161923200144742,
+      "ci_lo": 0.002423266464031473,
+      "ci_hi": 0.18546079888429087
+    }
+  }
+}

@@ -1,17 +1,17 @@
-# Quantum Geometric Observables for Financial Regime Detection
+# Geometric Observables for Financial Regime Detection
 
 Academic research code for the paper:
 
-> **Quantum Geometric Observables for Financial Regime Detection**
+> **Geometric Observables for Financial Regime Detection**
 > Will Hammond, Pitzer College
 
 ## Overview
 
-This project introduces three unsupervised regime detection observables derived from the quantum metric tensor of a QCML (Quantum Cognition Machine Learning) induced geometry on financial data manifolds:
+This project introduces three unsupervised regime detection observables derived from the metric tensor of a QCML (Quantum Cognition Machine Learning---a spectral metric learning framework) induced geometry on financial data manifolds:
 
 1. **Berry Phase Rate** -- rate of change of Berry curvature signals topological transitions
-2. **QFI Pseudo-Determinant** -- quantum metric volume element detects phase boundary crossings
-3. **Multi-Lag Fidelity** -- multi-scale quantum state overlap measures regime instability
+2. **QFI Pseudo-Determinant** -- metric volume element detects phase boundary crossings
+3. **Multi-Lag Fidelity** -- multi-scale state overlap measures regime instability
 
 These geometric observables are competitive with supervised Random Forest baselines (median Cohen's d = 1.67 vs 1.13 via simple weighted combination) and generalize across 5 ETFs (SPY, QQQ, IWM, EFA, DIA).
 
@@ -57,10 +57,10 @@ pytest tests/ -v
 
 ### QCML Geometry (`qcml_geometry/core.py`)
 
-Learns geometric structure from data using quantum-inspired methods:
+Learns geometric structure from data using spectral metric learning methods:
 - Error Hamiltonian: H(x) = 1/2 sum_k (A_k - x_k I)^2
 - Quasi-coherent states: ground states of H(x)
-- Quantum metric tensor: g_ab encoding manifold geometry
+- Metric tensor: g_ab encoding manifold geometry
 - Berry curvature: F_ab for topological analysis
 
 ```python
@@ -104,8 +104,8 @@ This work builds upon the QCML framework developed by Qognitive, Inc. and academ
 ## Citation
 
 ```bibtex
-@article{hammond2026quantum,
-  title={Quantum Geometric Observables for Financial Regime Detection},
+@article{hammond2026geometric,
+  title={Geometric Observables for Financial Regime Detection},
   author={Hammond, Will},
   year={2026},
   institution={Pitzer College}

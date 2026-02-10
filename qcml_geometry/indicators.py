@@ -1,5 +1,5 @@
 """
-Novel Quantum Indicators for Regime Detection
+Novel Geometric Indicators for Regime Detection
 
 Four novel contributions for academic research on topological regime detection:
 
@@ -435,9 +435,9 @@ class MultiScaleChernConsensus:
         )
 
 
-class QuantumIndicatorSuite:
+class GeometricIndicatorSuite:
     """
-    Suite of all quantum indicators for comprehensive regime analysis.
+    Suite of all geometric indicators for comprehensive regime analysis.
 
     Combines spectral gap, energy evolution, fidelity decay, and
     multi-scale consensus into a unified analysis framework.
@@ -470,7 +470,7 @@ class QuantumIndicatorSuite:
         )
 
     def compute_all(self, X: np.ndarray) -> Dict[str, IndicatorResult]:
-        """Compute all quantum indicators."""
+        """Compute all geometric indicators."""
         results = {}
 
         logger.info("Computing spectral gap indicator...")

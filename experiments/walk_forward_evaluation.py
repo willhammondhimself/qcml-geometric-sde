@@ -92,6 +92,49 @@ def count_alarm_episodes(alarm_mask, gap_days=5):
     return episodes
 
 
+def calibrate_threshold(scores, dates, crisis_keys, target_far=1.0, gap_days=5):
+    """Calibrate threshold tau on training data to achieve target FAR.
+
+    Given training-period scores, find threshold tau such that the false alarm
+    rate (alarm episodes per year outside known crisis windows) <= target_far.
+
+    Args:
+        scores: 1-D array of z-scores from training period.
+        dates: Corresponding dates.
+        crisis_keys: List of crisis keys active in training period.
+        target_far: Target false alarm rate (episodes/year). Default 1.0.
+        gap_days: Gap for episode counting.
+
+    Returns:
+        float: Calibrated threshold tau.
+    """
+    # Build normal mask (exclude known crisis windows)
+    normal_mask = np.ones(len(scores), dtype=bool)
+    for ck in crisis_keys:
+        ci = ALL_CRISES[ck]
+        cs = pd.Timestamp(ci['start'])
+        ce = pd.Timestamp(ci['end'])
+        crisis_m = (dates >= cs) & (dates <= ce)
+        normal_mask &= ~crisis_m
+
+    normal_days = np.sum(normal_mask)
+    years = max(normal_days / 252, 0.1)
+
+    # Binary search for threshold
+    lo, hi = 0.5, 5.0
+    for _ in range(50):
+        mid = (lo + hi) / 2
+        alarm_mask = (scores > mid) & normal_mask
+        episodes = count_alarm_episodes(alarm_mask, gap_days=gap_days)
+        far = episodes / years
+        if far > target_far:
+            lo = mid
+        else:
+            hi = mid
+
+    return round(hi, 3)
+
+
 def find_crises_in_period(start_date, end_date):
     """Return crisis keys whose windows overlap [start_date, end_date]."""
     matching = []
@@ -113,7 +156,7 @@ def find_training_crises(train_end):
     return matching
 
 
-def run_walk_forward(quick=False):
+def run_walk_forward(quick=False, far_target=None):
     """Run walk-forward evaluation with expanding window.
 
     Expanding windows:
@@ -124,6 +167,9 @@ def run_walk_forward(quick=False):
 
     Args:
         quick: If True, only use 3 windows.
+        far_target: If not None, calibrate a per-method threshold on training
+            data to achieve this false alarm rate (episodes/year). Default None
+            (z>2 only, backward-compatible).
     """
     logger.info("=" * 70)
     logger.info("Walk-Forward Detection Benchmark (Expanding Window)")
@@ -192,9 +238,23 @@ def run_walk_forward(quick=False):
             eval_scores = scores[eval_start_idx:]
             eval_dates = dates_window_enriched[eval_start_idx:]
 
+            # FAR-calibrated threshold on training data
+            tau = None
+            if far_target is not None:
+                train_scores = scores[:eval_start_idx]
+                train_dates_enriched = dates_window_enriched[:eval_start_idx]
+                train_crisis_keys = find_training_crises(train_end)
+                tau = calibrate_threshold(
+                    train_scores, train_dates_enriched,
+                    train_crisis_keys, target_far=far_target,
+                )
+                logger.info(f"    {method_name:25s} FAR-calibrated tau={tau:.3f} "
+                           f"(target={far_target}/yr)")
+
             for ck in eval_crises:
                 _record_crisis_result(results, method_name, ck, eval_start_year,
-                                      eval_scores, eval_dates)
+                                      eval_scores, eval_dates,
+                                      threshold_far=tau)
 
         # --- RF (supervised, expanding-window training) ---
         # Find crises that ended in the training period for labels
@@ -220,9 +280,22 @@ def run_walk_forward(quick=False):
             rf_eval = rf_window_scores[eval_start_idx:]
             eval_dates_rf = dates_window_enriched[eval_start_idx:]
 
+            # FAR-calibrated threshold for RF
+            rf_tau = None
+            if far_target is not None:
+                rf_train_scores = rf_window_scores[:eval_start_idx]
+                train_dates_enriched = dates_window_enriched[:eval_start_idx]
+                rf_tau = calibrate_threshold(
+                    rf_train_scores, train_dates_enriched,
+                    train_crises, target_far=far_target,
+                )
+                logger.info(f"    {'Random Forest':25s} FAR-calibrated tau={rf_tau:.3f} "
+                           f"(target={far_target}/yr)")
+
             for ck in eval_crises:
                 _record_crisis_result(results, 'Random Forest', ck, eval_start_year,
-                                      rf_eval, eval_dates_rf)
+                                      rf_eval, eval_dates_rf,
+                                      threshold_far=rf_tau)
         else:
             logger.info(f"  RF skipped (only {len(train_crises)} training crises)")
 
@@ -235,9 +308,15 @@ def run_walk_forward(quick=False):
 
     for mname in sorted(method_summary.keys()):
         s = method_summary[mname]
-        logger.info(f"  {mname:25s}: median_d={s['median_d']:.2f}, "
-                    f"median_delay={s['median_delay']:.1f}d, FAR={s['median_far']:.1f}/yr, "
-                    f"detected={s['n_detected']}/{s['n_total']} ({s['detection_rate']:.0%})")
+        line = (f"  {mname:25s}: median_d={s['median_d']:.2f}, "
+                f"z2: delay={s['median_delay_z2']:.1f}d, FAR={s['median_far_z2']:.1f}/yr, "
+                f"det={s['n_detected_z2']}/{s['n_total']}")
+        if not np.isnan(s.get('median_far_calibrated', float('nan'))):
+            line += (f"  |  FAR-cal: delay={s['median_delay_far']:.1f}d, "
+                     f"FAR={s['median_far_calibrated']:.1f}/yr, "
+                     f"det={s['n_detected_far']}/{s['n_total']}, "
+                     f"tau={s['median_threshold_far']:.2f}")
+        logger.info(line)
 
     # ---- Save ----
     output = {
@@ -245,7 +324,8 @@ def run_walk_forward(quick=False):
         'config': {
             'window_type': 'expanding',
             'train_start': '2005-01-01',
-            'threshold': 2.0,
+            'threshold_z2': 2.0,
+            'far_target': far_target,
             'alarm_episode_gap': 5,
             'quick': quick,
         },
@@ -267,8 +347,21 @@ def run_walk_forward(quick=False):
 
 
 def _record_crisis_result(results, method_name, ck, eval_start_year,
-                          eval_scores, eval_dates):
-    """Record detection metrics for one method × crisis × window."""
+                          eval_scores, eval_dates, threshold_far=None):
+    """Record detection metrics for one method x crisis x window.
+
+    Computes metrics for both a fixed z>2 threshold and, if provided,
+    a FAR-calibrated threshold.
+
+    Args:
+        results: Dict to store results (mutated in place).
+        method_name: Name of the detection method.
+        ck: Crisis key.
+        eval_start_year: Year of the evaluation window.
+        eval_scores: Z-scores for the evaluation period.
+        eval_dates: Dates for the evaluation period.
+        threshold_far: FAR-calibrated threshold (if None, only z>2 recorded).
+    """
     ci = ALL_CRISES[ck]
     cs = pd.Timestamp(ci['start'])
     ce = pd.Timestamp(ci['end'])
@@ -284,23 +377,32 @@ def _record_crisis_result(results, method_name, ck, eval_start_year,
         crisis_scores, normal_scores, n_bootstrap=5000
     )
 
-    # Detection delay (days from crisis start to first z > 2.0)
-    threshold = 2.0
-    alarm_mask = eval_scores > threshold
+    normal_days = np.sum(normal_mask)
+    years = max(normal_days / 252, 0.01)
     crisis_start_idx = np.searchsorted(eval_dates, cs)
     crisis_end_idx = np.searchsorted(eval_dates, ce)
 
-    alarms_in_crisis = np.where(
-        alarm_mask[crisis_start_idx:crisis_end_idx]
-    )[0]
-    detection_delay = int(alarms_in_crisis[0]) if len(alarms_in_crisis) > 0 else None
+    # --- Fixed z > 2.0 threshold ---
+    threshold_z2 = 2.0
+    alarm_z2 = eval_scores > threshold_z2
+    alarms_in_crisis_z2 = np.where(alarm_z2[crisis_start_idx:crisis_end_idx])[0]
+    delay_z2 = int(alarms_in_crisis_z2[0]) if len(alarms_in_crisis_z2) > 0 else None
+    normal_alarm_z2 = alarm_z2 & normal_mask
+    episodes_z2 = count_alarm_episodes(normal_alarm_z2, gap_days=5)
+    far_z2 = float(episodes_z2 / years)
 
-    # False alarm rate: alarm episodes per year outside crisis
-    normal_alarm_mask = alarm_mask & normal_mask
-    normal_days = np.sum(normal_mask)
-    episodes = count_alarm_episodes(normal_alarm_mask, gap_days=5)
-    years = max(normal_days / 252, 0.01)
-    far = float(episodes / years)
+    # --- FAR-calibrated threshold ---
+    delay_far = None
+    far_calibrated = None
+    threshold_far_value = None
+    if threshold_far is not None:
+        threshold_far_value = float(threshold_far)
+        alarm_far = eval_scores > threshold_far
+        alarms_in_crisis_far = np.where(alarm_far[crisis_start_idx:crisis_end_idx])[0]
+        delay_far = int(alarms_in_crisis_far[0]) if len(alarms_in_crisis_far) > 0 else None
+        normal_alarm_far = alarm_far & normal_mask
+        episodes_far = count_alarm_episodes(normal_alarm_far, gap_days=5)
+        far_calibrated = float(episodes_far / years)
 
     key = f"{method_name}|{ck}|{eval_start_year}"
     results[key] = {
@@ -310,44 +412,95 @@ def _record_crisis_result(results, method_name, ck, eval_start_year,
         'd': float(d) if not np.isnan(d) else None,
         'ci_lo': float(ci_lo) if not np.isnan(ci_lo) else None,
         'ci_hi': float(ci_hi) if not np.isnan(ci_hi) else None,
-        'detection_delay_days': detection_delay,
-        'false_alarm_rate_per_year': round(far, 3),
-        'crisis_detected': detection_delay is not None,
+        # Fixed z > 2 results
+        'detection_delay_z2': delay_z2,
+        'far_z2': round(far_z2, 3),
+        'crisis_detected_z2': delay_z2 is not None,
+        # FAR-calibrated results (if available)
+        'detection_delay_far': delay_far,
+        'far_calibrated': round(far_calibrated, 3) if far_calibrated is not None else None,
+        'crisis_detected_far': delay_far is not None if threshold_far is not None else None,
+        'threshold_far_value': threshold_far_value,
+        # Backward compat aliases
+        'detection_delay_days': delay_z2,
+        'false_alarm_rate_per_year': round(far_z2, 3),
+        'crisis_detected': delay_z2 is not None,
     }
 
+    far_str = f"FAR_cal={far_calibrated:.1f}/yr (tau={threshold_far_value:.2f})" if threshold_far is not None else ""
     logger.info(f"    {method_name:25s} on {ck:20s}: "
-               f"d={d:.2f}, delay={detection_delay}, FAR={far:.1f}/yr")
+               f"d={d:.2f}, delay_z2={delay_z2}, FAR_z2={far_z2:.1f}/yr"
+               f"  {far_str}")
 
 
 def _compute_summary(results):
-    """Aggregate per-method: median d, median delay, median FAR, detection rate."""
+    """Aggregate per-method: median d, delay, FAR for both z>2 and FAR-calibrated."""
     method_summary = {}
     for key, r in results.items():
         mname = r['method']
         if mname not in method_summary:
-            method_summary[mname] = {'ds': [], 'delays': [], 'fars': [],
-                                      'detected': 0, 'total': 0}
+            method_summary[mname] = {
+                'ds': [],
+                # z > 2 tracking
+                'delays_z2': [], 'fars_z2': [], 'detected_z2': 0,
+                # FAR-calibrated tracking
+                'delays_far': [], 'fars_far': [], 'detected_far': 0,
+                'thresholds_far': [],
+                'total': 0,
+            }
 
         method_summary[mname]['total'] += 1
         if r['d'] is not None:
             method_summary[mname]['ds'].append(r['d'])
-        if r['detection_delay_days'] is not None:
-            method_summary[mname]['delays'].append(r['detection_delay_days'])
-            method_summary[mname]['detected'] += 1
-        method_summary[mname]['fars'].append(r['false_alarm_rate_per_year'])
+
+        # z > 2 metrics
+        if r.get('detection_delay_z2') is not None:
+            method_summary[mname]['delays_z2'].append(r['detection_delay_z2'])
+            method_summary[mname]['detected_z2'] += 1
+        method_summary[mname]['fars_z2'].append(r.get('far_z2', r.get('false_alarm_rate_per_year', 0)))
+
+        # FAR-calibrated metrics
+        if r.get('detection_delay_far') is not None:
+            method_summary[mname]['delays_far'].append(r['detection_delay_far'])
+            method_summary[mname]['detected_far'] += 1
+        if r.get('far_calibrated') is not None:
+            method_summary[mname]['fars_far'].append(r['far_calibrated'])
+        if r.get('threshold_far_value') is not None:
+            method_summary[mname]['thresholds_far'].append(r['threshold_far_value'])
 
     summary = {}
     for mname, s in method_summary.items():
         median_d = float(np.median(s['ds'])) if s['ds'] else float('nan')
-        median_delay = float(np.median(s['delays'])) if s['delays'] else float('nan')
-        median_far = float(np.median(s['fars'])) if s['fars'] else float('nan')
-        detect_rate = s['detected'] / max(s['total'], 1)
+
+        # z > 2
+        median_delay_z2 = float(np.median(s['delays_z2'])) if s['delays_z2'] else float('nan')
+        median_far_z2 = float(np.median(s['fars_z2'])) if s['fars_z2'] else float('nan')
+        detect_rate_z2 = s['detected_z2'] / max(s['total'], 1)
+
+        # FAR-calibrated
+        median_delay_far = float(np.median(s['delays_far'])) if s['delays_far'] else float('nan')
+        median_far_cal = float(np.median(s['fars_far'])) if s['fars_far'] else float('nan')
+        detect_rate_far = s['detected_far'] / max(s['total'], 1)
+        median_tau = float(np.median(s['thresholds_far'])) if s['thresholds_far'] else float('nan')
+
         summary[mname] = {
             'median_d': median_d,
-            'median_delay': median_delay,
-            'median_far': median_far,
-            'detection_rate': detect_rate,
-            'n_detected': s['detected'],
+            # z > 2 summary
+            'median_delay_z2': median_delay_z2,
+            'median_far_z2': median_far_z2,
+            'detection_rate_z2': detect_rate_z2,
+            'n_detected_z2': s['detected_z2'],
+            # FAR-calibrated summary
+            'median_delay_far': median_delay_far,
+            'median_far_calibrated': median_far_cal,
+            'detection_rate_far': detect_rate_far,
+            'n_detected_far': s['detected_far'],
+            'median_threshold_far': median_tau,
+            # Backward compat
+            'median_delay': median_delay_z2,
+            'median_far': median_far_z2,
+            'detection_rate': detect_rate_z2,
+            'n_detected': s['detected_z2'],
             'n_total': s['total'],
         }
     return summary
@@ -356,8 +509,11 @@ def _compute_summary(results):
 def main():
     parser = argparse.ArgumentParser(description='Walk-forward detection benchmark')
     parser.add_argument('--quick', action='store_true', help='Only 3 windows')
+    parser.add_argument('--far-target', type=float, default=None,
+                        help='Target false alarm rate (episodes/yr) for calibration. '
+                             'Default: None (z>2 only). Recommended: 1.0.')
     args = parser.parse_args()
-    run_walk_forward(quick=args.quick)
+    run_walk_forward(quick=args.quick, far_target=args.far_target)
 
 
 if __name__ == '__main__':
