@@ -1,9 +1,9 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.3.8)  9 FEB 2026 20:25
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.3.8)  9 FEB 2026 12:28
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
-**qcml_geometric_sde.tex
-(./qcml_geometric_sde.tex
+**paper/qcml_geometric_sde.tex
+(./paper/qcml_geometric_sde.tex
 LaTeX2e <2024-11-01> patch level 2
 L3 programming layer <2025-01-18>
 (/usr/local/texlive/2025/texmf-dist/tex/latex/base/article.cls
@@ -423,54 +423,47 @@ Package caption Info: New subtype `subfigure' on input line 238.
 Package caption Info: New subtype `subtable' on input line 238.
 \c@subtable=\count314
 )
-(/usr/local/texlive/2025/texmf-dist/tex/latex/multirow/multirow.sty
-Package: multirow 2024/11/12 v2.9 Span multiple rows of a table
-\multirow@colwidth=\skip63
-\multirow@cntb=\count315
-\multirow@dima=\skip64
-\bigstrutjot=\dimen186
-)
-\c@theorem=\count316
+\c@theorem=\count315
 
 (/usr/local/texlive/2025/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
 File: l3backend-pdftex.def 2024-05-08 L3 backend support: PDF output (pdfTeX)
-\l__color_backend_stack_int=\count317
+\l__color_backend_stack_int=\count316
 \l__pdf_internal_box=\box56
 )
 (./qcml_geometric_sde.aux)
 \openout1 = `qcml_geometric_sde.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 59.
-LaTeX Font Info:    ... okay on input line 59.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 59.
-LaTeX Font Info:    ... okay on input line 59.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 59.
-LaTeX Font Info:    ... okay on input line 59.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 59.
-LaTeX Font Info:    ... okay on input line 59.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 59.
-LaTeX Font Info:    ... okay on input line 59.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 59.
-LaTeX Font Info:    ... okay on input line 59.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 59.
-LaTeX Font Info:    ... okay on input line 59.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 59.
-LaTeX Font Info:    ... okay on input line 59.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 59.
-LaTeX Font Info:    ... okay on input line 59.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
 
 (/usr/local/texlive/2025/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count318
-\scratchdimen=\dimen187
+\scratchcounter=\count317
+\scratchdimen=\dimen186
 \scratchbox=\box57
-\nofMPsegments=\count319
-\nofMParguments=\count320
+\nofMPsegments=\count318
+\nofMParguments=\count319
 \everyMPshowfont=\toks35
-\MPscratchCnt=\count321
-\MPscratchDim=\dimen188
-\MPnumerator=\count322
-\makeMPintoPDFobject=\count323
+\MPscratchCnt=\count320
+\MPscratchDim=\dimen187
+\MPnumerator=\count321
+\makeMPintoPDFobject=\count322
 \everyMPtoPDFconversion=\toks36
 ) (/usr/local/texlive/2025/texmf-dist/tex/latex/epstopdf-pkg/epstopdf-base.sty
 Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
@@ -481,7 +474,7 @@ Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
 File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
-Package hyperref Info: Link coloring OFF on input line 59.
+Package hyperref Info: Link coloring OFF on input line 58.
 
 (./qcml_geometric_sde.out) (./qcml_geometric_sde.out)
 \@outlinefile=\write3
@@ -524,125 +517,166 @@ Package hyperref Info: Link coloring OFF on input line 59.
 
 Package caption Info: Begin \AtBeginDocument code.
 Package caption Info: End \AtBeginDocument code.
-LaTeX Font Info:    Trying to load font information for U+msa on input line 61.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 60.
 
 (/usr/local/texlive/2025/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 61.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 60.
 
 
 (/usr/local/texlive/2025/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-Overfull \hbox (11.63817pt too wide) in paragraph at lines 75--82
-\OT1/cmr/m/n/10 0\OML/cmm/m/it/10 :\OT1/cmr/m/n/10 93$\T1/cmr/m/n/10 [0.68,1.18
-] (QFI), com-pet-i-tive with a su-per-vised Ran-dom For-est base-line ($\OML/cm
-m/m/it/10 d \OT1/cmr/m/n/10 = 1\OML/cmm/m/it/10 :\OT1/cmr/m/n/10 13$\T1/cmr/m/n
-/10 [0.91,1.35]).
- []
-
-
 
 [1
 
 {/usr/local/texlive/2025/texmf-var/fonts/map/pdftex/updmap/pdftex.map}{/usr/loc
 al/texlive/2025/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc}]
-Overfull \hbox (4.05719pt too wide) in paragraph at lines 145--149
-[]\T1/cmr/m/n/10.95 Three ge-o-met-ric observables---Berry cur-va-ture in-cre-m
-ent, QFI de-ter-mi-nant, multi-lag fidelity---
- []
-
-
 
 [2]
 
 [3]
-Overfull \hbox (43.95703pt too wide) in paragraph at lines 357--360
- []\T1/cmr/bx/n/10.95 Hyperparameters.[] \T1/cmr/m/n/10.95 Hilbert di-men-sion 
-$\OML/cmm/m/it/10.95 n$\T1/cmr/m/n/10.95 , PCA com-po-nents $\OML/cmm/m/it/10.9
-5 p$\T1/cmr/m/n/10.95 , op-er-a-tor method $\OMS/cmsy/m/n/10.95 2 f[]\OML/cmm/m
-/it/10.95 ; []\OMS/cmsy/m/n/10.95 g$\T1/cmr/m/n/10.95 ,
- []
 
-
-
-[4]
-Package hyperref Info: bookmark level for unknown algorithm defaults to 0 on in
-put line 399.
-
+[4{/usr/local/texlive/2025/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc
+}]
 
 [5]
-Overfull \hbox (68.71873pt too wide) in paragraph at lines 478--505
- [][] 
- []
-
-
 
 [6]
+Package hyperref Info: bookmark level for unknown algorithm defaults to 0 on in
+put line 567.
+
 
 [7]
 
 [8]
+
+LaTeX Warning: File `../experiments/outputs/regime_detection/narratives/narrati
+ve_2008_gfc.pdf' not found on input line 698.
+
+
+! Package pdftex.def Error: File `../experiments/outputs/regime_detection/narra
+tives/narrative_2008_gfc.pdf' not found: using draft setting.
+
+See the pdftex.def package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.698 ...ection/narratives/narrative_2008_gfc.pdf}
+                                                  
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+LaTeX Warning: File `../experiments/outputs/regime_detection/narratives/narrati
+ve_2020_covid.pdf' not found on input line 717.
+
+
+! Package pdftex.def Error: File `../experiments/outputs/regime_detection/narra
+tives/narrative_2020_covid.pdf' not found: using draft setting.
+
+See the pdftex.def package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.717 ...tion/narratives/narrative_2020_covid.pdf}
+                                                  
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+LaTeX Warning: File `../experiments/outputs/regime_detection/narratives/narrati
+ve_2022_rates.pdf' not found on input line 733.
+
+
+! Package pdftex.def Error: File `../experiments/outputs/regime_detection/narra
+tives/narrative_2022_rates.pdf' not found: using draft setting.
+
+See the pdftex.def package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.733 ...tion/narratives/narrative_2022_rates.pdf}
+                                                  
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
 
 [9]
 
 [10]
 
 [11]
-<../experiments/outputs/regime_detection/narratives/narrative_2008_gfc.pdf, id=
-393, 1000.87236pt x 853.13506pt>
-File: ../experiments/outputs/regime_detection/narratives/narrative_2008_gfc.pdf
- Graphic file (type pdf)
-<use ../experiments/outputs/regime_detection/narratives/narrative_2008_gfc.pdf>
-
-Package pdftex.def Info: ../experiments/outputs/regime_detection/narratives/nar
-rative_2008_gfc.pdf  used on input line 942.
-(pdftex.def)             Requested size: 399.29463pt x 340.36276pt.
-<../experiments/outputs/regime_detection/narratives/narrative_2020_covid.pdf, i
-d=394, 1005.08813pt x 853.13506pt>
-File: ../experiments/outputs/regime_detection/narratives/narrative_2020_covid.p
-df Graphic file (type pdf)
-<use ../experiments/outputs/regime_detection/narratives/narrative_2020_covid.pd
-f>
-Package pdftex.def Info: ../experiments/outputs/regime_detection/narratives/nar
-rative_2020_covid.pdf  used on input line 951.
-(pdftex.def)             Requested size: 399.29463pt x 338.9308pt.
-<../experiments/outputs/regime_detection/narratives/narrative_2022_rates.pdf, i
-d=395, 1000.87236pt x 853.13506pt>
-File: ../experiments/outputs/regime_detection/narratives/narrative_2022_rates.p
-df Graphic file (type pdf)
-<use ../experiments/outputs/regime_detection/narratives/narrative_2022_rates.pd
-f>
-Package pdftex.def Info: ../experiments/outputs/regime_detection/narratives/nar
-rative_2022_rates.pdf  used on input line 958.
-(pdftex.def)             Requested size: 399.29463pt x 340.36276pt.
-<../experiments/outputs/regime_detection/superiority_publication/figures/effect
-_sizes.pdf, id=396, 715.49309pt x 354.12746pt>
-File: ../experiments/outputs/regime_detection/superiority_publication/figures/e
-ffect_sizes.pdf Graphic file (type pdf)
-<use ../experiments/outputs/regime_detection/superiority_publication/figures/ef
-fect_sizes.pdf>
-Package pdftex.def Info: ../experiments/outputs/regime_detection/superiority_pu
-blication/figures/effect_sizes.pdf  used on input line 965.
-(pdftex.def)             Requested size: 469.75502pt x 232.50363pt.
-
 
 [12]
+Overfull \hbox (25.28024pt too wide) in paragraph at lines 804--810
+ []\T1/cmr/bx/n/10.95 Multi-observable fu-sion.[] \T1/cmr/m/n/10.95 Fus-ing the
+ top three ob-serv-ables via Optuna-optimized weights ($\OML/cmm/m/it/10.95 w[]
+ \OT1/cmr/m/n/10.95 =
+ []
 
-[13 <../experiments/outputs/regime_detection/narratives/narrative_2008_gfc.pdf>
-]
 
-[14 <../experiments/outputs/regime_detection/narratives/narrative_2020_covid.pd
-f>]
 
-[15 <../experiments/outputs/regime_detection/narratives/narrative_2022_rates.pd
-f>]
+[13]
 
-[16 <../experiments/outputs/regime_detection/superiority_publication/figures/ef
-fect_sizes.pdf>]
+[14]
+
+[15]
+
+LaTeX Warning: File `../experiments/outputs/regime_detection/superiority_public
+ation/figures/effect_sizes.pdf' not found on input line 997.
+
+
+! Package pdftex.def Error: File `../experiments/outputs/regime_detection/super
+iority_publication/figures/effect_sizes.pdf' not found: using draft setting.
+
+See the pdftex.def package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.997 ...ity_publication/figures/effect_sizes.pdf}
+                                                  
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+LaTeX Warning: File `../experiments/outputs/regime_detection/superiority_public
+ation/figures/bootstrap_ranks.pdf' not found on input line 1006.
+
+
+! Package pdftex.def Error: File `../experiments/outputs/regime_detection/super
+iority_publication/figures/bootstrap_ranks.pdf' not found: using draft setting.
+
+
+See the pdftex.def package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.1006 ...publication/figures/bootstrap_ranks.pdf}
+                                                  
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+
+[16]
 
 [17]
+Overfull \hbox (3.01674pt too wide) in paragraph at lines 1157--1162
+[]\T1/cmr/m/n/10.95 Consider the eigen-value equa-tion $\OML/cmm/m/it/10.95 H\O
+T1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 x\OT1/cmr/m/n/10.95 )\OMS/cmsy/m/n/10.95 
+j\OML/cmm/m/it/10.95  \OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 x\OT1/cmr/m/n/10.
+95 )\OMS/cmsy/m/n/10.95 i \OT1/cmr/m/n/10.95 = \OML/cmm/m/it/10.95 E[]\OT1/cmr/
+m/n/10.95 (\OML/cmm/m/it/10.95 x\OT1/cmr/m/n/10.95 )\OMS/cmsy/m/n/10.95 j\OML/c
+mm/m/it/10.95  \OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 x\OT1/cmr/m/n/10.95 )\OM
+S/cmsy/m/n/10.95 i$ \T1/cmr/m/n/10.95 sub-ject to $\OMS/cmsy/m/n/10.95 h\OML/cm
+m/m/it/10.95  \OMS/cmsy/m/n/10.95 j\OML/cmm/m/it/10.95  \OMS/cmsy/m/n/10.95 i \
+OT1/cmr/m/n/10.95 =
+ []
+
+
 
 [18]
 
@@ -656,48 +690,42 @@ LaTeX2e <2024-11-01> patch level 2
 L3 programming layer <2025-01-18>
  ***********
 Package rerunfilecheck Info: File `qcml_geometric_sde.out' has not changed.
-(rerunfilecheck)             Checksum: 056C3306DB2DB013EDD51284D7412AB0;4519.
+(rerunfilecheck)             Checksum: 83F3C613FB2A23B87F2C2DD62EC48876;5034.
  ) 
 Here is how much of TeX's memory you used:
- 14121 strings out of 473190
- 220845 string characters out of 5715801
- 641774 words of memory out of 5000000
- 37011 multiletter control sequences out of 15000+600000
- 587649 words of font info for 115 fonts, out of 8000000 for 9000
+ 14087 strings out of 473190
+ 229003 string characters out of 5715801
+ 631544 words of memory out of 5000000
+ 36994 multiletter control sequences out of 15000+600000
+ 583226 words of font info for 104 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,14n,79p,555b,688s stack positions out of 10000i,1000n,20000p,200000b,200000s
-</usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb
-></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb>
-</usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb><
-/usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></u
-sr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr
-/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmib10.pfb></usr
-/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/l
-ocal/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/loca
-l/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/local/t
-exlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texl
-ive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texli
-ve/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb></usr/local/texlive
-/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/local/texlive/2
-025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/202
-5/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/local/texlive
-/2025/texmf-dist/fonts/type1/public/cm-super/sfbx1000.pfb></usr/local/texlive/2
-025/texmf-dist/fonts/type1/public/cm-super/sfbx1095.pfb></usr/local/texlive/202
-5/texmf-dist/fonts/type1/public/cm-super/sfbx1200.pfb></usr/local/texlive/2025/
-texmf-dist/fonts/type1/public/cm-super/sfbx1440.pfb></usr/local/texlive/2025/te
-xmf-dist/fonts/type1/public/cm-super/sfrm0900.pfb></usr/local/texlive/2025/texm
-f-dist/fonts/type1/public/cm-super/sfrm1000.pfb></usr/local/texlive/2025/texmf-
-dist/fonts/type1/public/cm-super/sfrm1095.pfb></usr/local/texlive/2025/texmf-di
-st/fonts/type1/public/cm-super/sfrm1200.pfb></usr/local/texlive/2025/texmf-dist
-/fonts/type1/public/cm-super/sfrm1728.pfb></usr/local/texlive/2025/texmf-dist/f
-onts/type1/public/cm-super/sfti1000.pfb></usr/local/texlive/2025/texmf-dist/fon
-ts/type1/public/cm-super/sfti1095.pfb></usr/local/texlive/2025/texmf-dist/fonts
-/type1/public/cm-super/sftt1095.pfb></usr/local/texlive/2025/texmf-dist/fonts/t
-ype1/public/cm-super/sftt1200.pfb>
-Output written on qcml_geometric_sde.pdf (21 pages, 804578 bytes).
+ 75i,10n,79p,561b,610s stack positions out of 10000i,1000n,20000p,200000b,200000s
+</usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb
+></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb>
+</usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></
+usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></us
+r/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/
+local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/loc
+al/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/loca
+l/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/
+texlive/2025/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/lo
+cal/texlive/2025/texmf-dist/fonts/type1/public/cm-super/sfbx1000.pfb></usr/loca
+l/texlive/2025/texmf-dist/fonts/type1/public/cm-super/sfbx1095.pfb></usr/local/
+texlive/2025/texmf-dist/fonts/type1/public/cm-super/sfbx1200.pfb></usr/local/te
+xlive/2025/texmf-dist/fonts/type1/public/cm-super/sfbx1440.pfb></usr/local/texl
+ive/2025/texmf-dist/fonts/type1/public/cm-super/sfrm0900.pfb></usr/local/texliv
+e/2025/texmf-dist/fonts/type1/public/cm-super/sfrm1000.pfb></usr/local/texlive/
+2025/texmf-dist/fonts/type1/public/cm-super/sfrm1095.pfb></usr/local/texlive/20
+25/texmf-dist/fonts/type1/public/cm-super/sfrm1200.pfb></usr/local/texlive/2025
+/texmf-dist/fonts/type1/public/cm-super/sfrm1728.pfb></usr/local/texlive/2025/t
+exmf-dist/fonts/type1/public/cm-super/sfti1000.pfb></usr/local/texlive/2025/tex
+mf-dist/fonts/type1/public/cm-super/sfti1095.pfb></usr/local/texlive/2025/texmf
+-dist/fonts/type1/public/cm-super/sftt1095.pfb></usr/local/texlive/2025/texmf-d
+ist/fonts/type1/public/cm-super/sftt1200.pfb>
+Output written on qcml_geometric_sde.pdf (21 pages, 456670 bytes).
 PDF statistics:
- 989 PDF objects out of 1000 (max. 8388607)
- 595 compressed objects within 6 object streams
- 155 named destinations out of 1000 (max. 500000)
- 253 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 568 PDF objects out of 1000 (max. 8388607)
+ 495 compressed objects within 5 object streams
+ 149 named destinations out of 1000 (max. 500000)
+ 265 words of extra memory for PDF output out of 10000 (max. 10000000)
 
