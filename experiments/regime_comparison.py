@@ -247,19 +247,18 @@ def run_comparison(
     logger.info("\n[5] Fitting RF (leave-one-crisis-out)...")
     rf_scores_per_crisis = {}
     for held_out_key in crises:
-        # Build labels: 1 during all crises EXCEPT held_out
-        y = np.zeros(len(X_enriched))
-        for ck, ci in ALL_CRISES.items():
+        # Build labels aligned with raw X (fit_with_labels trims first 19 rows internally)
+        y = np.zeros(len(X))
+        for ck, ci in crises.items():
             if ck == held_out_key:
                 continue
             cs = pd.Timestamp(ci['start'])
             ce = pd.Timestamp(ci['end'])
-            mask = (dates_enriched >= cs) & (dates_enriched <= ce)
+            mask = (dates >= cs) & (dates <= ce)
             y[mask] = 1.0
 
         rf = RandomForestRegimeDetector(n_estimators=200, max_depth=6, seed=42, lookback=20)
-        # RF needs raw features (it builds enriched internally)
-        rf.fit_with_labels(X, y[:(len(X) - 19 + 19)])  # y aligns with X_enriched
+        rf.fit_with_labels(X, y)
 
         # Score on enriched-length data
         scores = rf.compute_regime_scores(X)
