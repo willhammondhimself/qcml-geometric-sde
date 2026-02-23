@@ -150,7 +150,11 @@ class ExpandingWindowMixin:
             geometry = QCMLGeometry(
                 n_features=X_pca_prefix.shape[1], hilbert_dim=self.hilbert_dim
             )
-            geometry.fit_operators(X_pca_prefix, method=self.operator_method)
+            scale_exp = getattr(self, 'scale_exponent', None)
+            geometry.fit_operators(
+                X_pca_prefix, method=self.operator_method,
+                scale_exponent=scale_exp,
+            )
 
             self._snapshots.append({
                 'refit_idx': refit_idx,
@@ -202,6 +206,7 @@ class QFIDeterminantDetector(ExpandingWindowMixin, BaseRegimeDetector):
         hilbert_dim: int = 8,
         n_pca_components: int = 15,
         operator_method: str = 'random',
+        scale_exponent: Optional[float] = None,
         rolling_window: int = 20,
         min_expanding: int = 60,
         seed: int = 42,
@@ -211,6 +216,7 @@ class QFIDeterminantDetector(ExpandingWindowMixin, BaseRegimeDetector):
         self.hilbert_dim = hilbert_dim
         self.n_pca_components = n_pca_components
         self.operator_method = operator_method
+        self.scale_exponent = scale_exponent
         self.rolling_window = rolling_window
         self.min_expanding = min_expanding
         self.seed = seed
@@ -248,7 +254,10 @@ class QFIDeterminantDetector(ExpandingWindowMixin, BaseRegimeDetector):
         self._geometry = QCMLGeometry(
             n_features=X_pca_fit.shape[1], hilbert_dim=self.hilbert_dim
         )
-        self._geometry.fit_operators(X_pca_fit, method=self.operator_method)
+        self._geometry.fit_operators(
+            X_pca_fit, method=self.operator_method,
+            scale_exponent=self.scale_exponent,
+        )
         return self
 
     def compute_regime_scores(self, X: np.ndarray) -> np.ndarray:
@@ -311,6 +320,7 @@ class BerryPhaseRateDetector(ExpandingWindowMixin, BaseRegimeDetector):
         hilbert_dim: int = 8,
         n_pca_components: int = 15,
         operator_method: str = 'random',
+        scale_exponent: Optional[float] = None,
         rolling_window: int = 20,
         min_expanding: int = 60,
         seed: int = 42,
@@ -320,6 +330,7 @@ class BerryPhaseRateDetector(ExpandingWindowMixin, BaseRegimeDetector):
         self.hilbert_dim = hilbert_dim
         self.n_pca_components = n_pca_components
         self.operator_method = operator_method
+        self.scale_exponent = scale_exponent
         self.rolling_window = rolling_window
         self.min_expanding = min_expanding
         self.seed = seed
@@ -357,7 +368,10 @@ class BerryPhaseRateDetector(ExpandingWindowMixin, BaseRegimeDetector):
         self._geometry = QCMLGeometry(
             n_features=X_pca_fit.shape[1], hilbert_dim=self.hilbert_dim
         )
-        self._geometry.fit_operators(X_pca_fit, method=self.operator_method)
+        self._geometry.fit_operators(
+            X_pca_fit, method=self.operator_method,
+            scale_exponent=self.scale_exponent,
+        )
         return self
 
     def compute_regime_scores(self, X: np.ndarray) -> np.ndarray:
@@ -412,6 +426,7 @@ class MultiLagFidelityDetector(ExpandingWindowMixin, BaseRegimeDetector):
         hilbert_dim: int = 8,
         n_pca_components: int = 15,
         operator_method: str = 'random',
+        scale_exponent: Optional[float] = None,
         lags: Optional[List[int]] = None,
         lag_weights: Optional[List[float]] = None,
         rolling_window: int = 20,
@@ -423,6 +438,7 @@ class MultiLagFidelityDetector(ExpandingWindowMixin, BaseRegimeDetector):
         self.hilbert_dim = hilbert_dim
         self.n_pca_components = n_pca_components
         self.operator_method = operator_method
+        self.scale_exponent = scale_exponent
         self.lags = lags or [1, 3, 5, 10]
         self.lag_weights = lag_weights or [0.4, 0.3, 0.2, 0.1]
         self.rolling_window = rolling_window
@@ -462,7 +478,10 @@ class MultiLagFidelityDetector(ExpandingWindowMixin, BaseRegimeDetector):
         self._geometry = QCMLGeometry(
             n_features=X_pca_fit.shape[1], hilbert_dim=self.hilbert_dim
         )
-        self._geometry.fit_operators(X_pca_fit, method=self.operator_method)
+        self._geometry.fit_operators(
+            X_pca_fit, method=self.operator_method,
+            scale_exponent=self.scale_exponent,
+        )
         return self
 
     def compute_regime_scores(self, X: np.ndarray) -> np.ndarray:

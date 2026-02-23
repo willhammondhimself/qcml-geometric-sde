@@ -61,9 +61,20 @@ class QCMLGeometry:
 
     def _create_pauli_basis_operator(self, idx: int) -> np.ndarray:
         """
-        Create operator from Pauli basis for 2-qubit system.
+        Create operator from n-qubit Pauli tensor products.
 
-        For hilbert_dim=4 (2 qubits), uses tensor products of Pauli matrices.
+        For hilbert_dim = 2^n, constructs tensor products of n Pauli matrices:
+            {I, X, Y, Z}^{⊗n} = 4^n operators (complete basis for d×d Hermitian).
+
+        Skips I⊗I⊗...⊗I (identity, idx=0) by offsetting: actual index = idx + 1.
+
+        Falls back to random Hermitian if hilbert_dim is not a power of 2.
+
+        Args:
+            idx: Operator index (0-based, maps to Pauli product idx+1).
+
+        Returns:
+            Hermitian matrix of shape (hilbert_dim, hilbert_dim).
         """
         I = np.array([[1, 0], [0, 1]], dtype=np.complex128)
         X = np.array([[0, 1], [1, 0]], dtype=np.complex128)
@@ -72,23 +83,107 @@ class QCMLGeometry:
 
         paulis = [I, X, Y, Z]
 
-        if self.hilbert_dim == 4:
-            i1, i2 = idx // 4, idx % 4
-            return np.kron(paulis[i1], paulis[i2])
-        elif self.hilbert_dim == 2:
-            return paulis[idx % 4]
-        else:
+        n_qubits = int(round(np.log2(self.hilbert_dim)))
+        if 2 ** n_qubits != self.hilbert_dim:
             return self._create_random_hermitian(seed=idx)
 
+        # Skip identity (all-I product at index 0) by using idx+1
+        pauli_idx = (idx + 1) % (4 ** n_qubits)
+
+        op = np.array([[1.0]], dtype=np.complex128)
+        remainder = pauli_idx
+        for _ in range(n_qubits):
+            op = np.kron(op, paulis[remainder % 4])
+            remainder //= 4
+
+        return op
+
+    def _create_gell_mann_operator(self, idx: int) -> np.ndarray:
+        """
+        Create generalized Gell-Mann matrix (SU(N) generator).
+
+        For dimension N, there are N²-1 generators:
+          - N(N-1)/2 symmetric:   (|i><j| + |j><i|) for i < j
+          - N(N-1)/2 antisymmetric: -i(|i><j| - |j><i|) for i < j
+          - N-1 diagonal:  constructed from first k+1 basis states
+
+        All are Hermitian, traceless, and orthogonal under Hilbert-Schmidt.
+
+        Args:
+            idx: Generator index (0-based). Wraps modulo N²-1.
+
+        Returns:
+            Hermitian traceless matrix of shape (hilbert_dim, hilbert_dim).
+        """
+        N = self.hilbert_dim
+        n_generators = N * N - 1
+        idx = idx % n_generators
+
+        n_symmetric = N * (N - 1) // 2
+        n_antisymmetric = n_symmetric
+
+        if idx < n_symmetric:
+            # Symmetric: (|i><j| + |j><i|)
+            k = idx
+            i, j = 0, 0
+            for i in range(N):
+                for j in range(i + 1, N):
+                    if k == 0:
+                        break
+                    k -= 1
+                if k == 0:
+                    break
+            op = np.zeros((N, N), dtype=np.complex128)
+            op[i, j] = 1.0
+            op[j, i] = 1.0
+            return op
+
+        elif idx < n_symmetric + n_antisymmetric:
+            # Antisymmetric: -i(|i><j| - |j><i|)
+            k = idx - n_symmetric
+            i, j = 0, 0
+            for i in range(N):
+                for j in range(i + 1, N):
+                    if k == 0:
+                        break
+                    k -= 1
+                if k == 0:
+                    break
+            op = np.zeros((N, N), dtype=np.complex128)
+            op[i, j] = -1j
+            op[j, i] = 1j
+            return op
+
+        else:
+            # Diagonal: sqrt(2/(k(k+1))) * (sum_{m=0}^{k-1} |m><m| - k|k><k|)
+            k = idx - n_symmetric - n_antisymmetric + 1  # k in 1..N-1
+            op = np.zeros((N, N), dtype=np.complex128)
+            norm = np.sqrt(2.0 / (k * (k + 1)))
+            for m in range(k):
+                op[m, m] = norm
+            op[k, k] = -k * norm
+            return op
+
     def fit_operators(self, X: np.ndarray, method: str = 'pca_inspired',
-                     n_components: Optional[int] = None) -> 'QCMLGeometry':
+                     n_components: Optional[int] = None,
+                     scale_exponent: Optional[float] = None) -> 'QCMLGeometry':
         """
         Learn Hermitian operators A_k from data.
 
         Args:
             X: Data matrix of shape (n_samples, n_features)
-            method: Learning method - 'pca_inspired', 'random', or 'pauli'
+            method: Learning method:
+                - 'pca_inspired': Pauli/Gell-Mann basis scaled by PCA eigenvalues
+                - 'random': Seeded random Hermitian matrices
+                - 'pauli': N-qubit Pauli tensor products (unscaled)
+                - 'gell_mann': Generalized Gell-Mann SU(N) generators (unscaled)
+                - 'pca_pauli': Pauli basis scaled by PCA eigenvalues
+                - 'pca_gell_mann': Gell-Mann basis scaled by PCA eigenvalues
             n_components: Number of operators to learn (default: n_features)
+            scale_exponent: Exponent for PCA eigenvalue scaling in pca_* methods.
+                0.0 = equal weight, 0.5 = sqrt (default), 1.0 = full eigenvalue.
+                -0.5 = inverse sqrt (emphasize low-variance directions).
+                Only used with pca_inspired, pca_pauli, pca_gell_mann.
 
         Returns:
             self
@@ -101,19 +196,30 @@ class QCMLGeometry:
 
         n_ops = n_components if n_components else n_features
 
-        if method == 'pca_inspired':
+        # Methods that use PCA eigenvalue scaling
+        pca_methods = {'pca_inspired', 'pca_pauli', 'pca_gell_mann'}
+
+        if method in pca_methods:
+            exp = scale_exponent if scale_exponent is not None else 0.5
+
             X_centered = X - X.mean(axis=0)
             cov = X_centered.T @ X_centered / (n_samples - 1)
             eigenvalues, eigenvectors = np.linalg.eigh(cov)
 
-            idx = np.argsort(eigenvalues)[::-1]
-            eigenvectors = eigenvectors[:, idx]
-            eigenvalues = eigenvalues[idx]
+            idx_sort = np.argsort(eigenvalues)[::-1]
+            eigenvectors = eigenvectors[:, idx_sort]
+            eigenvalues = eigenvalues[idx_sort]
+
+            # Select base operator constructor
+            if method == 'pca_gell_mann':
+                base_fn = self._create_gell_mann_operator
+            else:
+                base_fn = self._create_pauli_basis_operator
 
             self.operators = []
             for k in range(min(n_ops, n_features)):
-                base_op = self._create_pauli_basis_operator(k)
-                scale = np.sqrt(max(eigenvalues[k], self.regularization))
+                base_op = base_fn(k)
+                scale = max(eigenvalues[k], self.regularization) ** exp
                 self.operators.append(scale * base_op)
 
         elif method == 'random':
@@ -128,6 +234,14 @@ class QCMLGeometry:
                 self._create_pauli_basis_operator(k)
                 for k in range(min(n_ops, max_ops))
             ]
+
+        elif method == 'gell_mann':
+            max_ops = self.hilbert_dim ** 2 - 1
+            self.operators = [
+                self._create_gell_mann_operator(k)
+                for k in range(min(n_ops, max_ops))
+            ]
+
         else:
             raise ValueError(f"Unknown method: {method}")
 
