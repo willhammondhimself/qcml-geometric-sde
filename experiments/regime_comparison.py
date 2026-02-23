@@ -136,20 +136,19 @@ def build_qcml_detectors(causal=False, expanding_interval=252):
     Returns:
         List of (name, detector) tuples.
     """
-    common = dict(
-        hilbert_dim=8,
-        n_pca_components=15,
-        operator_method='pca_inspired',
-        rolling_window=20,
-        seed=42,
-    )
+    shared = dict(hilbert_dim=8, n_pca_components=15, rolling_window=20, seed=42)
     if causal:
-        common['expanding_refit_interval'] = expanding_interval
+        shared['expanding_refit_interval'] = expanding_interval
 
+    # Berry uses random operators (d=0.59 vs 0.28 pca_inspired, operator_ablation.py).
+    # QFI and MLF use pca_inspired operators.
     detectors = [
-        ('Berry Phase Rate', BerryPhaseRateDetector(**common)),
-        ('QFI Determinant', QFIDeterminantDetector(**common)),
-        ('Multi-Lag Fidelity', MultiLagFidelityDetector(**common)),
+        ('Berry Phase Rate', BerryPhaseRateDetector(
+            **shared, operator_method='random')),
+        ('QFI Determinant', QFIDeterminantDetector(
+            **shared, operator_method='pca_inspired')),
+        ('Multi-Lag Fidelity', MultiLagFidelityDetector(
+            **shared, operator_method='pca_inspired')),
     ]
 
     # Chern and Consensus don't support expanding window
@@ -202,7 +201,7 @@ def run_comparison(
     # ---- Data ----
     logger.info("\n[1] Fetching data from Polygon...")
     symbols = ['SPY', 'DIA']
-    raw = fetch_polygon_data(symbols, '2005-01-01', '2024-12-31')
+    raw = fetch_polygon_data(symbols, '1995-01-01', '2024-12-31')
     prices_df = raw['close'].unstack('symbol').dropna()
     X, dates = create_feature_matrix(prices_df)
     logger.info(f"  Feature matrix: {X.shape}, dates: {dates[0]} to {dates[-1]}")

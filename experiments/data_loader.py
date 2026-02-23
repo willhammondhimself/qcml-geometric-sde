@@ -4,7 +4,7 @@ Shared data loading and crisis definitions for all experiments.
 Provides:
 - fetch_polygon_data(): Fetch daily OHLCV from Polygon API
 - create_feature_matrix(): Build feature matrix from close prices
-- ALL_CRISES: 12 crisis definitions with start/end dates
+- ALL_CRISES: 16 crisis definitions with start/end dates (12 post-2005 + 4 pre-2005)
 - CRISIS_CATEGORIES: Pre-defined novel vs conventional classification
 - PolygonDataSource / MinimalFeatureEngine: Legacy-compatible wrappers
 
@@ -29,6 +29,24 @@ ROOT = Path(__file__).resolve().parent.parent
 # =============================================================================
 
 ALL_CRISES = {
+    # --- Pre-2005 crises (SPY launched 1993-01-29) ---
+    '1997_asia': {
+        'start': '1997-10-20', 'end': '1997-11-30',
+        'label': 'Asian Crisis 1997',
+    },
+    '1998_ltcm': {
+        'start': '1998-08-01', 'end': '1998-10-15',
+        'label': 'LTCM/Russia 1998',
+    },
+    '2000_dotcom': {
+        'start': '2000-03-10', 'end': '2000-10-09',
+        'label': 'Dot-Com Crash 2000',
+    },
+    '2001_911': {
+        'start': '2001-09-10', 'end': '2001-10-15',
+        'label': 'September 11 2001',
+    },
+    # --- Post-2005 crises (original 12) ---
     '2007_quant': {
         'start': '2007-08-01', 'end': '2007-09-30',
         'label': 'Quant Crisis 2007',
@@ -79,6 +97,21 @@ ALL_CRISES = {
     },
 }
 
+# Pre-SPY crises that require CRSP index data (not Polygon).
+# Kept separate so existing Polygon-based pipelines aren't broken.
+CRSP_ONLY_CRISES = {
+    '1987_crash': {
+        'start': '1987-10-14', 'end': '1987-11-30',
+        'label': 'Black Monday 1987',
+    },
+}
+
+# SPY-era crises (post-1993): can use either Polygon or WRDS CRSP
+SPY_ERA_CRISES = {k: v for k, v in ALL_CRISES.items()}
+
+# All crises including CRSP-only (for WRDS-based analysis)
+ALL_CRISES_EXTENDED = {**CRSP_ONLY_CRISES, **ALL_CRISES}
+
 # Pre-defined BEFORE seeing results (Review Item 8).
 # Novel = new market mechanisms without historical precedent.
 # Conventional = crises with recognizable historical parallels.
@@ -92,6 +125,10 @@ CRISIS_CATEGORIES = {
         '2024_carry',        # Yen carry unwind + AI rotation
     ],
     'conventional': [
+        '1997_asia',    # Asian contagion (EM crisis archetype)
+        '1998_ltcm',    # Leverage/liquidity crisis (resembles 2007 quant)
+        '2000_dotcom',  # Valuation bubble burst (resembles 1929)
+        '2001_911',     # Exogenous shock (resembles 2020 COVID)
         '2007_quant',   # Factor crowding (resembles LTCM)
         '2008_gfc',     # Credit crisis (resembles 1929, 1987)
         '2010_flash',   # Liquidity shock (resembles 1987)
@@ -211,7 +248,63 @@ def create_feature_matrix(prices_df):
         features_dict['avg_ret'] = log_ret.mean(axis=1)
 
     feat_df = pd.DataFrame(features_dict)
-    feat_df = feat_df.dropna()
+    feat_df = feat_df.replace([np.inf, -np.inf], np.nan).dropna()
+
+    return feat_df.values, feat_df.index
+
+
+def create_feature_matrix_single_asset(prices_series, extra_lags=True):
+    """Create feature matrix from a single price series.
+
+    Unlike create_feature_matrix() which needs >= 2 symbols for cross-sectional
+    features, this works with a single asset by using only per-asset features
+    plus additional lag/momentum features to reach sufficient dimensionality.
+
+    Args:
+        prices_series: Series with DatetimeIndex and close prices, or
+            single-column DataFrame.
+        extra_lags: If True, add extra rolling windows (10, 40, 60) to
+            increase dimensionality for PCA.
+
+    Returns:
+        features: np.ndarray (T', d) after warmup. d >= 15 if extra_lags=True.
+        dates: DatetimeIndex aligned with features.
+    """
+    if isinstance(prices_series, pd.DataFrame):
+        if prices_series.shape[1] == 1:
+            prices_series = prices_series.iloc[:, 0]
+        else:
+            # If multi-column, use create_feature_matrix instead
+            return create_feature_matrix(prices_series)
+
+    log_ret = np.log(prices_series / prices_series.shift(1))
+
+    features_dict = {
+        'ret': log_ret,
+        'vol5': log_ret.rolling(5).std(),
+        'vol20': log_ret.rolling(20).std(),
+        'mom5': prices_series.pct_change(5),
+        'mom20': prices_series.pct_change(20),
+    }
+
+    if extra_lags:
+        features_dict.update({
+            'vol10': log_ret.rolling(10).std(),
+            'vol40': log_ret.rolling(40).std(),
+            'vol60': log_ret.rolling(60).std(),
+            'mom10': prices_series.pct_change(10),
+            'mom40': prices_series.pct_change(40),
+            'mom60': prices_series.pct_change(60),
+            'ret_sq': log_ret ** 2,
+            'range_20': (
+                prices_series.rolling(20).max() / prices_series.rolling(20).min() - 1
+            ),
+            'skew_20': log_ret.rolling(20).skew(),
+            'kurt_20': log_ret.rolling(20).kurt(),
+        })
+
+    feat_df = pd.DataFrame(features_dict)
+    feat_df = feat_df.replace([np.inf, -np.inf], np.nan).dropna()
 
     return feat_df.values, feat_df.index
 
