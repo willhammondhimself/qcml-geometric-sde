@@ -96,7 +96,7 @@ def ensure_output_dir():
 # Figure 1: Hero Complementarity Timeline
 # =============================================================================
 
-def generate_hero_complementarity(crisis_key='2020_covid'):
+def generate_hero_complementarity(crisis_key='2020_covid', use_wrds=False, start_date='2005-01-01'):
     """Generate 4-panel complementarity timeline for a single crisis.
 
     Panels:
@@ -104,6 +104,12 @@ def generate_hero_complementarity(crisis_key='2020_covid'):
         2. Berry Phase Rate z-score (QCML catches early)
         3. RF probability (catches late or misses OOS)
         4. Ensemble (QCML + Vol Z combined)
+
+    Args:
+        crisis_key: Key into ALL_CRISES dict.
+        use_wrds: If True, fetch via CRSP (WRDS) instead of Polygon. Enables
+            pre-2005 history (e.g., start_date='2000-01-01').
+        start_date: History start for data fetch (default '2005-01-01').
     """
     logger.info(f"\n[Hero] Generating complementarity timeline for {crisis_key}...")
     ensure_output_dir()
@@ -116,18 +122,27 @@ def generate_hero_complementarity(crisis_key='2020_covid'):
     context_start = cs - pd.Timedelta(days=180)
     context_end = ce + pd.Timedelta(days=180)
 
-    # Fetch data
+    # Fetch data — either WRDS/CRSP or Polygon
     symbols = ['SPY', 'DIA']
-    raw = fetch_polygon_data(symbols, '2005-01-01', '2024-12-31')
-    prices_df = raw['close'].unstack('symbol').dropna()
+    if use_wrds:
+        from experiments.wrds_data_loader import fetch_wrds_equities, wrds_prices_to_polygon_format
+        logger.info(f"  Fetching via WRDS/CRSP from {start_date}...")
+        wide_prices = fetch_wrds_equities(symbols, start_date, '2024-12-31')
+        raw = wrds_prices_to_polygon_format(wide_prices)
+        prices_df = raw['close'].unstack('symbol').dropna()
+        # Ensure column order matches symbols list; cast to float64 (CRSP returns object dtype)
+        prices_df = prices_df[[s for s in symbols if s in prices_df.columns]].astype(np.float64)
+    else:
+        raw = fetch_polygon_data(symbols, start_date, '2024-12-31')
+        prices_df = raw['close'].unstack('symbol').dropna()
     X, dates = create_feature_matrix(prices_df)
     X_enriched = BaseRegimeDetector.build_enriched_features(X, lookback=20)
     dates_enriched = dates[19:]
 
-    # Compute QCML Berry signal
+    # Compute QCML Berry signal (HPO-optimal params)
     common = dict(
-        hilbert_dim=8, n_pca_components=15, operator_method='pca_inspired',
-        rolling_window=20, seed=42,
+        hilbert_dim=6, n_pca_components=8, operator_method='random',
+        rolling_window=15, seed=42,
     )
     berry_det = BerryPhaseRateDetector(**common)
     berry_det.fit(X_enriched)
@@ -432,6 +447,168 @@ def generate_walkforward_improvement(results_path=None):
 
 
 # =============================================================================
+# Figure 5: Method Comparison Bar Chart (for poster Card 1 / image_0.png)
+# =============================================================================
+
+def generate_comparison_barchart(results_path=None):
+    """Generate horizontal bar chart of all methods ranked by median d.
+
+    Reads from the authoritative causal comparison JSON. Output saved
+    both to paper/figures/ and poster/pptx_images/image_0.png for the poster.
+    """
+    logger.info("\n[BarChart] Generating method comparison bar chart...")
+    ensure_output_dir()
+
+    if results_path is None:
+        results_path = ROOT / 'experiments' / 'outputs' / 'regime_detection' / 'causal_comparison_20260222_225143.json'
+
+    if not Path(results_path).exists():
+        logger.warning(f"  Results not found: {results_path}")
+        return
+
+    with open(results_path) as f:
+        data = json.load(f)
+
+    median_d = data['summary']['median_d']
+    mean_ranks = data['summary']['mean_ranks']
+
+    # Sort by median d descending
+    sorted_methods = sorted(median_d.items(), key=lambda x: x[1], reverse=True)
+    names = [m for m, _ in sorted_methods]
+    values = [d for _, d in sorted_methods]
+
+    # Color coding
+    qcml_methods = {'Berry Phase Rate', 'QFI Determinant', 'Multi-Lag Fidelity',
+                    'QCML Chern', 'Geometric Consensus'}
+    bar_colors = []
+    for m in names:
+        if m in qcml_methods:
+            bar_colors.append('#F5A623')  # Gold for QCML
+        elif m == 'Random Forest':
+            bar_colors.append('#FF6B6B')  # Red for RF
+        else:
+            bar_colors.append('#888888')  # Gray for baselines
+
+    fig, ax = plt.subplots(figsize=(14.5, 3.0))
+
+    bars = ax.barh(range(len(names)), values, color=bar_colors, edgecolor='white', linewidth=0.5)
+
+    ax.set_yticks(range(len(names)))
+    ax.set_yticklabels(names, fontsize=8)
+    ax.set_xlabel("Median Cohen's d (12 crises)", fontsize=9)
+    ax.invert_yaxis()
+
+    # Annotate values
+    for i, (name, val) in enumerate(zip(names, values)):
+        ax.text(val + 0.02, i, f'd={val:.2f}', va='center', fontsize=7,
+               fontweight='bold')
+
+    # Highlight MLF-RF rank tie
+    mlf_rank = mean_ranks.get('Multi-Lag Fidelity', 0)
+    rf_rank = mean_ranks.get('Random Forest', 0)
+    ax.text(max(values) * 0.55, len(names) - 0.5,
+            f'MLF ties RF on Friedman rank (both {mlf_rank:.2f})',
+            fontsize=8, color='#F5A623', fontweight='bold',
+            bbox=dict(boxstyle='round,pad=0.3', facecolor='#FFF8E1',
+                     edgecolor='#F5A623', alpha=0.9))
+
+    plt.tight_layout()
+
+    # Save to both locations
+    out_path = OUT_DIR / 'poster_comparison_barchart.pdf'
+    fig.savefig(out_path)
+    fig.savefig(out_path.with_suffix('.png'))
+
+    poster_img_path = ROOT / 'poster' / 'pptx_images' / 'image_0.png'
+    if poster_img_path.parent.exists():
+        fig.savefig(poster_img_path, dpi=300)
+        logger.info(f"  Also saved: {poster_img_path}")
+
+    plt.close(fig)
+    logger.info(f"  Saved: {out_path}")
+
+
+# =============================================================================
+# Figure 6: Where QCML Wins Heatmap
+# =============================================================================
+
+def generate_qcml_wins_heatmap(results_path=None):
+    """Generate heatmap showing per-crisis d-values for key methods.
+
+    Green cells where geometric method beats RF, red where RF wins.
+    """
+    logger.info("\n[Wins] Generating QCML-wins heatmap...")
+    ensure_output_dir()
+
+    if results_path is None:
+        results_path = ROOT / 'experiments' / 'outputs' / 'regime_detection' / 'causal_comparison_20260222_225143.json'
+
+    if not Path(results_path).exists():
+        logger.warning(f"  Results not found: {results_path}")
+        return
+
+    with open(results_path) as f:
+        data = json.load(f)
+
+    res = data['results']
+    methods = ['Multi-Lag Fidelity', 'Berry Phase Rate', 'QFI Determinant', 'CUSUM', 'Random Forest']
+    crisis_keys = [k for k in ALL_CRISES.keys() if k in res.get('Random Forest', {})]
+
+    # Build matrix
+    d_matrix = np.zeros((len(crisis_keys), len(methods)))
+    for j, m in enumerate(methods):
+        for i, ck in enumerate(crisis_keys):
+            d_matrix[i, j] = res.get(m, {}).get(ck, {}).get('d', 0)
+
+    # Color: green where geometric > RF, red where RF wins
+    rf_col = methods.index('Random Forest')
+    rf_vals = d_matrix[:, rf_col]
+
+    fig, ax = plt.subplots(figsize=(10, 6))
+
+    # Custom diverging colormap
+    from matplotlib.colors import TwoSlopeNorm
+    cmap_diverge = LinearSegmentedColormap.from_list(
+        'wins', ['#FF6B6B', '#ffffff', '#4CAF50'])
+
+    # Difference from RF for geometric methods
+    diff_matrix = d_matrix.copy()
+    for j in range(len(methods)):
+        if methods[j] != 'Random Forest':
+            diff_matrix[:, j] = d_matrix[:, j] - rf_vals
+
+    im = ax.imshow(d_matrix, cmap='RdYlGn', aspect='auto', vmin=0, vmax=2.0)
+
+    # Labels
+    crisis_labels = [ALL_CRISES[ck]['label'] for ck in crisis_keys]
+    ax.set_xticks(range(len(methods)))
+    ax.set_xticklabels(methods, rotation=30, ha='right', fontsize=8)
+    ax.set_yticks(range(len(crisis_keys)))
+    ax.set_yticklabels(crisis_labels, fontsize=7)
+
+    # Annotate with d-values and win/loss indicator
+    for i in range(len(crisis_keys)):
+        for j in range(len(methods)):
+            val = d_matrix[i, j]
+            is_geometric = methods[j] in {'Multi-Lag Fidelity', 'Berry Phase Rate', 'QFI Determinant'}
+            beats_rf = val > rf_vals[i] if is_geometric else False
+            marker = ' *' if beats_rf else ''
+            color = 'white' if val > 1.2 else 'black'
+            ax.text(j, i, f'{val:.2f}{marker}', ha='center', va='center',
+                   fontsize=6, color=color, fontweight='bold' if beats_rf else 'normal')
+
+    ax.set_title('Per-Crisis Effect Sizes (* = beats RF)', fontsize=11)
+    plt.colorbar(im, ax=ax, label="Cohen's d", shrink=0.8)
+
+    plt.tight_layout()
+    out_path = OUT_DIR / 'poster_qcml_wins_heatmap.pdf'
+    fig.savefig(out_path)
+    fig.savefig(out_path.with_suffix('.png'))
+    plt.close(fig)
+    logger.info(f"  Saved: {out_path}")
+
+
+# =============================================================================
 # Main
 # =============================================================================
 
@@ -439,11 +616,26 @@ def main():
     parser = argparse.ArgumentParser(description='Generate poster figures')
     parser.add_argument('--results-dir', type=str, default=None,
                        help='Directory with experiment results JSON files')
-    parser.add_argument('--crisis', type=str, default='2020_covid',
-                       help='Crisis for hero figure (default: 2020_covid)')
+    parser.add_argument('--crisis', type=str, default=None,
+                       help='Crisis for hero figure (default: 2020_covid, or 2008_gfc with --use-wrds)')
     parser.add_argument('--skip-hero', action='store_true',
                        help='Skip hero figure (requires data fetch)')
+    parser.add_argument('--use-wrds', action='store_true',
+                       help='Fetch data via WRDS/CRSP instead of Polygon (enables pre-2005 history)')
+    parser.add_argument('--start-date', type=str, default=None,
+                       help='Data history start date (default: 2000-01-01 with --use-wrds, else 2005-01-01)')
     args = parser.parse_args()
+
+    # Resolve defaults that depend on --use-wrds
+    if args.use_wrds:
+        default_crisis = '2008_gfc'
+        default_start = '2000-01-01'
+    else:
+        default_crisis = '2020_covid'
+        default_start = '2005-01-01'
+
+    crisis_key = args.crisis if args.crisis else default_crisis
+    start_date = args.start_date if args.start_date else default_start
 
     results_dir = Path(args.results_dir) if args.results_dir else None
 
@@ -461,13 +653,22 @@ def main():
         if candidates:
             wf_path = candidates[-1]
 
+    # Authoritative causal results
+    causal_path = ROOT / 'experiments' / 'outputs' / 'regime_detection' / 'causal_comparison_20260222_225143.json'
+
     # Generate all figures
     if not args.skip_hero:
-        generate_hero_complementarity(crisis_key=args.crisis)
+        generate_hero_complementarity(
+            crisis_key=crisis_key,
+            use_wrds=args.use_wrds,
+            start_date=start_date,
+        )
 
     generate_cross_asset_heatmap(results_path=cross_asset_path)
     generate_crisis_timeline()
     generate_walkforward_improvement(results_path=wf_path)
+    generate_comparison_barchart(results_path=causal_path)
+    generate_qcml_wins_heatmap(results_path=causal_path)
 
     logger.info(f"\n  All poster figures saved to {OUT_DIR}/")
 

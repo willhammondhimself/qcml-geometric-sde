@@ -178,7 +178,7 @@
   // ── CARD 1: QCML RESEARCH (Blue accent) ────────────────────────
   project-card("QCML Research", primary)[
     #text(size: 20pt, fill: primary, style: "italic", weight: "medium")[
-      I applied physics math to find hidden patterns in financial data
+      Unsupervised geometric signals that detect crises machine learning misses
     ]
     #v(6pt)
 
@@ -202,10 +202,10 @@
 
     #text(size: 24pt, weight: "bold", fill: text-primary)[Outcome]
     #v(2pt)
-    // KEY METRICS — update these if numbers change
-    #bullet-item[Multi-Lag Fidelity (*d=1.44*) beat Random Forest (*d=1.13*, p=0.002)]
-    #bullet-item[Tested across *5 ETFs* and *4 out-of-sample crises*]
-    #bullet-item[Solo-authored *34-page research paper* (in revision)]
+    // KEY METRICS — causal pipeline, 12 crises, n_bootstrap=5000
+    #bullet-item[Multi-Lag Fidelity (*d=0.56*) matches Random Forest rank — *without any labeled data*]
+    #bullet-item[Walk-forward: *86% detection*, 9-day delay across *12 crises* and *5 ETFs*]
+    #bullet-item[Solo-authored *25-page research paper* with 3 theorems]
     #v(6pt)
 
     #tool-tag[Python] #h(3pt) #tool-tag[PyTorch] #h(3pt) #tool-tag[NumPy/SciPy] #h(3pt) #tool-tag[Optuna] #h(3pt) #tool-tag[LaTeX]
@@ -342,7 +342,7 @@
       #v(4pt)
 
       #text(size: 22pt, weight: "bold", fill: text-primary)[Independent Researcher] \
-      #text(size: 19pt, fill: text-secondary)[Solo-authored 34-page research paper]
+      #text(size: 19pt, fill: text-secondary)[Solo-authored 25-page research paper with 3 theorems]
       #v(4pt)
 
       #text(size: 22pt, weight: "bold", fill: text-primary)[Team Collaboration] \

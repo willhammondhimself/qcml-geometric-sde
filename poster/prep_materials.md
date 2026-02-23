@@ -6,9 +6,7 @@
 
 "Hi, I'm **Will Hammond** — I'm a sophomore at **Pitzer College** studying physics and math.
 
-I'm most excited about applying **mathematical tools to messy real-world problems**, especially in finance.
-
-My main research project is **QCML** — a quantum-inspired framework where I embed financial time series into a projective Hilbert space and extract geometric observables that detect regime shifts, like market crashes — **without any labeled data**. My geometric observables are **competitive with supervised baselines** and provide **complementary signals** — a simple ensemble significantly outperforms any individual method. I solo-authored a **34-page paper** on this.
+I built a regime detection system using **differential geometry** — measuring how the geometric structure of market data deforms during stress. On **12 historical crises**, my unsupervised method **ties supervised Random Forest on statistical rank** — without needing any crisis labels. In **walk-forward testing**, it detects **86% of crises** with just **9-day delay**. And it computes **faster** than RF.
 
 I also built a systematic trading system for **Quanta Ventures** — multi-strategy framework with walk-forward validation, achieving a **Sharpe of 2.92** and **Calmar of 5.02** out-of-sample.
 
@@ -23,18 +21,18 @@ I'm looking for opportunities in **quant research, ML engineering, or physics re
 ### QCML Research (Blue card)
 
 **The 30-second pitch:**
-"I took tools from differential geometry — the same math used in general relativity — and applied them to financial time series. By embedding price data into a projective Hilbert space, I can measure how the geometry of the data manifold deforms during stress. Three different geometric observables each capture different types of crises. The key result: these unsupervised geometric signals are competitive with supervised methods and provide genuinely complementary detection — they catch crises that classical methods miss, and vice versa."
+"I took tools from differential geometry — the same math used in general relativity — and applied them to financial time series. By embedding price data into a projective Hilbert space, I can measure how the geometry of the data manifold deforms during stress. Three geometric observables each capture different types of crises. The key result: Multi-Lag Fidelity ties supervised Random Forest on Friedman rank across 12 crises — despite being completely unsupervised. And it catches crises RF misses, like the SVB collapse and 2019 repo crisis."
 
 **If they ask "What's the Hilbert space / why quantum?":**
 "The name 'QCML' is historical — the actual math is spectral theory and differential geometry. I map feature vectors to quantum-like states because projective Hilbert space has rich geometric structure: there's a natural metric (Fubini-Study), Berry curvature, and topological invariants. The 'quantum' framing gives us a rigorous mathematical toolkit that happens to work really well for detecting nonlinear regime changes."
 
 **If they ask about the comparison with Random Forest:**
-"On the current walk-forward benchmark across 16 crises, QFI Determinant achieves Cohen's d = 0.36 vs RF's d = 0.21 — a 71% improvement. But be honest: CUSUM — a classical change-point method — scores d = 0.71, which is stronger than any individual geometric method on mean effect size. The geometric advantage is that it's unsupervised and complementary: it detects different crises than CUSUM or RF, so a simple ensemble nearly doubles the best individual method."
+"RF leads on median effect size — d=0.96 vs our best at d=0.56. But MLF ties RF on Friedman rank (both 4.42), and our methods win on 5 of the 12 crises — exactly the ones where RF's training labels are sparse. The 2023 SVB collapse: MLF d=0.94 vs RF d=0.12. The 2019 repo crisis: MLF d=0.91 vs RF d=0.02. The real contribution isn't 'beats RF' — it's complementarity. Different methods see different things."
 
-> **Honesty note:** CUSUM d=0.71 is the strongest baseline — be upfront about this at the poster. Don't claim geometric methods dominate; claim they are *complementary* and *unsupervised*, which is the real contribution.
+> **Honesty note:** RF d=0.96 leads on median d, CUSUM d=0.73 is second. Be upfront. The geometric advantage is (1) unsupervised, (2) complementary — catches what RF misses, (3) faster to compute.
 
-**If they push on CUSUM beating geometric methods on mean d:**
-"CUSUM (d=0.71) beats all of our geometric methods on median Cohen's d — that's true. The QCML advantage is threefold: (1) fully unsupervised, no labeled data needed, (2) the geometric signals fire on different crises than CUSUM, providing genuine complementarity, and (3) a simple average ensemble of geometric + classical methods significantly outperforms any individual method. The contribution is a new *class* of features, not a single dominant method."
+**If they push on RF or CUSUM beating geometric methods on median d:**
+"RF (d=0.96) and CUSUM (d=0.73) both beat geometric methods on aggregate — that's true. The QCML advantage is threefold: (1) fully unsupervised, no labeled data needed, (2) the geometric signals fire on different crises than RF, providing genuine complementarity — MLF wins 5/12 crises, and (3) walk-forward testing shows 86% detection rate with 9-day delay. The contribution is a new *class* of unsupervised features that complement existing methods."
 
 **If they ask about the math:**
 "The three observables are: (1) Berry phase rate — measures curvature of the data path on the manifold, (2) QFI determinant — quantum Fisher information quantifying distinguishability between nearby states, and (3) Multi-Lag Fidelity — measures how quickly the state space decorrelates across multiple time scales. Each captures a different geometric signature of market stress."
@@ -101,7 +99,7 @@ A: "Physics trained me to build mathematical models of complex systems and valid
 ### Curveball Questions
 
 **Q: "What's your biggest failure?"**
-A: "My initial QCML approach had a subtle data leakage bug in the PCA pipeline — the scaler was fit on the full dataset instead of just the training window. When I caught it and fixed it, the results were honest but weaker. I rewrote the paper around 'competitive and complementary' instead of 'beats everything.' CUSUM actually has a higher mean effect size than any individual geometric method — but the geometric signals catch different crises, so the ensemble is strongest. That taught me more about research integrity than any class."
+A: "My initial QCML approach had a subtle data leakage bug in the PCA pipeline — the scaler was fit on the full dataset instead of just the training window. When I caught it and fixed it, the results were honest but weaker. I rewrote the paper around 'competitive and complementary' instead of 'beats everything.' RF d=0.96 leads on median effect size, and CUSUM d=0.73 beats our geometric methods too — but MLF ties RF on rank and catches different crises. That taught me more about research integrity than any class."
 
 **Q: "What's the poker club about?"**
 A: "I co-founded the poker club. Poker is applied decision theory under uncertainty — Bayesian updating, expected value, risk management, reading incomplete information. The skills transfer directly to quantitative thinking."

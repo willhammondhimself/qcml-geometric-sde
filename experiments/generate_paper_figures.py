@@ -216,14 +216,14 @@ def compute_all_scores(X, dates):
 
     detectors = [
         ('Berry Phase Rate', BerryPhaseRateDetector(
-            hilbert_dim=8, n_pca_components=15, operator_method='pca_inspired',
+            hilbert_dim=8, n_pca_components=15, operator_method='random',
             rolling_window=20, seed=42)),
         ('QFI Determinant', QFIDeterminantDetector(
-            hilbert_dim=8, n_pca_components=15, operator_method='pca_inspired',
+            hilbert_dim=8, n_pca_components=15, operator_method='random',
             rolling_window=20, seed=42)),
         ('Multi-Lag Fidelity', MultiLagFidelityDetector(
-            hilbert_dim=8, n_pca_components=15, operator_method='pca_inspired',
-            rolling_window=20, seed=42)),
+            hilbert_dim=8, n_pca_components=15, operator_method='pauli',
+            scale_exponent=0.0, rolling_window=20, seed=42)),
     ]
 
     for name, det in detectors:
@@ -403,14 +403,14 @@ def compute_crisis_effect_sizes(X, dates, crisis_dict):
 
     methods = {
         'Berry Phase Rate': BerryPhaseRateDetector(
-            hilbert_dim=8, n_pca_components=15, operator_method='pca_inspired',
+            hilbert_dim=8, n_pca_components=15, operator_method='random',
             rolling_window=20, seed=42),
         'QFI Determinant': QFIDeterminantDetector(
-            hilbert_dim=8, n_pca_components=15, operator_method='pca_inspired',
+            hilbert_dim=8, n_pca_components=15, operator_method='random',
             rolling_window=20, seed=42),
         'Multi-Lag Fidelity': MultiLagFidelityDetector(
-            hilbert_dim=8, n_pca_components=15, operator_method='pca_inspired',
-            rolling_window=20, seed=42),
+            hilbert_dim=8, n_pca_components=15, operator_method='pauli',
+            scale_exponent=0.0, rolling_window=20, seed=42),
     }
 
     # Compute scores for each method

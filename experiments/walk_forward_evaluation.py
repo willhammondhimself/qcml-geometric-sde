@@ -45,6 +45,11 @@ from experiments.baselines import (
     RandomForestRegimeDetector,
 )
 from experiments.evaluation import compute_cohens_d_with_ci
+from qcml_geometry.adaptive_threshold import (
+    RollingQuantileThreshold,
+    ScoreVelocityThreshold,
+    CombinedAdaptiveThreshold,
+)
 
 logging.basicConfig(
     level=logging.INFO,
@@ -203,7 +208,7 @@ def find_training_crises(train_end):
     return matching
 
 
-def run_walk_forward(quick=False, far_target=None):
+def run_walk_forward(quick=False, far_target=None, adaptive=False):
     """Run walk-forward evaluation with expanding window.
 
     Expanding windows:
@@ -217,6 +222,8 @@ def run_walk_forward(quick=False, far_target=None):
         far_target: If not None, calibrate a per-method threshold on training
             data to achieve this false alarm rate (episodes/year). Default None
             (z>2 only, backward-compatible).
+        adaptive: If True, use adaptive rolling quantile + velocity thresholds
+            calibrated on training data.
     """
     logger.info("=" * 70)
     logger.info("Walk-Forward Detection Benchmark (Expanding Window)")
@@ -301,12 +308,26 @@ def run_walk_forward(quick=False, far_target=None):
                 logger.info(f"    {method_name:25s} FAR-calibrated tau={tau:.4f} "
                            f"(target={far_target}/yr)")
 
+            # Adaptive threshold (rolling quantile + velocity on training data)
+            adaptive_tau = None
+            if adaptive:
+                combined = CombinedAdaptiveThreshold(
+                    quantile_params=dict(lookback=252, quantile=0.95, persistence=3, gap=5),
+                    velocity_params=dict(smoothing_window=5, velocity_lookback=252, z_threshold=2.0, persistence=2),
+                )
+                # Run detection on the full window (training + eval) — thresholds
+                # are computed causally from past data only
+                adaptive_alarm, adaptive_details = combined.detect(scores)
+                # Extract eval-period alarms
+                adaptive_eval_alarm = adaptive_alarm[eval_start_idx:]
+
             train_scores_for_diag = scores[:eval_start_idx]
             for ck in eval_crises:
                 _record_crisis_result(results, method_name, ck, eval_start_year,
                                       eval_scores, eval_dates,
                                       threshold_far=tau,
-                                      train_scores=train_scores_for_diag)
+                                      train_scores=train_scores_for_diag,
+                                      adaptive_alarm=adaptive_eval_alarm if adaptive else None)
 
         # --- Ensemble: fire if (any QCML z > 1.0) AND (Vol Z > 1.5) ---
         qcml_names = ['Berry Phase Rate', 'QFI Determinant', 'Multi-Lag Fidelity']
@@ -404,6 +425,10 @@ def run_walk_forward(quick=False, far_target=None):
                      f"FAR={s['median_far_calibrated']:.1f}/yr, "
                      f"det={s['n_detected_far']}/{s['n_total']}, "
                      f"tau={s['median_threshold_far']:.2f}")
+        if not np.isnan(s.get('median_delay_adaptive', float('nan'))):
+            line += (f"  |  Adaptive: delay={s['median_delay_adaptive']:.1f}d, "
+                     f"FAR={s['median_far_adaptive']:.1f}/yr, "
+                     f"det={s['n_detected_adaptive']}/{s['n_total']}")
         logger.info(line)
 
     # ---- Save ----
@@ -414,6 +439,7 @@ def run_walk_forward(quick=False, far_target=None):
             'train_start': '2005-01-01',
             'threshold_z2': 2.0,
             'far_target': far_target,
+            'adaptive': adaptive,
             'alarm_episode_gap': 5,
             'quick': quick,
         },
@@ -436,7 +462,7 @@ def run_walk_forward(quick=False, far_target=None):
 
 def _record_crisis_result(results, method_name, ck, eval_start_year,
                           eval_scores, eval_dates, threshold_far=None,
-                          train_scores=None):
+                          train_scores=None, adaptive_alarm=None):
     """Record detection metrics for one method x crisis x window.
 
     Computes metrics for both a fixed z>2 threshold and, if provided,
@@ -453,6 +479,8 @@ def _record_crisis_result(results, method_name, ck, eval_start_year,
         eval_dates: Dates for the evaluation period.
         threshold_far: FAR-calibrated threshold (if None, only z>2 recorded).
         train_scores: Training-period scores used to compute crisis_peak_pctile.
+        adaptive_alarm: Pre-computed boolean alarm array from adaptive threshold
+            (same length as eval_scores). If None, adaptive metrics not recorded.
     """
     ci = ALL_CRISES[ck]
     cs = pd.Timestamp(ci['start'])
@@ -507,6 +535,16 @@ def _record_crisis_result(results, method_name, ck, eval_start_year,
         if len(tv) >= 10:
             crisis_peak_pctile = float(np.mean(tv <= crisis_peak))
 
+    # --- Adaptive threshold results ---
+    delay_adaptive = None
+    far_adaptive = None
+    if adaptive_alarm is not None and len(adaptive_alarm) == len(eval_scores):
+        alarms_in_crisis_adp = np.where(adaptive_alarm[crisis_start_idx:crisis_end_idx])[0]
+        delay_adaptive = int(alarms_in_crisis_adp[0]) if len(alarms_in_crisis_adp) > 0 else None
+        normal_alarm_adp = adaptive_alarm & normal_mask
+        episodes_adp = count_alarm_episodes(normal_alarm_adp, gap_days=5)
+        far_adaptive = float(episodes_adp / years)
+
     key = f"{method_name}|{ck}|{eval_start_year}"
     results[key] = {
         'method': method_name,
@@ -524,6 +562,10 @@ def _record_crisis_result(results, method_name, ck, eval_start_year,
         'far_calibrated': round(far_calibrated, 3) if far_calibrated is not None else None,
         'crisis_detected_far': delay_far is not None if threshold_far is not None else None,
         'threshold_far_value': threshold_far_value,
+        # Adaptive threshold results (if available)
+        'detection_delay_adaptive': delay_adaptive,
+        'far_adaptive': round(far_adaptive, 3) if far_adaptive is not None else None,
+        'crisis_detected_adaptive': delay_adaptive is not None if adaptive_alarm is not None else None,
         # Diagnostic (additive, no impact on detection logic)
         'crisis_peak': round(crisis_peak, 4) if not np.isnan(crisis_peak) else None,
         'crisis_peak_pctile': crisis_peak_pctile,
@@ -559,6 +601,8 @@ def _compute_summary(results):
                 # FAR-calibrated tracking
                 'delays_far': [], 'fars_far': [], 'detected_far': 0,
                 'thresholds_far': [],
+                # Adaptive tracking
+                'delays_adaptive': [], 'fars_adaptive': [], 'detected_adaptive': 0,
                 'total': 0,
             }
 
@@ -581,6 +625,13 @@ def _compute_summary(results):
         if r.get('threshold_far_value') is not None:
             method_summary[mname]['thresholds_far'].append(r['threshold_far_value'])
 
+        # Adaptive metrics
+        if r.get('detection_delay_adaptive') is not None:
+            method_summary[mname]['delays_adaptive'].append(r['detection_delay_adaptive'])
+            method_summary[mname]['detected_adaptive'] += 1
+        if r.get('far_adaptive') is not None:
+            method_summary[mname]['fars_adaptive'].append(r['far_adaptive'])
+
     summary = {}
     for mname, s in method_summary.items():
         median_d = float(np.median(s['ds'])) if s['ds'] else float('nan')
@@ -596,6 +647,11 @@ def _compute_summary(results):
         detect_rate_far = s['detected_far'] / max(s['total'], 1)
         median_tau = float(np.median(s['thresholds_far'])) if s['thresholds_far'] else float('nan')
 
+        # Adaptive
+        median_delay_adp = float(np.median(s['delays_adaptive'])) if s['delays_adaptive'] else float('nan')
+        median_far_adp = float(np.median(s['fars_adaptive'])) if s['fars_adaptive'] else float('nan')
+        detect_rate_adp = s['detected_adaptive'] / max(s['total'], 1)
+
         summary[mname] = {
             'median_d': median_d,
             # z > 2 summary
@@ -609,6 +665,11 @@ def _compute_summary(results):
             'detection_rate_far': detect_rate_far,
             'n_detected_far': s['detected_far'],
             'median_threshold_far': median_tau,
+            # Adaptive summary
+            'median_delay_adaptive': median_delay_adp,
+            'median_far_adaptive': median_far_adp,
+            'detection_rate_adaptive': detect_rate_adp,
+            'n_detected_adaptive': s['detected_adaptive'],
             # Backward compat
             'median_delay': median_delay_z2,
             'median_far': median_far_z2,
@@ -625,8 +686,10 @@ def main():
     parser.add_argument('--far-target', type=float, default=2.0,
                         help='Target false alarm rate (episodes/yr) for calibration. '
                              'Default: 2.0. Use 1.0 for the canonical paper number.')
+    parser.add_argument('--adaptive', action='store_true',
+                        help='Use adaptive rolling quantile + velocity thresholds')
     args = parser.parse_args()
-    run_walk_forward(quick=args.quick, far_target=args.far_target)
+    run_walk_forward(quick=args.quick, far_target=args.far_target, adaptive=args.adaptive)
 
 
 if __name__ == '__main__':

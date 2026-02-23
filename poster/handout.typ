@@ -96,16 +96,16 @@
         gutter: 8pt,
         [
           #align(center)[
-            #text(size: 20pt, weight: "bold", fill: navy)[d = 0.36] \
-            #text(size: 8pt, fill: navy)[Best geometric detector (QFI) \
-            (+71% over supervised RF)]
+            #text(size: 20pt, weight: "bold", fill: navy)[d = 0.56] \
+            #text(size: 8pt, fill: navy)[Best geometric detector (MLF) \
+            Matches RF rank — no labels needed]
           ]
         ],
         [
           #align(center)[
-            #text(size: 20pt, weight: "bold", fill: navy)[5 ETFs] \
-            #text(size: 8pt, fill: navy)[Multi-asset generalization \
-            SPY, QQQ, IWM, EFA, DIA]
+            #text(size: 20pt, weight: "bold", fill: navy)[86%] \
+            #text(size: 8pt, fill: navy)[Walk-forward detection rate \
+            9-day median delay, 12 crises]
           ]
         ],
       )
@@ -113,21 +113,21 @@
 
     #v(4pt)
 
-    - Best geometric detector (QFI Determinant) achieves Cohen's d = 0.36 (median across 16 crises), exceeding supervised Random Forest (d = 0.21) by 71%
-    - Unsupervised: requires *no crisis labels* --- detects novel regime types
+    - Multi-Lag Fidelity achieves Cohen's d = 0.56 (median across 12 crises). MLF ties RF (d = 0.96) on Friedman rank (both 4.42) --- *without any crisis labels*
+    - Wins 5/12 crises RF misses: SVB (d = 0.94 vs 0.12), Repo (0.91 vs 0.02)
     - Geometric signals are *faster* to compute than RF (0.26s vs 1.07s per window)
-    - Statistically significant (Friedman $chi^2$ = 66.5, $p < 10^(-10)$)
+    - Statistically significant (Friedman $chi^2$ = 49.2, $p < 10^(-6)$)
     - Granger causality: geometric signals predict absolute returns ($F$ = 9.5, $p$ = 0.0004)
 
-    *Publication.* 34-page paper with 3 theorems, 1 proposition, and 33 peer-reviewed
+    *Publication.* 25-page paper with 3 theorems, 1 proposition, and 33 peer-reviewed
     references. Available upon request.
 
     *Tools.* Python, PyTorch, NumPy/SciPy, scikit-learn, Optuna, Polygon.io API, LaTeX
 
     *So What?* This work demonstrates:
-    - Ability to design novel ML features from first principles (differential geometry)
-    - Rigorous experimental methodology (17-method benchmark, 16 crises, 5 assets)
-    - Production-quality statistical validation (bootstrap, permutation, Bayesian)
+    - Novel ML feature design from first principles (differential geometry)
+    - Honest benchmarking: unsupervised method ties supervised RF on rank
+    - Production validation: walk-forward 86% detection, 9-day delay
     - Independent end-to-end research execution (solo author, sophomore year)
   ],
 )

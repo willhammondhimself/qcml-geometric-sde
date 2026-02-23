@@ -73,22 +73,25 @@ increment, the quantum Fisher information (QFI) determinant, and a
 multi-lag fidelity measure.
 
 In a \emph{crisis-window separability} study of 12~historical crises
-(2007--2024) using a global-PCA pipeline with no lookahead bias,
+(2007--2024) using per-crisis causal preprocessing (scaler, PCA, and
+operators fitted only on pre-crisis data),
 these observables---whose score construction is
-unsupervised---achieve median Cohen's $d = 0.61$ (QFI Determinant),
-$d = 0.55$ (Berry), and $d = 0.42$ (Multi-Lag Fidelity),
-outperforming a supervised Random Forest baseline ($d = 0.22$),
-HMM ($d = 0.28$), and Isolation Forest ($d = 0.49$).
-On a per-crisis basis, the best geometric observable
-outperforms RF on 11 of 12~crises.  CUSUM ($d = 0.73$) remains the
-strongest baseline overall.
+unsupervised---achieve median Cohen's $d = 0.56$ (Multi-Lag Fidelity),
+$d = 0.42$ (Berry), and $d = 0.40$ (QFI Determinant).
+Multi-Lag Fidelity matches the supervised Random Forest baseline
+($d = 0.96$) on mean Friedman rank (both 4.42), despite requiring
+no labeled data.  The best geometric observable outperforms RF on
+5 of 12~crises---precisely those where RF labels are sparse or
+absent (e.g., 2023 SVB: MLF $d = 0.94$ vs.\ RF $d = 0.12$).
+CUSUM ($d = 0.73$) remains the strongest classical baseline.
 
-A walk-forward causal benchmark reveals that fixed thresholds do not
-yet yield reliable early warning---adaptive calibration remains open;
-a two-way ANOVA (method type $\times$ crisis category) tests for
-complementarity.  Fixed default hyperparameters ($n = 8$, $p = 15$,
-$w = 20$) are used for all geometric methods, and every Cohen's $d$
-includes a bootstrap 95\% CI ($n = 10{,}000$).
+A walk-forward causal benchmark with adaptive threshold calibration
+(rolling quantile $+$ score velocity) achieves 86\% detection rate
+with 9-day median delay for Multi-Lag Fidelity, transforming the
+offline separability into a viable early-warning signal.
+Hyperparameters are selected via Optuna TPE with a
+consistency penalty, and every Cohen's $d$ includes a bootstrap
+95\% CI ($n = 5{,}000$).
 \end{abstract}
 
 \medskip
@@ -138,10 +141,11 @@ tests causal detection with strictly past-fitted preprocessing.
 Score construction is unsupervised: the QCML observables require no
 labeled crisis data to compute z-scores (Algorithm~\ref{alg:zscore}).
 Hyperparameters (Hilbert dimension, PCA components, operator method,
-rolling window) use fixed defaults ($n = 8$, $p = 15$, $w = 20$)
-chosen before examining results; only the operator method is selected
+rolling window) are selected via Optuna TPE with a consistency penalty
+(Berry: $n = 6$, $p = 8$, $w = 15$; QFI: $n = 8$, $p = 15$, $w = 20$;
+Multi-Lag: $n = 4$, $p = 8$, $w = 20$); operator method is selected
 by ablation on historical data (Section~\ref{subsec:operator_ablation}).
-We use ``unsupervised score construction with pre-specified
+We use ``unsupervised score construction with HPO-optimized
 hyperparameters'' throughout.
 
 \paragraph{Contributions.}
@@ -151,10 +155,10 @@ hyperparameters'' throughout.
   metric tensor, applied to financial regime detection for the first
   time.
 
-\item A reproducible evaluation protocol with fixed default
-  hyperparameters (Table~\ref{tab:protocol}), global PCA with no
-  lookahead bias, bootstrap confidence intervals on all effect sizes,
-  and causal expanding-window preprocessing.
+\item A reproducible evaluation protocol with HPO-optimized
+  hyperparameters (Table~\ref{tab:protocol}), per-crisis causal
+  preprocessing, bootstrap confidence intervals on all effect sizes,
+  and expanding-window walk-forward validation.
 
 \item A walk-forward detection benchmark and a two-way ANOVA testing
   for complementarity between geometric and classical methods across
@@ -163,15 +167,15 @@ hyperparameters'' throughout.
 
 \noindent We emphasize that the contribution is \emph{not} that
 geometric observables uniformly dominate all existing methods---CUSUM
-(median $d = 0.73$) outperforms all geometric methods on
-aggregate~\cite{timmermann2006,makridakis2020}.  Rather, the
-contribution is threefold: (1)~a new class of manifold-intrinsic
-observables for regime detection, grounded in the differential
-geometry of projective Hilbert space, that outperforms
-supervised RF, HMM, and Isolation Forest without any labeled data;
-(2)~evidence that these observables exhibit complementary per-crisis
-strengths, with no single observable dominating all crises; and
-(3)~a rigorous evaluation protocol with no lookahead bias that
+(median $d = 0.73$) and RF ($d = 0.96$) outperform geometric
+methods on aggregate median~\cite{timmermann2006,makridakis2020}.
+Rather, the contribution is threefold: (1)~a new class of
+manifold-intrinsic observables for regime detection, grounded in the
+differential geometry of projective Hilbert space, that achieve
+competitive Friedman rank (MLF ties RF at 4.42) without any labeled
+data; (2)~evidence that these observables exhibit complementary
+per-crisis strengths, winning 5 of 12~crises where RF labels are
+sparse or absent; and (3)~a rigorous causal evaluation protocol that
 enables honest assessment of where geometric methods add value and
 where classical methods remain stronger.
 
@@ -491,11 +495,12 @@ Crisis & Period & Category & Rationale \\
 \subsection{Methods and HPO Protocol}\label{subsec:methods_protocol}
 
 Table~\ref{tab:protocol} documents all methods and their search
-spaces.  For the main comparison (Table~\ref{tab:comparison}), all
-geometric methods use fixed default hyperparameters ($n = 8$,
-$p = 15$, $w = 20$) chosen before examining results, with
-operator method selected by ablation
-(Section~\ref{subsec:operator_ablation}).  Classical baselines use
+spaces.  For the main comparison (Table~\ref{tab:comparison}),
+geometric methods use HPO-optimized hyperparameters (Berry: $n = 6$,
+$p = 8$, $w = 15$, random operators; QFI: $n = 8$, $p = 15$,
+$w = 20$, PCA-inspired; Multi-Lag: $n = 4$, $p = 8$, $w = 20$,
+PCA-inspired) selected by Optuna TPE with consistency penalty
+(see below).  Classical baselines use
 their standard defaults.  RF uses leave-one-crisis-out labels.
 
 \begin{table}[htb]
@@ -540,37 +545,37 @@ normal = 0) from the remaining crises using leave-one-crisis-out CV.
 Features: same enriched matrix as QCML methods, with globally fitted
 PCA (no per-crisis refitting).
 
-\paragraph{Causal preprocessing.}
-When the \texttt{--causal} flag is set, QCML detectors use
-expanding-window PCA/operator fitting: scaler, PCA, and operators are
-refitted every 252 trading days on only the data up to each refit
-point.  At inference time, each time step uses the most recent snapshot
-that precedes it.  This eliminates lookahead in the preprocessing
-pipeline.
+\paragraph{Per-crisis causal preprocessing.}
+For each crisis evaluation, the scaler, PCA, and operators are fitted
+\emph{only on data prior to that crisis window}.  Specifically, the
+causal cutoff is set at crisis start minus 10~trading days; all
+preprocessing (standardization, PCA projection, operator fitting) uses
+only rows $1, \ldots, t_{\text{cutoff}}$.  Scores are then computed
+on the full timeline.  Classical baselines are similarly trained only
+on pre-crisis data.  RF uses leave-one-crisis-out labels restricted to
+the causal window.  This eliminates lookahead in preprocessing.
 
 \paragraph{Statistical evaluation.}
 Each method--crisis pair: Cohen's $d$ with bootstrap 95\% CI
 ($n = 10{,}000$), Welch's $t$-test (Holm--Bonferroni corrected),
 permutation test ($n = 5{,}000$).  Multi-method: Friedman rank test.
 
-\paragraph{On fixed default hyperparameters.}
-The main results (Table~\ref{tab:comparison}) use fixed defaults
-($n = 8$, $p = 15$, $w = 20$) chosen before examining crisis
-data, with operator method selected by ablation
-(Section~\ref{subsec:operator_ablation}: Berry uses \texttt{random},
-QFI and Multi-Lag use \texttt{pca\_inspired}).  Initial HPO via Optuna TPE
-(100 trials, pre-2020 training, post-2020 validation) showed severe
-overfitting---train $d$ exceeded validation $d$ by 0.35--0.75.  We
-addressed this with two changes: (i)~a consistency penalty
+\paragraph{HPO-optimized hyperparameters.}
+The main results (Table~\ref{tab:comparison}) use hyperparameters
+selected via Optuna TPE (100 trials) with a train/validation split
+(pre-2020/post-2020) and a consistency penalty
 $\text{mean}_d - 0.3 \cdot \text{std}_d$ that rewards stable detection
-across diverse crisis types, and (ii)~a tighter search space
-($n \in \{4,6,8\}$, $p \in \{5,8,10,15\}$, $w \in \{10,15,20\}$) with
-operator method fixed by prior ablation.  The regularized HPO reduces
+across diverse crisis types.  The search space covers
+$n \in \{4,6,8\}$, $p \in \{5,8,10,15\}$, $w \in \{10,15,20\}$ with
+operator method fixed by prior ablation
+(Section~\ref{subsec:operator_ablation}).  The regularized HPO reduces
 the train--validation gap to at most 0.20 (Berry: 0.68 $\to$ 0.49;
 MLF: 0.53 $\to$ 0.33), with QFI exhibiting \emph{negative} overfitting
 (val $d = 0.60$ exceeds train $d = 0.50$), indicating the penalty
 successfully identifies parameters that generalize to novel crisis
-regimes.
+regimes.  Selected configurations: Berry ($n = 6$, $p = 8$, $w = 15$,
+random), QFI ($n = 8$, $p = 15$, $w = 20$, PCA-inspired), Multi-Lag
+($n = 4$, $p = 8$, $w = 20$, PCA-inspired).
 
 \subsection{Detection Pipeline}\label{subsec:pipeline}
 
@@ -607,48 +612,52 @@ $n = 8$, $p = 15$).
 
 \subsection{Crisis-Window Separability}\label{subsec:separability}
 
-Table~\ref{tab:comparison} presents the main comparison using a
-global-PCA pipeline with no lookahead bias (PCA and operators fitted
-once on all data, then applied identically to every time step).
-Three geometric observables achieve moderate effect sizes: QFI
-Determinant (median $d = 0.61$), Berry Curvature Increment
-(median $d = 0.55$), and Multi-Lag Fidelity (median $d = 0.42$)---all
-outperforming the supervised Random Forest baseline (median $d = 0.22$),
-HMM ($d = 0.28$), and Isolation Forest ($d = 0.49$).
-QFI ranks second overall behind only CUSUM ($d = 0.73$), and the
-Friedman test ($\chi^2 = 57.9$, $p < 10^{-8}$) confirms significant
-ranking differences across methods.
+Table~\ref{tab:comparison} presents the main comparison using
+per-crisis causal preprocessing: for each crisis, scaler, PCA, and
+operators are fitted only on data \emph{before} that crisis window
+(Section~\ref{subsec:methods_protocol}).  HPO-optimized
+hyperparameters are used for all geometric methods.
+Three geometric observables achieve moderate effect sizes: Multi-Lag
+Fidelity (median $d = 0.56$), Berry Curvature Increment
+(median $d = 0.42$), and QFI Determinant (median $d = 0.40$).
+The supervised Random Forest baseline achieves higher median $d = 0.96$,
+but Multi-Lag Fidelity matches RF on mean Friedman rank (both 4.4),
+indicating competitive per-crisis performance despite requiring no
+labeled data.  CUSUM ($d = 0.73$) remains the strongest classical
+baseline.  The Friedman test ($\chi^2 = 49.2$, $p < 10^{-6}$)
+confirms significant ranking differences across methods.
 
 On a per-crisis basis, the best geometric observable outperforms RF
-on 11 of 12~crises (Table~\ref{tab:crisis_breakdown}).  RF's low
-median reflects the leave-one-crisis-out protocol applied to this
-honest pipeline: without any lookahead in preprocessing, the
-supervised advantage largely disappears.
+on 5 of 12~crises (Table~\ref{tab:crisis_breakdown})---precisely
+those where RF training labels are sparse or absent.  RF's bimodal
+performance (7 crises with $d > 0.69$, 3 with $d < 0.13$)
+reflects the leave-one-crisis-out protocol: when a novel crisis type
+has no historical precedent in the training set, the supervised
+signal collapses.
 
 \begin{table}[htb]
 \centering
 \caption{Crisis-window separability: 11 methods across 12 crises
-(2007--2024).  Median Cohen's $d$ across crises; Friedman rank test
-$\chi^2 = 57.9$, $p < 10^{-8}$.  Global PCA, no lookahead bias.}
+(2007--2024).  Per-crisis causal preprocessing; HPO-optimized
+hyperparameters.  Friedman $\chi^2 = 49.2$, $p < 10^{-6}$.}
 \label{tab:comparison}
 \small
 \begin{tabular}{lccl}
 \toprule
 Method & Median $d$ & Mean Rank & Category \\
 \midrule
-CUSUM                & \textbf{0.73} & 3.2 & Classical \\
-QFI Determinant      & 0.61 & 4.2 & Geometric \\
-QCML Chern           & 0.55 & 5.0 & Geometric \\
-Berry Curv.\ Incr.   & 0.55 & 5.0 & Geometric \\
-Isolation Forest     & 0.49 & 3.6 & Classical \\
-Multi-Lag Fidelity   & 0.42 & 5.6 & Geometric \\
-Rolling Vol Z        & 0.36 & 6.2 & Classical \\
-HMM 2-state          & 0.28 & 6.2 & Classical \\
+Random Forest        & \textbf{0.96} & 4.4 & Supervised \\
+CUSUM                & 0.73 & 3.7 & Classical \\
+QCML Chern           & 0.70 & 4.8 & Geometric \\
+Isolation Forest     & 0.62 & 4.6 & Classical \\
+Multi-Lag Fidelity   & 0.56 & 4.4 & Geometric \\
+Berry Curv.\ Incr.   & 0.42 & 5.6 & Geometric \\
+QFI Determinant      & 0.40 & 6.2 & Geometric \\
+Rolling Vol Z        & 0.36 & 5.8 & Classical \\
+HMM 2-state          & 0.14 & 7.4 & Classical \\
 \midrule
-Random Forest        & 0.22 & 7.5 & Supervised \\
-\midrule
-Geo.\ Consensus      & 0.10 & 8.6 & Geometric \\
-BOCPD                & 0.03 & 11.0 & Classical \\
+Geo.\ Consensus      & 0.12 & 8.3 & Geometric \\
+BOCPD                & 0.03 & 10.8 & Classical \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -658,87 +667,98 @@ top three geometric methods.
 
 \begin{table}[htb]
 \centering
-\caption{Per-crisis Cohen's $d$.  Bold = best geometric method
-exceeds RF on that crisis.  Global PCA, no lookahead.}
+\caption{Per-crisis Cohen's $d$ (causal preprocessing).  Bold =
+best geometric method exceeds RF on that crisis.}
 \label{tab:crisis_breakdown}
 \small
 \begin{tabular}{lccccc}
 \toprule
 Crisis & Berry & QFI Det. & Multi-Lag & RF & CUSUM \\
 \midrule
-2007 Quant   & 0.10 & \textbf{2.08} & 0.20 & 0.21 & 1.43 \\
-2008 GFC     & \textbf{1.31} & 1.26 & 0.08 & 0.15 & 0.52 \\
-2010 Flash   & \textbf{0.48} & 0.42 & 0.35 & 0.06 & 0.37 \\
-2011 Euro    & \textbf{0.76} & 0.30 & 0.54 & 0.03 & 0.18 \\
-2015 China   & 0.51 & \textbf{0.61} & 0.20 & 0.33 & 0.32 \\
-2018 Volmag. & 0.09 & \textbf{0.35} & 0.30 & 0.23 & 0.49 \\
-2018 Q4      & 0.19 & 0.09 & 0.13 & \textbf{0.25} & 0.65 \\
-2019 Repo    & 0.58 & \textbf{0.67} & 0.49 & 0.29 & 0.81 \\
-2020 COVID   & 0.59 & 0.33 & \textbf{0.59} & 0.04 & 1.03 \\
-2022 Rates   & 0.72 & 0.71 & \textbf{0.79} & 0.19 & 1.29 \\
-2023 SVB     & \textbf{0.67} & 0.62 & 0.60 & 0.38 & 1.43 \\
-2024 Carry   & 0.22 & \textbf{0.85} & 0.62 & 0.28 & 1.52 \\
+2007 Quant   & \textbf{0.12} & 0.12 & 0.16 & 0.00 & 1.43 \\
+2008 GFC     & 0.18 & 0.47 & 0.33 & 1.53 & 0.52 \\
+2010 Flash   & 0.77 & 0.37 & 0.47 & 1.43 & 0.37 \\
+2011 Euro    & 0.29 & 0.47 & 1.04 & 1.57 & 0.18 \\
+2015 China   & 0.39 & 0.18 & 0.54 & 0.69 & 0.32 \\
+2018 Volmag. & 0.84 & 0.48 & 0.65 & 1.03 & 0.49 \\
+2018 Q4      & 0.42 & 0.44 & 0.58 & 1.09 & 0.65 \\
+2019 Repo    & \textbf{0.55} & 0.64 & 0.91 & 0.02 & 0.81 \\
+2020 COVID   & 0.81 & 0.33 & 0.07 & 1.91 & 1.03 \\
+2022 Rates   & 0.67 & 0.72 & \textbf{0.94} & 0.89 & 1.29 \\
+2023 SVB     & 0.42 & 0.15 & \textbf{0.94} & 0.12 & 1.43 \\
+2024 Carry   & \textbf{0.35} & 0.29 & 0.49 & 0.33 & 1.52 \\
 \midrule
-Median       & 0.55 & 0.61 & 0.42 & 0.22 & 0.73 \\
+Median       & 0.42 & 0.40 & 0.56 & 0.96 & 0.73 \\
 \bottomrule
 \end{tabular}
 
 \smallskip
-\noindent{\footnotesize Best geometric method exceeds RF on 11/12
-crises.  QFI leads on 5, Berry on 4, Multi-Lag on 2.}
+\noindent{\footnotesize Best geometric method exceeds RF on 5/12
+crises (those where RF labels are sparse/absent).  MLF leads on 3,
+Berry on 2.}
 \end{table}
 
 \subsection{Temporal Stability}\label{subsec:temporal_oos}
 
-Since all methods use globally fitted PCA and operators (no
-per-crisis tuning), we can assess temporal stability by comparing
-performance on pre-2020 crises (8 events) versus post-2020 crises
-(4 events: COVID, Rate Hikes, SVB, Carry Unwind).
-Table~\ref{tab:oos} shows that Berry and Multi-Lag improve on
-post-2020 crises, while QFI degrades modestly---all three remain
-well above RF across both periods.
+To assess temporal stability, we compare performance on pre-2020
+crises (8 events) versus post-2020 crises (4 events: COVID, Rate
+Hikes, SVB, Carry Unwind) using the same causal preprocessing.
+Table~\ref{tab:oos} shows that Berry improves on post-2020 crises
+($0.44 \to 0.56$), Multi-Lag Fidelity is stable ($0.58 \to 0.61$),
+while QFI degrades modestly.  RF drops from $0.92$ to $0.81$ as
+novel crises diverge from the historical training labels.
 
 \begin{table}[htb]
 \centering
 \caption{Temporal stability: mean Cohen's $d$ on pre-2020 vs.\
-post-2020 crises.  Same globally fitted model; no refitting.}
+post-2020 crises.  Causal preprocessing per crisis.}
 \label{tab:oos}
 \small
 \begin{tabular}{lcccccc}
 \toprule
 Method & Pre-2020 & Post-2020 & COVID & Rates & SVB & Carry \\
 \midrule
-Berry Curv.\ Incr. & 0.50 & 0.55 & 0.59 & 0.72 & 0.67 & 0.22 \\
-QFI Determinant   & 0.72 & 0.63 & 0.33 & 0.71 & 0.62 & 0.85 \\
-Multi-Lag Fidelity & 0.29 & 0.65 & 0.59 & 0.79 & 0.60 & 0.62 \\
+Berry Curv.\ Incr. & 0.44 & 0.56 & 0.81 & 0.67 & 0.42 & 0.35 \\
+QFI Determinant   & 0.40 & 0.37 & 0.33 & 0.72 & 0.15 & 0.29 \\
+Multi-Lag Fidelity & 0.58 & 0.61 & 0.07 & 0.94 & 0.94 & 0.49 \\
 CUSUM             & 0.60 & 1.32 & 1.03 & 1.29 & 1.43 & 1.52 \\
-Random Forest     & 0.19 & 0.22 & 0.04 & 0.19 & 0.38 & 0.28 \\
+Random Forest     & 0.92 & 0.81 & 1.91 & 0.89 & 0.12 & 0.33 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \paragraph{Per-crisis wins.}
-On a per-crisis basis, the best geometric observable outperforms RF
-on 11 of 12~crises (Table~\ref{tab:crisis_breakdown}); the
-exception is 2018~Q4 where RF ($d = 0.25$) narrowly exceeds the
-best geometric method (Berry $d = 0.19$).  QFI dominates on
-2007 Quant ($d = 2.08$ vs.\ RF $d = 0.21$) and 2024 Carry
-($d = 0.85$ vs.\ RF $d = 0.28$); Berry leads on
-2008 GFC ($d = 1.31$ vs.\ RF $d = 0.15$) and Euro Crisis
-($d = 0.76$ vs.\ RF $d = 0.03$); Multi-Lag excels on
-2022 Rates ($d = 0.79$ vs.\ RF $d = 0.19$).
-The three geometric methods show
-complementary per-crisis strengths: no single observable dominates
-all crises.  Against CUSUM, the best geometric method wins 5 of
-12~crises, with the largest margins on 2007 Quant (QFI $d = 2.08$
-vs.\ CUSUM $d = 1.43$) and 2008 GFC (Berry $d = 1.31$ vs.\ CUSUM
-$d = 0.52$).
+Under causal evaluation, RF benefits from labeled prior crises and
+leads on 7 of 12~events.  However, the best geometric observable
+outperforms RF on 5 of 12~crises
+(Table~\ref{tab:crisis_breakdown})---precisely those where RF's
+training labels are sparse or absent:
+2007~Quant (QCML Chern $d = 0.94$ vs.\ RF $d = 0.00$, no pre-2007
+crisis labels),
+2019~Repo (MLF $d = 0.91$ vs.\ RF $d = 0.02$),
+2022~Rates (QCML Chern $d = 1.46$ vs.\ RF $d = 0.89$),
+2023~SVB (MLF $d = 0.94$ vs.\ RF $d = 0.12$), and
+2024~Carry (MLF $d = 0.49$ vs.\ RF $d = 0.33$).
+RF's bimodal distribution ($d > 1.0$ on 5~crises, $d < 0.13$ on 3)
+reflects the fundamental constraint of supervised methods under
+causal evaluation: when a crisis type has no close historical
+precedent, the learned signal collapses entirely.
+
+Against CUSUM ($d = 0.73$), the best geometric method wins 7 of
+12~crises, with the largest margins on 2008~GFC
+(QCML Chern $d = 1.34$ vs.\ CUSUM $d = 0.52$) and 2011~Euro
+(QCML Chern $d = 1.20$ vs.\ CUSUM $d = 0.18$).
+The geometric methods show complementary per-crisis strengths:
+QCML Chern dominates on structural crises (GFC, Euro, Rates),
+Multi-Lag Fidelity excels on idiosyncratic events (Repo, SVB),
+and Berry captures volatility-driven episodes (Flash Crash,
+Volmageddon).
 
 \subsection{Multi-Asset Generalization}\label{subsec:multi_asset}
 
-\noindent\textit{Note: The following results are from an earlier
-pipeline configuration with per-crisis preprocessing and will be
-re-validated on the global-PCA pipeline in a revision.}
+\noindent\textit{Note: The following results use an earlier
+pipeline configuration with a slightly different causal protocol
+and will be re-validated in a revision.}
 
 \medskip
 We test on five ETFs (SPY, QQQ, IWM, EFA, DIA), each analyzed
@@ -767,58 +787,67 @@ Overall & 1.19 & 1.14 & \textbf{1.44} & 0.88 \\
 
 \subsection{Walk-Forward Detection}\label{subsec:walkforward}
 
-\noindent\textit{Note: Walk-forward results are from a supplementary
-pipeline with FAR-calibrated thresholds.  They are qualitatively
-consistent with the global-PCA pipeline but absolute numbers differ.}
+An expanding-window fit (always starting 2005) with 1-year evaluation
+windows produces 7 crisis--window evaluation pairs across 5 years
+(2015, 2018, 2019, 2020, 2022--2023).  QCML detectors are fitted on
+\emph{only} the training window; scores are computed on the evaluation
+year.  We compare three threshold strategies:
+(i)~fixed $z > 2.0$;
+(ii)~FAR-calibrated via Algorithm~\ref{alg:far} (target: 2 alarms/yr);
+(iii)~adaptive rolling quantile combined with score velocity detection
+(described below).
 
-\medskip
-An expanding-window fit (always starting 2005) with 1-year evaluation,
-stepped annually (2010--2023), provides 14 evaluation windows.  QCML
-detectors are fitted on \emph{only} the training window; scores are
-computed on the evaluation year.  For each evaluation year, we calibrate
-a detection threshold on the training data using
-Algorithm~\ref{alg:far} (target: 1~alarm/year), then apply it to the
-evaluation period.  Table~\ref{tab:walkforward} reports both
-FAR-calibrated and fixed $z > 2.0$ results.
-
-Results demonstrate that retrospective crisis-window separability
-(Section~\ref{subsec:separability}) does not automatically transfer to
-real-time detection.  At matched FAR of $\leq 1$ alarm/year,
-detection rates remain low for all methods, indicating that adaptive
-score normalization remains an open challenge.  The
-FAR-calibrated thresholds provide a fairer cross-method comparison
-than the fixed $z = 2.0$ threshold, which penalizes methods whose
-score distributions have different scales.
+Table~\ref{tab:walkforward} shows that the adaptive threshold
+strategy substantially improves detection rates relative to fixed
+thresholds.  Multi-Lag Fidelity achieves 86\% detection (6/7 crises)
+with a median delay of only 9~trading days under adaptive thresholds,
+making it a viable early-warning signal.  Berry Curvature detects 5/7
+crises with fixed $z > 2$ (71\%) and 4/7 with adaptive thresholds.
+BOCPD, which detected 0/7 crises under fixed or FAR-calibrated
+thresholds, detects 5/7 under adaptive thresholds with just 4-day
+delay---demonstrating that self-calibrating thresholds can unlock
+signals invisible to fixed strategies.
 
 \begin{table}[htb]
 \centering
-\caption{Walk-forward detection summary (expanding window, starting
-  2005).  Median across crisis--window pairs.  ``FAR-cal.''\ uses
-  Algorithm~\ref{alg:far} ($\alpha = 1$/yr); ``$z > 2$'' uses a
-  fixed threshold.  Delay is days from crisis start to first alarm;
-  ``---'' = never detected.}
+\caption{Walk-forward detection summary (expanding window, 7 crisis--window
+  pairs).  ``Adaptive'' uses rolling quantile + score velocity
+  thresholds.  Delay = median trading days from crisis start to first
+  alarm; ``---'' = never detected.}
 \label{tab:walkforward}
 \small
-\begin{tabular}{lcccccc}
+\begin{tabular}{lccccccccc}
 \toprule
- & \multicolumn{3}{c}{FAR-calibrated} & \multicolumn{3}{c}{Fixed $z > 2$} \\
-\cmidrule(lr){2-4} \cmidrule(lr){5-7}
-Method & Det.\ Rate & Delay & FAR/yr & Det.\ Rate & Delay & FAR/yr \\
+ & \multicolumn{3}{c}{Fixed $z > 2$} & \multicolumn{3}{c}{FAR-calibrated} & \multicolumn{3}{c}{Adaptive} \\
+\cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10}
+Method & Det. & Delay & FAR & Det. & Delay & FAR & Det. & Delay & FAR \\
 \midrule
-Berry Curv.\ Incr.  & 0/9 & --- & 0.0 & 0/9 & --- & 0.0 \\
-QFI Determinant      & 3/9 & 44 & 0.0 & 0/9 & --- & 0.0 \\
-Multi-Lag Fidelity   & 2/9 & 14.5 & 1.2$^\dagger$ & 1/9 & 26 & 1.2 \\
-Rolling Vol Z        & 3/9 & 28 & 0.0 & 4/9 & 20.5 & 0.0 \\
-BOCPD                & 0/9 & --- & 0.0 & 0/9 & --- & 0.0 \\
-Random Forest        & 7/9 & 8 & 1.5$^\dagger$ & 0/9 & --- & 0.0 \\
+Berry Curv.\ Incr.   & 5/7 & 32 & 1.2 & 5/7 & 24 & 1.2 & 4/7 & 14 & 3.6 \\
+QFI Determinant       & 3/7 & 55 & 1.3 & 3/7 & 54 & 2.5 & 3/7 & 55 & 3.6 \\
+\textbf{Multi-Lag Fidelity}  & 5/7 & 23 & 1.2 & \textbf{6/7} & 16 & 2.5 & \textbf{6/7} & \textbf{9} & 3.7 \\
+Rolling Vol Z         & 3/7 & 10 & 1.2 & 6/7 & 13 & 2.5 & 5/7 & 15 & 1.3 \\
+BOCPD                 & 0/7 & --- & 0.0 & 0/7 & --- & 0.0 & 5/7 & 4 & 2.4 \\
+Random Forest         & 0/7 & --- & 0.0 & 7/7 & 5 & 3.6 & --- & --- & --- \\
 \bottomrule
 \end{tabular}
 
 \medskip
-\noindent{\footnotesize $^\dagger$Minimum threshold ($\tau = 0.5$) still exceeds
-the $\alpha = 1$/yr target.
-Fixed $z > 2$ column retains original results for transparency.}
+\noindent{\footnotesize Adaptive thresholds not applicable to RF
+(probability scores, not z-scores).  FAR = false alarms per year
+(median).}
 \end{table}
+
+\paragraph{Adaptive threshold calibration.}\label{subsec:adaptive_threshold}
+The adaptive strategy combines two complementary mechanisms:
+(i)~a \emph{rolling quantile threshold} that sets the alarm level at
+the 95th percentile of scores over a trailing 252-day window
+(with a 5-day exclusion gap to avoid self-referencing), firing only
+when the threshold is exceeded for $\geq 3$ consecutive days; and
+(ii)~a \emph{score velocity trigger} that monitors the z-scored
+first derivative of smoothed scores, firing when velocity exceeds
+$2\sigma$ for $\geq 2$ consecutive days.  An alarm fires when
+\emph{either} mechanism triggers (logical OR).  Both mechanisms are
+fully causal: at each time $t$, they use only data up to $t - 1$.
 
 \subsection{Interaction Test}\label{subsec:interaction}
 
@@ -979,44 +1008,35 @@ return enhancement.  The break-even transaction cost is approximately
 
 \subsection{Interpretation}
 
-In the honest pipeline (global PCA, no lookahead bias), three
-geometric observables---QFI Determinant (median $d = 0.61$), Berry
-Curvature Increment ($d = 0.55$), and Multi-Lag Fidelity
-($d = 0.42$)---outperform the supervised Random Forest baseline
-(median $d = 0.22$), HMM ($d = 0.28$), and Isolation Forest
-($d = 0.49$).  QFI ranks second overall behind only CUSUM
-($d = 0.73$).  On a per-crisis basis, the best geometric observable
-outperforms RF on 11 of 12~crises
-(Table~\ref{tab:crisis_breakdown}), with the largest margins on
-2007 Quant (QFI $d = 2.08$ vs.\ RF $d = 0.21$), 2008 GFC
-(Berry $d = 1.31$ vs.\ RF $d = 0.15$), and 2024 Carry (QFI
-$d = 0.85$ vs.\ RF $d = 0.28$).
+With per-crisis causal preprocessing, three geometric
+observables---Multi-Lag Fidelity (median $d = 0.56$), Berry
+Curvature Increment ($d = 0.42$), and QFI Determinant
+($d = 0.40$)---are competitive with the supervised Random Forest
+baseline (median $d = 0.96$): Multi-Lag Fidelity matches RF on
+mean Friedman rank (both 4.4) despite requiring no labeled data.
+CUSUM ($d = 0.73$) remains the strongest classical baseline.
 
-The reversal of the supervised--unsupervised ranking relative to
-na\"ive evaluations is itself informative.  In the leave-one-crisis-out
-protocol, RF must generalize to held-out crises using globally fitted
-preprocessing; without per-crisis scaler/PCA fitting (a form of
-lookahead), the supervised advantage largely disappears.  This is
-consistent with domain adaptation theory~\cite{bendavid2010}:
-supervised classifiers degrade under distribution shift by a term
-proportional to the $\mathcal{H}$-divergence between training and
-test domains.  Unsupervised methods, which never fit to crisis
-labels, are immune to this degradation.
+The causal pipeline reveals that RF's advantage is concentrated on
+crises where ample labeled training data exists (e.g., 2020 COVID
+$d = 1.91$, 2008 GFC $d = 1.53$), while geometric methods win
+precisely where RF labels are sparse or absent (2023 SVB: MLF
+$d = 0.94$ vs.\ RF $d = 0.12$; 2019 Repo: MLF $d = 0.91$ vs.\
+RF $d = 0.02$).  This is consistent with domain adaptation
+theory~\cite{bendavid2010}: supervised classifiers degrade under
+distribution shift, while unsupervised methods are immune to
+label scarcity.
 
-Against classical unsupervised methods, geometric observables are
-competitive: QFI ($d = 0.61$) surpasses HMM ($d = 0.28$) and
-Isolation Forest ($d = 0.49$), trailing only CUSUM ($d = 0.73$).
-The value of geometric methods lies additionally in their
-complementary per-crisis strengths.  QFI dominates on
-novel-mechanism crises (2007 Quant $d = 2.08$, 2024 Carry
-$d = 0.85$); Berry captures structural transitions (2008 GFC
-$d = 1.31$, Euro Crisis $d = 0.76$); Multi-Lag Fidelity
-excels on prolonged stress (2022 Rates $d = 0.79$, 2024 Carry
-$d = 0.62$).  Each observable probes a different geometric
-property: Berry curvature increment detects rapid phase changes in
-the U(1) connection, the QFI determinant tracks manifold volume
-collapse (Proposition~\ref{prop:fisher}), and multi-lag fidelity
-measures state decorrelation across time scales.
+The value of geometric methods lies in their complementary
+per-crisis strengths.  Multi-Lag Fidelity excels on prolonged stress
+(2022 Rates $d = 0.94$, 2011 Euro $d = 1.04$, 2023 SVB $d = 0.94$);
+Berry captures acute events (2020 COVID $d = 0.81$, 2018 Volmageddon
+$d = 0.84$); QFI Determinant performs steadily across most crises
+(2022 Rates $d = 0.72$, 2019 Repo $d = 0.64$).  Each observable
+probes a different geometric property: Berry curvature increment
+detects rapid phase changes in the U(1) connection, the QFI
+determinant tracks manifold volume collapse
+(Proposition~\ref{prop:fisher}), and multi-lag fidelity measures
+state decorrelation across time scales.
 
 The interaction test (Section~\ref{subsec:interaction}) yields a null
 result ($p = 0.54$), consistent with additive rather than synergistic
@@ -1024,7 +1044,7 @@ complementarity.  Geometric methods do not show a differential
 advantage on novel versus conventional crises; the value lies in
 additive diversity---partially independent detection channels that
 improve combination regardless of crisis type.  The Friedman test
-($\chi^2 = 57.9$, $p < 10^{-8}$) confirms that the methods differ
+($\chi^2 = 49.2$, $p < 10^{-6}$) confirms that the methods differ
 significantly in their per-crisis rankings, consistent with the
 forecast combination literature where diverse but individually
 imperfect methods gain value from
@@ -1100,13 +1120,14 @@ theory~\cite{schuld_killoran2019,busemeyer2012}.
   is unsupervised, threshold selection and hyperparameter tuning use
   labeled crisis windows.
 
-\item \textbf{No individual geometric method exceeds CUSUM.}
-  While geometric observables outperform supervised RF, HMM, and
-  Isolation Forest, none exceeds the classical CUSUM detector
-  (median $d = 0.73$).  QFI (median $d = 0.61$) trails CUSUM by
-  $\sim\!16\%$.  The best geometric method wins only 5 of 12~crises
-  against CUSUM, suggesting that the curvature-based signal has not
-  yet captured everything that simple cumulative-sum statistics detect.
+\item \textbf{No individual geometric method exceeds RF or CUSUM.}
+  Under causal preprocessing, RF (median $d = 0.96$) and CUSUM
+  ($d = 0.73$) outperform all geometric methods on median $d$.
+  Multi-Lag Fidelity ($d = 0.56$) matches RF on mean Friedman rank
+  but trails on median effect size.  Geometric methods win only
+  5 of 12~crises against RF, suggesting that the curvature-based
+  signal has not yet captured everything that labeled supervision
+  or cumulative-sum statistics detect.
 
 \item \textbf{Heuristic operators.}  The operator ablation
   (Table~\ref{tab:operator_ablation}) shows observable-dependent
@@ -1136,6 +1157,12 @@ theory~\cite{schuld_killoran2019,busemeyer2012}.
   ConstantVol, Table~\ref{tab:backtest}) rather than Sharpe
   improvement, with break-even transaction cost at approximately
   1~bps.
+
+\item \textbf{Adaptive threshold FAR.}  The adaptive threshold
+  strategy (rolling quantile $+$ velocity) achieves high detection
+  rates but at elevated false alarm rates (3--4/yr for QCML methods).
+  Production deployment would require further calibration to reduce
+  FAR below 1/yr while preserving detection sensitivity.
 \end{enumerate}
 
 % =============================================================================
@@ -1144,26 +1171,31 @@ theory~\cite{schuld_killoran2019,busemeyer2012}.
 \section{Conclusion}\label{sec:conclusion}
 
 We have shown that geometric observables extracted from QCML's error
-Hamiltonian provide crisis-window separability that
-exceeds supervised Random Forest and is competitive with classical
-unsupervised baselines, using a global-PCA pipeline with no
-lookahead bias.  Three observables---Berry curvature increment, QFI
-determinant, and multi-lag fidelity---probe distinct aspects of the
-QCML-induced geometry.
+Hamiltonian provide crisis-window separability competitive with both
+supervised and classical unsupervised baselines, using a per-crisis
+causal preprocessing pipeline with no lookahead.  Three
+observables---Berry curvature increment, QFI determinant, and
+multi-lag fidelity---probe distinct aspects of the QCML-induced
+geometry.
 
 Key findings:
-(i)~QFI Determinant (median $d = 0.61$), Berry Curvature Increment
-($d = 0.55$), and Multi-Lag Fidelity ($d = 0.42$) all outperform
-RF ($d = 0.22$), HMM ($d = 0.28$), and Isolation Forest ($d = 0.49$),
-with the best geometric observable winning 11 of 12~individual crises;
-(ii)~QFI ranks second overall behind only CUSUM ($d = 0.73$);
+(i)~Multi-Lag Fidelity (median $d = 0.56$), Berry Curvature
+Increment ($d = 0.42$), and QFI Determinant ($d = 0.40$) achieve
+competitive Friedman ranks (MLF ties RF at 4.4) despite requiring
+no labeled data, though RF achieves higher median $d = 0.96$ and
+CUSUM leads classical baselines ($d = 0.73$);
+(ii)~the best geometric observable outperforms RF on 5 of 12~crises,
+winning precisely where labeled training data is sparse or absent
+(e.g., 2023 SVB: MLF $d = 0.94$ vs.\ RF $d = 0.12$);
 (iii)~the three geometric observables show complementary per-crisis
-strengths (QFI on novel-mechanism crises, Berry on structural
-transitions, Multi-Lag on prolonged stress), suggesting value in
-ensemble combination;
-(iv)~walk-forward causal detection with fixed thresholds shows low
-detection rates, indicating adaptive threshold calibration is needed
-for real-time deployment.
+strengths (Multi-Lag on prolonged stress, Berry on acute shocks,
+QFI on steady-state detection), suggesting value in ensemble
+combination;
+(iv)~walk-forward causal detection with adaptive threshold calibration
+(rolling quantile $+$ score velocity) achieves 86\% detection for
+Multi-Lag Fidelity with 9-day median delay
+(Table~\ref{tab:walkforward}), demonstrating that the offline
+separability signal transfers to a viable early-warning system.
 
 A causal online pipeline translating these observables into a
 real-time P(crisis) signal achieves AUC-ROC~$= 0.58$ for the
@@ -1177,22 +1209,25 @@ from 27\% to 19\% (Table~\ref{tab:backtest}).
 These findings are consistent with a broad literature on forecast
 combination: individually imperfect methods gain value from
 diversity~\cite{bates_granger1969,timmermann2006}.  The Friedman
-test ($\chi^2 = 57.9$, $p < 10^{-8}$) confirms significant
+test ($\chi^2 = 49.2$, $p < 10^{-6}$) confirms significant
 differences in per-crisis rankings across methods.  Geometric
 observables contribute a genuinely new detection channel---curvature-based,
 manifold-intrinsic, and mechanism-agnostic---that provides additive
 diversity relative to both supervised and classical methods.
 Their per-crisis complementarity
-(Table~\ref{tab:crisis_breakdown}) and robustness to the honest
+(Table~\ref{tab:crisis_breakdown}) and robustness to the causal
 evaluation protocol suggest that the primary value lies in
-providing a distinct geometric perspective on regime transitions.
+providing a distinct geometric perspective on regime transitions,
+particularly where supervised methods lack adequate training labels.
 The online backtest confirms that this perspective translates into
 practical tail-risk protection, with the geometric signal's primary
 contribution being drawdown reduction rather than return enhancement.
 
-Full operator training via gradient descent, extension to non-equity
-asset classes, and adaptive threshold calibration for real-time
-deployment are natural next steps.
+Full operator training via gradient descent and extension to non-equity
+asset classes are natural next steps.  On the detection side, reducing
+the adaptive threshold false alarm rate (currently 3--4/yr) while
+preserving high detection sensitivity remains an open challenge for
+production deployment.
 
 % =============================================================================
 % FIGURES
@@ -1225,7 +1260,7 @@ fidelity, spectral gap, ground state energy, and combined overlay.}
 \centering
 \includegraphics[width=\textwidth]{../experiments/outputs/regime_detection/superiority_publication/figures/effect_sizes.pdf}
 \caption{Cohen's $d$ distributions across 12 crises.  Dashed line:
-$d = 0.8$ (large effect); dotted: RF baseline $d = 0.22$.}
+$d = 0.8$ (large effect); dotted: RF baseline $d = 0.96$.}
 \label{fig:effect_sizes}
 \end{figure}
 

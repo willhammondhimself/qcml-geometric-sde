@@ -1,117 +1,78 @@
 # Geometric Observables for Financial Regime Detection
 
-Academic research code for the paper:
+A spectral metric learning framework that detects financial crises using
+differential geometry — without labeled data.
 
-> **Geometric Observables for Financial Regime Detection**
-> Will Hammond, Pitzer College
+## Key Results
 
-## Overview
+- **Multi-Lag Fidelity** matches supervised Random Forest on Friedman rank (4.42)
+  despite requiring no crisis labels
+- Walk-forward validation: **86% detection rate**, 9-day median delay
+- Tested across **12 historical crises** (2007-2024) and **5 ETFs**
+- Computes faster than RF (0.26-0.77s vs 1.07s per window)
+- MLF wins 5/12 crises RF misses (SVB d=0.94 vs RF d=0.12)
 
-This project introduces three unsupervised regime detection observables derived from the metric tensor of a QCML (Quantum Cognition Machine Learning---a spectral metric learning framework) induced geometry on financial data manifolds:
+## Interactive Demo
 
-1. **Berry Phase Rate** -- rate of change of Berry curvature signals topological transitions
-2. **QFI Pseudo-Determinant** -- metric volume element detects phase boundary crossings
-3. **Multi-Lag Fidelity** -- multi-scale state overlap measures regime instability
+Try the interactive demo: `streamlit run demo/app.py`
 
-These geometric observables are competitive with supervised Random Forest baselines (median Cohen's d = 1.67 vs 1.13 via simple weighted combination) and generalize across 5 ETFs (SPY, QQQ, IWM, EFA, DIA).
+Pre-cache data first: `python demo/cache_data.py`
 
-## Repository Structure
+## How It Works
+
+Financial time series are embedded into a projective Hilbert space via spectral
+metric learning. Three geometric observables measure manifold deformation during
+market stress:
+
+1. **Berry Phase Rate** — curvature of the data path on the manifold
+2. **QFI Determinant** — metric volume element (distinguishability between states)
+3. **Multi-Lag Fidelity** — state overlap decay across multiple time horizons
+
+These spike during regime transitions without requiring any labeled crisis data.
+
+## Project Structure
 
 ```
-qcml_geometry/       Core math library (pure functions, no I/O)
-  core.py            QCMLGeometry: error Hamiltonian, quantum metric, Berry curvature
-  observables.py     BerryPhaseRateDetector, QFIDeterminantDetector, MultiLagFidelityDetector
-  topology.py        TopologicalRegimeDetector, Chern number computation
-  indicators.py      Spectral gap, energy evolution, fidelity decay, multi-scale Chern
+qcml_geometry/          Core library (pure math, no I/O)
+  core.py               QCMLGeometry: metric tensor, Berry curvature, Chern numbers
+  observables.py        Berry/QFI/MLF regime detectors
+  indicators.py         Spectral gap, energy, fidelity indicators
+  topology.py           Topological regime detectors
 
-experiments/         Paper 1 experiment scripts
-  data/              PolygonDataSource, MinimalFeatureEngine
-  baselines.py       Classical baselines (Vol-Z, CUSUM, HMM, Random Forest)
-  additional_detectors.py  Additional QCML detectors (Chern, QFI susceptibility, etc.)
-  crisis_config.py   Crisis period definitions
-  config.yaml        Default hyperparameters
+experiments/            Reproducible experiment scripts
+  regime_comparison.py  Main 11-method x 12-crisis pipeline
+  walk_forward_evaluation.py
+  baselines.py          RF, VolZ, CUSUM, HMM, BOCPD, Isolation Forest
+  data_loader.py        Polygon API + feature engineering
+  honest_hpo_sweep.py   Optuna HPO with consistency penalty
 
-notebooks/           3 polished notebooks for Paper 1
-paper/               LaTeX source
-archive/             Non-Paper-1 code (SDE, trading, deep learning, TDA, etc.)
-tests/               Unit tests
+demo/                   Interactive Streamlit app
+  app.py                Main demo (dark navy theme, Plotly charts)
+  cache_data.py         One-time data caching
+
+poster/                 APS Global Physics Summit 2026 poster
+paper/                  LaTeX paper (25 pages, 3 theorems)
+tests/                  pytest suite
 ```
 
 ## Quick Start
 
 ```bash
-# Install dependencies
 pip install -r requirements.txt
+echo "POLYGON_API_KEY=your_key" > .env
 
-# Set up Polygon API key
-echo "POLYGON_API_KEY=your_key_here" > .env
-
-# Run example regime detection
-python experiments/example_regime_detection.py
+# Run the full comparison pipeline
+python experiments/regime_comparison.py --causal
 
 # Run tests
-pytest tests/ -v
+pytest tests/ -x -q
 ```
 
-## Core Modules
+## Paper
 
-### QCML Geometry (`qcml_geometry/core.py`)
-
-Learns geometric structure from data using spectral metric learning methods:
-- Error Hamiltonian: H(x) = 1/2 sum_k (A_k - x_k I)^2
-- Quasi-coherent states: ground states of H(x)
-- Metric tensor: g_ab encoding manifold geometry
-- Berry curvature: F_ab for topological analysis
-
-```python
-from qcml_geometry import QCMLGeometry
-
-geometry = QCMLGeometry(n_features=5, hilbert_dim=8)
-geometry.fit_operators(X, method='pca_inspired')
-
-g = geometry.quantum_metric(x)       # Metric tensor
-F = geometry.berry_curvature(x)      # Topological structure
-d = geometry.quantum_distance(x1, x2)  # Fubini-Study distance
-```
-
-### Geometric Observables (`qcml_geometry/observables.py`)
-
-Three novel unsupervised regime detectors:
-
-```python
-from qcml_geometry import BerryPhaseRateDetector, QFIDeterminantDetector, MultiLagFidelityDetector
-
-detector = BerryPhaseRateDetector(hilbert_dim=8, n_pca_components=15)
-detector.fit(X_features)
-scores = detector.compute_regime_scores(X_features)
-```
-
-## Key Results
-
-| Method | Median Cohen's d | Type |
-|--------|-----------------|------|
-| Fused QCML (Phase B) | 1.79 | Unsupervised geometric |
-| Fused QCML (Phase A) | 1.67 | Unsupervised geometric |
-| QFI Determinant | 1.42 | Unsupervised geometric |
-| Berry Phase Rate | 1.31 | Unsupervised geometric |
-| Multi-Lag Fidelity | 1.26 | Unsupervised geometric |
-| Random Forest | 1.13 | Supervised statistical |
-
-## References
-
-This work builds upon the QCML framework developed by Qognitive, Inc. and academic collaborators. See `paper/qcml_geometric_sde.tex` for complete references.
-
-## Citation
-
-```bibtex
-@article{hammond2026geometric,
-  title={Geometric Observables for Financial Regime Detection},
-  author={Hammond, Will},
-  year={2026},
-  institution={Pitzer College}
-}
-```
+25-page paper with 3 theorems, 1 proposition, and 33 references.
+Available in `paper/qcml_geometric_sde.tex`.
 
 ## Author
 
-Will Hammond (whammond@pitzer.edu), Pitzer College
+Will Hammond | Pitzer College | whammond@pitzer.edu

@@ -9,11 +9,11 @@ import logging
 from typing import Optional
 
 import numpy as np
-from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
 
-from qcml_geometry.observables import BaseRegimeDetector
 from qcml_geometry.core import QCMLGeometry
+from qcml_geometry.observables import BaseRegimeDetector
 
 logger = logging.getLogger(__name__)
 
@@ -32,12 +32,14 @@ class QCMLChernDetector(BaseRegimeDetector):
         n_pca_components: int = 15,
         operator_method: str = 'pca_inspired',
         seed: int = 42,
+        causal_fit_length: Optional[int] = None,
     ):
         self.hilbert_dim = hilbert_dim
         self.window_size = window_size
         self.n_pca_components = n_pca_components
         self.operator_method = operator_method
         self.seed = seed
+        self.causal_fit_length = causal_fit_length
         self._geometry = None
         self._scaler = None
         self._pca = None
@@ -49,22 +51,23 @@ class QCMLChernDetector(BaseRegimeDetector):
     def fit(self, X: np.ndarray, **kwargs) -> 'QCMLChernDetector':
         np.random.seed(self.seed)
         n_components = min(self.n_pca_components, X.shape[1])
+        fit_end = self.causal_fit_length or X.shape[0]
 
         self._scaler = StandardScaler()
-        self._scaler.fit(X)
+        self._scaler.fit(X[:fit_end])
 
         self._pca = PCA(n_components=n_components)
-        X_scaled = self._scaler.transform(X)
-        self._pca.fit(X_scaled)
+        X_scaled_fit = self._scaler.transform(X[:fit_end])
+        self._pca.fit(X_scaled_fit)
 
-        X_pca = self._pca.transform(X_scaled)
-        norms = np.linalg.norm(X_pca, axis=1, keepdims=True)
-        X_pca = X_pca / (norms + 1e-8)
+        X_pca_fit = self._pca.transform(X_scaled_fit)
+        norms = np.linalg.norm(X_pca_fit, axis=1, keepdims=True)
+        X_pca_fit = X_pca_fit / (norms + 1e-8)
 
         self._geometry = QCMLGeometry(
-            n_features=X_pca.shape[1], hilbert_dim=self.hilbert_dim
+            n_features=X_pca_fit.shape[1], hilbert_dim=self.hilbert_dim
         )
-        self._geometry.fit_operators(X_pca, method=self.operator_method)
+        self._geometry.fit_operators(X_pca_fit, method=self.operator_method)
         return self
 
     def compute_regime_scores(self, X: np.ndarray) -> np.ndarray:
@@ -109,6 +112,7 @@ class GeometricConsensusDetector(BaseRegimeDetector):
         min_expanding: int = 60,
         seed: int = 42,
         threshold_quantile: float = 0.9,
+        causal_fit_length: Optional[int] = None,
     ):
         self.hilbert_dim = hilbert_dim
         self.n_pca_components = n_pca_components
@@ -118,6 +122,7 @@ class GeometricConsensusDetector(BaseRegimeDetector):
         self.min_expanding = min_expanding
         self.seed = seed
         self.threshold_quantile = threshold_quantile
+        self.causal_fit_length = causal_fit_length
         self._geometry = None
         self._scaler = None
         self._pca = None
@@ -129,22 +134,23 @@ class GeometricConsensusDetector(BaseRegimeDetector):
     def fit(self, X: np.ndarray, **kwargs) -> 'GeometricConsensusDetector':
         np.random.seed(self.seed)
         n_components = min(self.n_pca_components, X.shape[1])
+        fit_end = self.causal_fit_length or X.shape[0]
 
         self._scaler = StandardScaler()
-        self._scaler.fit(X)
+        self._scaler.fit(X[:fit_end])
 
         self._pca = PCA(n_components=n_components)
-        X_scaled = self._scaler.transform(X)
-        self._pca.fit(X_scaled)
+        X_scaled_fit = self._scaler.transform(X[:fit_end])
+        self._pca.fit(X_scaled_fit)
 
-        X_pca = self._pca.transform(X_scaled)
-        norms = np.linalg.norm(X_pca, axis=1, keepdims=True)
-        X_pca = X_pca / (norms + 1e-8)
+        X_pca_fit = self._pca.transform(X_scaled_fit)
+        norms = np.linalg.norm(X_pca_fit, axis=1, keepdims=True)
+        X_pca_fit = X_pca_fit / (norms + 1e-8)
 
         self._geometry = QCMLGeometry(
-            n_features=X_pca.shape[1], hilbert_dim=self.hilbert_dim
+            n_features=X_pca_fit.shape[1], hilbert_dim=self.hilbert_dim
         )
-        self._geometry.fit_operators(X_pca, method=self.operator_method)
+        self._geometry.fit_operators(X_pca_fit, method=self.operator_method)
         return self
 
     def compute_regime_scores(self, X: np.ndarray) -> np.ndarray:

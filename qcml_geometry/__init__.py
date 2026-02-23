@@ -34,6 +34,11 @@ from .indicators import (
     GeometricIndicatorSuite,
     IndicatorResult,
 )
+from .adaptive_threshold import (
+    RollingQuantileThreshold,
+    ScoreVelocityThreshold,
+    CombinedAdaptiveThreshold,
+)
 
 # Deprecated alias for backward compatibility
 QuantumIndicatorSuite = GeometricIndicatorSuite
@@ -59,4 +64,7 @@ __all__ = [
     "GeometricIndicatorSuite",
     "QuantumIndicatorSuite",  # deprecated alias
     "IndicatorResult",
+    "RollingQuantileThreshold",
+    "ScoreVelocityThreshold",
+    "CombinedAdaptiveThreshold",
 ]

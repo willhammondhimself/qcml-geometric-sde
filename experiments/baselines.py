@@ -344,7 +344,12 @@ class RandomForestRegimeDetector(BaseRegimeDetector):
             X = X.reshape(-1, 1)
 
         X_enriched = BaseRegimeDetector.build_enriched_features(X, lookback=self.lookback)
-        proba = self._model.predict_proba(X_enriched)[:, 1]
+
+        # Handle single-class training (e.g., no crisis labels in causal window)
+        if len(self._model.classes_) < 2:
+            proba = np.zeros(len(X_enriched))
+        else:
+            proba = self._model.predict_proba(X_enriched)[:, 1]
 
         # Pad front with NaN to match original length
         pad = np.full(self.lookback - 1, np.nan)

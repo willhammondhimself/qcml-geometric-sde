@@ -345,7 +345,13 @@ def run_comparison(
             continue
 
         rf = RandomForestRegimeDetector(n_estimators=200, max_depth=6, seed=42, lookback=20)
-        rf.fit_with_labels(X[:fit_end_raw], y[:fit_end_raw])
+
+        # Check if training data has crisis labels
+        y_train = y[:fit_end_raw]
+        if np.sum(y_train) == 0:
+            logger.warning(f"  RF {held_out_key}: no crisis labels in causal training window, scores will be zero")
+
+        rf.fit_with_labels(X[:fit_end_raw], y_train)
 
         scores = rf.compute_regime_scores(X)
         # Trim to enriched length
