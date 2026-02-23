@@ -849,6 +849,182 @@ $2\sigma$ for $\geq 2$ consecutive days.  An alarm fires when
 \emph{either} mechanism triggers (logical OR).  Both mechanisms are
 fully causal: at each time $t$, they use only data up to $t - 1$.
 
+\subsection{Detection-Oriented Metrics}\label{subsec:detection_metrics}
+
+While Cohen's $d$ measures crisis-window separability (offline event study),
+practitioners need detection-relevant metrics: precision, recall, timeliness,
+and false alarm control.  We evaluate each method's z-score series using a
+threshold of $z > 2$ and three tolerance windows (5, 10, 30 trading days).
+Table~\ref{tab:detection_metrics} reports aggregates across all 12~crises.
+
+\begin{table}[htbp]
+\centering
+\caption{Detection metrics across 12 crises (threshold $z > 2$, tolerance
+  window = 10 trading days).  Med.\ Delay = median detection delay in
+  trading days among crises where a detection occurred;
+  FAR = mean false alarms per year.  AUC-PR = area under
+  precision--recall curve (threshold-free).  ``---'' = no crisis detected.}
+\label{tab:detection_metrics}
+\small
+\begin{tabular}{lccccc}
+\toprule
+Method & F1@10d & AUC-PR & Med.\ Delay & FAR/yr & Category \\
+\midrule
+Geo.\ Consensus      & 0.004 & 0.024 & 19.5 &  3.1 & Geometric \\
+Rolling Vol Z         & 0.004 & 0.079 & 25.0 & 10.8 & Classical \\
+Berry Curv.\ Incr.    & 0.003 & 0.027 &  8.0 &  8.3 & Geometric \\
+Multi-Lag Fidelity    & 0.003 & 0.021 &  5.0 & 12.4 & Geometric \\
+Isolation Forest      & 0.002 & 0.111 &  8.5 & 17.8 & Classical \\
+QCML Chern            & 0.002 & 0.011 & --- & 13.5 & Geometric \\
+Random Forest         & 0.001 & 0.090 & 10.0 & 15.0 & Supervised \\
+CUSUM                 & 0.001 & 0.053 &  0.0 & 186.6 & Classical \\
+QFI Determinant       & 0.000 & 0.017 & 26.0 & 16.9 & Geometric \\
+HMM 2-state           & 0.000 & 0.330 & --- &  5.4 & Classical \\
+BOCPD                 & 0.000 & 0.018 & --- &  1.0 & Classical \\
+\bottomrule
+\end{tabular}
+
+\medskip
+\noindent{\footnotesize F1 scores are low across all methods due to the
+extreme class imbalance inherent in crisis detection (crisis days
+$\approx 5{-}10\%$ of the sample).  AUC-PR, which is threshold-free, provides
+a more discriminating ranking.  HMM achieves the highest AUC-PR (0.330)
+via persistent regime labels; among z-score methods, Isolation Forest
+(0.111) and Random Forest (0.090) lead, with Berry (0.027) and
+Multi-Lag Fidelity (0.021) at moderate levels.  Geometric methods offer
+the fastest median detection delays: Multi-Lag Fidelity at 5 days and
+Berry at 8 days, compared to RF at 10 days and Rolling Vol Z at 25 days.
+CUSUM fires immediately (0-day delay) but at prohibitive FAR
+(186.6/yr).}
+\end{table}
+
+\subsection{Statistical Comparison Framework}\label{subsec:stat_comparison}
+
+We supplement the Friedman test with three modern statistical comparison
+tools that provide richer inference than a single omnibus test.
+
+\paragraph{Model Confidence Set.}
+The Model Confidence Set (MCS; Hansen et al., 2011) identifies the set of
+methods whose performance cannot be statistically distinguished from the
+best at the 90\% confidence level ($\alpha = 0.1$, $B = 10{,}000$ bootstrap
+resamples).  The MCS contains 10 of 11~methods
+(Table~\ref{tab:mcs}); only BOCPD is excluded, confirming that it is
+the sole statistically dominated method.  All geometric methods are
+retained in the MCS, consistent with their competitive per-crisis
+rankings despite lower median $d$.
+
+\begin{table}[htbp]
+\centering
+\caption{Model Confidence Set (90\% level, 10,000 bootstrap resamples).
+  $\checkmark$ = included; $\times$ = excluded.}
+\label{tab:mcs}
+\small
+\begin{tabular}{lc}
+\toprule
+Method & MCS \\
+\midrule
+CUSUM               & $\checkmark$ \\
+Random Forest       & $\checkmark$ \\
+Isolation Forest    & $\checkmark$ \\
+QCML Chern          & $\checkmark$ \\
+Multi-Lag Fidelity  & $\checkmark$ \\
+Berry Curv.\ Incr.   & $\checkmark$ \\
+HMM 2-state         & $\checkmark$ \\
+Rolling Vol Z       & $\checkmark$ \\
+QFI Determinant     & $\checkmark$ \\
+Geo.\ Consensus      & $\checkmark$ \\
+\midrule
+BOCPD               & $\times$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Bayesian Signed-Rank Test.}
+We test pairwise superiority of the three top geometric methods against
+RF and CUSUM using the Bayesian signed-rank test with a ROPE of $\pm 0.1$
+(Benavoli et al., 2017).  Table~\ref{tab:bayesian} shows posterior
+probabilities.  RF and CUSUM are strongly favoured over all three
+geometric methods ($P(\text{B better}) > 0.92$ in every comparison),
+with tight posteriors reflecting the consistent per-crisis advantage
+of supervised and cumulative-sum methods on aggregate.  Multi-Lag Fidelity
+shows the narrowest gap ($P(\text{MLF} > \text{RF}) = 0.078$), consistent
+with its competitive Friedman rank.
+
+\begin{table}[htbp]
+\centering
+\caption{Bayesian signed-rank test (ROPE $= \pm 0.1$) on per-crisis
+  Cohen's~$d$.  $P(A > B)$ = posterior probability that method A exceeds
+  method B by more than the ROPE.}
+\label{tab:bayesian}
+\small
+\begin{tabular}{lccc}
+\toprule
+Comparison & $P(A > B)$ & $P(\text{equiv})$ & $P(B > A)$ \\
+\midrule
+Berry vs RF   & 0.013 & 0.002 & 0.985 \\
+QFI Det vs RF & 0.001 & 0.000 & 0.999 \\
+MLF vs RF     & 0.078 & 0.000 & 0.921 \\
+Berry vs CUSUM  & 0.005 & 0.003 & 0.992 \\
+QFI Det vs CUSUM & 0.001 & 0.000 & 0.999 \\
+MLF vs CUSUM    & 0.056 & 0.013 & 0.931 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Bootstrap Rank Confidence Intervals.}
+Table~\ref{tab:bootstrap_ranks} presents bootstrap 95\% CIs for mean
+Friedman ranks ($B = 10{,}000$).  Wide confidence intervals for most methods
+(spanning 2--3 ranks) reflect the heterogeneity of per-crisis performance.
+CUSUM has the best mean rank ($3.67$, CI $[2.33, 5.17]$), followed by
+a cluster at 4.50 (Isolation Forest, QCML Chern, Random Forest) with
+heavily overlapping CIs.  Multi-Lag Fidelity ($5.33$, CI $[3.92, 6.92]$)
+overlaps with RF ($4.50$, CI $[2.50, 6.83]$), confirming
+that the rank difference is not significant.  BOCPD is clearly
+separated at the bottom ($10.67$, CI $[10.25, 11.00]$).
+
+\begin{table}[htbp]
+\centering
+\caption{Bootstrap 95\% CIs for mean Friedman rank (10,000 resamples).
+  Lower rank = better; overlapping CIs indicate non-significant differences.}
+\label{tab:bootstrap_ranks}
+\small
+\begin{tabular}{lcc}
+\toprule
+Method & Mean Rank & 95\% CI \\
+\midrule
+CUSUM               & 3.67 & [2.33, 5.17] \\
+Isolation Forest    & 4.50 & [3.25, 5.75] \\
+QCML Chern          & 4.50 & [3.33, 5.83] \\
+Random Forest       & 4.50 & [2.50, 6.83] \\
+Multi-Lag Fidelity  & 5.33 & [3.92, 6.92] \\
+Rolling Vol Z       & 5.67 & [3.92, 7.42] \\
+Berry Curv.\ Incr.   & 5.75 & [4.67, 6.83] \\
+HMM 2-state         & 5.75 & [3.83, 7.67] \\
+QFI Determinant     & 7.67 & [6.83, 8.50] \\
+Geo.\ Consensus      & 8.00 & [7.00, 9.00] \\
+BOCPD               & 10.67 & [10.25, 11.00] \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Critical Difference Diagram.}
+Figure~\ref{fig:cd_diagram} shows the Nemenyi post-hoc critical difference
+(CD) diagram, where methods connected by a horizontal bar do not differ
+significantly at $\alpha = 0.05$.  The diagram confirms a single large
+clique spanning ranks 3.7--8.0 (CUSUM through Geometric Consensus), with
+only BOCPD outside.  Geometric methods fall within the main clique,
+indicating that their rank differences from RF and CUSUM are within
+sampling variability.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.85\textwidth]{figures/cd_diagram.pdf}
+\caption{Nemenyi critical difference diagram.  Methods connected by a
+  horizontal bar are not significantly different at $\alpha = 0.05$.
+  Axis shows mean Friedman rank (lower = better).}
+\label{fig:cd_diagram}
+\end{figure}
+
 \subsection{Interaction Test}\label{subsec:interaction}
 
 We classify crises \emph{a priori} as ``novel'' or ``conventional''
@@ -1049,6 +1225,25 @@ significantly in their per-crisis rankings, consistent with the
 forecast combination literature where diverse but individually
 imperfect methods gain value from
 aggregation~\cite{bates_granger1969,timmermann2006}.
+
+\paragraph{Oracle combination and complementarity.}
+An oracle selector that picks the best-performing method per crisis achieves
+median $d = 1.43$, a 49\% improvement over the best single method (RF,
+median $d = 0.96$).  The complementarity score---defined as
+$1 - |\text{Oracle} - \text{best single}| / \text{Oracle}$---is $0.69$,
+indicating substantial non-overlapping information across methods.
+Six different methods serve as the oracle winner across the 12~crises
+(CUSUM~3, RF~5, Multi-Lag Fidelity~1, Isolation Forest~1, Rolling
+Vol Z~1, HMM~1), with no single method dominating.
+Multi-Lag Fidelity wins 5 of 12~crises head-to-head against RF
+(Table~\ref{tab:comparison}), confirming that the geometric signal
+provides value precisely where supervised methods are weakest.
+These oracle results---together with the bootstrap rank CIs
+(Table~\ref{tab:bootstrap_ranks}), which show nearly all methods
+within a single critical difference clique
+(Figure~\ref{fig:cd_diagram})---support the interpretation that
+geometric observables are best viewed as a \emph{complementary detection
+channel} rather than a standalone replacement for established methods.
 
 \subsection{Computational Cost}
 
