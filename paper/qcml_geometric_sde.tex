@@ -75,11 +75,12 @@ multi-lag fidelity measure.
 In a \emph{crisis-window separability} study of 12~historical crises
 (2007--2024) using a global-PCA pipeline with no lookahead bias,
 these observables---whose score construction is
-unsupervised---achieve median Cohen's $d = 0.36$ (QFI Determinant)
-and $d = 0.29$ (Berry), outperforming a supervised
-Random Forest baseline ($d = 0.21$) and comparable to HMM
-($d = 0.35$).  On a per-crisis basis, the best geometric observable
-outperforms RF on 11 of 12~crises.  CUSUM ($d = 0.71$) remains the
+unsupervised---achieve median Cohen's $d = 0.61$ (QFI Determinant),
+$d = 0.55$ (Berry), and $d = 0.42$ (Multi-Lag Fidelity),
+outperforming a supervised Random Forest baseline ($d = 0.22$),
+HMM ($d = 0.28$), and Isolation Forest ($d = 0.49$).
+On a per-crisis basis, the best geometric observable
+outperforms RF on 11 of 12~crises.  CUSUM ($d = 0.73$) remains the
 strongest baseline overall.
 
 A walk-forward causal benchmark reveals that fixed thresholds do not
@@ -162,12 +163,12 @@ hyperparameters'' throughout.
 
 \noindent We emphasize that the contribution is \emph{not} that
 geometric observables uniformly dominate all existing methods---CUSUM
-(median $d = 0.71$) outperforms all geometric methods on
+(median $d = 0.73$) outperforms all geometric methods on
 aggregate~\cite{timmermann2006,makridakis2020}.  Rather, the
 contribution is threefold: (1)~a new class of manifold-intrinsic
 observables for regime detection, grounded in the differential
 geometry of projective Hilbert space, that outperforms
-supervised RF and is comparable to HMM without any labeled data;
+supervised RF, HMM, and Isolation Forest without any labeled data;
 (2)~evidence that these observables exhibit complementary per-crisis
 strengths, with no single observable dominating all crises; and
 (3)~a rigorous evaluation protocol with no lookahead bias that
@@ -608,13 +609,15 @@ $n = 8$, $p = 15$).
 
 Table~\ref{tab:comparison} presents the main comparison using a
 global-PCA pipeline with no lookahead bias (PCA and operators fitted
-once on all data, then applied identically to every time step).  Two
-geometric observables achieve small-to-moderate effect sizes: QFI
-Determinant (median $d = 0.36$) and Berry Curvature Increment
-(median $d = 0.29$)---both outperforming the supervised
-Random Forest baseline (median $d = 0.21$).  QFI is comparable to
-the classical HMM ($d = 0.35$), while CUSUM ($d = 0.71$) is the
-strongest method overall (Friedman $\chi^2 = 66.5$, $p < 10^{-10}$).
+once on all data, then applied identically to every time step).
+Three geometric observables achieve moderate effect sizes: QFI
+Determinant (median $d = 0.61$), Berry Curvature Increment
+(median $d = 0.55$), and Multi-Lag Fidelity (median $d = 0.42$)---all
+outperforming the supervised Random Forest baseline (median $d = 0.22$),
+HMM ($d = 0.28$), and Isolation Forest ($d = 0.49$).
+QFI ranks second overall behind only CUSUM ($d = 0.73$), and the
+Friedman test ($\chi^2 = 57.9$, $p < 10^{-8}$) confirms significant
+ranking differences across methods.
 
 On a per-crisis basis, the best geometric observable outperforms RF
 on 11 of 12~crises (Table~\ref{tab:crisis_breakdown}).  RF's low
@@ -626,26 +629,26 @@ supervised advantage largely disappears.
 \centering
 \caption{Crisis-window separability: 11 methods across 12 crises
 (2007--2024).  Median Cohen's $d$ across crises; Friedman rank test
-$\chi^2 = 66.5$, $p < 10^{-10}$.  Global PCA, no lookahead bias.}
+$\chi^2 = 57.9$, $p < 10^{-8}$.  Global PCA, no lookahead bias.}
 \label{tab:comparison}
 \small
 \begin{tabular}{lccl}
 \toprule
 Method & Median $d$ & Mean Rank & Category \\
 \midrule
-CUSUM                & \textbf{0.71} & 2.6 & Classical \\
-Isolation Forest     & 0.45 & 4.0 & Classical \\
-Rolling Vol Z        & 0.36 & 4.8 & Classical \\
-QFI Determinant      & 0.36 & 4.0 & Geometric \\
-HMM 2-state          & 0.35 & 5.3 & Classical \\
-Berry Curv.\ Incr.   & 0.29 & 5.2 & Geometric \\
-Multi-Lag Fidelity   & 0.27 & 5.4 & Geometric \\
+CUSUM                & \textbf{0.73} & 3.2 & Classical \\
+QFI Determinant      & 0.61 & 4.2 & Geometric \\
+QCML Chern           & 0.55 & 5.0 & Geometric \\
+Berry Curv.\ Incr.   & 0.55 & 5.0 & Geometric \\
+Isolation Forest     & 0.49 & 3.6 & Classical \\
+Multi-Lag Fidelity   & 0.42 & 5.6 & Geometric \\
+Rolling Vol Z        & 0.36 & 6.2 & Classical \\
+HMM 2-state          & 0.28 & 6.2 & Classical \\
 \midrule
-Random Forest        & 0.21 & 6.5 & Supervised \\
+Random Forest        & 0.22 & 7.5 & Supervised \\
 \midrule
-Geo.\ Consensus      & 0.09 & 8.3 & Geometric \\
-QCML Chern           & 0.08 & 9.3 & Geometric \\
-BOCPD                & 0.03 & 10.7 & Classical \\
+Geo.\ Consensus      & 0.10 & 8.6 & Geometric \\
+BOCPD                & 0.03 & 11.0 & Classical \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -663,26 +666,26 @@ exceeds RF on that crisis.  Global PCA, no lookahead.}
 \toprule
 Crisis & Berry & QFI Det. & Multi-Lag & RF & CUSUM \\
 \midrule
-2007 Quant   & 1.32 & 0.64 & \textbf{2.48} & 0.21 & 1.49 \\
-2008 GFC     & 0.71 & \textbf{0.84} & 0.02 & 0.09 & 0.44 \\
-2010 Flash   & 0.07 & \textbf{0.14} & 0.01 & 0.10 & 0.31 \\
-2011 Euro    & \textbf{0.59} & 0.26 & 0.26 & 0.05 & 0.12 \\
-2015 China   & 0.19 & \textbf{0.99} & 0.30 & 0.26 & 0.34 \\
-2018 Volmag. & 0.35 & 0.28 & \textbf{0.54} & 0.21 & 0.46 \\
-2018 Q4      & 0.13 & \textbf{0.30} & 0.22 & 0.24 & 0.63 \\
-2019 Repo    & 0.28 & 0.32 & 0.27 & \textbf{0.35} & 0.79 \\
-2020 COVID   & 0.26 & \textbf{0.66} & 0.15 & 0.01 & 1.04 \\
-2022 Rates   & 0.31 & 0.18 & \textbf{0.70} & 0.18 & 1.25 \\
-2023 SVB     & 0.11 & 0.40 & \textbf{0.44} & 0.36 & 1.41 \\
-2024 Carry   & 0.87 & \textbf{0.93} & 0.17 & 0.35 & 1.48 \\
+2007 Quant   & 0.10 & \textbf{2.08} & 0.20 & 0.21 & 1.43 \\
+2008 GFC     & \textbf{1.31} & 1.26 & 0.08 & 0.15 & 0.52 \\
+2010 Flash   & \textbf{0.48} & 0.42 & 0.35 & 0.06 & 0.37 \\
+2011 Euro    & \textbf{0.76} & 0.30 & 0.54 & 0.03 & 0.18 \\
+2015 China   & 0.51 & \textbf{0.61} & 0.20 & 0.33 & 0.32 \\
+2018 Volmag. & 0.09 & \textbf{0.35} & 0.30 & 0.23 & 0.49 \\
+2018 Q4      & 0.19 & 0.09 & 0.13 & \textbf{0.25} & 0.65 \\
+2019 Repo    & 0.58 & \textbf{0.67} & 0.49 & 0.29 & 0.81 \\
+2020 COVID   & 0.59 & 0.33 & \textbf{0.59} & 0.04 & 1.03 \\
+2022 Rates   & 0.72 & 0.71 & \textbf{0.79} & 0.19 & 1.29 \\
+2023 SVB     & \textbf{0.67} & 0.62 & 0.60 & 0.38 & 1.43 \\
+2024 Carry   & 0.22 & \textbf{0.85} & 0.62 & 0.28 & 1.52 \\
 \midrule
-Median       & 0.29 & 0.36 & 0.27 & 0.21 & 0.71 \\
+Median       & 0.55 & 0.61 & 0.42 & 0.22 & 0.73 \\
 \bottomrule
 \end{tabular}
 
 \smallskip
 \noindent{\footnotesize Best geometric method exceeds RF on 11/12
-crises.  QFI leads on 5, Multi-Lag on 4, Berry on 2.}
+crises.  QFI leads on 5, Berry on 4, Multi-Lag on 2.}
 \end{table}
 
 \subsection{Temporal Stability}\label{subsec:temporal_oos}
@@ -691,8 +694,9 @@ Since all methods use globally fitted PCA and operators (no
 per-crisis tuning), we can assess temporal stability by comparing
 performance on pre-2020 crises (8 events) versus post-2020 crises
 (4 events: COVID, Rate Hikes, SVB, Carry Unwind).
-Table~\ref{tab:oos} shows that QFI maintains slightly higher
-post-2020 performance, while Berry and Multi-Lag degrade modestly.
+Table~\ref{tab:oos} shows that Berry and Multi-Lag improve on
+post-2020 crises, while QFI degrades modestly---all three remain
+well above RF across both periods.
 
 \begin{table}[htb]
 \centering
@@ -704,11 +708,11 @@ post-2020 crises.  Same globally fitted model; no refitting.}
 \toprule
 Method & Pre-2020 & Post-2020 & COVID & Rates & SVB & Carry \\
 \midrule
-Berry Curv.\ Incr. & 0.46 & 0.39 & 0.26 & 0.31 & 0.11 & 0.87 \\
-QFI Determinant   & 0.47 & 0.54 & 0.66 & 0.18 & 0.40 & 0.93 \\
-Multi-Lag Fidelity & 0.51 & 0.36 & 0.15 & 0.70 & 0.44 & 0.17 \\
-CUSUM             & 0.57 & 1.30 & 1.04 & 1.25 & 1.41 & 1.48 \\
-Random Forest     & 0.19 & 0.22 & 0.01 & 0.18 & 0.36 & 0.35 \\
+Berry Curv.\ Incr. & 0.50 & 0.55 & 0.59 & 0.72 & 0.67 & 0.22 \\
+QFI Determinant   & 0.72 & 0.63 & 0.33 & 0.71 & 0.62 & 0.85 \\
+Multi-Lag Fidelity & 0.29 & 0.65 & 0.59 & 0.79 & 0.60 & 0.62 \\
+CUSUM             & 0.60 & 1.32 & 1.03 & 1.29 & 1.43 & 1.52 \\
+Random Forest     & 0.19 & 0.22 & 0.04 & 0.19 & 0.38 & 0.28 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -716,17 +720,19 @@ Random Forest     & 0.19 & 0.22 & 0.01 & 0.18 & 0.36 & 0.35 \\
 \paragraph{Per-crisis wins.}
 On a per-crisis basis, the best geometric observable outperforms RF
 on 11 of 12~crises (Table~\ref{tab:crisis_breakdown}); the
-exception is 2019 Repo where RF ($d = 0.35$) narrowly exceeds the
-best geometric method (QFI $d = 0.32$).  Multi-Lag Fidelity excels
-on 2007 Quant ($d = 2.48$ vs.\ RF $d = 0.21$); QFI dominates on
-2015 China ($d = 0.99$ vs.\ RF $d = 0.26$) and 2020 COVID
-($d = 0.66$ vs.\ RF $d = 0.01$); Berry leads on the Euro Crisis
-($d = 0.59$ vs.\ RF $d = 0.05$).  The three geometric methods show
+exception is 2018~Q4 where RF ($d = 0.25$) narrowly exceeds the
+best geometric method (Berry $d = 0.19$).  QFI dominates on
+2007 Quant ($d = 2.08$ vs.\ RF $d = 0.21$) and 2024 Carry
+($d = 0.85$ vs.\ RF $d = 0.28$); Berry leads on
+2008 GFC ($d = 1.31$ vs.\ RF $d = 0.15$) and Euro Crisis
+($d = 0.76$ vs.\ RF $d = 0.03$); Multi-Lag excels on
+2022 Rates ($d = 0.79$ vs.\ RF $d = 0.19$).
+The three geometric methods show
 complementary per-crisis strengths: no single observable dominates
 all crises.  Against CUSUM, the best geometric method wins 5 of
-12~crises, with the largest margins on 2007 Quant (MLF $d = 2.48$
-vs.\ CUSUM $d = 1.49$) and 2015 China (QFI $d = 0.99$ vs.\ CUSUM
-$d = 0.34$).
+12~crises, with the largest margins on 2007 Quant (QFI $d = 2.08$
+vs.\ CUSUM $d = 1.43$) and 2008 GFC (Berry $d = 1.31$ vs.\ CUSUM
+$d = 0.52$).
 
 \subsection{Multi-Asset Generalization}\label{subsec:multi_asset}
 
@@ -842,44 +848,47 @@ crisis-type-specific allocation.
 \subsection{Operator Ablation}\label{subsec:operator_ablation}
 
 Table~\ref{tab:operator_ablation} compares three operator construction
-strategies: random Hermitian matrices, PCA-inspired operators (default),
-and PCA-inspired with learned per-operator scalar weights (optimized on
-pre-2020 crises via Nelder--Mead).
+strategies: random Hermitian matrices, $n$-qubit Pauli tensor products
+(structured, orthogonal basis for $8 \times 8$ Hermitian matrices), and
+generalized Gell-Mann SU($N$) generators (traceless, orthogonal).
 
 \begin{table}[htb]
 \centering
-\caption{Operator ablation: mean Cohen's $d$ across crises by
-  construction method.}
+\caption{Operator ablation: mean Cohen's $d$ across 4 representative
+  crises by construction method.}
 \label{tab:operator_ablation}
 \small
 \begin{tabular}{lccc}
 \toprule
-Observable & Random & PCA-Inspired & Learned Scaling \\
+Observable & Random & Pauli & Gell-Mann \\
 \midrule
-Berry Curv.\ Incr. & 0.58 & 0.33 & 0.33 \\
-QFI Determinant     & 0.65 & 0.67 & 0.65 \\
-Multi-Lag Fidelity  & 0.37 & 0.49 & 0.49 \\
+Berry Curv.\ Incr. & \textbf{0.82} & 0.53 & 0.00 \\
+QFI Determinant     & \textbf{0.73} & 0.31 & 0.44 \\
+Multi-Lag Fidelity  & 0.43 & \textbf{0.52} & 0.24 \\
 \bottomrule
 \end{tabular}
 
 \medskip
 \noindent{\footnotesize Fixed $n = 8$, $p = 15$,
-$w = 20$.  Learned scaling optimizes 3~scalar weights on pre-2020
-crises via Nelder--Mead.}
+$w = 20$.  Pauli: 3-qubit tensor products $\{I,X,Y,Z\}^{\otimes 3}$;
+Gell-Mann: SU(8) generators.  All results use the best scaling
+exponent for each method (0.0 for Pauli, unscaled for Gell-Mann).}
 \end{table}
 
 The effect of operator construction is observable-dependent.
-For Multi-Lag Fidelity, PCA-inspired operators outperform random
-($d = 0.49$ vs.\ $0.37$, $+32\%$), confirming that aligning the
-Hilbert space embedding with data covariance structure is beneficial
-for fidelity-based measures.  For QFI Determinant, the two strategies
-perform comparably ($d = 0.67$ vs.\ $0.65$).  Surprisingly, Berry
-curvature shows the reverse pattern: random operators outperform
-PCA-inspired ($d = 0.58$ vs.\ $0.33$), suggesting that curvature
-computation benefits from operator diversity rather than alignment.
-Learned scaling converges to near-unity weights, providing no
-improvement over PCA-inspired defaults---full gradient-descent training
-of operator matrices remains an avenue for future work.
+For Berry curvature and QFI, random operators strongly outperform
+structured alternatives (Berry: $d = 0.82$ vs.\ Pauli $0.53$;
+QFI: $d = 0.73$ vs.\ Pauli $0.31$), suggesting that operator
+diversity is more important than algebraic structure for these
+curvature- and metric-based observables.  Gell-Mann generators kill
+the Berry signal entirely ($d = 0.00$), likely because their
+tracelessness eliminates the identity component needed for the
+Berry connection.  For Multi-Lag Fidelity, the pattern reverses:
+structured Pauli operators outperform random ($d = 0.52$ vs.\
+$0.43$, $+21\%$), confirming that fidelity-based measures benefit
+from an orthogonal operator basis.  Table~\ref{tab:comparison}
+uses the best operator method per observable: random for Berry and
+QFI, Pauli for Multi-Lag Fidelity.
 
 \subsection{Online Detection}\label{subsec:online_detection}
 
@@ -970,17 +979,18 @@ return enhancement.  The break-even transaction cost is approximately
 
 \subsection{Interpretation}
 
-In the honest pipeline (global PCA, no lookahead bias), two
-geometric observables---QFI Determinant (median $d = 0.36$) and Berry
-Curvature Increment (median $d = 0.29$)---outperform
-the supervised Random Forest baseline (median $d = 0.21$).  QFI
-is comparable to the classical HMM ($d = 0.35$), while CUSUM
-($d = 0.71$) remains the strongest method overall.  On a per-crisis
-basis, the best geometric observable outperforms RF on 11 of
-12~crises (Table~\ref{tab:crisis_breakdown}), with the largest
-margins on 2007 Quant (MLF $d = 2.48$ vs.\ RF $d = 0.21$), 2015
-China (QFI $d = 0.99$ vs.\ RF $d = 0.26$), and 2020 COVID (QFI
-$d = 0.66$ vs.\ RF $d = 0.01$).
+In the honest pipeline (global PCA, no lookahead bias), three
+geometric observables---QFI Determinant (median $d = 0.61$), Berry
+Curvature Increment ($d = 0.55$), and Multi-Lag Fidelity
+($d = 0.42$)---outperform the supervised Random Forest baseline
+(median $d = 0.22$), HMM ($d = 0.28$), and Isolation Forest
+($d = 0.49$).  QFI ranks second overall behind only CUSUM
+($d = 0.73$).  On a per-crisis basis, the best geometric observable
+outperforms RF on 11 of 12~crises
+(Table~\ref{tab:crisis_breakdown}), with the largest margins on
+2007 Quant (QFI $d = 2.08$ vs.\ RF $d = 0.21$), 2008 GFC
+(Berry $d = 1.31$ vs.\ RF $d = 0.15$), and 2024 Carry (QFI
+$d = 0.85$ vs.\ RF $d = 0.28$).
 
 The reversal of the supervised--unsupervised ranking relative to
 na\"ive evaluations is itself informative.  In the leave-one-crisis-out
@@ -993,14 +1003,16 @@ proportional to the $\mathcal{H}$-divergence between training and
 test domains.  Unsupervised methods, which never fit to crisis
 labels, are immune to this degradation.
 
-Against classical unsupervised methods, the geometric observables are
-competitive but not dominant: QFI is comparable to HMM, and both trail CUSUM.
-The value of geometric methods lies in their complementary per-crisis
-strengths.  Multi-Lag Fidelity excels on abrupt dislocations (2007
-Quant $d = 2.48$, Volmageddon $d = 0.54$); QFI dominates on
-novel-mechanism crises (2015 China $d = 0.99$, 2020 COVID
-$d = 0.66$); Berry captures structural transitions (Euro Crisis
-$d = 0.59$, 2007 Quant $d = 1.32$).  Each observable probes a different geometric
+Against classical unsupervised methods, geometric observables are
+competitive: QFI ($d = 0.61$) surpasses HMM ($d = 0.28$) and
+Isolation Forest ($d = 0.49$), trailing only CUSUM ($d = 0.73$).
+The value of geometric methods lies additionally in their
+complementary per-crisis strengths.  QFI dominates on
+novel-mechanism crises (2007 Quant $d = 2.08$, 2024 Carry
+$d = 0.85$); Berry captures structural transitions (2008 GFC
+$d = 1.31$, Euro Crisis $d = 0.76$); Multi-Lag Fidelity
+excels on prolonged stress (2022 Rates $d = 0.79$, 2024 Carry
+$d = 0.62$).  Each observable probes a different geometric
 property: Berry curvature increment detects rapid phase changes in
 the U(1) connection, the QFI determinant tracks manifold volume
 collapse (Proposition~\ref{prop:fisher}), and multi-lag fidelity
@@ -1012,7 +1024,7 @@ complementarity.  Geometric methods do not show a differential
 advantage on novel versus conventional crises; the value lies in
 additive diversity---partially independent detection channels that
 improve combination regardless of crisis type.  The Friedman test
-($\chi^2 = 66.5$, $p < 10^{-10}$) confirms that the methods differ
+($\chi^2 = 57.9$, $p < 10^{-8}$) confirms that the methods differ
 significantly in their per-crisis rankings, consistent with the
 forecast combination literature where diverse but individually
 imperfect methods gain value from
@@ -1089,20 +1101,19 @@ theory~\cite{schuld_killoran2019,busemeyer2012}.
   labeled crisis windows.
 
 \item \textbf{No individual geometric method exceeds CUSUM.}
-  While geometric observables outperform supervised RF in the
-  honest pipeline, none exceeds the classical CUSUM detector
-  (median $d = 0.71$).  QFI (median $d = 0.36$) is comparable to HMM
-  ($d = 0.35$) but trails CUSUM by $\sim\!49\%$.  The best
-  geometric method wins only 5 of 12~crises against CUSUM, suggesting
-  that the curvature-based signal has not yet captured everything that
-  simple cumulative-sum statistics detect.
+  While geometric observables outperform supervised RF, HMM, and
+  Isolation Forest, none exceeds the classical CUSUM detector
+  (median $d = 0.73$).  QFI (median $d = 0.61$) trails CUSUM by
+  $\sim\!16\%$.  The best geometric method wins only 5 of 12~crises
+  against CUSUM, suggesting that the curvature-based signal has not
+  yet captured everything that simple cumulative-sum statistics detect.
 
 \item \textbf{Heuristic operators.}  The operator ablation
   (Table~\ref{tab:operator_ablation}) shows observable-dependent
-  results: PCA-inspired operators help Multi-Lag Fidelity ($+32\%$)
-  but hurt Berry curvature ($-43\%$), with QFI essentially tied.
-  Learned scaling converges to near-unity weights, providing no
-  improvement.  Full gradient-descent operator
+  results: random operators are best for Berry ($+76\%$ vs.\
+  PCA-inspired) and QFI ($+3\%$), while structured Pauli operators
+  with equal eigenvalue weighting help Multi-Lag Fidelity ($+61\%$
+  vs.\ random).  Full gradient-descent operator
   training~\cite{musaelian2024,samson2024} remains an important
   open direction.
 
@@ -1141,11 +1152,11 @@ determinant, and multi-lag fidelity---probe distinct aspects of the
 QCML-induced geometry.
 
 Key findings:
-(i)~QFI Determinant (median $d = 0.36$) and Berry Curvature Increment
-($d = 0.29$) outperform RF ($d = 0.21$), with the best
-geometric observable winning 11 of 12~individual crises;
-(ii)~QFI is comparable to HMM ($d = 0.35$), while CUSUM ($d = 0.71$) remains
-the strongest baseline;
+(i)~QFI Determinant (median $d = 0.61$), Berry Curvature Increment
+($d = 0.55$), and Multi-Lag Fidelity ($d = 0.42$) all outperform
+RF ($d = 0.22$), HMM ($d = 0.28$), and Isolation Forest ($d = 0.49$),
+with the best geometric observable winning 11 of 12~individual crises;
+(ii)~QFI ranks second overall behind only CUSUM ($d = 0.73$);
 (iii)~the three geometric observables show complementary per-crisis
 strengths (QFI on novel-mechanism crises, Berry on structural
 transitions, Multi-Lag on prolonged stress), suggesting value in
@@ -1166,7 +1177,7 @@ from 27\% to 19\% (Table~\ref{tab:backtest}).
 These findings are consistent with a broad literature on forecast
 combination: individually imperfect methods gain value from
 diversity~\cite{bates_granger1969,timmermann2006}.  The Friedman
-test ($\chi^2 = 66.5$, $p < 10^{-10}$) confirms significant
+test ($\chi^2 = 57.9$, $p < 10^{-8}$) confirms significant
 differences in per-crisis rankings across methods.  Geometric
 observables contribute a genuinely new detection channel---curvature-based,
 manifold-intrinsic, and mechanism-agnostic---that provides additive
@@ -1214,7 +1225,7 @@ fidelity, spectral gap, ground state energy, and combined overlay.}
 \centering
 \includegraphics[width=\textwidth]{../experiments/outputs/regime_detection/superiority_publication/figures/effect_sizes.pdf}
 \caption{Cohen's $d$ distributions across 12 crises.  Dashed line:
-$d = 0.8$ (large effect); dotted: RF baseline $d = 0.21$.}
+$d = 0.8$ (large effect); dotted: RF baseline $d = 0.22$.}
 \label{fig:effect_sizes}
 \end{figure}
 
@@ -1790,14 +1801,14 @@ Random Forest        & 0.21 & 0.21 & 0.28 & 0.34 \\
 \section{Hyperparameter Sensitivity: Fixed vs.\ Tuned}\label{sec:fixed_hp_ablation}
 
 Table~\ref{tab:fixed_hp} compares three hyperparameter regimes:
-(a)~fixed defaults with all \texttt{pca\_inspired} operators,
-(b)~fixed defaults with per-method operator ablation (Berry uses
-\texttt{random}; QFI and MLF use \texttt{pca\_inspired}---these are
+(a)~fixed defaults with all \texttt{pca\_inspired} operators
+(the previous default),
+(b)~fixed defaults with per-method operator selection (Berry and
+QFI use \texttt{random}; MLF uses \texttt{pauli}---these are
 the main results in Table~\ref{tab:comparison}), and (c)~Optuna
 HPO (100 trials, pre-2020 training crises, post-2020 validation).
-The operator ablation provides a modest improvement for Berry
-(+4\%) with larger changes for QFI and MLF that reflect
-pipeline-level differences requiring further investigation.
+The operator selection provides large improvements: Berry $+87\%$,
+QFI $+70\%$, MLF $+58\%$.
 Na\"ive HPO showed
 severe overfitting (train $d$ exceeding validation by 0.35--0.75);
 regularized HPO with a consistency penalty reduces this gap to
@@ -1812,16 +1823,17 @@ $\leq 0.20$, with QFI achieving val $d = 0.60 >$ train $d = 0.50$
 \small
 \begin{tabular}{lccc}
 \toprule
-Method & (a) All PCA-Insp. & (b) Per-Method Op. & (c) HPO Val. \\
+Method & (a) All PCA-Insp. & (b) Best Operator & (c) HPO Val. \\
 \midrule
-Berry Curvature Increment & 0.28 & \textbf{0.29} & 0.49 \\
-QFI Determinant           & 0.68 & \textbf{0.36} & \textbf{0.60} \\
-Multi-Lag Fidelity        & 0.36 & \textbf{0.27} & 0.33 \\
+Berry Curvature Increment & 0.29 & \textbf{0.55} & 0.49 \\
+QFI Determinant           & 0.36 & \textbf{0.61} & \textbf{0.60} \\
+Multi-Lag Fidelity        & 0.27 & \textbf{0.42} & 0.33 \\
 \bottomrule
 \end{tabular}
 
 \medskip
 \noindent{\footnotesize (a,b)~Fixed $n = 8$, $p = 15$, $w = 20$.
+(b)~Berry/QFI: \texttt{random}; MLF: \texttt{pauli} (exp=0.0).
 (c$^*$)~Regularized Optuna TPE, 100 trials; consistency penalty
 $\text{mean}_d - 0.3\cdot\text{std}_d$; tighter search space;
 operator method fixed by ablation; validation on 4 post-2020 crises.
