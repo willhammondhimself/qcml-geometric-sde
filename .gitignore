@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+
+# LaTeX build artifacts
+*.aux
+*.log
+*.out
+*.blg
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+*.toc
+
+# OS files
+.DS_Store
+**/.DS_Store
+Thumbs.db
+
+# Data caches
+demo/data/*.npz
+data/wrds_cache/
+*.pkl
+
+# Environment
+.env
+
+# Experiment outputs (keep authoritative results)
+experiments/outputs/regime_detection/*.json
+!experiments/outputs/regime_detection/causal_comparison_20260222_225143.json
+!experiments/outputs/regime_detection/AUTHORITATIVE_RESULTS.md
+
+# IDE
+.vscode/
+.idea/
+*.swp
