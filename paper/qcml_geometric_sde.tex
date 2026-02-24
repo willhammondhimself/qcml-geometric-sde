@@ -42,6 +42,7 @@
 \newcommand{\calM}{\mathcal{M}}
 \newcommand{\calF}{\mathcal{F}}       % Fidelity (distinct from F_{ab})
 \DeclareMathOperator*{\argmin}{arg\,min}
+\newcommand{\doi}[1]{\href{https://doi.org/#1}{\texttt{doi:#1}}}
 
 % =============================================================================
 \title{Geometric Observables for Financial Regime Detection:\\
@@ -53,7 +54,7 @@ A Spectral Metric Learning Approach}
   \texttt{whammond@pitzer.edu}
 }
 
-\date{\today}
+\date{February 2026}
 
 % =============================================================================
 \begin{document}
@@ -124,7 +125,9 @@ effective in specific settings, these methods operate in flat Euclidean
 feature spaces.
 
 Quantum Cognition Machine Learning
-(QCML)~\cite{musaelian2024,candelori2025} encodes data points as unit
+(QCML)~\cite{candelori2025}---introduced in industry white
+papers~\cite{musaelian2024,samson2024} and subsequently validated in
+peer-reviewed work~\cite{candelori2025}---encodes data points as unit
 vectors in a finite-dimensional Hilbert space and represents features
 as Hermitian operators.  The map $x \mapsto \ket{\psi(x)}$ from
 feature space to projective Hilbert space $\CP^{n-1}$ endows the data
@@ -181,6 +184,12 @@ hyperparameters'' throughout.
   FAR), and expanding-window walk-forward validation---providing a
   multi-dimensional assessment rather than reliance on a single
   summary statistic.
+
+\item To our knowledge, this is the first independent academic
+  evaluation of QCML geometry for financial regime detection; prior
+  QCML publications are either from the framework's
+  developers~\cite{candelori2025,abanov2025} or industry white
+  papers~\cite{musaelian2024,samson2024}.
 \end{enumerate}
 
 \noindent We emphasize an honest framing of these results.  RF retains
@@ -192,9 +201,9 @@ more completely (7/7 vs.\ 6/7 crises).  However, aggregate effect size
 and speed are only two dimensions of evaluation.  Geometric methods are
 statistically indistinguishable from RF in the Model Confidence Set,
 produce fewer false alarms (2.5 vs.\ 3.6/yr) without requiring labels,
-and win 6 of 12~crises head-to-head---precisely those where supervised
-training data is sparse or absent (e.g., 2023 SVB: MLF $d = 0.94$ vs.\
-RF $d = 0.12$).  The practical contribution is a new class of
+and the best geometric observable wins 6 of 12~crises head-to-head---precisely
+those where supervised training data is sparse or absent (e.g., 2023 SVB:
+MLF $d = 0.94$ vs.\ RF $d = 0.11$).  The practical contribution is a new class of
 manifold-intrinsic, label-free detection channels that complement
 rather than replace supervised
 methods~\cite{timmermann2006,bates_granger1969}.
@@ -251,6 +260,21 @@ but lack geometric interpretability.  Bronstein et
 al.~\cite{bronstein2021} systematize gauge-equivariant neural
 architectures but impose geometric priors rather than discovering
 geometry from data.
+
+\paragraph{Relationship to the QCML literature.}
+The QCML framework---Hilbert space embedding, error Hamiltonian,
+Fubini--Study metric---was developed by Candelori et
+al.~\cite{candelori2025} and Abanov et al.~\cite{abanov2025}; the
+financial forecasting application was proposed in industry white
+papers~\cite{musaelian2024,samson2024} (not peer-reviewed).  Our
+contribution is not the framework itself but three specific
+applications: (i)~extracting Berry curvature increment, QFI
+determinant, and multi-lag fidelity as standalone regime-detection
+observables; (ii)~the first head-to-head comparison against
+established baselines (RF, HMM, CUSUM, BOCPD) with proper statistical
+testing (MCS, Bayesian pairwise tests, bootstrap rank CIs); and
+(iii)~a comprehensive robustness framework including walk-forward
+validation and multi-asset generalization.
 
 Table~\ref{tab:geometry_compare} summarizes these distinctions.
 Our approach is unique in providing simultaneously a Riemannian metric,
@@ -529,12 +553,12 @@ their standard defaults.  RF uses leave-one-crisis-out labels.
 (bold); ablation explores alternatives.  Enriched features (4$d$
 rolling stats) for all methods.}
 \label{tab:protocol}
-\small
-\begin{tabular}{lcll}
+\scriptsize
+\begin{tabular}{@{}lcp{0.48\textwidth}l@{}}
 \toprule
 Method & \# Params & Search Space & Training Data \\
 \midrule
-\multicolumn{4}{l}{\emph{Geometric (unsupervised score construction)}} \\
+\multicolumn{4}{@{}l}{\emph{Geometric (unsupervised score construction)}} \\
 Berry Curv.\ Incr. & 4 & $n \in \{4,8,16\}$, $p \in \{10,15,20\}$,
   op $\in$ \{rnd, pca\}, $w \in \{10,20,30\}$ & Full (or expanding) \\
 QFI Determinant    & 4 & same as Berry & Full (or expanding) \\
@@ -543,7 +567,7 @@ QCML Chern         & 3 & $n \in \{4,8\}$, $p \in \{5,10,15\}$,
   window $\in \{10,20\}$ & Full \\
 Geo.\ Consensus    & 3 & same as Chern & Full \\
 \midrule
-\multicolumn{4}{l}{\emph{Classical (unsupervised)}} \\
+\multicolumn{4}{@{}l}{\emph{Classical (unsupervised)}} \\
 Rolling Vol Z      & 2 & vol\_window $\in \{10,20,30\}$,
   min\_expanding $\in \{30,60\}$ & None (online) \\
 CUSUM              & 2 & $k \in [0.3, 1.0]$, burn\_in $\in \{30,60,90\}$ & Burn-in period \\
@@ -552,7 +576,7 @@ BOCPD              & 1 & hazard $\in [50, 500]$ & None (online) \\
 Isolation Forest   & 2 & n\_est $\in [50, 300]$,
   contam $\in [0.01, 0.15]$ & Full \\
 \midrule
-\multicolumn{4}{l}{\emph{Supervised}} \\
+\multicolumn{4}{@{}l}{\emph{Supervised}} \\
 Random Forest      & 2 & n\_est $\in [50, 300]$,
   depth $\in [5, 20]$ & LOCO labels \\
 \bottomrule
@@ -576,7 +600,7 @@ on pre-crisis data.  RF uses leave-one-crisis-out labels restricted to
 the causal window.  This eliminates lookahead in preprocessing.
 
 \paragraph{Statistical evaluation.}
-Each method--crisis pair: Cohen's $d$ with bootstrap 95\% CI
+Each method--crisis pair: Cohen's~$d$ with bootstrap 95\% CI
 ($n = 10{,}000$), Welch's $t$-test (Holm--Bonferroni corrected),
 permutation test ($n = 5{,}000$).  Multi-method: Friedman rank test.
 
@@ -648,9 +672,10 @@ CUSUM ($d = 0.73$, rank~$4.4$) achieves the best mean rank among all
 methods.  The Friedman test ($\chi^2 = 64.2$, $p < 10^{-8}$)
 confirms significant ranking differences across methods.
 
-On a per-crisis basis, the best geometric observable outperforms RF
-on 6 of 12~crises (Table~\ref{tab:crisis_breakdown})---precisely
-those where RF training labels are sparse or absent.  RF's bimodal
+On a per-crisis basis, the best geometric observable (including
+QCML Chern) outperforms RF on 6 of 12~crises
+(Table~\ref{tab:crisis_breakdown})---precisely those where RF
+training labels are sparse or absent.  RF's bimodal
 performance (7 crises with $d > 0.69$, 3 with $d < 0.13$)
 reflects the leave-one-crisis-out protocol: when a novel crisis type
 has no historical precedent in the training set, the supervised
@@ -691,7 +716,7 @@ top three geometric methods.
 
 \begin{table}[htb]
 \centering
-\caption{Per-crisis Cohen's $d$ (causal preprocessing).  Bold =
+\caption{Per-crisis Cohen's~$d$ (causal preprocessing).  Bold =
 best geometric method exceeds RF on that crisis.}
 \label{tab:crisis_breakdown}
 \small
@@ -709,7 +734,7 @@ Crisis & Berry & QFI Det. & Multi-Lag & RF & CUSUM \\
 2019 Repo    & 0.55 & 0.53 & \textbf{0.91} & 0.02 & 0.81 \\
 2020 COVID   & 0.81 & 1.21 & 0.08 & 1.91 & 1.03 \\
 2022 Rates   & 0.67 & \textbf{1.24} & 0.94 & 0.89 & 1.29 \\
-2023 SVB     & 0.42 & 0.54 & \textbf{0.94} & 0.12 & 1.43 \\
+2023 SVB     & 0.42 & 0.54 & \textbf{0.94} & 0.11 & 1.43 \\
 2024 Carry   & 0.35 & 0.07 & \textbf{0.49} & 0.34 & 1.52 \\
 \midrule
 Median       & 0.42 & 0.48 & 0.53 & 0.96 & 0.73 \\
@@ -736,7 +761,7 @@ novel crises diverge from the historical training labels.
 
 \begin{table}[htb]
 \centering
-\caption{Temporal stability: mean Cohen's $d$ on pre-2020 vs.\
+\caption{Temporal stability: mean Cohen's~$d$ on pre-2020 vs.\
 post-2020 crises.  Causal preprocessing per crisis.}
 \label{tab:oos}
 \small
@@ -748,7 +773,7 @@ Berry Curv.\ Incr. & 0.41 & 0.56 & 0.81 & 0.67 & 0.42 & 0.35 \\
 QFI Determinant   & 0.46 & 0.76 & 1.21 & 1.24 & 0.54 & 0.07 \\
 Multi-Lag Fidelity & 0.52 & 0.61 & 0.08 & 0.94 & 0.94 & 0.49 \\
 CUSUM             & 0.60 & 1.32 & 1.03 & 1.29 & 1.43 & 1.52 \\
-Random Forest     & 0.92 & 0.81 & 1.91 & 0.89 & 0.12 & 0.33 \\
+Random Forest     & 0.92 & 0.81 & 1.91 & 0.89 & 0.11 & 0.33 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -764,7 +789,7 @@ crisis labels),
 2008~GFC (QCML Chern $d = 1.73$ vs.\ RF $d = 1.53$),
 2019~Repo (MLF $d = 0.91$ vs.\ RF $d = 0.02$),
 2022~Rates (QCML Chern $d = 1.50$ vs.\ RF $d = 0.89$),
-2023~SVB (MLF $d = 0.94$ vs.\ RF $d = 0.12$), and
+2023~SVB (MLF $d = 0.94$ vs.\ RF $d = 0.11$), and
 2024~Carry (MLF $d = 0.49$ vs.\ RF $d = 0.34$).
 RF's bimodal distribution ($d > 1.0$ on 6~crises, $d < 0.13$ on 3)
 reflects the fundamental constraint of supervised methods under
@@ -783,31 +808,30 @@ Volmageddon).
 
 \subsection{Multi-Asset Generalization}\label{subsec:multi_asset}
 
-\noindent\textit{Note: The following results use an earlier
-pipeline configuration with a slightly different causal protocol
-and will be re-validated in a revision.}
-
-\medskip
-We test on five ETFs (SPY, QQQ, IWM, EFA, DIA), each analyzed
-independently.  Table~\ref{tab:multi_asset} shows Multi-Lag Fidelity
-achieves mean $d = 1.44$ vs.\ RF $d = 0.88$ (Wilcoxon $p = 0.002$).
+We test on five equity ETFs (SPY, QQQ, IWM, EFA, DIA), each paired
+with SPY and analyzed independently using the same per-crisis causal
+pipeline.  Table~\ref{tab:multi_asset} shows RF leads overall
+($d = 1.90$), but Berry Curvature Increment ($d = 1.53$) generalizes
+well without requiring labels---particularly on QQQ ($d = 2.35$) where
+it outperforms RF ($d = 1.54$).
 
 \begin{table}[htb]
 \centering
-\caption{Mean Cohen's $d$ by asset across 4 representative crises.}
+\caption{Mean Cohen's~$d$ by asset across 4 representative crises
+  (2008 GFC, 2020 COVID, 2022 Rates, 2023 SVB).  Causal pipeline.}
 \label{tab:multi_asset}
 \small
 \begin{tabular}{lcccc}
 \toprule
 Asset & Berry & QFI Det. & Multi-Lag & RF \\
 \midrule
-SPY & 0.86 & 1.75 & 1.84 & 0.69 \\
-QQQ & 1.59 & 1.44 & 1.70 & 0.30 \\
-IWM & 1.30 & 1.01 & 1.05 & 1.01 \\
-EFA & 0.75 & 0.95 & 1.34 & 1.22 \\
-DIA & 1.53 & 0.63 & 1.33 & 1.03 \\
+SPY & 1.16 & 0.76 & 0.86 & \textbf{2.03} \\
+QQQ & \textbf{2.35} & 1.61 & 1.43 & 1.54 \\
+IWM & 1.49 & 0.95 & 0.57 & \textbf{1.98} \\
+EFA & 1.48 & 0.86 & 0.47 & \textbf{1.91} \\
+DIA & 1.16 & 0.76 & 0.86 & \textbf{2.03} \\
 \midrule
-Overall & 1.19 & 1.14 & \textbf{1.44} & 0.88 \\
+Overall & 1.53 & 0.99 & 0.84 & \textbf{1.90} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -891,7 +915,7 @@ fully causal: at each time $t$, they use only data up to $t - 1$.
 
 \subsection{Detection-Oriented Metrics}\label{subsec:detection_metrics}
 
-While Cohen's $d$ measures crisis-window separability (offline event study),
+While Cohen's~$d$ measures crisis-window separability (offline event study),
 practitioners need detection-relevant metrics: precision, recall, timeliness,
 and false alarm control.  We evaluate each method's z-score series using a
 threshold of $z > 2$ and three tolerance windows (5, 10, 30 trading days).
@@ -1080,7 +1104,7 @@ and CUSUM are within sampling variability.
 
 We classify crises \emph{a priori} as ``novel'' or ``conventional''
 (Table~\ref{tab:crises}) and methods as ``geometric'' or
-``classical.''  A two-way ANOVA on Cohen's $d$
+``classical.''  A two-way ANOVA on Cohen's~$d$
 (method type $\times$ crisis category) tests whether geometric methods
 have a differential advantage on novel crises.
 
@@ -1110,7 +1134,7 @@ generalized Gell-Mann SU($N$) generators (traceless, orthogonal).
 
 \begin{table}[htb]
 \centering
-\caption{Operator ablation: mean Cohen's $d$ across 4 representative
+\caption{Operator ablation: mean Cohen's~$d$ across 4 representative
   crises by construction method.}
 \label{tab:operator_ablation}
 \small
@@ -1143,18 +1167,14 @@ Berry connection.  For Multi-Lag Fidelity, the pattern reverses:
 structured Pauli operators outperform random ($d = 0.52$ vs.\
 $0.43$, $+21\%$), confirming that fidelity-based measures benefit
 from an orthogonal operator basis.  Table~\ref{tab:comparison}
-uses the best operator method per observable: random for Berry and
-QFI, Pauli for Multi-Lag Fidelity.
+uses the HPO-selected operator per observable: random for Berry,
+PCA-inspired for QFI and Multi-Lag Fidelity.
 
 \subsection{Online Detection}\label{subsec:online_detection}
 
-\noindent\textit{Note: Online detection and backtest results are from
-a supplementary pipeline and will be re-validated in a revision.}
-
-\medskip
 To evaluate practical deployability, we implement a strictly causal online
-pipeline that computes geometric features and P(crisis) using only data
-available up to each timestep.  The pipeline comprises: (i)~an
+pipeline that computes geometric features and P(crisis) at each timestep
+using only data available up to that point.  The pipeline comprises: (i)~an
 \emph{OnlineGeometricFeatureComputer} that periodically refits
 scaler/PCA/operators on a rolling 500-day window and outputs 10~features
 (5~base geometric observables plus 5~EMA velocity features); (ii)~three
@@ -1164,7 +1184,7 @@ expanding-percentile RMS scoring---combined via a weighted ensemble
 
 \begin{table}[htb]
 \centering
-\caption{Online detection performance (4,994 timesteps, 2005--2024).
+\caption{Online detection performance (4,934 timesteps, 2005--2024).
   Detection rate and delay measured at 1~false alarm per year.}
 \label{tab:online_detection}
 \small
@@ -1172,25 +1192,25 @@ expanding-percentile RMS scoring---combined via a weighted ensemble
 \toprule
 Detector & AUC-ROC & AUC-PR & Det@1/yr & Delay \\
 \midrule
-Online Logistic (supervised) & \textbf{0.799} & \textbf{0.546} & 58\% & 58d \\
-Online HMM                   & 0.644 & 0.285 &  0\% & --- \\
-Online CUSUM                 & 0.619 & 0.330 & 67\% & 39d \\
-\textbf{Online Ensemble}     & 0.579 & 0.244 &  8\% &  0d \\
-Online Vol-Z                 & 0.576 & 0.366 & 67\% & 20d \\
-Online Percentile            & 0.442 & 0.180 &  0\% & --- \\
-Online Bayesian              & 0.438 & 0.214 &  0\% & --- \\
+Online CUSUM                 & \textbf{0.619} & 0.330 & 67\% & 39d \\
+Online Vol-Z                 & 0.576 & \textbf{0.366} & 67\% & 20d \\
+Online Logistic (supervised) & 0.528 & 0.261 & 33\% & 82d \\
+\textbf{Online Ensemble}     & 0.502 & 0.221 & 17\% & 20d \\
+Online Percentile            & 0.502 & 0.218 &  0\% & --- \\
+Online Bayesian              & 0.500 & 0.221 &  0\% & --- \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Among unsupervised detectors, the Online HMM achieves the highest
-AUC-ROC (0.644), surpassing classical baselines CUSUM (0.619) and
-Vol-Z (0.576).  The ensemble of all three geometric detectors reaches
-AUC-ROC~$=0.579$, a meaningful improvement over the na\"ive scalar-max
-aggregation baseline (AUC-ROC~$\approx 0.51$ in prior work).  The
-supervised Online Logistic detector (0.799) confirms that geometric
-features carry substantial regime information---the unsupervised challenge
-is extracting it without labels.
+The online results are sobering: the geometric ensemble achieves only
+AUC-ROC~$= 0.502$, barely above chance, and classical CUSUM (0.619)
+dominates all methods.  Even the supervised Online Logistic (0.528)
+struggles, suggesting that the online feature pipeline---with its
+rolling refit and EMA smoothing---substantially degrades the signal
+compared to the offline Cohen's~$d$ evaluation.  The gap between offline
+separability ($d \approx 0.5$) and online discrimination (AUC~$\approx 0.5$)
+highlights that \emph{detecting regime transitions in real time} remains
+a harder problem than retrospective event classification.
 
 \subsection{PnL Backtest}\label{subsec:backtest}
 
@@ -1251,7 +1271,7 @@ The causal pipeline reveals that RF's advantage is concentrated on
 crises where ample labeled training data exists (e.g., 2020 COVID
 $d = 1.91$, 2008 GFC $d = 1.53$), while geometric methods win
 precisely where RF labels are sparse or absent (2023 SVB: MLF
-$d = 0.94$ vs.\ RF $d = 0.12$; 2019 Repo: MLF $d = 0.91$ vs.\
+$d = 0.94$ vs.\ RF $d = 0.11$; 2019 Repo: MLF $d = 0.91$ vs.\
 RF $d = 0.02$).  This is consistent with domain adaptation
 theory~\cite{bendavid2010}: supervised classifiers degrade under
 distribution shift, while unsupervised methods are immune to
@@ -1270,6 +1290,9 @@ detects rapid phase changes in the U(1) connection, the QFI
 determinant tracks manifold volume collapse
 (Proposition~\ref{prop:fisher}), and multi-lag fidelity measures
 state decorrelation across time scales.
+Figures~\ref{fig:narrative_2008}--\ref{fig:narrative_2022} visualize
+these complementary signatures for the 2008, 2020, and 2022 crises;
+Figure~\ref{fig:effect_sizes} summarizes the Cohen's~$d$ distributions.
 
 The interaction test (Section~\ref{subsec:interaction}) yields a null
 result ($p = 0.54$), consistent with additive rather than synergistic
@@ -1385,10 +1408,9 @@ theory~\cite{schuld_killoran2019,busemeyer2012}.
 
 \item \textbf{Heuristic operators.}  The operator ablation
   (Table~\ref{tab:operator_ablation}) shows observable-dependent
-  results: random operators are best for Berry ($+76\%$ vs.\
-  PCA-inspired) and QFI ($+3\%$), while structured Pauli operators
-  with equal eigenvalue weighting help Multi-Lag Fidelity ($+61\%$
-  vs.\ random).  Full gradient-descent operator
+  results: random operators are best for Berry ($+55\%$ vs.\
+  Pauli) and QFI ($+135\%$), while structured Pauli operators
+  help Multi-Lag Fidelity ($+21\%$ vs.\ random).  Full gradient-descent operator
   training~\cite{musaelian2024,samson2024} remains an important
   open direction.
 
@@ -1404,9 +1426,9 @@ theory~\cite{schuld_killoran2019,busemeyer2012}.
   indicating observables largely react to rather than predict stress.
 
 \item \textbf{Online detection gap.}  The causal online pipeline
-  (Section~\ref{subsec:online_detection}) achieves AUC-ROC~$= 0.58$
-  for the unsupervised ensemble, substantially below the offline
-  separability results.  The geometric signal provides value
+  (Section~\ref{subsec:online_detection}) achieves AUC-ROC~$= 0.50$
+  for the unsupervised ensemble, barely above chance and far below
+  the offline separability results.  The geometric signal provides value
   primarily through drawdown reduction ($-30\%$ relative to
   ConstantVol, Table~\ref{tab:backtest}) rather than Sharpe
   improvement, with break-even transaction cost at approximately
@@ -1453,7 +1475,7 @@ important dimensions:
   single method (RF, $d = 0.96$)---with a complementarity score of
   $0.71$.  Multi-Lag Fidelity wins 5 of 12~crises head-to-head against
   RF, particularly where supervised training data is sparse (2023 SVB:
-  MLF $d = 0.94$ vs.\ RF $d = 0.12$).  The three observables show
+  MLF $d = 0.94$ vs.\ RF $d = 0.11$).  The three observables show
   complementary per-crisis strengths: Multi-Lag on prolonged stress,
   Berry on acute shocks, QFI on structural regime shifts.
 \end{enumerate}
@@ -1462,8 +1484,7 @@ important dimensions:
 retains the highest median Cohen's~$d$ ($0.96$ vs.\ $0.53$ for MLF),
 and Bayesian pairwise tests directionally favour RF
 (Table~\ref{tab:bayesian}).  The causal online pipeline achieves
-AUC-ROC~$= 0.58$ for the unsupervised ensemble, substantially below
-offline separability.  A long-flat strategy driven by the geometric
+AUC-ROC~$= 0.50$ for the unsupervised ensemble, essentially at chance.  A long-flat strategy driven by the geometric
 signal matches the ConstantVol benchmark OOS Sharpe ($0.79$ vs.\
 $0.79$) while reducing maximum drawdown from 27\% to 19\%
 (Table~\ref{tab:backtest}), with the primary contribution being
@@ -1519,7 +1540,7 @@ fidelity, spectral gap, ground state energy, and combined overlay.}
 \begin{figure}[htb]
 \centering
 \includegraphics[width=\textwidth]{../experiments/outputs/regime_detection/superiority_publication/figures/effect_sizes.pdf}
-\caption{Cohen's $d$ distributions across 12 crises.  Dashed line:
+\caption{Cohen's~$d$ distributions across 12 crises.  Dashed line:
 $d = 0.8$ (large effect); dotted: RF baseline $d = 0.96$.}
 \label{fig:effect_sizes}
 \end{figure}
@@ -1531,7 +1552,7 @@ $d = 0.8$ (large effect); dotted: RF baseline $d = 0.96$.}
 
 Market data from the Polygon.io API (paid subscription).  The
 \texttt{qcml\_geometry/} library and all experiment scripts are
-available at \texttt{[repository URL upon acceptance]}.  Crisis
+available at \url{https://github.com/willhammondhimself/qcml-geometric-sde}.  Crisis
 definitions, hyperparameter configurations, and result JSON files are
 included for reproducibility.
 
@@ -1540,7 +1561,7 @@ included for reproducibility.
 % =============================================================================
 \begin{thebibliography}{99}
 
-% --- QCML Primary ---
+% ============= PEER-REVIEWED PUBLICATIONS =============
 
 \bibitem{candelori2025}
 L.~Candelori, A.~G. Abanov, J.~Berger, C.~J. Hogan,
@@ -1548,7 +1569,173 @@ V.~Kirakosyan, K.~Musaelian, R.~Samson, J.~E.~T. Smith,
 D.~Villani, M.~T. Wells, and M.~Xu,
 ``Robust estimation of the intrinsic dimension of data sets with
 quantum cognition machine learning,''
-\emph{Scientific Reports}, vol.~15, no.~6933, 2025.
+\emph{Scientific Reports}, vol.~15, art.~no.~6933, 2025.
+\newblock \doi{10.1038/s41598-025-91676-8}
+
+\bibitem{berry1984}
+M.~V. Berry,
+``Quantal phase factors accompanying adiabatic changes,''
+\emph{Proceedings of the Royal Society A}, vol.~392, no.~1802,
+pp.~45--57, 1984.
+\newblock \doi{10.1098/rspa.1984.0023}
+
+\bibitem{hamilton1989}
+J.~D. Hamilton,
+``A new approach to the economic analysis of nonstationary time series
+and the business cycle,''
+\emph{Econometrica}, vol.~57, no.~2, pp.~357--384, 1989.
+\newblock \doi{10.2307/1912559}
+
+\bibitem{busemeyer2012}
+J.~R. Busemeyer and P.~D. Bruza,
+\emph{Quantum Models of Cognition and Decision}.
+Cambridge University Press, 2012.
+
+\bibitem{nakahara2003}
+M.~Nakahara,
+\emph{Geometry, Topology and Physics}, 2nd ed.
+Taylor \& Francis, 2003.
+
+\bibitem{provost_vallee1980}
+J.~P. Provost and G.~Vallee,
+``Riemannian structure on manifolds of quantum states,''
+\emph{Communications in Mathematical Physics}, vol.~76, no.~3,
+pp.~289--301, 1980.
+
+\bibitem{amari_nagaoka2000}
+S.~Amari and H.~Nagaoka,
+\emph{Methods of Information Geometry}.
+American Mathematical Society, 2000.
+
+\bibitem{kato1966}
+T.~Kato,
+\emph{Perturbation Theory for Linear Operators}.
+Springer-Verlag, 1966.
+
+\bibitem{chern1946}
+S.-S.~Chern,
+``Characteristic classes of Hermitian manifolds,''
+\emph{Annals of Mathematics}, vol.~47, no.~1, pp.~85--121, 1946.
+\newblock \doi{10.2307/1969037}
+
+\bibitem{bates_granger1969}
+J.~M. Bates and C.~W.~J. Granger,
+``The combination of forecasts,''
+\emph{Journal of the Operational Research Society}, vol.~20, no.~4,
+pp.~451--468, 1969.
+
+\bibitem{timmermann2006}
+A.~Timmermann,
+``Forecast combinations,''
+in \emph{Handbook of Economic Forecasting}, vol.~1,
+G.~Elliott, C.~W.~J. Granger, and A.~Timmermann, Eds.
+Elsevier, 2006, ch.~4, pp.~135--196.
+
+\bibitem{bendavid2010}
+S.~Ben-David, J.~Blitzer, K.~Crammer, A.~Kulesza,
+F.~Pereira, and J.~W. Vaughan,
+``A theory of learning from different domains,''
+\emph{Machine Learning}, vol.~79, no.~1--2, pp.~151--175, 2010.
+
+\bibitem{braunstein_caves1994}
+S.~L. Braunstein and C.~M. Caves,
+``Statistical distance and the geometry of quantum states,''
+\emph{Physical Review Letters}, vol.~72, no.~22,
+pp.~3439--3443, 1994.
+\newblock \doi{10.1103/PhysRevLett.72.3439}
+
+\bibitem{helstrom1976}
+C.~W. Helstrom,
+\emph{Quantum Detection and Estimation Theory}.
+Academic Press, 1976.
+
+\bibitem{brody_hughston2001}
+D.~C. Brody and L.~P. Hughston,
+``Interest rates and information geometry,''
+\emph{Proceedings of the Royal Society A}, vol.~457, no.~2010,
+pp.~1343--1363, 2001.
+\newblock \doi{10.1098/rspa.2000.0722}
+
+\bibitem{taylor2019}
+S.~Taylor,
+``Clustering financial return distributions using the Fisher
+information metric,''
+\emph{Entropy}, vol.~21, no.~2, p.~110, 2019.
+\newblock \doi{10.3390/e21020110}
+
+\bibitem{horvath2024}
+B.~Horvath, Z.~Issa, and A.~Muguruza,
+``Clustering market regimes using the Wasserstein distance,''
+\emph{Journal of Computational Finance}, 2024.
+\newblock \doi{10.21314/jcf.2024.005}
+
+\bibitem{gidea_katz2018}
+M.~Gidea and Y.~A. Katz,
+``Topological data analysis of financial time series:
+Landscapes of crashes,''
+\emph{Physica A}, vol.~491, pp.~820--834, 2018.
+\newblock \doi{10.1016/j.physa.2017.09.028}
+
+\bibitem{sandhu2016}
+R.~S. Sandhu, T.~T. Georgiou, E.~Reznik, L.~Zhu, I.~Kolesov,
+Y.~Senbabaoglu, and A.~Tannenbaum,
+``Ricci curvature: An economic indicator for market fragility
+and systemic risk,''
+\emph{Science Advances}, vol.~2, no.~6, e1501495, 2016.
+\newblock \doi{10.1126/sciadv.1501495}
+
+\bibitem{laloux1999}
+L.~Laloux, P.~Cizeau, J.-P.~Bouchaud, and M.~Potters,
+``Noise dressing of financial correlation matrices,''
+\emph{Physical Review Letters}, vol.~83, no.~7,
+pp.~1467--1470, 1999.
+\newblock \doi{10.1103/PhysRevLett.83.1467}
+
+\bibitem{plerou2002}
+V.~Plerou, P.~Gopikrishnan, B.~Rosenow, L.~A.~N. Amaral,
+and H.~E. Stanley,
+``A random matrix approach to cross-correlations in financial
+data,''
+\emph{Physical Review E}, vol.~65, 066126, 2002.
+\newblock \doi{10.1103/PhysRevE.65.066126}
+
+\bibitem{hopfield1982}
+J.~J. Hopfield,
+``Neural networks and physical systems with emergent collective
+computational abilities,''
+\emph{Proc.\ Natl.\ Acad.\ Sci.}, vol.~79,
+pp.~2554--2558, 1982.
+
+\bibitem{stoudenmire_schwab2016}
+E.~M. Stoudenmire and D.~J. Schwab,
+``Supervised learning with quantum-inspired tensor networks,''
+in \emph{Advances in Neural Information Processing Systems 29} (NeurIPS 2016), pp.~4799--4807, 2016.
+
+\bibitem{sornette2003}
+D.~Sornette,
+``Critical market crashes,''
+\emph{Physics Reports}, vol.~378, no.~1, pp.~1--98, 2003.
+
+\bibitem{schuld_killoran2019}
+M.~Schuld and N.~Killoran,
+``Quantum machine learning in feature Hilbert spaces,''
+\emph{Physical Review Letters}, vol.~122, 040504, 2019.
+\newblock \doi{10.1103/PhysRevLett.122.040504}
+
+\bibitem{pancharatnam1956}
+S.~Pancharatnam,
+``Generalized theory of interference, and its applications,''
+\emph{Proc.\ Indian Acad.\ Sci.\ A}, vol.~44, pp.~247--262, 1956.
+\newblock \doi{10.1007/BF03046050}
+
+\bibitem{simon1983}
+B.~Simon,
+``Holonomy, the quantum adiabatic theorem, and Berry's phase,''
+\emph{Physical Review Letters}, vol.~51, no.~24,
+pp.~2167--2170, 1983.
+\newblock \doi{10.1103/PhysRevLett.51.2167}
+
+% ============= PREPRINTS =============
 
 \bibitem{abanov2025}
 A.~G. Abanov, L.~Candelori, H.~C. Steinacker, M.~T. Wells,
@@ -1556,18 +1743,6 @@ J.~R. Busemeyer, V.~Kirakosyan, N.~Marzari, S.~Pinnamaneni,
 D.~Villani, M.~Xu, and K.~Musaelian,
 ``Quantum geometry of data,''
 arXiv preprint arXiv:2507.21135, 2025.
-
-\bibitem{musaelian2024}
-K.~Musaelian, A.~Abanov, J.~Berger, L.~Candelori, V.~Kirakosyan,
-R.~Samson, J.~Smith, and D.~Villani,
-``Quantum cognition machine learning: AI needs quantum,''
-Qognitive, Inc., 2024.
-
-\bibitem{samson2024}
-R.~Samson, J.~Berger, L.~Candelori, V.~Kirakosyan, K.~Musaelian,
-and D.~Villani,
-``Quantum cognition machine learning: Financial forecasting,''
-Qognitive, Inc., 2024.
 
 \bibitem{rosaler2025}
 J.~Rosaler, L.~Candelori, V.~Kirakosyan, K.~Musaelian,
@@ -1591,175 +1766,10 @@ H.~Steinacker, D.~Villani, M.~T. Wells, R.~J. Wenstrup, and M.~Xu,
 instability,''
 arXiv preprint arXiv:2506.03199, 2025.
 
-% --- Essential Externals ---
-
-\bibitem{berry1984}
-M.~V. Berry,
-``Quantal phase factors accompanying adiabatic changes,''
-\emph{Proceedings of the Royal Society A}, vol.~392, no.~1802,
-pp.~45--57, 1984.
-
-\bibitem{hamilton1989}
-J.~D. Hamilton,
-``A new approach to the economic analysis of nonstationary time series
-and the business cycle,''
-\emph{Econometrica}, vol.~57, no.~2, pp.~357--384, 1989.
-
 \bibitem{adams_mackay2007}
 R.~P. Adams and D.~J.~C. MacKay,
 ``Bayesian online changepoint detection,''
 arXiv preprint arXiv:0710.3742, 2007.
-
-\bibitem{busemeyer2012}
-J.~R. Busemeyer and P.~D. Bruza,
-\emph{Quantum Models of Cognition and Decision}.
-Cambridge University Press, 2012.
-
-\bibitem{nakahara2003}
-M.~Nakahara,
-\emph{Geometry, Topology and Physics}, 2nd ed.
-Taylor \& Francis, 2003.
-
-\bibitem{sachdev2011}
-S.~Sachdev,
-\emph{Quantum Phase Transitions}, 2nd ed.
-Cambridge University Press, 2011.
-
-\bibitem{provost_vallee1980}
-J.~P. Provost and G.~Vallee,
-``Riemannian structure on manifolds of quantum states,''
-\emph{Communications in Mathematical Physics}, vol.~76, no.~3,
-pp.~289--301, 1980.
-
-\bibitem{amari_nagaoka2000}
-S.~Amari and H.~Nagaoka,
-\emph{Methods of Information Geometry}.
-American Mathematical Society, 2000.
-
-\bibitem{granger1969}
-C.~W.~J. Granger,
-``Investigating causal relations by econometric models and
-cross-spectral methods,''
-\emph{Econometrica}, vol.~37, no.~3, pp.~424--438, 1969.
-
-\bibitem{kato1966}
-T.~Kato,
-\emph{Perturbation Theory for Linear Operators}.
-Springer-Verlag, 1966.
-
-\bibitem{chern1946}
-S.-S.~Chern,
-``Characteristic classes of Hermitian manifolds,''
-\emph{Annals of Mathematics}, vol.~47, no.~1, pp.~85--121, 1946.
-
-% --- Forecast Combination ---
-
-\bibitem{bates_granger1969}
-J.~M. Bates and C.~W.~J. Granger,
-``The combination of forecasts,''
-\emph{Journal of the Operational Research Society}, vol.~20, no.~4,
-pp.~451--468, 1969.
-
-\bibitem{timmermann2006}
-A.~Timmermann,
-``Forecast combinations,''
-in \emph{Handbook of Economic Forecasting}, vol.~1,
-G.~Elliott, C.~W.~J. Granger, and A.~Timmermann, Eds.
-Elsevier, 2006, ch.~4, pp.~135--196.
-
-\bibitem{rapach2010}
-D.~E. Rapach, J.~K. Strauss, and G.~Zhou,
-``Out-of-sample equity premium prediction: Combination forecasts
-and links to the real economy,''
-\emph{The Review of Financial Studies}, vol.~23, no.~2,
-pp.~821--862, 2010.
-
-\bibitem{makridakis2020}
-S.~Makridakis, E.~Spiliotis, and V.~Assimakopoulos,
-``The M4 competition: 100,000 time series and 61 forecasting
-methods,''
-\emph{International Journal of Forecasting}, vol.~36, no.~1,
-pp.~54--74, 2020.
-
-\bibitem{stock_watson2004}
-J.~H. Stock and M.~W. Watson,
-``Combination forecasts of output growth in a seven-country data set,''
-\emph{Journal of Forecasting}, vol.~23, no.~6,
-pp.~405--430, 2004.
-
-% --- Minimax / Changepoint Theory ---
-
-\bibitem{tartakovsky2014}
-A.~G. Tartakovsky, I.~V. Nikiforov, and M.~Basseville,
-\emph{Sequential Analysis: Hypothesis Testing and Changepoint
-Detection}.
-CRC Press, 2014.
-
-% --- Domain Adaptation ---
-
-\bibitem{bendavid2010}
-S.~Ben-David, J.~Blitzer, K.~Crammer, A.~Kulesza,
-F.~Pereira, and J.~W. Vaughan,
-``A theory of learning from different domains,''
-\emph{Machine Learning}, vol.~79, no.~1--2, pp.~151--175, 2010.
-
-% --- Fisher Information / QFI ---
-
-\bibitem{braunstein_caves1994}
-S.~L. Braunstein and C.~M. Caves,
-``Statistical distance and the geometry of quantum states,''
-\emph{Physical Review Letters}, vol.~72, no.~22,
-pp.~3439--3443, 1994.
-
-\bibitem{helstrom1976}
-C.~W. Helstrom,
-\emph{Quantum Detection and Estimation Theory}.
-Academic Press, 1976.
-
-% --- Non-Euclidean Finance ---
-
-\bibitem{brody_hughston2001}
-D.~C. Brody and L.~P. Hughston,
-``Interest rates and information geometry,''
-\emph{Proceedings of the Royal Society A}, vol.~457, no.~2010,
-pp.~1343--1363, 2001.
-
-\bibitem{taylor2019}
-S.~Taylor,
-``Clustering financial return distributions using the Fisher
-information metric,''
-\emph{Entropy}, vol.~21, no.~2, p.~110, 2019.
-
-\bibitem{horvath2024}
-B.~Horvath, Z.~Issa, and A.~Muguruza,
-``Clustering market regimes using the Wasserstein distance,''
-\emph{Journal of Computational Finance}, 2024.
-
-\bibitem{gidea_katz2018}
-M.~Gidea and Y.~A. Katz,
-``Topological data analysis of financial time series:
-Landscapes of crashes,''
-\emph{Physica A}, vol.~491, pp.~820--834, 2018.
-
-\bibitem{sandhu2016}
-R.~S. Sandhu, T.~T. Georgiou, E.~Reznik, L.~Zhu, I.~Kolesov,
-Y.~Senbabaoglu, and A.~Tannenbaum,
-``Ricci curvature: An economic indicator for market fragility
-and systemic risk,''
-\emph{Science Advances}, vol.~2, no.~6, e1501495, 2016.
-
-\bibitem{laloux1999}
-L.~Laloux, P.~Cizeau, J.-P.~Bouchaud, and M.~Potters,
-``Noise dressing of financial correlation matrices,''
-\emph{Physical Review Letters}, vol.~83, no.~7,
-pp.~1467--1470, 1999.
-
-\bibitem{plerou2002}
-V.~Plerou, P.~Gopikrishnan, B.~Rosenow, L.~A.~N. Amaral,
-and H.~E. Stanley,
-``A random matrix approach to cross-correlations in financial
-data,''
-\emph{Physical Review E}, vol.~65, 066126, 2002.
 
 \bibitem{issa_horvath2023}
 Z.~Issa and B.~Horvath,
@@ -1775,47 +1785,19 @@ P.~Veli\v{c}kovi\'{c},
 and gauges,''
 arXiv preprint arXiv:2104.13478, 2021.
 
-% --- Physics-Inspired ML ---
+% ============= INDUSTRY TECHNICAL REPORTS =============
 
-\bibitem{hopfield1982}
-J.~J. Hopfield,
-``Neural networks and physical systems with emergent collective
-computational abilities,''
-\emph{Proc.\ Natl.\ Acad.\ Sci.}, vol.~79,
-pp.~2554--2558, 1982.
+\bibitem{musaelian2024}
+K.~Musaelian, A.~Abanov, J.~Berger, L.~Candelori, V.~Kirakosyan,
+R.~Samson, J.~Smith, and D.~Villani,
+``Quantum cognition machine learning: AI needs quantum,''
+Qognitive, Inc., technical white paper (not peer-reviewed), 2024.
 
-\bibitem{stoudenmire_schwab2016}
-E.~M. Stoudenmire and D.~J. Schwab,
-``Supervised learning with quantum-inspired tensor networks,''
-\emph{Advances in Neural Information Processing Systems}, 29, 2016.
-
-\bibitem{sornette2003}
-D.~Sornette,
-``Critical market crashes,''
-\emph{Physics Reports}, vol.~378, no.~1, pp.~1--98, 2003.
-
-\bibitem{schuld_killoran2019}
-M.~Schuld and N.~Killoran,
-``Quantum machine learning in feature Hilbert spaces,''
-\emph{Physical Review Letters}, vol.~122, 040504, 2019.
-
-% --- Berry Phase (Classical) ---
-
-\bibitem{pancharatnam1956}
-S.~Pancharatnam,
-``Generalized theory of interference, and its applications,''
-\emph{Proc.\ Indian Acad.\ Sci.\ A}, vol.~44, pp.~247--262, 1956.
-
-\bibitem{simon1983}
-B.~Simon,
-``Holonomy, the quantum adiabatic theorem, and Berry's phase,''
-\emph{Physical Review Letters}, vol.~51, no.~24,
-pp.~2167--2170, 1983.
-
-\bibitem{silverman1986}
-B.~W. Silverman,
-\emph{Density Estimation for Statistics and Data Analysis}.
-Chapman \& Hall, 1986.
+\bibitem{samson2024}
+R.~Samson, J.~Berger, L.~Candelori, V.~Kirakosyan, K.~Musaelian,
+and D.~Villani,
+``Quantum cognition machine learning: Financial forecasting,''
+Qognitive, Inc., technical white paper (not peer-reviewed), 2024.
 
 \end{thebibliography}
 
@@ -2037,7 +2019,7 @@ with performance increasing from $p = 5$ ($d = 0.29$) to $p = 10$
 
 \begin{table}[htb]
 \centering
-\caption{Numerical stability: median Cohen's $d$ across 4 crises.
+\caption{Numerical stability: median Cohen's~$d$ across 4 crises.
 Multi-Lag Fidelity does not use $\epsilon$ (no finite differences).}
 \label{tab:stability}
 \small
@@ -2063,7 +2045,7 @@ $p = 30$ & 0.22 & 0.54 & 0.45 \\
 % =============================================================================
 \section{Window-Size Sensitivity}\label{sec:window_sensitivity}
 
-We re-compute Cohen's $d$ at crisis window extensions $\pm 5$,
+We re-compute Cohen's~$d$ at crisis window extensions $\pm 5$,
 $\pm 10$ (default), $\pm 20$, $\pm 60$ trading days.  Kendall $\tau$
 rank correlations across window sizes assess robustness of method
 rankings.  Results appear in Table~\ref{tab:window}.  Rankings are
@@ -2075,7 +2057,7 @@ observable, maintaining the highest $d$ across all window sizes.
 
 \begin{table}[htb]
 \centering
-\caption{Median Cohen's $d$ by crisis window size (12 crises).}
+\caption{Median Cohen's~$d$ by crisis window size (12 crises).}
 \label{tab:window}
 \small
 \begin{tabular}{lcccc}
@@ -2112,7 +2094,7 @@ $\leq 0.20$, with QFI achieving val $d = 0.60 >$ train $d = 0.50$
 
 \begin{table}[htb]
 \centering
-\caption{Hyperparameter sensitivity: median Cohen's $d$ across
+\caption{Hyperparameter sensitivity: median Cohen's~$d$ across
   12~crises (columns a--b) and train/val split (column c).}
 \label{tab:fixed_hp}
 \small
