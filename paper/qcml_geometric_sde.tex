@@ -78,27 +78,30 @@ preprocessing (scaler, PCA, and operators fitted only on pre-crisis
 data), all three geometric observables are retained in the 90\% Model
 Confidence Set (Hansen et al., 2011), placing them in the set of methods
 statistically indistinguishable from the best---alongside the supervised
-Random Forest (RF) baseline and nine other detectors; only BOCPD is
-excluded.  Bootstrap rank confidence intervals confirm this: QCML Chern,
-Isolation Forest, and RF share mean rank~4.50, while Multi-Lag Fidelity
-(rank~5.33, CI~$[3.92, 6.92]$) overlaps RF's CI~$[2.50, 6.83]$.
-Geometric methods also detect crises faster---Multi-Lag Fidelity in
-5~trading days and Berry in~8, versus RF at~10---while requiring no
-labeled crisis data.  An oracle selector achieves median Cohen's
-$d = 1.43$, a 49\% improvement over the best single method (RF,
-$d = 0.96$), with complementarity score~$0.69$, confirming that geometric
-and classical methods capture non-overlapping crisis information.
+Random Forest (RF) baseline and eleven other detectors; only BOCPD and
+Geometric Ensemble are excluded.  Bootstrap rank confidence intervals
+confirm this: CUSUM (rank~4.42), RF (5.50), and a broad cluster of
+geometric methods (5.75--7.67) share heavily overlapping CIs, with
+Multi-Lag Fidelity (rank~6.50, CI~$[4.67, 8.42]$) overlapping RF's
+CI~$[2.92, 8.33]$.
+An oracle selector achieves median Cohen's $d = 1.43$, a 47\%
+improvement over the best single method (RF, $d = 0.96$), with
+complementarity score~$0.71$, confirming that geometric and classical
+methods capture non-overlapping crisis information.
 
-RF retains the highest median Cohen's~$d$ ($0.96$ vs.\ $0.56$ for
-Multi-Lag Fidelity, $0.42$ for Berry, $0.40$ for QFI Determinant), and
-Bayesian pairwise tests favour RF in every comparison.  The contribution
-is therefore not dominance but a new class of unsupervised,
+RF retains the highest median Cohen's~$d$ ($0.96$ vs.\ $0.53$ for
+Multi-Lag Fidelity, $0.48$ for QFI Determinant, $0.42$ for Berry), and
+Bayesian pairwise tests directionally favour RF in every comparison,
+though posteriors are broad.  The contribution is therefore not
+dominance but a new class of unsupervised,
 curvature-based detection channels---mechanism-agnostic and
-label-free---that provide statistically competitive performance, faster
-detection, and complementary per-crisis strengths.  A walk-forward causal
-benchmark with adaptive threshold calibration achieves 86\% detection
-rate with 9-day median delay for Multi-Lag Fidelity.  All effect sizes
-include bootstrap 95\% CIs ($n = 5{,}000$).
+label-free---that provide statistically competitive performance and
+complementary per-crisis strengths.  In walk-forward validation with
+FAR-calibrated thresholds, Multi-Lag Fidelity detects 6/7~crises with a
+median delay of 16~trading days and 2.5~false alarms/yr, while RF
+detects 7/7 in 5~days at 3.6~false alarms/yr; geometric methods trade
+detection speed for 30\% fewer false alarms without requiring any crisis
+labels.  All effect sizes include bootstrap 95\% CIs ($n = 5{,}000$).
 \end{abstract}
 
 \medskip
@@ -164,12 +167,13 @@ hyperparameters'' throughout.
   placing them in the set of methods statistically indistinguishable
   from the best (Table~\ref{tab:mcs}).
 
-\item Evidence that unsupervised geometric methods detect crises
-  \emph{faster} than supervised alternatives (Multi-Lag Fidelity:
-  5-day median delay vs.\ RF: 10 days;
-  Table~\ref{tab:detection_metrics}) and provide \emph{complementary}
-  information: an oracle selector improves on the best single method
-  by 49\%, with a complementarity score of $0.69$.
+\item Evidence that unsupervised geometric methods provide
+  \emph{complementary} detection with lower false alarm rates: in
+  walk-forward validation, Multi-Lag Fidelity detects 6/7~crises with
+  30\% fewer false alarms than RF (2.5 vs.\ 3.6/yr;
+  Table~\ref{tab:walkforward}), trading detection speed for precision.
+  An oracle selector improves on the best single method by 47\%, with
+  a complementarity score of $0.71$.
 
 \item A comprehensive evaluation framework including per-crisis causal
   preprocessing, Model Confidence Set analysis, Bayesian pairwise
@@ -180,14 +184,17 @@ hyperparameters'' throughout.
 \end{enumerate}
 
 \noindent We emphasize an honest framing of these results.  RF retains
-the highest median Cohen's~$d$ ($0.96$ vs.\ $0.56$ for MLF), and
-Bayesian pairwise tests favour RF in every comparison.  However,
-aggregate effect size is only one dimension of evaluation.  Geometric
-methods are statistically indistinguishable from RF in the Model
-Confidence Set, achieve faster detection without labels, and win 5 of
-12~crises head-to-head---precisely those where supervised training data
-is sparse or absent (e.g., 2023 SVB: MLF $d = 0.94$ vs.\ RF
-$d = 0.12$).  The practical contribution is a new class of
+the highest median Cohen's~$d$ ($0.96$ vs.\ $0.53$ for MLF), and
+Bayesian pairwise tests directionally favour RF, though posteriors
+are broad given only 12~crises.  In walk-forward
+validation, RF also detects faster (5-day vs.\ 16-day median delay) and
+more completely (7/7 vs.\ 6/7 crises).  However, aggregate effect size
+and speed are only two dimensions of evaluation.  Geometric methods are
+statistically indistinguishable from RF in the Model Confidence Set,
+produce fewer false alarms (2.5 vs.\ 3.6/yr) without requiring labels,
+and win 6 of 12~crises head-to-head---precisely those where supervised
+training data is sparse or absent (e.g., 2023 SVB: MLF $d = 0.94$ vs.\
+RF $d = 0.12$).  The practical contribution is a new class of
 manifold-intrinsic, label-free detection channels that complement
 rather than replace supervised
 methods~\cite{timmermann2006,bates_granger1969}.
@@ -631,17 +638,18 @@ operators are fitted only on data \emph{before} that crisis window
 (Section~\ref{subsec:methods_protocol}).  HPO-optimized
 hyperparameters are used for all geometric methods.
 Three geometric observables achieve moderate effect sizes: Multi-Lag
-Fidelity (median $d = 0.56$), Berry Curvature Increment
-(median $d = 0.42$), and QFI Determinant (median $d = 0.40$).
-The supervised Random Forest baseline achieves higher median $d = 0.96$,
-but Multi-Lag Fidelity matches RF on mean Friedman rank (both 4.4),
-indicating competitive per-crisis performance despite requiring no
-labeled data.  CUSUM ($d = 0.73$) remains the strongest classical
-baseline.  The Friedman test ($\chi^2 = 49.2$, $p < 10^{-6}$)
+Fidelity (median $d = 0.53$), QFI Determinant (median $d = 0.48$),
+and Berry Curvature Increment (median $d = 0.42$).
+The supervised Random Forest baseline achieves higher median $d = 0.96$
+with mean rank~$5.5$.  All geometric methods fall within the same
+Nemenyi clique as RF (ranks $5.5$--$7.7$), indicating statistically
+indistinguishable per-crisis performance despite requiring no labels.
+CUSUM ($d = 0.73$, rank~$4.4$) achieves the best mean rank among all
+methods.  The Friedman test ($\chi^2 = 64.2$, $p < 10^{-8}$)
 confirms significant ranking differences across methods.
 
 On a per-crisis basis, the best geometric observable outperforms RF
-on 5 of 12~crises (Table~\ref{tab:crisis_breakdown})---precisely
+on 6 of 12~crises (Table~\ref{tab:crisis_breakdown})---precisely
 those where RF training labels are sparse or absent.  RF's bimodal
 performance (7 crises with $d > 0.69$, 3 with $d < 0.13$)
 reflects the leave-one-crisis-out protocol: when a novel crisis type
@@ -650,27 +658,30 @@ signal collapses.
 
 \begin{table}[htb]
 \centering
-\caption{Crisis-window separability: 11 methods across 12 crises
+\caption{Crisis-window separability: 14 methods across 12 crises
 (2007--2024).  Per-crisis causal preprocessing; HPO-optimized
-hyperparameters.  Friedman $\chi^2 = 49.2$, $p < 10^{-6}$.}
+hyperparameters.  Friedman $\chi^2 = 64.2$, $p < 10^{-8}$.}
 \label{tab:comparison}
 \small
 \begin{tabular}{lccl}
 \toprule
 Method & Median $d$ & Mean Rank & Category \\
 \midrule
-Random Forest        & \textbf{0.96} & 4.4 & Supervised \\
-CUSUM                & 0.73 & 3.7 & Classical \\
-QCML Chern           & 0.70 & 4.8 & Geometric \\
-Isolation Forest     & 0.62 & 4.6 & Classical \\
-Multi-Lag Fidelity   & 0.56 & 4.4 & Geometric \\
-Berry Curv.\ Incr.   & 0.42 & 5.6 & Geometric \\
-QFI Determinant      & 0.40 & 6.2 & Geometric \\
-Rolling Vol Z        & 0.36 & 5.8 & Classical \\
-HMM 2-state          & 0.14 & 7.4 & Classical \\
+Random Forest        & \textbf{0.96} & 5.5 & Supervised \\
+CUSUM                & 0.73 & 4.4 & Classical \\
+QCML Chern           & 0.70 & 6.1 & Geometric \\
+Metric Condition     & 0.67 & 5.8 & Geometric \\
+Isolation Forest     & 0.62 & 5.8 & Classical \\
+Multi-Lag Fidelity   & 0.53 & 6.5 & Geometric \\
+QFI Determinant      & 0.48 & 7.7 & Geometric \\
+Spectral Gap         & 0.46 & 6.1 & Geometric \\
+Berry Curv.\ Incr.   & 0.42 & 7.0 & Geometric \\
+HMM 2-state          & 0.37 & 6.9 & Classical \\
+Rolling Vol Z        & 0.36 & 7.2 & Classical \\
 \midrule
-Geo.\ Consensus      & 0.12 & 8.3 & Geometric \\
-BOCPD                & 0.03 & 10.8 & Classical \\
+Geo.\ Consensus      & 0.07 & 10.1 & Geometric \\
+BOCPD                & 0.03 & 12.8 & Classical \\
+Geo.\ Ensemble       & 0.01 & 13.2 & Geometric \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -688,27 +699,27 @@ best geometric method exceeds RF on that crisis.}
 \toprule
 Crisis & Berry & QFI Det. & Multi-Lag & RF & CUSUM \\
 \midrule
-2007 Quant   & \textbf{0.12} & 0.12 & 0.16 & 0.00 & 1.43 \\
-2008 GFC     & 0.18 & 0.47 & 0.33 & 1.53 & 0.52 \\
-2010 Flash   & 0.77 & 0.37 & 0.47 & 1.43 & 0.37 \\
-2011 Euro    & 0.29 & 0.47 & 1.04 & 1.57 & 0.18 \\
-2015 China   & 0.39 & 0.18 & 0.54 & 0.69 & 0.32 \\
-2018 Volmag. & 0.84 & 0.48 & 0.65 & 1.03 & 0.49 \\
-2018 Q4      & 0.42 & 0.44 & 0.58 & 1.09 & 0.65 \\
-2019 Repo    & \textbf{0.55} & 0.64 & 0.91 & 0.02 & 0.81 \\
-2020 COVID   & 0.81 & 0.33 & 0.07 & 1.91 & 1.03 \\
-2022 Rates   & 0.67 & 0.72 & \textbf{0.94} & 0.89 & 1.29 \\
-2023 SVB     & 0.42 & 0.15 & \textbf{0.94} & 0.12 & 1.43 \\
-2024 Carry   & \textbf{0.35} & 0.29 & 0.49 & 0.33 & 1.52 \\
+2007 Quant   & 0.12 & \textbf{1.33} & 0.16 & 0.00 & 1.43 \\
+2008 GFC     & 0.18 & 1.15 & 0.33 & 1.53 & 0.52 \\
+2010 Flash   & 0.77 & 0.42 & 0.49 & 1.43 & 0.37 \\
+2011 Euro    & 0.29 & 0.08 & 1.03 & 1.57 & 0.18 \\
+2015 China   & 0.09 & 0.07 & 0.02 & 0.69 & 0.32 \\
+2018 Volmag. & 0.84 & 0.04 & 0.65 & 1.03 & 0.49 \\
+2018 Q4      & 0.42 & 0.07 & 0.58 & 1.09 & 0.65 \\
+2019 Repo    & 0.55 & 0.53 & \textbf{0.91} & 0.02 & 0.81 \\
+2020 COVID   & 0.81 & 1.21 & 0.08 & 1.91 & 1.03 \\
+2022 Rates   & 0.67 & \textbf{1.24} & 0.94 & 0.89 & 1.29 \\
+2023 SVB     & 0.42 & 0.54 & \textbf{0.94} & 0.12 & 1.43 \\
+2024 Carry   & 0.35 & 0.07 & \textbf{0.49} & 0.34 & 1.52 \\
 \midrule
-Median       & 0.42 & 0.40 & 0.56 & 0.96 & 0.73 \\
+Median       & 0.42 & 0.48 & 0.53 & 0.96 & 0.73 \\
 \bottomrule
 \end{tabular}
 
 \smallskip
 \noindent{\footnotesize Best geometric method exceeds RF on 5/12
 crises (those where RF labels are sparse/absent).  MLF leads on 3,
-Berry on 2.}
+QFI on 2.}
 \end{table}
 
 \subsection{Temporal Stability}\label{subsec:temporal_oos}
@@ -717,8 +728,10 @@ To assess temporal stability, we compare performance on pre-2020
 crises (8 events) versus post-2020 crises (4 events: COVID, Rate
 Hikes, SVB, Carry Unwind) using the same causal preprocessing.
 Table~\ref{tab:oos} shows that Berry improves on post-2020 crises
-($0.44 \to 0.56$), Multi-Lag Fidelity is stable ($0.58 \to 0.61$),
-while QFI degrades modestly.  RF drops from $0.92$ to $0.81$ as
+($0.41 \to 0.56$), Multi-Lag Fidelity improves modestly ($0.52 \to
+0.61$), and QFI Determinant improves dramatically ($0.46 \to 0.76$),
+driven by strong performance on prolonged structural crises (COVID
+$d = 1.21$, Rates $d = 1.24$).  RF drops from $0.92$ to $0.81$ as
 novel crises diverge from the historical training labels.
 
 \begin{table}[htb]
@@ -731,9 +744,9 @@ post-2020 crises.  Causal preprocessing per crisis.}
 \toprule
 Method & Pre-2020 & Post-2020 & COVID & Rates & SVB & Carry \\
 \midrule
-Berry Curv.\ Incr. & 0.44 & 0.56 & 0.81 & 0.67 & 0.42 & 0.35 \\
-QFI Determinant   & 0.40 & 0.37 & 0.33 & 0.72 & 0.15 & 0.29 \\
-Multi-Lag Fidelity & 0.58 & 0.61 & 0.07 & 0.94 & 0.94 & 0.49 \\
+Berry Curv.\ Incr. & 0.41 & 0.56 & 0.81 & 0.67 & 0.42 & 0.35 \\
+QFI Determinant   & 0.46 & 0.76 & 1.21 & 1.24 & 0.54 & 0.07 \\
+Multi-Lag Fidelity & 0.52 & 0.61 & 0.08 & 0.94 & 0.94 & 0.49 \\
 CUSUM             & 0.60 & 1.32 & 1.03 & 1.29 & 1.43 & 1.52 \\
 Random Forest     & 0.92 & 0.81 & 1.91 & 0.89 & 0.12 & 0.33 \\
 \bottomrule
@@ -742,25 +755,26 @@ Random Forest     & 0.92 & 0.81 & 1.91 & 0.89 & 0.12 & 0.33 \\
 
 \paragraph{Per-crisis wins.}
 Under causal evaluation, RF benefits from labeled prior crises and
-leads on 7 of 12~events.  However, the best geometric observable
-outperforms RF on 5 of 12~crises
+leads on 6 of 12~events.  However, the best geometric observable
+outperforms RF on 6 of 12~crises
 (Table~\ref{tab:crisis_breakdown})---precisely those where RF's
 training labels are sparse or absent:
-2007~Quant (QCML Chern $d = 0.94$ vs.\ RF $d = 0.00$, no pre-2007
+2007~Quant (QFI $d = 1.33$ vs.\ RF $d = 0.00$, no pre-2007
 crisis labels),
+2008~GFC (QCML Chern $d = 1.73$ vs.\ RF $d = 1.53$),
 2019~Repo (MLF $d = 0.91$ vs.\ RF $d = 0.02$),
-2022~Rates (QCML Chern $d = 1.46$ vs.\ RF $d = 0.89$),
+2022~Rates (QCML Chern $d = 1.50$ vs.\ RF $d = 0.89$),
 2023~SVB (MLF $d = 0.94$ vs.\ RF $d = 0.12$), and
-2024~Carry (MLF $d = 0.49$ vs.\ RF $d = 0.33$).
-RF's bimodal distribution ($d > 1.0$ on 5~crises, $d < 0.13$ on 3)
+2024~Carry (MLF $d = 0.49$ vs.\ RF $d = 0.34$).
+RF's bimodal distribution ($d > 1.0$ on 6~crises, $d < 0.13$ on 3)
 reflects the fundamental constraint of supervised methods under
 causal evaluation: when a crisis type has no close historical
 precedent, the learned signal collapses entirely.
 
 Against CUSUM ($d = 0.73$), the best geometric method wins 7 of
 12~crises, with the largest margins on 2008~GFC
-(QCML Chern $d = 1.34$ vs.\ CUSUM $d = 0.52$) and 2011~Euro
-(QCML Chern $d = 1.20$ vs.\ CUSUM $d = 0.18$).
+(QCML Chern $d = 1.73$ vs.\ CUSUM $d = 0.52$) and 2011~Euro
+(QCML Chern $d = 1.29$ vs.\ CUSUM $d = 0.18$).
 The geometric methods show complementary per-crisis strengths:
 QCML Chern dominates on structural crises (GFC, Euro, Rates),
 Multi-Lag Fidelity excels on idiosyncratic events (Repo, SVB),
@@ -810,44 +824,57 @@ year.  We compare three threshold strategies:
 (iii)~adaptive rolling quantile combined with score velocity detection
 (described below).
 
-Table~\ref{tab:walkforward} shows that the adaptive threshold
-strategy substantially improves detection rates relative to fixed
-thresholds.  Multi-Lag Fidelity achieves 86\% detection (6/7 crises)
-with a median delay of only 9~trading days under adaptive thresholds,
-making it a viable early-warning signal.  Berry Curvature detects 5/7
-crises with fixed $z > 2$ (71\%) and 4/7 with adaptive thresholds.
-BOCPD, which detected 0/7 crises under fixed or FAR-calibrated
-thresholds, detects 5/7 under adaptive thresholds with just 4-day
-delay---demonstrating that self-calibrating thresholds can unlock
-signals invisible to fixed strategies.
+Table~\ref{tab:walkforward} presents results under three threshold
+strategies.  The FAR-calibrated column provides the fair cross-method
+comparison (all methods calibrated to a common false alarm target):
+Random Forest detects all 7/7~crises with 5-day median delay at
+3.6~false alarms/yr; Multi-Lag Fidelity detects 6/7~crises with 16-day
+median delay at 2.5~false alarms/yr.  RF is thus faster and more
+complete; Multi-Lag Fidelity produces 30\% fewer false alarms without
+requiring any crisis labels.  Note that RF produces probability scores
+$\in [0,1]$, not z-scores, making the fixed $z > 2$ threshold
+dimensionally inapplicable; the FAR-calibrated results are the
+appropriate benchmark for RF comparisons.
+
+Under adaptive thresholds (rolling quantile $+$ score velocity), Multi-Lag
+Fidelity achieves 86\% detection (6/7~crises) with 9-day median delay,
+but at an elevated 3.7~false alarms/yr.  BOCPD, which detected 0/7
+crises under fixed or FAR-calibrated thresholds, detects 5/7 under
+adaptive thresholds with just 4-day delay---demonstrating that
+self-calibrating thresholds can unlock signals invisible to fixed
+strategies.
 
 \begin{table}[htb]
 \centering
 \caption{Walk-forward detection summary (expanding window, 7 crisis--window
   pairs).  ``Adaptive'' uses rolling quantile + score velocity
   thresholds.  Delay = median trading days from crisis start to first
-  alarm; ``---'' = never detected.}
+  alarm; ``---'' = never detected.  The \textbf{FAR-calibrated} column
+  provides the comparable cross-method benchmark.}
 \label{tab:walkforward}
 \small
 \begin{tabular}{lccccccccc}
 \toprule
- & \multicolumn{3}{c}{Fixed $z > 2$} & \multicolumn{3}{c}{FAR-calibrated} & \multicolumn{3}{c}{Adaptive} \\
+ & \multicolumn{3}{c}{Fixed $z > 2$} & \multicolumn{3}{c}{\textbf{FAR-calibrated}$^\dagger$} & \multicolumn{3}{c}{Adaptive} \\
 \cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10}
 Method & Det. & Delay & FAR & Det. & Delay & FAR & Det. & Delay & FAR \\
 \midrule
 Berry Curv.\ Incr.   & 5/7 & 32 & 1.2 & 5/7 & 24 & 1.2 & 4/7 & 14 & 3.6 \\
 QFI Determinant       & 3/7 & 55 & 1.3 & 3/7 & 54 & 2.5 & 3/7 & 55 & 3.6 \\
-\textbf{Multi-Lag Fidelity}  & 5/7 & 23 & 1.2 & \textbf{6/7} & 16 & 2.5 & \textbf{6/7} & \textbf{9} & 3.7 \\
+Multi-Lag Fidelity    & 5/7 & 23 & 1.2 & \textbf{6/7} & \textbf{16} & \textbf{2.5} & 6/7 & 9 & 3.7 \\
 Rolling Vol Z         & 3/7 & 10 & 1.2 & 6/7 & 13 & 2.5 & 5/7 & 15 & 1.3 \\
 BOCPD                 & 0/7 & --- & 0.0 & 0/7 & --- & 0.0 & 5/7 & 4 & 2.4 \\
-Random Forest         & 0/7 & --- & 0.0 & 7/7 & 5 & 3.6 & --- & --- & --- \\
+\textbf{Random Forest} & ---$^\ddagger$ & --- & --- & \textbf{7/7} & \textbf{5} & \textbf{3.6} & --- & --- & --- \\
 \bottomrule
 \end{tabular}
 
 \medskip
-\noindent{\footnotesize Adaptive thresholds not applicable to RF
-(probability scores, not z-scores).  FAR = false alarms per year
-(median).}
+\noindent{\footnotesize $^\dagger$FAR-calibrated is the comparable
+cross-method benchmark (all methods calibrated to a common false alarm
+target).  FAR = false alarms per year (median).
+$^\ddagger$RF outputs probability scores $\in [0,1]$, not z-scores;
+the fixed $z > 2$ threshold is dimensionally inapplicable.
+Adaptive thresholds not applicable to RF for the same reason.}
 \end{table}
 
 \paragraph{Adaptive threshold calibration.}\label{subsec:adaptive_threshold}
@@ -904,9 +931,13 @@ $\approx 5{-}10\%$ of the sample).  AUC-PR, which is threshold-free, provides
 a more discriminating ranking.  HMM achieves the highest AUC-PR (0.330)
 via persistent regime labels; among z-score methods, Isolation Forest
 (0.111) and Random Forest (0.090) lead, with Berry (0.027) and
-Multi-Lag Fidelity (0.021) at moderate levels.  Geometric methods offer
-the fastest median detection delays: Multi-Lag Fidelity at 5 days and
-Berry at 8 days, compared to RF at 10 days and Rolling Vol Z at 25 days.
+Multi-Lag Fidelity (0.021) at moderate levels.  In this offline
+evaluation (crisis boundaries known a priori), geometric methods show
+fast median detection delays: Multi-Lag Fidelity at 5 days and Berry
+at 8 days, compared to RF at 10 days and Rolling Vol Z at 25 days.
+These offline delays should not be confused with prospective detection
+speed; see Table~\ref{tab:walkforward} for walk-forward results with
+strictly causal thresholds.
 CUSUM fires immediately (0-day delay) but at prohibitive FAR
 (186.6/yr).}
 \end{table}
@@ -920,9 +951,8 @@ tools that provide richer inference than a single omnibus test.
 The Model Confidence Set (MCS; Hansen et al., 2011) identifies the set of
 methods whose performance cannot be statistically distinguished from the
 best at the 90\% confidence level ($\alpha = 0.1$, $B = 10{,}000$ bootstrap
-resamples).  The MCS contains 10 of 11~methods
-(Table~\ref{tab:mcs}); only BOCPD is excluded, confirming that it is
-the sole statistically dominated method.  All geometric methods are
+resamples).  The MCS contains 12 of 14~methods
+(Table~\ref{tab:mcs}); only BOCPD and Geometric Ensemble are excluded.  All geometric methods are
 retained in the MCS, consistent with their competitive per-crisis
 rankings despite lower median $d$.
 
@@ -939,7 +969,9 @@ Method & MCS \\
 CUSUM               & $\checkmark$ \\
 Random Forest       & $\checkmark$ \\
 Isolation Forest    & $\checkmark$ \\
+Metric Condition    & $\checkmark$ \\
 QCML Chern          & $\checkmark$ \\
+Spectral Gap        & $\checkmark$ \\
 Multi-Lag Fidelity  & $\checkmark$ \\
 Berry Curv.\ Incr.   & $\checkmark$ \\
 HMM 2-state         & $\checkmark$ \\
@@ -948,6 +980,7 @@ QFI Determinant     & $\checkmark$ \\
 Geo.\ Consensus      & $\checkmark$ \\
 \midrule
 BOCPD               & $\times$ \\
+Geo.\ Ensemble       & $\times$ \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -956,12 +989,12 @@ BOCPD               & $\times$ \\
 We test pairwise superiority of the three top geometric methods against
 RF and CUSUM using the Bayesian signed-rank test with a ROPE of $\pm 0.1$
 (Benavoli et al., 2017).  Table~\ref{tab:bayesian} shows posterior
-probabilities.  RF and CUSUM are strongly favoured over all three
-geometric methods ($P(\text{B better}) > 0.92$ in every comparison),
-with tight posteriors reflecting the consistent per-crisis advantage
-of supervised and cumulative-sum methods on aggregate.  Multi-Lag Fidelity
-shows the narrowest gap ($P(\text{MLF} > \text{RF}) = 0.078$), consistent
-with its competitive Friedman rank.
+probabilities.  RF is directionally favoured over all three
+geometric methods ($P(\text{RF better}) \geq 0.58$), and CUSUM is
+favoured over Berry and MLF, though the posteriors are broad given
+only 12~crises.  Multi-Lag Fidelity shows the narrowest gap against
+RF ($P(\text{MLF} > \text{RF}) = 0.33$), and QFI Determinant is
+essentially equivocal against CUSUM ($P(\text{equiv}) = 0.33$).
 
 \begin{table}[htbp]
 \centering
@@ -974,26 +1007,28 @@ with its competitive Friedman rank.
 \toprule
 Comparison & $P(A > B)$ & $P(\text{equiv})$ & $P(B > A)$ \\
 \midrule
-Berry vs RF   & 0.013 & 0.002 & 0.985 \\
-QFI Det vs RF & 0.001 & 0.000 & 0.999 \\
-MLF vs RF     & 0.078 & 0.000 & 0.921 \\
-Berry vs CUSUM  & 0.005 & 0.003 & 0.992 \\
-QFI Det vs CUSUM & 0.001 & 0.000 & 0.999 \\
-MLF vs CUSUM    & 0.056 & 0.013 & 0.931 \\
+Berry vs RF   & 0.250 & 0.083 & 0.667 \\
+QFI Det vs RF & 0.333 & 0.000 & 0.667 \\
+MLF vs RF     & 0.333 & 0.083 & 0.583 \\
+Berry vs CUSUM  & 0.250 & 0.000 & 0.750 \\
+QFI Det vs CUSUM & 0.167 & 0.333 & 0.500 \\
+MLF vs CUSUM    & 0.333 & 0.083 & 0.583 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \paragraph{Bootstrap Rank Confidence Intervals.}
 Table~\ref{tab:bootstrap_ranks} presents bootstrap 95\% CIs for mean
-Friedman ranks ($B = 10{,}000$).  Wide confidence intervals for most methods
-(spanning 2--3 ranks) reflect the heterogeneity of per-crisis performance.
-CUSUM has the best mean rank ($3.67$, CI $[2.33, 5.17]$), followed by
-a cluster at 4.50 (Isolation Forest, QCML Chern, Random Forest) with
-heavily overlapping CIs.  Multi-Lag Fidelity ($5.33$, CI $[3.92, 6.92]$)
-overlaps with RF ($4.50$, CI $[2.50, 6.83]$), confirming
-that the rank difference is not significant.  BOCPD is clearly
-separated at the bottom ($10.67$, CI $[10.25, 11.00]$).
+Friedman ranks ($B = 10{,}000$) across all 14~methods.  Wide confidence
+intervals (spanning 3--5 ranks) reflect the heterogeneity of per-crisis
+performance.  CUSUM has the best mean rank ($4.42$, CI $[2.83, 6.17]$),
+followed by a broad cluster spanning RF ($5.50$, CI $[2.92, 8.33]$),
+Isolation Forest, Metric Condition (both $5.75$), QCML Chern and
+Spectral Gap (both $6.08$) with heavily overlapping CIs.  Multi-Lag
+Fidelity ($6.50$, CI $[4.67, 8.42]$) overlaps with RF ($[2.92, 8.33]$),
+confirming that the rank difference is not significant.  BOCPD
+($12.83$) and Geometric Ensemble ($13.25$) are clearly separated at
+the bottom.
 
 \begin{table}[htbp]
 \centering
@@ -1005,17 +1040,20 @@ separated at the bottom ($10.67$, CI $[10.25, 11.00]$).
 \toprule
 Method & Mean Rank & 95\% CI \\
 \midrule
-CUSUM               & 3.67 & [2.33, 5.17] \\
-Isolation Forest    & 4.50 & [3.25, 5.75] \\
-QCML Chern          & 4.50 & [3.33, 5.83] \\
-Random Forest       & 4.50 & [2.50, 6.83] \\
-Multi-Lag Fidelity  & 5.33 & [3.92, 6.92] \\
-Rolling Vol Z       & 5.67 & [3.92, 7.42] \\
-Berry Curv.\ Incr.   & 5.75 & [4.67, 6.83] \\
-HMM 2-state         & 5.75 & [3.83, 7.67] \\
-QFI Determinant     & 7.67 & [6.83, 8.50] \\
-Geo.\ Consensus      & 8.00 & [7.00, 9.00] \\
-BOCPD               & 10.67 & [10.25, 11.00] \\
+CUSUM               & 4.42 & [2.83, 6.17] \\
+Random Forest       & 5.50 & [2.92, 8.33] \\
+Isolation Forest    & 5.75 & [4.08, 7.42] \\
+Metric Condition    & 5.75 & [4.33, 7.33] \\
+QCML Chern          & 6.08 & [4.33, 8.00] \\
+Spectral Gap        & 6.08 & [4.42, 7.75] \\
+Multi-Lag Fidelity  & 6.50 & [4.67, 8.42] \\
+HMM 2-state         & 6.92 & [4.50, 9.25] \\
+Berry Curv.\ Incr.   & 7.00 & [5.58, 8.33] \\
+Rolling Vol Z       & 7.17 & [5.08, 9.25] \\
+QFI Determinant     & 7.67 & [6.00, 9.33] \\
+Geo.\ Consensus      & 10.08 & [8.33, 11.58] \\
+BOCPD               & 12.83 & [12.33, 13.25] \\
+Geo.\ Ensemble       & 13.25 & [12.25, 14.00] \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -1024,10 +1062,10 @@ BOCPD               & 10.67 & [10.25, 11.00] \\
 Figure~\ref{fig:cd_diagram} shows the Nemenyi post-hoc critical difference
 (CD) diagram, where methods connected by a horizontal bar do not differ
 significantly at $\alpha = 0.05$.  The diagram confirms a single large
-clique spanning ranks 3.7--8.0 (CUSUM through Geometric Consensus), with
-only BOCPD outside.  Geometric methods fall within the main clique,
-indicating that their rank differences from RF and CUSUM are within
-sampling variability.
+clique spanning ranks 4.4--10.1 (CUSUM through Geometric Consensus), with
+only BOCPD and Geometric Ensemble outside.  All geometric methods fall
+within the main clique, indicating that their rank differences from RF
+and CUSUM are within sampling variability.
 
 \begin{figure}[htbp]
 \centering
@@ -1197,15 +1235,16 @@ return enhancement.  The break-even transaction cost is approximately
 
 \subsection{Interpretation}
 
-The 90\% Model Confidence Set retains 10 of 11~methods
+The 90\% Model Confidence Set retains 12 of 14~methods
 (Table~\ref{tab:mcs}), placing all geometric observables in the set
 of methods statistically indistinguishable from the best.  Bootstrap
-rank CIs (Table~\ref{tab:bootstrap_ranks}) reinforce this: QCML Chern,
-Isolation Forest, and RF share mean rank~4.50, with Multi-Lag Fidelity
-(rank~5.33, CI $[3.92, 6.92]$) overlapping RF ($[2.50, 6.83]$).
+rank CIs (Table~\ref{tab:bootstrap_ranks}) reinforce this: CUSUM
+(rank~4.42), RF (5.50), and a broad cluster of geometric methods
+(5.75--7.67) all share heavily overlapping CIs, with Multi-Lag Fidelity
+(rank~6.50, CI $[4.67, 8.42]$) overlapping RF ($[2.92, 8.33]$).
 On median Cohen's~$d$, RF ($0.96$) leads, followed by CUSUM ($0.73$),
-Multi-Lag Fidelity ($0.56$), Berry ($0.42$), and QFI Determinant
-($0.40$).  Geometric methods thus achieve statistical parity on rank
+Multi-Lag Fidelity ($0.53$), QFI Determinant ($0.48$), and Berry
+($0.42$).  Geometric methods thus achieve statistical parity on rank
 while trailing on aggregate effect size.
 
 The causal pipeline reveals that RF's advantage is concentrated on
@@ -1220,10 +1259,12 @@ label scarcity.
 
 The value of geometric methods lies in their complementary
 per-crisis strengths.  Multi-Lag Fidelity excels on prolonged stress
-(2022 Rates $d = 0.94$, 2011 Euro $d = 1.04$, 2023 SVB $d = 0.94$);
+(2022 Rates $d = 0.94$, 2011 Euro $d = 1.03$, 2023 SVB $d = 0.94$);
 Berry captures acute events (2020 COVID $d = 0.81$, 2018 Volmageddon
-$d = 0.84$); QFI Determinant performs steadily across most crises
-(2022 Rates $d = 0.72$, 2019 Repo $d = 0.64$).  Each observable
+$d = 0.84$); QFI Determinant excels on prolonged structural crises
+(2008 GFC $d = 1.15$, 2020 COVID $d = 1.21$, 2022 Rates $d = 1.24$)
+but is near-zero on acute shocks (2018 Volmageddon $d = 0.04$,
+2018 Q4 $d = 0.07$).  Each observable
 probes a different geometric property: Berry curvature increment
 detects rapid phase changes in the U(1) connection, the QFI
 determinant tracks manifold volume collapse
@@ -1236,7 +1277,7 @@ complementarity.  Geometric methods do not show a differential
 advantage on novel versus conventional crises; the value lies in
 additive diversity---partially independent detection channels that
 improve combination regardless of crisis type.  The Friedman test
-($\chi^2 = 49.2$, $p < 10^{-6}$) confirms that the methods differ
+($\chi^2 = 64.2$, $p < 10^{-8}$) confirms that the methods differ
 significantly in their per-crisis rankings, consistent with the
 forecast combination literature where diverse but individually
 imperfect methods gain value from
@@ -1244,9 +1285,9 @@ aggregation~\cite{bates_granger1969,timmermann2006}.
 
 \paragraph{Oracle combination and complementarity.}
 An oracle selector that picks the best-performing method per crisis achieves
-median $d = 1.43$, a 49\% improvement over the best single method (RF,
+median $d = 1.43$, a 47\% improvement over the best single method (RF,
 median $d = 0.96$).  The complementarity score---defined as
-$1 - |\text{Oracle} - \text{best single}| / \text{Oracle}$---is $0.69$,
+$1 - |\text{Oracle} - \text{best single}| / \text{Oracle}$---is $0.71$,
 indicating substantial non-overlapping information across methods.
 Six different methods serve as the oracle winner across the 12~crises
 (CUSUM~3, RF~5, Multi-Lag Fidelity~1, Isolation Forest~1, Rolling
@@ -1335,8 +1376,8 @@ theory~\cite{schuld_killoran2019,busemeyer2012}.
   While all geometric methods are in the 90\% Model Confidence Set,
   RF (median $d = 0.96$) and CUSUM ($d = 0.73$) achieve higher
   median Cohen's~$d$ than any individual geometric observable (MLF
-  $d = 0.56$), and Bayesian pairwise tests favour RF in every
-  comparison (Table~\ref{tab:bayesian}).  Multi-Lag Fidelity wins 5
+  $d = 0.53$), and Bayesian pairwise tests directionally favour RF
+  (Table~\ref{tab:bayesian}).  Multi-Lag Fidelity wins 5
   of 12~crises head-to-head against RF, but loses on aggregate,
   suggesting that the curvature-based signal has not yet captured
   everything that labeled supervision or cumulative-sum statistics
@@ -1393,27 +1434,33 @@ are retained in the 90\% Model Confidence Set (Table~\ref{tab:mcs}),
 and their bootstrap rank CIs overlap those of the supervised Random
 Forest baseline (Table~\ref{tab:bootstrap_ranks}).
 
-This statistical parity coexists with a clear advantage on two
-practically important dimensions:
+This statistical parity coexists with advantages on two practically
+important dimensions:
 \begin{enumerate}
-\item \textbf{Detection speed.}  Multi-Lag Fidelity detects crises in
-  5~trading days (median) and Berry in~8, compared to RF at~10
-  (Table~\ref{tab:detection_metrics}).  Geometric methods achieve this
-  speed without any labeled crisis data.
+\item \textbf{Detection precision.}  Under FAR-calibrated walk-forward
+  validation (Table~\ref{tab:walkforward}), RF detects all 7/7~crises
+  in 5~days (median) at 3.6~false alarms/yr; Multi-Lag Fidelity detects
+  6/7 in 16~days at 2.5~false alarms/yr.  RF is faster and more
+  complete; geometric methods produce 30\% fewer false alarms without
+  requiring any crisis labels.  The offline detection metrics
+  (Table~\ref{tab:detection_metrics}, crisis boundaries known a priori)
+  show faster geometric response (MLF 5d, Berry 8d vs.\ RF 10d), but
+  the walk-forward benchmark is the appropriate test of
+  deployment-realistic detection speed.
 
 \item \textbf{Complementarity.}  An oracle selector combining all
-  methods achieves median $d = 1.43$---a 49\% improvement over the best
+  methods achieves median $d = 1.43$---a 47\% improvement over the best
   single method (RF, $d = 0.96$)---with a complementarity score of
-  $0.69$.  Multi-Lag Fidelity wins 5 of 12~crises head-to-head against
+  $0.71$.  Multi-Lag Fidelity wins 5 of 12~crises head-to-head against
   RF, particularly where supervised training data is sparse (2023 SVB:
   MLF $d = 0.94$ vs.\ RF $d = 0.12$).  The three observables show
   complementary per-crisis strengths: Multi-Lag on prolonged stress,
-  Berry on acute shocks, QFI on steady-state detection.
+  Berry on acute shocks, QFI on structural regime shifts.
 \end{enumerate}
 
 \noindent We are explicit about the limitations of these results.  RF
-retains the highest median Cohen's~$d$ ($0.96$ vs.\ $0.56$ for MLF),
-and Bayesian pairwise tests favour RF in every comparison
+retains the highest median Cohen's~$d$ ($0.96$ vs.\ $0.53$ for MLF),
+and Bayesian pairwise tests directionally favour RF
 (Table~\ref{tab:bayesian}).  The causal online pipeline achieves
 AUC-ROC~$= 0.58$ for the unsupervised ensemble, substantially below
 offline separability.  A long-flat strategy driven by the geometric
@@ -1425,15 +1472,16 @@ drawdown reduction rather than return enhancement.
 These findings align with a broad literature on forecast combination:
 individually imperfect methods gain value from
 diversity~\cite{bates_granger1969,timmermann2006}.  The Friedman test
-($\chi^2 = 49.2$, $p < 10^{-6}$) confirms significant heterogeneity in
+($\chi^2 = 64.2$, $p < 10^{-8}$) confirms significant heterogeneity in
 per-crisis rankings.  Geometric observables contribute a genuinely new
 detection channel---curvature-based, manifold-intrinsic, and
 mechanism-agnostic---that is best deployed \emph{alongside} supervised
 and classical methods rather than as a replacement.  The practical
 implication is that practitioners should include geometric observables in
 their detection ensemble: they are computationally inexpensive (Berry
-0.77s, MLF 0.26s for $T = 3{,}447$), require no crisis labels, detect
-faster, and capture crisis information that supervised methods miss.
+0.77s, MLF 0.26s for $T = 3{,}447$), require no crisis labels, produce
+fewer false alarms, and capture crisis information that supervised
+methods miss.
 
 Full operator training via gradient descent and extension to non-equity
 asset classes are natural next steps.  On the detection side, reducing
