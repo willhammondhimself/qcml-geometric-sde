@@ -2,14 +2,15 @@
 Shared data loading and crisis definitions for all experiments.
 
 Provides:
-- fetch_polygon_data(): Fetch daily OHLCV from Polygon API
+- fetch_data(): Unified data fetcher (WRDS default, Polygon fallback)
+- fetch_polygon_data(): Fetch daily OHLCV from Polygon API (legacy)
 - create_feature_matrix(): Build feature matrix from close prices
 - ALL_CRISES: 16 crisis definitions with start/end dates (12 post-2005 + 4 pre-2005)
 - CRISIS_CATEGORIES: Pre-defined novel vs conventional classification
 - PolygonDataSource / MinimalFeatureEngine: Legacy-compatible wrappers
 
 Usage:
-    from experiments.data_loader import fetch_polygon_data, create_feature_matrix, ALL_CRISES
+    from experiments.data_loader import fetch_data, create_feature_matrix, ALL_CRISES
 """
 
 import os
@@ -216,6 +217,94 @@ def fetch_polygon_data(symbols, start_date, end_date):
     return df
 
 
+def fetch_yfinance_data(symbols, start_date, end_date):
+    """Fetch daily OHLCV from Yahoo Finance via yfinance.
+
+    Free, no API key required. 30+ years of history for liquid ETFs.
+    Returns split/dividend-adjusted prices (same adjustment as Polygon default).
+
+    Args:
+        symbols: List of ticker symbols, e.g. ['SPY', 'DIA'].
+        start_date: Start date string 'YYYY-MM-DD'.
+        end_date: End date string 'YYYY-MM-DD'.
+
+    Returns:
+        DataFrame with MultiIndex (symbol, timestamp) and columns
+        [open, high, low, close, volume].
+    """
+    try:
+        import yfinance as yf
+    except ImportError:
+        raise RuntimeError("yfinance not installed. Run: pip install yfinance")
+
+    raw = yf.download(
+        symbols,
+        start=start_date,
+        end=end_date,
+        auto_adjust=True,
+        progress=False,
+        threads=True,
+    )
+
+    if raw.empty:
+        raise RuntimeError(f"yfinance returned no data for {symbols} {start_date}:{end_date}")
+
+    # yfinance 0.2.x returns MultiIndex columns (field, ticker) for any input
+    if isinstance(raw.columns, pd.MultiIndex):
+        raw.columns.names = ['field', 'symbol']
+        df = raw.stack(level='symbol', future_stack=True)
+        df.columns = [c.lower() for c in df.columns]
+        df.index = df.index.rename(['timestamp', 'symbol'])
+        df = df.swaplevel().sort_index()
+    else:
+        # Flat columns — single ticker, older yfinance behaviour
+        df = raw.copy()
+        df.columns = [c.lower() for c in df.columns]
+        df.index.name = 'timestamp'
+        df.index = pd.MultiIndex.from_tuples(
+            [(symbols[0], t) for t in df.index],
+            names=['symbol', 'timestamp'],
+        )
+
+    return df[['open', 'high', 'low', 'close', 'volume']]
+
+
+def fetch_data(symbols, start_date, end_date, source='auto'):
+    """Unified data fetcher. Tries WRDS, then yfinance (free), then Polygon.
+
+    Args:
+        symbols: List of ticker symbols, e.g. ['SPY', 'DIA'].
+        start_date: Start date string 'YYYY-MM-DD'.
+        end_date: End date string 'YYYY-MM-DD'.
+        source: 'auto' (default), 'yfinance', 'polygon', or 'wrds'.
+            'auto' tries WRDS if configured, otherwise uses yfinance.
+
+    Returns:
+        DataFrame with MultiIndex (symbol, timestamp) and columns
+        [open, high, low, close, volume].
+    """
+    if source == 'yfinance':
+        return fetch_yfinance_data(symbols, start_date, end_date)
+
+    if source == 'polygon':
+        return fetch_polygon_data(symbols, start_date, end_date)
+
+    # source == 'auto' or 'wrds': try WRDS first, fall back to yfinance
+    try:
+        from experiments.wrds_data_loader import (
+            fetch_wrds_equities, wrds_prices_to_polygon_format,
+        )
+        from dotenv import load_dotenv
+        load_dotenv(ROOT / '.env')
+        if not os.environ.get('WRDS_USERNAME'):
+            raise RuntimeError("WRDS_USERNAME not set")
+        prices_wide = fetch_wrds_equities(symbols, start_date, end_date)
+        return wrds_prices_to_polygon_format(prices_wide)
+    except Exception as e:
+        logger.warning(f"WRDS fetch failed ({e}), falling back to yfinance")
+        return fetch_yfinance_data(symbols, start_date, end_date)
+
+
 def create_feature_matrix(prices_df):
     """Create a minimal feature matrix from a close-price DataFrame.
 
@@ -325,7 +414,7 @@ def load_default_data(symbols=None, start='2005-01-01', end='2024-12-31'):
     if symbols is None:
         symbols = ['SPY', 'DIA']
 
-    raw = fetch_polygon_data(symbols, start, end)
+    raw = fetch_data(symbols, start, end)
     prices_df = raw['close'].unstack('symbol').dropna()
     X, dates = create_feature_matrix(prices_df)
     return X, dates, prices_df
@@ -336,10 +425,13 @@ def load_default_data(symbols=None, start='2005-01-01', end='2024-12-31'):
 # =============================================================================
 
 class PolygonDataSource:
-    """Wrapper matching the old qcml.data.PolygonDataSource interface."""
+    """Wrapper matching the old qcml.data.PolygonDataSource interface.
+
+    Now uses WRDS by default via fetch_data().
+    """
 
     def fetch_equities(self, symbols, start_date, end_date):
-        return fetch_polygon_data(symbols, start_date, end_date)
+        return fetch_data(symbols, start_date, end_date)
 
 
 class MinimalFeatureEngine:
