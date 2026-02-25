@@ -70,11 +70,12 @@ def _write_cache(df: pd.DataFrame, filename: str):
 def get_wrds_connection():
     """Get or create a cached WRDS database connection.
 
-    Reads WRDS_USERNAME from .env file. On first use, WRDS may prompt
-    for password interactively (stored in ~/.pgpass afterward).
+    Uses the wrds library which handles PAM/Duo 2FA interactively.
+    Must be run from an interactive terminal where the user can accept
+    the Duo push notification on their phone.
 
     Returns:
-        wrds.Connection instance.
+        wrds.Connection object with raw_sql() method.
     """
     global _wrds_conn
     if _wrds_conn is not None:
@@ -90,8 +91,10 @@ def get_wrds_connection():
         )
 
     import wrds
+    logger.info(f"  Connecting to WRDS as {username}...")
+    logger.info(f"  Check your phone for a Duo push notification and accept it.")
     _wrds_conn = wrds.Connection(wrds_username=username)
-    logger.info(f"  Connected to WRDS as {username}")
+    logger.info(f"  Connected to WRDS.")
     return _wrds_conn
 
 

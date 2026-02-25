@@ -2,7 +2,7 @@
 Shared data loading and crisis definitions for all experiments.
 
 Provides:
-- fetch_data(): Unified data fetcher (WRDS default, Polygon fallback)
+- fetch_data(): Unified data fetcher (yfinance by default, WRDS optional)
 - fetch_polygon_data(): Fetch daily OHLCV from Polygon API (legacy)
 - create_feature_matrix(): Build feature matrix from close prices
 - ALL_CRISES: 16 crisis definitions with start/end dates (12 post-2005 + 4 pre-2005)
@@ -98,8 +98,8 @@ ALL_CRISES = {
     },
 }
 
-# Pre-SPY crises that require CRSP index data (not Polygon).
-# Kept separate so existing Polygon-based pipelines aren't broken.
+# Pre-SPY crises that require CRSP index data (not available via yfinance ETFs).
+# Kept separate; requires WRDS access.
 CRSP_ONLY_CRISES = {
     '1987_crash': {
         'start': '1987-10-14', 'end': '1987-11-30',
@@ -107,7 +107,7 @@ CRSP_ONLY_CRISES = {
     },
 }
 
-# SPY-era crises (post-1993): can use either Polygon or WRDS CRSP
+# SPY-era crises (post-1993): accessible via yfinance (free) or WRDS CRSP (institutional)
 SPY_ERA_CRISES = {k: v for k, v in ALL_CRISES.items()}
 
 # All crises including CRSP-only (for WRDS-based analysis)
@@ -427,7 +427,7 @@ def load_default_data(symbols=None, start='2005-01-01', end='2024-12-31'):
 class PolygonDataSource:
     """Wrapper matching the old qcml.data.PolygonDataSource interface.
 
-    Now uses WRDS by default via fetch_data().
+    Now uses yfinance by default via fetch_data().
     """
 
     def fetch_equities(self, symbols, start_date, end_date):
