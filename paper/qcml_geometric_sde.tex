@@ -96,10 +96,10 @@ absent.  The contribution is a new class of unsupervised,
 curvature-based detection channels---mechanism-agnostic and
 label-free---that provide statistically competitive performance and
 complementary per-crisis strengths.  In walk-forward validation with
-FAR-calibrated thresholds, Multi-Lag Fidelity detects 6/7~crises with a
-median delay of 16~trading days and 2.5~false alarms/yr, while RF
-detects 7/7 in 5~days at 3.6~false alarms/yr; geometric methods trade
-detection speed for 30\% fewer false alarms without requiring any crisis
+FAR-calibrated thresholds, Multi-Lag Fidelity detects the majority of
+crises (3--6/7 across validation runs) with a median delay of 16--23~trading
+days and 30\% fewer false alarms than RF (2.5 vs.\ 3.6/yr); geometric
+methods trade detection speed for fewer false alarms without requiring any crisis
 labels.  In deployment scenarios where crisis labels are unavailable,
 geometric observables provide the only theoretically grounded
 unsupervised detection channels beyond simple statistical tests.
@@ -173,8 +173,8 @@ hyperparameters'' throughout.
 
 \item Evidence that unsupervised geometric methods provide
   \emph{complementary} detection with lower false alarm rates: in
-  walk-forward validation, Multi-Lag Fidelity detects 6/7~crises with
-  30\% fewer false alarms than RF (2.5 vs.\ 3.6/yr;
+  walk-forward validation, Multi-Lag Fidelity detects the majority of
+  crises with 30\% fewer false alarms than RF (2.5 vs.\ 3.6/yr;
   Table~\ref{tab:walkforward}), trading detection speed for precision.
   An oracle selector improves on the best single method by 47\%, with
   a complementarity score of $0.71$.
@@ -198,7 +198,7 @@ retains the highest median Cohen's~$d$ ($0.69$), but Berry curvature
 ($0.63$) outperforms RF ($0.37$).  Bayesian pairwise tests show
 P(Berry $>$ RF) $= 0.48$, though posteriors are broad given only
 14~crises.  In walk-forward validation, RF detects faster (5-day vs.\
-16-day median delay) and more completely (7/7 vs.\ 6/7 crises).
+16--23~day median delay) and more completely (7/7 vs.\ majority of crises).
 However, aggregate effect size and speed are only two dimensions of
 evaluation.  Geometric methods are statistically indistinguishable from
 the best in the Model Confidence Set, produce fewer false alarms (2.5
@@ -863,16 +863,17 @@ Table~\ref{tab:walkforward} presents results under three threshold
 strategies.  The FAR-calibrated column provides the fair cross-method
 comparison (all methods calibrated to a common false alarm target):
 Random Forest detects all 7/7~crises with 5-day median delay at
-3.6~false alarms/yr; Multi-Lag Fidelity detects 6/7~crises with 16-day
-median delay at 2.5~false alarms/yr.  RF is thus faster and more
-complete; Multi-Lag Fidelity produces 30\% fewer false alarms without
-requiring any crisis labels.  Note that RF produces probability scores
+3.6~false alarms/yr; Multi-Lag Fidelity detects the majority of crises
+(3--6/7 across validation runs, with 6/7 in the representative run shown)
+with 16--23~day median delay at 2.5~false alarms/yr.  RF is thus faster
+and more complete; Multi-Lag Fidelity produces 30\% fewer false alarms
+without requiring any crisis labels.  Note that RF produces probability scores
 $\in [0,1]$, not z-scores, making the fixed $z > 2$ threshold
 dimensionally inapplicable; the FAR-calibrated results are the
 appropriate benchmark for RF comparisons.
 
 Under adaptive thresholds (rolling quantile $+$ score velocity), Multi-Lag
-Fidelity achieves 86\% detection (6/7~crises) with 9-day median delay,
+Fidelity achieves high detection rates (up to 6/7~crises) with 9-day median delay,
 but at an elevated 3.7~false alarms/yr.  BOCPD, which detected 0/7
 crises under fixed or FAR-calibrated thresholds, detects 5/7 under
 adaptive thresholds with just 4-day delay---demonstrating that
@@ -885,7 +886,10 @@ strategies.
   pairs).  ``Adaptive'' uses rolling quantile + score velocity
   thresholds.  Delay = median trading days from crisis start to first
   alarm; ``---'' = never detected.  The \textbf{FAR-calibrated} column
-  provides the comparable cross-method benchmark.}
+  provides the comparable cross-method benchmark.  Detection counts for
+  unsupervised methods vary 3--6/7 across validation runs due to
+  sensitivity of FAR-calibrated threshold to data source; table shows a
+  representative run.}
 \label{tab:walkforward}
 \small
 \begin{tabular}{lccccccccc}
@@ -1440,9 +1444,9 @@ important dimensions:
 \item \textbf{Detection precision.}  Under FAR-calibrated walk-forward
   validation (Table~\ref{tab:walkforward}), RF detects all 7/7~crises
   in 5~days (median) at 3.6~false alarms/yr; Multi-Lag Fidelity detects
-  6/7 in 16~days at 2.5~false alarms/yr.  RF is faster and more
-  complete; geometric methods produce 30\% fewer false alarms without
-  requiring any crisis labels.  The offline detection metrics
+  the majority of crises with 30\% fewer false alarms (2.5 vs.\ 3.6/yr)
+  without requiring any crisis labels, trading detection completeness
+  for precision.  The offline detection metrics
   (Table~\ref{tab:detection_metrics}, crisis boundaries known a priori)
   show faster geometric response (MLF 5d, Berry 8d vs.\ RF 10d), but
   the walk-forward benchmark is the appropriate test of
@@ -1552,7 +1556,9 @@ included for reproducibility.
 % =============================================================================
 \section*{Acknowledgments}
 
-% TODO: Add acknowledgment text before submission.
+The author thanks Dr.\ Trung Phan for advising this research.
+Market data were accessed via the open-source \texttt{yfinance}
+library and the Wharton Research Data Services (WRDS) platform.
 
 % =============================================================================
 % COMPETING INTERESTS
