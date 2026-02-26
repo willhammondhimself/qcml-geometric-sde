@@ -45,7 +45,7 @@ from qcml_geometry.observables import (
     MultiLagFidelityDetector,
 )
 from experiments.data_loader import (
-    fetch_polygon_data,
+    fetch_data,
     create_feature_matrix,
     ALL_CRISES,
 )
@@ -133,7 +133,7 @@ def generate_hero_complementarity(crisis_key='2020_covid', use_wrds=False, start
         # Ensure column order matches symbols list; cast to float64 (CRSP returns object dtype)
         prices_df = prices_df[[s for s in symbols if s in prices_df.columns]].astype(np.float64)
     else:
-        raw = fetch_polygon_data(symbols, start_date, '2024-12-31')
+        raw = fetch_data(symbols, start_date, '2024-12-31')
         prices_df = raw['close'].unstack('symbol').dropna()
     X, dates = create_feature_matrix(prices_df)
     X_enriched = BaseRegimeDetector.build_enriched_features(X, lookback=20)

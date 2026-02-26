@@ -46,7 +46,7 @@ from qcml_geometry import (
 from qcml_geometry.observables import BaseRegimeDetector
 
 from experiments.data_loader import (
-    fetch_polygon_data, create_feature_matrix, ALL_CRISES,
+    fetch_data, create_feature_matrix, ALL_CRISES,
 )
 from experiments.baselines import (
     RollingVolatilityDetector,
@@ -248,7 +248,7 @@ def run_enhanced_comparison(
     logger.info("\n[1] Fetching data from Polygon...")
     symbols = ['SPY', 'DIA']
     start = '1995-01-01' if full else '1995-01-01'
-    raw = fetch_polygon_data(symbols, start, '2024-12-31')
+    raw = fetch_data(symbols, start, '2024-12-31')
     prices_df = raw['close'].unstack('symbol').dropna()
     X, dates = create_feature_matrix(prices_df)
     logger.info(f"  Feature matrix: {X.shape}, dates: {dates[0]} to {dates[-1]}")

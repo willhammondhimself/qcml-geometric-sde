@@ -37,7 +37,7 @@ from qcml_geometry import (
 from qcml_geometry.observables import BaseRegimeDetector
 
 from experiments.data_loader import (
-    fetch_polygon_data, create_feature_matrix, ALL_CRISES,
+    fetch_data, create_feature_matrix, ALL_CRISES,
 )
 from experiments.baselines import (
     RollingVolatilityDetector,
@@ -232,7 +232,7 @@ def run_walk_forward(quick=False, far_target=None, adaptive=False):
     # Fetch full data range
     logger.info("\n[1] Fetching data...")
     symbols = ['SPY', 'DIA', 'QQQ']  # C4: QQQ adds tech-crisis sensitivity (Flash Crash, 2022)
-    raw = fetch_polygon_data(symbols, '2005-01-01', '2024-12-31')
+    raw = fetch_data(symbols, '2005-01-01', '2024-12-31')
     prices_df = raw['close'].unstack('symbol').dropna()
     X_full, dates_full = create_feature_matrix(prices_df)
     logger.info(f"  Full feature matrix: {X_full.shape}")

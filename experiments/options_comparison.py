@@ -43,7 +43,7 @@ from qcml_geometry.observables import (
     MultiLagFidelityDetector,
 )
 from experiments.data_loader import (
-    fetch_polygon_data,
+    fetch_data,
     create_feature_matrix,
     ALL_CRISES,
 )
@@ -214,7 +214,7 @@ def run_options_comparison(quick=False):
     # ---- Fetch equity data ----
     logger.info("\n[1] Fetching equity data...")
     symbols = ['SPY', 'DIA']
-    raw = fetch_polygon_data(symbols, '2005-01-01', '2024-12-31')
+    raw = fetch_data(symbols, '2005-01-01', '2024-12-31')
     prices_df = raw['close'].unstack('symbol').dropna()
     X, dates = create_feature_matrix(prices_df)
     X_enriched = BaseRegimeDetector.build_enriched_features(X, lookback=20)
@@ -230,7 +230,7 @@ def run_options_comparison(quick=False):
 
     # Also try VIXY ETF if available
     try:
-        vixy_raw = fetch_polygon_data(['VIXY'], '2011-01-01', '2024-12-31')
+        vixy_raw = fetch_data(['VIXY'], '2011-01-01', '2024-12-31')
         vixy_close = vixy_raw['close'].unstack('symbol')['VIXY'].dropna()
         logger.info(f"  VIXY data: {len(vixy_close)} days")
     except Exception:

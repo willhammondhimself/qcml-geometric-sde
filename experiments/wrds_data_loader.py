@@ -128,7 +128,7 @@ def fetch_wrds_equities(
     )
     cached = _read_cache(cache_file)
     if cached is not None:
-        return cached
+        return cached.astype('float64')
 
     db = get_wrds_connection()
 
@@ -157,6 +157,8 @@ def fetch_wrds_equities(
     prices = df.pivot_table(index='date', columns='symbol', values='close')
     prices = prices.dropna()
     prices.index.name = None
+    # Ensure plain numpy float64 (parquet may restore pandas nullable Float64)
+    prices = prices.astype('float64')
 
     _write_cache(prices, cache_file)
     return prices

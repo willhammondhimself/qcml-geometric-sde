@@ -13,7 +13,7 @@ from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 
 from qcml_geometry.core import QCMLGeometry
-from qcml_geometry.observables import BaseRegimeDetector
+from qcml_geometry.observables import BaseRegimeDetector, _apply_normalization
 
 logger = logging.getLogger(__name__)
 
@@ -33,6 +33,7 @@ class QCMLChernDetector(BaseRegimeDetector):
         operator_method: str = 'pca_inspired',
         seed: int = 42,
         causal_fit_length: Optional[int] = None,
+        normalization: str = 'sphere',
     ):
         self.hilbert_dim = hilbert_dim
         self.window_size = window_size
@@ -40,9 +41,12 @@ class QCMLChernDetector(BaseRegimeDetector):
         self.operator_method = operator_method
         self.seed = seed
         self.causal_fit_length = causal_fit_length
+        self.normalization = normalization
         self._geometry = None
         self._scaler = None
         self._pca = None
+        self._train_norms = None
+        self._train_std = None
 
     @property
     def name(self) -> str:
@@ -60,9 +64,12 @@ class QCMLChernDetector(BaseRegimeDetector):
         X_scaled_fit = self._scaler.transform(X[:fit_end])
         self._pca.fit(X_scaled_fit)
 
-        X_pca_fit = self._pca.transform(X_scaled_fit)
-        norms = np.linalg.norm(X_pca_fit, axis=1, keepdims=True)
-        X_pca_fit = X_pca_fit / (norms + 1e-8)
+        X_pca_raw = self._pca.transform(X_scaled_fit)
+        self._train_norms = np.linalg.norm(X_pca_raw, axis=1)
+        self._train_std = np.std(X_pca_raw, axis=0)
+        X_pca_fit = _apply_normalization(
+            X_pca_raw, self.normalization, self._train_norms, self._train_std,
+        )
 
         self._geometry = QCMLGeometry(
             n_features=X_pca_fit.shape[1], hilbert_dim=self.hilbert_dim
@@ -75,9 +82,10 @@ class QCMLChernDetector(BaseRegimeDetector):
             raise RuntimeError("Call fit() before compute_regime_scores().")
 
         X_scaled = self._scaler.transform(X)
-        X_pca = self._pca.transform(X_scaled)
-        norms = np.linalg.norm(X_pca, axis=1, keepdims=True)
-        X_pca = X_pca / (norms + 1e-8)
+        X_pca_raw = self._pca.transform(X_scaled)
+        X_pca = _apply_normalization(
+            X_pca_raw, self.normalization, self._train_norms, self._train_std,
+        )
 
         T = len(X_pca)
         scores = np.full(T, np.nan)
@@ -113,6 +121,7 @@ class GeometricConsensusDetector(BaseRegimeDetector):
         seed: int = 42,
         threshold_quantile: float = 0.9,
         causal_fit_length: Optional[int] = None,
+        normalization: str = 'sphere',
     ):
         self.hilbert_dim = hilbert_dim
         self.n_pca_components = n_pca_components
@@ -123,9 +132,12 @@ class GeometricConsensusDetector(BaseRegimeDetector):
         self.seed = seed
         self.threshold_quantile = threshold_quantile
         self.causal_fit_length = causal_fit_length
+        self.normalization = normalization
         self._geometry = None
         self._scaler = None
         self._pca = None
+        self._train_norms = None
+        self._train_std = None
 
     @property
     def name(self) -> str:
@@ -143,9 +155,12 @@ class GeometricConsensusDetector(BaseRegimeDetector):
         X_scaled_fit = self._scaler.transform(X[:fit_end])
         self._pca.fit(X_scaled_fit)
 
-        X_pca_fit = self._pca.transform(X_scaled_fit)
-        norms = np.linalg.norm(X_pca_fit, axis=1, keepdims=True)
-        X_pca_fit = X_pca_fit / (norms + 1e-8)
+        X_pca_raw = self._pca.transform(X_scaled_fit)
+        self._train_norms = np.linalg.norm(X_pca_raw, axis=1)
+        self._train_std = np.std(X_pca_raw, axis=0)
+        X_pca_fit = _apply_normalization(
+            X_pca_raw, self.normalization, self._train_norms, self._train_std,
+        )
 
         self._geometry = QCMLGeometry(
             n_features=X_pca_fit.shape[1], hilbert_dim=self.hilbert_dim
@@ -160,9 +175,10 @@ class GeometricConsensusDetector(BaseRegimeDetector):
         import pandas as pd
 
         X_scaled = self._scaler.transform(X)
-        X_pca = self._pca.transform(X_scaled)
-        norms = np.linalg.norm(X_pca, axis=1, keepdims=True)
-        X_pca = X_pca / (norms + 1e-8)
+        X_pca_raw = self._pca.transform(X_scaled)
+        X_pca = _apply_normalization(
+            X_pca_raw, self.normalization, self._train_norms, self._train_std,
+        )
 
         T = len(X_pca)
 

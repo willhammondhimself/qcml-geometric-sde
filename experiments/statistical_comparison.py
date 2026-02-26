@@ -402,6 +402,162 @@ def build_d_matrix(results):
 
 
 # ---------------------------------------------------------------------------
+# Bayesian Hierarchical Model
+# ---------------------------------------------------------------------------
+
+
+def run_bayesian_hierarchical(d_matrix, method_names, n_samples=5000, seed=42):
+    """Bayesian hierarchical model for method comparison.
+
+    Model: d_ij ~ N(mu_j, sigma_j^2 + tau^2)
+    where j=method, i=crisis, tau=between-crisis heterogeneity.
+
+    Uses conjugate Gibbs sampling (no external MCMC library required).
+    Produces posterior distributions for each method's "true mean d".
+
+    Args:
+        d_matrix: (n_crises, n_methods) array of Cohen's d values.
+        method_names: List of method names.
+        n_samples: Number of MCMC samples.
+        seed: Random seed.
+
+    Returns:
+        Dict with posterior summaries per method.
+    """
+    rng = np.random.default_rng(seed)
+    n_crises, n_methods = d_matrix.shape
+
+    # Priors: mu_j ~ N(0, 10), sigma_j ~ HalfCauchy(1), tau ~ HalfCauchy(1)
+    # Use empirical Bayes initialization
+    mu = np.nanmean(d_matrix, axis=0)
+    sigma = np.nanstd(d_matrix, axis=0, ddof=1) + 1e-4
+    tau = float(np.std(mu)) + 0.1
+
+    # Storage
+    mu_samples = np.zeros((n_samples, n_methods))
+    sigma_samples = np.zeros((n_samples, n_methods))
+    tau_samples = np.zeros(n_samples)
+
+    # Gibbs sampling with slice updates
+    for s in range(n_samples):
+        total_var = sigma**2 + tau**2
+
+        # Update mu_j (conjugate normal)
+        for j in range(n_methods):
+            valid = ~np.isnan(d_matrix[:, j])
+            n_j = valid.sum()
+            if n_j == 0:
+                mu[j] = rng.normal(0, 3)
+                continue
+            d_j = d_matrix[valid, j]
+            var_j = total_var[j]
+            # Prior: N(0, 100); Likelihood: N(mu_j, var_j) for each obs
+            prior_prec = 1.0 / 100.0
+            lik_prec = n_j / var_j
+            post_prec = prior_prec + lik_prec
+            post_mean = (lik_prec * np.mean(d_j)) / post_prec
+            mu[j] = rng.normal(post_mean, 1.0 / np.sqrt(post_prec))
+
+        # Update sigma_j (Metropolis step)
+        for j in range(n_methods):
+            valid = ~np.isnan(d_matrix[:, j])
+            if valid.sum() == 0:
+                continue
+            d_j = d_matrix[valid, j]
+            n_j = len(d_j)
+
+            sigma_prop = sigma[j] * np.exp(rng.normal(0, 0.2))
+            if sigma_prop <= 0:
+                continue
+
+            var_curr = sigma[j]**2 + tau**2
+            var_prop = sigma_prop**2 + tau**2
+
+            # Log-likelihood ratio
+            ll_curr = -0.5 * n_j * np.log(var_curr) - 0.5 * np.sum((d_j - mu[j])**2) / var_curr
+            ll_prop = -0.5 * n_j * np.log(var_prop) - 0.5 * np.sum((d_j - mu[j])**2) / var_prop
+
+            # Half-Cauchy prior on sigma: p(sigma) = 2/(pi*(1+sigma^2))
+            lp_curr = -np.log(1 + sigma[j]**2)
+            lp_prop = -np.log(1 + sigma_prop**2)
+
+            # Log proposal ratio (log-normal proposal)
+            lq = np.log(sigma_prop) - np.log(sigma[j])
+
+            if np.log(rng.uniform()) < (ll_prop + lp_prop) - (ll_curr + lp_curr) + lq:
+                sigma[j] = sigma_prop
+
+        # Update tau (Metropolis step)
+        tau_prop = tau * np.exp(rng.normal(0, 0.2))
+        if tau_prop > 0:
+            ll_curr_total = 0.0
+            ll_prop_total = 0.0
+            for j in range(n_methods):
+                valid = ~np.isnan(d_matrix[:, j])
+                if valid.sum() == 0:
+                    continue
+                d_j = d_matrix[valid, j]
+                n_j = len(d_j)
+                var_curr = sigma[j]**2 + tau**2
+                var_prop = sigma[j]**2 + tau_prop**2
+                ll_curr_total += -0.5 * n_j * np.log(var_curr) - 0.5 * np.sum((d_j - mu[j])**2) / var_curr
+                ll_prop_total += -0.5 * n_j * np.log(var_prop) - 0.5 * np.sum((d_j - mu[j])**2) / var_prop
+
+            lp_curr = -np.log(1 + tau**2)
+            lp_prop = -np.log(1 + tau_prop**2)
+            lq = np.log(tau_prop) - np.log(tau)
+
+            if np.log(rng.uniform()) < (ll_prop_total + lp_prop) - (ll_curr_total + lp_curr) + lq:
+                tau = tau_prop
+
+        mu_samples[s] = mu.copy()
+        sigma_samples[s] = sigma.copy()
+        tau_samples[s] = tau
+
+    # Discard burn-in (first 20%)
+    burn = n_samples // 5
+    mu_post = mu_samples[burn:]
+    sigma_post = sigma_samples[burn:]
+    tau_post = tau_samples[burn:]
+
+    # Compute summaries
+    results = {}
+    for j, name in enumerate(method_names):
+        post = mu_post[:, j]
+        results[name] = {
+            'posterior_mean': float(np.mean(post)),
+            'posterior_median': float(np.median(post)),
+            'hdi_95_lo': float(np.percentile(post, 2.5)),
+            'hdi_95_hi': float(np.percentile(post, 97.5)),
+            'sigma_mean': float(np.mean(sigma_post[:, j])),
+        }
+
+    # Pairwise P(method > reference)
+    ref_methods = ['Random Forest', 'CUSUM']
+    pairwise = {}
+    for ref in ref_methods:
+        if ref not in method_names:
+            continue
+        ref_idx = method_names.index(ref)
+        ref_post = mu_post[:, ref_idx]
+        for j, name in enumerate(method_names):
+            if name == ref:
+                continue
+            p_better = float(np.mean(mu_post[:, j] > ref_post))
+            pairwise[f'{name} > {ref}'] = p_better
+
+    results['_pairwise'] = pairwise
+    results['_tau'] = {
+        'posterior_mean': float(np.mean(tau_post)),
+        'posterior_median': float(np.median(tau_post)),
+        'hdi_95_lo': float(np.percentile(tau_post, 2.5)),
+        'hdi_95_hi': float(np.percentile(tau_post, 97.5)),
+    }
+
+    return results
+
+
+# ---------------------------------------------------------------------------
 # Main pipeline
 # ---------------------------------------------------------------------------
 
@@ -589,6 +745,49 @@ def run_statistical_comparison(input_path):
                 w = win_rates[name][other]
                 row_vals.append(f"{w:>4d}/{n_crises:<1d}")
         print(f"  {name:>20s} | " + " | ".join(row_vals))
+    print()
+
+    # --- G. Bayesian Hierarchical Model ---
+    print(f"{'─'*40}")
+    print("G. BAYESIAN HIERARCHICAL MODEL")
+    print(f"{'─'*40}")
+    try:
+        hier_results = run_bayesian_hierarchical(d_matrix, method_names, n_samples=5000, seed=42)
+        print(f"  Between-crisis heterogeneity (tau): "
+              f"{hier_results['_tau']['posterior_mean']:.3f} "
+              f"[{hier_results['_tau']['hdi_95_lo']:.3f}, "
+              f"{hier_results['_tau']['hdi_95_hi']:.3f}]")
+        print(f"\n  Posterior mean d (95% HDI):")
+        for name in method_names:
+            r = hier_results[name]
+            print(f"    {name}: {r['posterior_mean']:.3f} "
+                  f"[{r['hdi_95_lo']:.3f}, {r['hdi_95_hi']:.3f}]")
+        print(f"\n  P(method > reference):")
+        for pair, p in hier_results['_pairwise'].items():
+            print(f"    {pair}: {p:.3f}")
+        output["bayesian_hierarchical"] = hier_results
+    except Exception as e:
+        print(f"  Failed: {e}")
+        output["bayesian_hierarchical"] = {"error": str(e)}
+    print()
+
+    # --- H. Power Analysis ---
+    print(f"{'─'*40}")
+    print("H. MCS POWER ANALYSIS")
+    print(f"{'─'*40}")
+    # Approximate power of MCS to detect difference delta
+    # Using simplified normal approximation
+    for delta in [0.2, 0.3, 0.5]:
+        # Paired t-test power as proxy for MCS discriminability
+        se = float(np.std(d_matrix, axis=0).mean()) / np.sqrt(n_crises)
+        z_effect = delta / (se + 1e-10)
+        # Power = P(reject | true difference = delta)
+        power = float(1 - stats.norm.cdf(1.645 - z_effect))
+        print(f"  delta = {delta:.1f}: approx. power = {power:.2f} (N={n_crises})")
+    output["mcs_power_analysis"] = {
+        "n_crises": n_crises,
+        "note": "Approximate power using normal proxy for MCS discriminability"
+    }
     print()
 
     # --- Save output ---

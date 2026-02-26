@@ -124,45 +124,10 @@ COLORS = {
 
 
 # ============================================================================
-# Data Fetching
+# Data Fetching (via unified dispatcher)
 # ============================================================================
 
-def fetch_polygon_data(symbols, start_date, end_date):
-    """Fetch daily OHLCV from Polygon API."""
-    from polygon import RESTClient
-
-    api_key = os.environ.get('POLYGON_API_KEY')
-    if not api_key:
-        raise RuntimeError("POLYGON_API_KEY not found in environment")
-
-    client = RESTClient(api_key)
-    all_data = []
-
-    for symbol in symbols:
-        logger.info(f"  Fetching {symbol} {start_date} to {end_date}...")
-        aggs = list(client.list_aggs(
-            ticker=symbol,
-            multiplier=1,
-            timespan='day',
-            from_=start_date,
-            to=end_date,
-            limit=50000,
-        ))
-
-        for a in aggs:
-            all_data.append({
-                'symbol': symbol,
-                'timestamp': pd.Timestamp(a.timestamp, unit='ms'),
-                'open': a.open,
-                'high': a.high,
-                'low': a.low,
-                'close': a.close,
-                'volume': a.volume,
-            })
-
-    df = pd.DataFrame(all_data)
-    df = df.set_index(['symbol', 'timestamp']).sort_index()
-    return df
+from experiments.data_loader import fetch_data
 
 
 def create_feature_matrix(prices_df):
@@ -577,9 +542,9 @@ def main():
     summary_dir.mkdir(parents=True, exist_ok=True)
 
     # ---- Step 1: Fetch data ----
-    logger.info("\n[Step 1] Fetching SPY + DIA data from Polygon (2005-2024)...")
+    logger.info("\n[Step 1] Fetching SPY + DIA data (2005-2024)...")
     symbols = ['SPY', 'DIA']
-    raw = fetch_polygon_data(symbols, '2005-01-01', '2024-12-31')
+    raw = fetch_data(symbols, '2005-01-01', '2024-12-31')
 
     # Build close price DataFrame
     prices_df = raw['close'].unstack('symbol')

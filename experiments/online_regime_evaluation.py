@@ -47,7 +47,7 @@ from qcml_geometry.online_detection import (
 )
 
 from experiments.data_loader import (
-    fetch_polygon_data, create_feature_matrix, ALL_CRISES,
+    fetch_data, create_feature_matrix, ALL_CRISES,
 )
 
 logging.basicConfig(
@@ -459,7 +459,7 @@ def run_evaluation(quick=False):
     # ---- Data ----
     logger.info("\n[1/5] Fetching data...")
     symbols = ['SPY', 'DIA']
-    raw = fetch_polygon_data(symbols, '2005-01-01', '2024-12-31')
+    raw = fetch_data(symbols, '2005-01-01', '2024-12-31')
     prices_df = raw['close'].unstack('symbol').dropna()
     X_raw, dates = create_feature_matrix(prices_df)
 

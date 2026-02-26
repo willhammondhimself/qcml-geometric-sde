@@ -36,7 +36,7 @@ from qcml_geometry import (
     MultiLagFidelityDetector,
 )
 from qcml_geometry.observables import BaseRegimeDetector
-from experiments.data_loader import fetch_polygon_data, create_feature_matrix, ALL_CRISES
+from experiments.data_loader import fetch_data, create_feature_matrix, ALL_CRISES
 from experiments.evaluation import compute_cohens_d_with_ci
 
 logging.basicConfig(
@@ -165,7 +165,7 @@ def run_fusion(quick=False, hpo_config_path=None):
 
     logger.info("\n[1] Fetching data...")
     symbols = ['SPY', 'DIA']
-    raw = fetch_polygon_data(symbols, '2005-01-01', '2024-12-31')
+    raw = fetch_data(symbols, '2005-01-01', '2024-12-31')
     prices_df = raw['close'].unstack('symbol').dropna()
     X, dates = create_feature_matrix(prices_df)
     X_enriched = BaseRegimeDetector.build_enriched_features(X, lookback=20)

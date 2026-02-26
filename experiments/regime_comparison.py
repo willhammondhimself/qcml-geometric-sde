@@ -34,11 +34,14 @@ from qcml_geometry import (
     BerryPhaseRateDetector,
     QFIDeterminantDetector,
     MultiLagFidelityDetector,
+    SpectralGapDetector,
+    MetricConditionDetector,
+    GeometricEnsembleDetector,
 )
 from qcml_geometry.observables import BaseRegimeDetector
 
 from experiments.data_loader import (
-    fetch_polygon_data, create_feature_matrix, ALL_CRISES,
+    fetch_data, create_feature_matrix, ALL_CRISES,
 )
 from experiments.baselines import (
     RollingVolatilityDetector,
@@ -74,14 +77,20 @@ np.random.seed(42)
 # HPO-Optimized QCML Detector Configs
 # =============================================================================
 
-# Source: experiments/outputs/regime_detection/honest_hpo/hpo_results_20260221_220739.json
-# Train: pre-2020 crises, Val: post-2020 crises, Consistency-penalized objective
+# Source: normalization_ablation_20260223 + full 12-crisis comparison 20260223
+# Best normalization per detector (validated on 12 crises):
+#   Berry: sphere + f01 — frobenius/soft causes outlier spikes in normal periods → d collapse
+#   QFI: soft + logdet — consistent improvement (d=0.476 median vs 0.409 sphere)
+#   MLF: sphere — marginal differences across modes
+#   Spectral Gap / Metric Condition: soft + adaptive_epsilon
+#   Geometric Ensemble: sphere — Berry component causes same outlier issue with soft
 HPO_CONFIGS = {
     'Berry Phase Rate': {
         'class': BerryPhaseRateDetector,
         'params': dict(
             hilbert_dim=6, n_pca_components=8, rolling_window=15,
             operator_method='random', seed=42,
+            normalization='sphere', berry_aggregation='f01',
         ),
     },
     'QFI Determinant': {
@@ -89,6 +98,8 @@ HPO_CONFIGS = {
         'params': dict(
             hilbert_dim=8, n_pca_components=15, rolling_window=20,
             operator_method='pca_inspired', seed=42,
+            normalization='soft', qfi_mode='logdet',
+            adaptive_epsilon=True,
         ),
     },
     'Multi-Lag Fidelity': {
@@ -96,6 +107,7 @@ HPO_CONFIGS = {
         'params': dict(
             hilbert_dim=4, n_pca_components=8, rolling_window=20,
             operator_method='pca_inspired', seed=42,
+            normalization='sphere',
         ),
     },
     'QCML Chern': {
@@ -103,6 +115,7 @@ HPO_CONFIGS = {
         'params': dict(
             hilbert_dim=8, n_pca_components=15,
             operator_method='random', seed=42,
+            normalization='soft',
         ),
     },
     'Geometric Consensus': {
@@ -110,6 +123,31 @@ HPO_CONFIGS = {
         'params': dict(
             hilbert_dim=8, n_pca_components=15,
             operator_method='random', seed=42,
+            normalization='soft',
+        ),
+    },
+    'Spectral Gap': {
+        'class': SpectralGapDetector,
+        'params': dict(
+            hilbert_dim=8, n_pca_components=15, rolling_window=20,
+            operator_method='random', seed=42,
+            normalization='soft', adaptive_epsilon=True,
+        ),
+    },
+    'Metric Condition': {
+        'class': MetricConditionDetector,
+        'params': dict(
+            hilbert_dim=8, n_pca_components=15, rolling_window=20,
+            operator_method='random', seed=42,
+            normalization='soft', adaptive_epsilon=True,
+        ),
+    },
+    'Geometric Ensemble': {
+        'class': GeometricEnsembleDetector,
+        'params': dict(
+            hilbert_dim=8, n_pca_components=15, rolling_window=20,
+            operator_method='random', seed=42,
+            normalization='sphere',
         ),
     },
 }
@@ -230,7 +268,7 @@ def run_comparison(
     logger.info("\n[1] Fetching data from Polygon...")
     symbols = ['SPY', 'DIA']
     start = '1995-01-01' if full else '1995-01-01'
-    raw = fetch_polygon_data(symbols, start, '2024-12-31')
+    raw = fetch_data(symbols, start, '2024-12-31')
     prices_df = raw['close'].unstack('symbol').dropna()
     X, dates = create_feature_matrix(prices_df)
     logger.info(f"  Feature matrix: {X.shape}, dates: {dates[0]} to {dates[-1]}")

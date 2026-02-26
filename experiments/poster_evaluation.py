@@ -54,7 +54,7 @@ from qcml_geometry.online_detection import (
 )
 
 from experiments.data_loader import (
-    fetch_polygon_data, create_feature_matrix, ALL_CRISES,
+    fetch_data, create_feature_matrix, ALL_CRISES,
 )
 from experiments.backtest.strategies import (
     geometric_long_flat, geometric_long_short,
@@ -414,7 +414,7 @@ def main(quick=False):
     # ---- Step 1: Fetch data ----
     logger.info("\n[1/5] Fetching data from Polygon API...")
     symbols = ['SPY', 'DIA', 'QQQ', 'IWM', 'EFA']
-    raw = fetch_polygon_data(symbols, '1995-01-01', '2024-12-31')
+    raw = fetch_data(symbols, '1995-01-01', '2024-12-31')
     prices_df = raw['close'].unstack('symbol').dropna()
     X_raw, dates = create_feature_matrix(prices_df)
 

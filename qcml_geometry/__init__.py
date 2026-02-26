@@ -18,6 +18,9 @@ from .observables import (
     BerryPhaseRateDetector,
     QFIDeterminantDetector,
     MultiLagFidelityDetector,
+    SpectralGapDetector,
+    MetricConditionDetector,
+    GeometricEnsembleDetector,
 )
 from .topology import (
     TopologicalRegimeDetector,
@@ -52,6 +55,9 @@ __all__ = [
     "BerryPhaseRateDetector",
     "QFIDeterminantDetector",
     "MultiLagFidelityDetector",
+    "SpectralGapDetector",
+    "MetricConditionDetector",
+    "GeometricEnsembleDetector",
     "TopologicalRegimeDetector",
     "MultiScaleRegimeDetector",
     "RegimeTransition",

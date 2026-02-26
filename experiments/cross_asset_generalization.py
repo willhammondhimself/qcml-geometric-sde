@@ -49,7 +49,7 @@ from qcml_geometry.observables import (
     MultiLagFidelityDetector,
 )
 from experiments.data_loader import (
-    fetch_polygon_data,
+    fetch_data,
     create_feature_matrix,
     create_feature_matrix_single_asset,
     ALL_CRISES,
@@ -184,7 +184,7 @@ def evaluate_universe(
 
     # Fetch data
     try:
-        raw = fetch_polygon_data(symbols, start, end)
+        raw = fetch_data(symbols, start, end)
         prices_df = raw['close'].unstack('symbol').dropna()
     except Exception as e:
         logger.error(f"  Failed to fetch {symbols}: {e}")
@@ -302,7 +302,7 @@ def train_equity_rf():
     """
     logger.info("\n[Pre] Training RF on equity crises for transfer test...")
     symbols = ['SPY', 'DIA']
-    raw = fetch_polygon_data(symbols, '2005-01-01', '2024-12-31')
+    raw = fetch_data(symbols, '2005-01-01', '2024-12-31')
     prices_df = raw['close'].unstack('symbol').dropna()
     X, dates = create_feature_matrix(prices_df)
 

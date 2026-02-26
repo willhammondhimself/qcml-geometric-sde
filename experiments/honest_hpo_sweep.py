@@ -34,9 +34,12 @@ from qcml_geometry import (
     BerryPhaseRateDetector,
     QFIDeterminantDetector,
     MultiLagFidelityDetector,
+    SpectralGapDetector,
+    MetricConditionDetector,
+    GeometricEnsembleDetector,
 )
 from qcml_geometry.observables import BaseRegimeDetector
-from experiments.data_loader import fetch_polygon_data, create_feature_matrix, ALL_CRISES
+from experiments.data_loader import fetch_data, create_feature_matrix, ALL_CRISES
 from experiments.evaluation import compute_cohens_d_with_ci
 
 logging.basicConfig(
@@ -59,6 +62,9 @@ DETECTOR_CLASSES = {
     'berry': ('Berry Phase Rate', BerryPhaseRateDetector),
     'qfi': ('QFI Determinant', QFIDeterminantDetector),
     'mlf': ('Multi-Lag Fidelity', MultiLagFidelityDetector),
+    'spectral_gap': ('Spectral Gap', SpectralGapDetector),
+    'metric_cond': ('Metric Condition', MetricConditionDetector),
+    'geo_ensemble': ('Geometric Ensemble', GeometricEnsembleDetector),
 }
 
 
@@ -117,6 +123,9 @@ OPERATOR_METHODS = {
     'berry': 'random',
     'qfi': 'pca_inspired',
     'mlf': 'pca_inspired',
+    'spectral_gap': 'random',
+    'metric_cond': 'random',
+    'geo_ensemble': 'random',
 }
 
 
@@ -144,6 +153,10 @@ def create_objective(detector_key, X_enriched, dates_enriched):
         n_pca = trial.suggest_categorical('n_pca_components', [5, 8, 10, 15])
         rolling_window = trial.suggest_categorical('rolling_window', [10, 15, 20])
 
+        # Normalization and adaptive epsilon (new axes)
+        normalization = trial.suggest_categorical('normalization', ['sphere', 'none', 'soft', 'clip'])
+        adaptive_epsilon = (normalization != 'sphere')
+
         # Validate n_pca < feature dimension to avoid errors
         n_features = X_enriched.shape[1]
         if n_pca > n_features:
@@ -154,8 +167,18 @@ def create_objective(detector_key, X_enriched, dates_enriched):
             n_pca_components=n_pca,
             rolling_window=rolling_window,
             operator_method=operator_method,
+            normalization=normalization,
+            adaptive_epsilon=adaptive_epsilon,
             seed=42,
         )
+
+        # Detector-specific aggregation modes
+        if detector_key == 'berry':
+            berry_agg = trial.suggest_categorical('berry_aggregation', ['f01', 'frobenius', 'max'])
+            params['berry_aggregation'] = berry_agg
+        elif detector_key == 'qfi':
+            qfi_mode = trial.suggest_categorical('qfi_mode', ['logdet', 'trace', 'max_eig', 'condition', 'entropy'])
+            params['qfi_mode'] = qfi_mode
 
         mean_d, per_crisis = evaluate_detector(
             detector_class, params, X_enriched, dates_enriched, TRAIN_CRISES,
@@ -194,7 +217,7 @@ def run_hpo(n_trials=100, quick=False, detector_filter=None):
     # Fetch and prepare data (once)
     logger.info("\n[1] Fetching data...")
     symbols = ['SPY', 'DIA']
-    raw = fetch_polygon_data(symbols, '2005-01-01', '2024-12-31')
+    raw = fetch_data(symbols, '2005-01-01', '2024-12-31')
     prices_df = raw['close'].unstack('symbol').dropna()
     X, dates = create_feature_matrix(prices_df)
     X_enriched = BaseRegimeDetector.build_enriched_features(X, lookback=20)
@@ -232,8 +255,14 @@ def run_hpo(n_trials=100, quick=False, detector_filter=None):
             n_pca_components=best.params['n_pca_components'],
             rolling_window=best.params['rolling_window'],
             operator_method=OPERATOR_METHODS[det_key],
+            normalization=best.params.get('normalization', 'sphere'),
+            adaptive_epsilon=(best.params.get('normalization', 'sphere') != 'sphere'),
             seed=42,
         )
+        if 'berry_aggregation' in best.params:
+            best_params['berry_aggregation'] = best.params['berry_aggregation']
+        if 'qfi_mode' in best.params:
+            best_params['qfi_mode'] = best.params['qfi_mode']
 
         val_d, val_per_crisis = evaluate_detector(
             det_class, best_params, X_enriched, dates_enriched, VAL_CRISES,
@@ -285,6 +314,9 @@ def run_hpo(n_trials=100, quick=False, detector_filter=None):
                 'hilbert_dim': [4, 6, 8],
                 'n_pca_components': [5, 8, 10, 15],
                 'rolling_window': [10, 15, 20],
+                'normalization': ['sphere', 'none', 'soft', 'clip'],
+                'berry_aggregation': ['f01', 'frobenius', 'max'],
+                'qfi_mode': ['logdet', 'trace', 'max_eig', 'condition', 'entropy'],
             },
         },
         'results': all_results,
@@ -311,7 +343,8 @@ def main():
                         help='Optuna trials per detector (default: 100)')
     parser.add_argument('--quick', action='store_true',
                         help='Quick run with 25 trials')
-    parser.add_argument('--detector', choices=['berry', 'qfi', 'mlf'],
+    parser.add_argument('--detector',
+                        choices=['berry', 'qfi', 'mlf', 'spectral_gap', 'metric_cond', 'geo_ensemble'],
                         help='Only optimize a single detector')
     args = parser.parse_args()
 
