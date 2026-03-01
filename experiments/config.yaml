@@ -1,0 +1,687 @@
+# experiments/config.yaml — Single source of truth for all experiment parameters
+#
+# This file replaces hardcoded parameters scattered across regime_comparison.py,
+# normalization_ablation.py, walk_forward_hpo.py, and other experiment scripts.
+#
+# Usage:
+#   import yaml
+#   with open("experiments/config.yaml") as f:
+#       cfg = yaml.safe_load(f)
+
+# ---------------------------------------------------------------------------
+# Data sourcing
+# ---------------------------------------------------------------------------
+data:
+  symbols: [SPY, DIA]
+  start_date: "1995-01-01"
+  end_date: "2024-12-31"
+  source: yfinance      # yfinance | polygon | wrds | auto
+  cache_dir: experiments/outputs/.cache
+  enrichment_lookback: 20
+
+# ---------------------------------------------------------------------------
+# Crisis definitions — 16 episodes used in the comparison pipeline
+# Each entry carries start/end dates, a human-readable label, and a category
+# tag (conventional = well-studied in literature, novel = post-sample / rare).
+# ---------------------------------------------------------------------------
+crises:
+  1997_asia:
+    start: "1997-10-20"
+    end: "1997-11-30"
+    label: "Asian Crisis 1997"
+    category: conventional
+
+  1998_ltcm:
+    start: "1998-08-01"
+    end: "1998-10-15"
+    label: "LTCM/Russia 1998"
+    category: conventional
+
+  2000_dotcom:
+    start: "2000-03-10"
+    end: "2000-10-09"
+    label: "Dot-Com Crash 2000"
+    category: conventional
+
+  2001_911:
+    start: "2001-09-10"
+    end: "2001-10-15"
+    label: "September 11 2001"
+    category: conventional
+
+  2007_quant:
+    start: "2007-08-01"
+    end: "2007-09-30"
+    label: "Quant Crisis 2007"
+    category: conventional
+
+  2008_gfc:
+    start: "2008-09-01"
+    end: "2009-03-31"
+    label: "GFC 2008"
+    category: conventional
+
+  2010_flash:
+    start: "2010-05-01"
+    end: "2010-06-30"
+    label: "Flash Crash 2010"
+    category: conventional
+
+  2011_euro:
+    start: "2011-07-01"
+    end: "2011-10-31"
+    label: "Euro Crisis 2011"
+    category: conventional
+
+  2015_china:
+    start: "2015-07-01"
+    end: "2015-09-30"
+    label: "China Crash 2015"
+    category: conventional
+
+  2018_volmageddon:
+    start: "2018-01-26"
+    end: "2018-04-30"
+    label: "Volmageddon 2018"
+    category: novel
+
+  2018_q4:
+    start: "2018-10-01"
+    end: "2018-12-31"
+    label: "Q4 Selloff 2018"
+    category: novel
+
+  2019_repo:
+    start: "2019-09-01"
+    end: "2019-10-31"
+    label: "Repo Crisis 2019"
+    category: novel
+
+  2020_covid:
+    start: "2020-02-20"
+    end: "2020-04-30"
+    label: "COVID 2020"
+    category: conventional
+
+  2022_rates:
+    start: "2022-01-01"
+    end: "2022-10-31"
+    label: "Rate Hikes 2022"
+    category: novel
+
+  2023_svb:
+    start: "2023-03-01"
+    end: "2023-04-30"
+    label: "SVB 2023"
+    category: novel
+
+  2024_carry:
+    start: "2024-07-15"
+    end: "2024-08-31"
+    label: "Carry Unwind 2024"
+    category: novel
+
+# ---------------------------------------------------------------------------
+# Named crisis subsets — used by --quick, --full, etc. CLI flags
+# ---------------------------------------------------------------------------
+crisis_subsets:
+  quick: [2008_gfc, 2020_covid, 2022_rates, 2023_svb]
+
+  post_2005:
+    - 2007_quant
+    - 2008_gfc
+    - 2010_flash
+    - 2011_euro
+    - 2015_china
+    - 2018_volmageddon
+    - 2018_q4
+    - 2019_repo
+    - 2020_covid
+    - 2022_rates
+    - 2023_svb
+    - 2024_carry
+
+  all:
+    - 1997_asia
+    - 1998_ltcm
+    - 2000_dotcom
+    - 2001_911
+    - 2007_quant
+    - 2008_gfc
+    - 2010_flash
+    - 2011_euro
+    - 2015_china
+    - 2018_volmageddon
+    - 2018_q4
+    - 2019_repo
+    - 2020_covid
+    - 2022_rates
+    - 2023_svb
+    - 2024_carry
+
+  paper:
+    - 2000_dotcom
+    - 2001_911
+    - 2007_quant
+    - 2008_gfc
+    - 2010_flash
+    - 2011_euro
+    - 2015_china
+    - 2018_volmageddon
+    - 2018_q4
+    - 2019_repo
+    - 2020_covid
+    - 2022_rates
+    - 2023_svb
+    - 2024_carry
+
+  novel:
+    - 2018_volmageddon
+    - 2018_q4
+    - 2019_repo
+    - 2022_rates
+    - 2023_svb
+    - 2024_carry
+
+  conventional:
+    - 1997_asia
+    - 1998_ltcm
+    - 2000_dotcom
+    - 2001_911
+    - 2007_quant
+    - 2008_gfc
+    - 2010_flash
+    - 2011_euro
+    - 2015_china
+    - 2020_covid
+
+# ---------------------------------------------------------------------------
+# Geometric (QCML) detectors
+# ---------------------------------------------------------------------------
+detectors:
+  berry_phase_rate:
+    class: qcml_geometry.BerryPhaseRateDetector
+    display_name: "Berry Phase Rate"
+    params:
+      hilbert_dim: 6
+      n_pca_components: 8
+      rolling_window: 15
+      operator_method: random
+      seed: 42
+      normalization: sphere
+      berry_aggregation: f01
+    hpo_source: "normalization_ablation_20260223"
+
+  qfi_determinant:
+    class: qcml_geometry.QFIDeterminantDetector
+    display_name: "QFI Determinant"
+    params:
+      hilbert_dim: 8
+      n_pca_components: 15
+      rolling_window: 20
+      operator_method: pca_inspired
+      seed: 42
+      normalization: soft
+      qfi_mode: logdet
+      adaptive_epsilon: true
+    hpo_source: "normalization_ablation_20260223"
+
+  multi_lag_fidelity:
+    class: qcml_geometry.MultiLagFidelityDetector
+    display_name: "Multi-Lag Fidelity"
+    params:
+      hilbert_dim: 4
+      n_pca_components: 8
+      rolling_window: 20
+      operator_method: pca_inspired
+      seed: 42
+      normalization: sphere
+    hpo_source: "normalization_ablation_20260223"
+
+  qcml_chern:
+    class: experiments.additional_detectors.QCMLChernDetector
+    display_name: "QCML Chern"
+    params:
+      hilbert_dim: 8
+      n_pca_components: 15
+      operator_method: random
+      seed: 42
+      normalization: soft
+    hpo_source: "normalization_ablation_20260223"
+
+  geometric_consensus:
+    class: experiments.additional_detectors.GeometricConsensusDetector
+    display_name: "Geometric Consensus"
+    params:
+      hilbert_dim: 8
+      n_pca_components: 15
+      operator_method: random
+      seed: 42
+      normalization: soft
+    hpo_source: "normalization_ablation_20260223"
+
+  spectral_gap:
+    class: qcml_geometry.SpectralGapDetector
+    display_name: "Spectral Gap"
+    params:
+      hilbert_dim: 8
+      n_pca_components: 15
+      rolling_window: 20
+      operator_method: random
+      seed: 42
+      normalization: soft
+      adaptive_epsilon: true
+    hpo_source: "normalization_ablation_20260223"
+
+  metric_condition:
+    class: qcml_geometry.MetricConditionDetector
+    display_name: "Metric Condition"
+    params:
+      hilbert_dim: 8
+      n_pca_components: 15
+      rolling_window: 20
+      operator_method: random
+      seed: 42
+      normalization: soft
+      adaptive_epsilon: true
+    hpo_source: "normalization_ablation_20260223"
+
+  geometric_ensemble:
+    class: qcml_geometry.GeometricEnsembleDetector
+    display_name: "Geometric Ensemble"
+    params:
+      hilbert_dim: 8
+      n_pca_components: 15
+      rolling_window: 20
+      operator_method: random
+      seed: 42
+      normalization: sphere
+    hpo_source: "normalization_ablation_20260223"
+
+  # --- New geometric detectors (Workstream A) ---
+  geodesic_velocity:
+    class: qcml_geometry.GeodesicVelocityDetector
+    display_name: "Geodesic Velocity"
+    params:
+      hilbert_dim: 8
+      n_pca_components: 8
+      rolling_window: 15
+      operator_method: pca_inspired
+      seed: 42
+      normalization: sphere
+    hpo_source: "initial_defaults"
+
+  spectral_flow:
+    class: qcml_geometry.SpectralFlowDetector
+    display_name: "Spectral Flow"
+    params:
+      hilbert_dim: 8
+      n_pca_components: 8
+      rolling_window: 15
+      operator_method: pca_inspired
+      seed: 42
+      normalization: soft
+      adaptive_epsilon: true
+    hpo_source: "initial_defaults"
+
+  commutator_norm:
+    class: qcml_geometry.CommutatorNormDetector
+    display_name: "Commutator Norm"
+    params:
+      hilbert_dim: 8
+      n_pca_components: 8
+      rolling_window: 15
+      operator_method: pca_inspired
+      seed: 42
+      normalization: soft
+      adaptive_epsilon: true
+    hpo_source: "initial_defaults"
+
+  ricci_scalar:
+    class: qcml_geometry.RicciScalarDetector
+    display_name: "Ricci Scalar"
+    params:
+      hilbert_dim: 6
+      n_pca_components: 3
+      rolling_window: 20
+      operator_method: pca_inspired
+      seed: 42
+      normalization: soft
+      adaptive_epsilon: true
+    hpo_source: "initial_defaults"
+
+  sectional_curvature:
+    class: qcml_geometry.SectionalCurvatureDetector
+    display_name: "Sectional Curvature"
+    params:
+      hilbert_dim: 6
+      n_pca_components: 3
+      rolling_window: 20
+      operator_method: pca_inspired
+      seed: 42
+      normalization: soft
+      adaptive_epsilon: true
+    hpo_source: "initial_defaults"
+
+  # --- Observatory expansion detectors (Feb 2026 sprint) ---
+  speed_limit_ratio:
+    class: qcml_geometry.SpeedLimitRatioDetector
+    display_name: "Speed Limit Ratio"
+    params:
+      hilbert_dim: 8
+      n_pca_components: 8
+      rolling_window: 20
+      operator_method: random
+      seed: 42
+      normalization: soft
+      adaptive_epsilon: true
+    hpo_source: "exploration_sprint_20260228"
+
+  dimensionality_collapse:
+    class: qcml_geometry.DimensionalityCollapseDetector
+    display_name: "Dimensionality Collapse"
+    params:
+      hilbert_dim: 8
+      n_pca_components: 8
+      rolling_window: 20
+      operator_method: random
+      seed: 42
+      normalization: soft
+      adaptive_epsilon: true
+      subsample: 5
+    hpo_source: "exploration_sprint_20260228"
+
+  sectional_curvature_sign:
+    class: qcml_geometry.SectionalCurvatureDetector
+    display_name: "Sectional Curvature Sign"
+    params:
+      hilbert_dim: 6
+      n_pca_components: 3
+      operator_method: pca_inspired
+      seed: 42
+      normalization: soft
+      adaptive_epsilon: true
+      score_mode: neg_fraction
+      neg_fraction_window: 20
+      subsample: 10
+    hpo_source: "exploration_sprint_20260228"
+
+# ---------------------------------------------------------------------------
+# Information geometry detectors (Workstream B)
+# ---------------------------------------------------------------------------
+info_geometry:
+  fisher_rao:
+    class: qcml_geometry.info_geometry.FisherRaoDetector
+    display_name: "Fisher-Rao"
+    params:
+      window: 30
+      lag: 10
+      rolling_window: 15
+      min_expanding: 60
+      seed: 42
+    hpo_source: "initial_defaults"
+
+  wasserstein:
+    class: qcml_geometry.info_geometry.WassersteinDetector
+    display_name: "Wasserstein"
+    params:
+      window: 30
+      lag: 10
+      rolling_window: 15
+      min_expanding: 60
+      n_projections: 20
+      seed: 42
+    hpo_source: "initial_defaults"
+
+  kl_divergence:
+    class: qcml_geometry.info_geometry.KLDivergenceDetector
+    display_name: "KL Divergence"
+    params:
+      window: 30
+      lag: 10
+      rolling_window: 15
+      min_expanding: 60
+      n_bins: 30
+      seed: 42
+    hpo_source: "initial_defaults"
+
+  sinkhorn:
+    class: qcml_geometry.info_geometry.SinkhornDetector
+    display_name: "Sinkhorn"
+    params:
+      window: 30
+      lag: 10
+      rolling_window: 15
+      min_expanding: 60
+      reg: 0.1
+      seed: 42
+    hpo_source: "initial_defaults"
+
+# ---------------------------------------------------------------------------
+# Classical and supervised baselines
+# ---------------------------------------------------------------------------
+baselines:
+  rolling_vol_z:
+    class: experiments.baselines.RollingVolatilityDetector
+    display_name: "Rolling Vol Z"
+    params:
+      vol_window: 20
+      min_expanding: 60
+    supervised: false
+
+  cusum:
+    class: experiments.baselines.CUSUMDetector
+    display_name: "CUSUM"
+    params:
+      burn_in: 60
+    supervised: false
+
+  hmm:
+    class: experiments.baselines.HMMRegimeDetector
+    display_name: "HMM"
+    params:
+      n_iter: 100
+      seed: 42
+    supervised: false
+
+  bocpd:
+    class: experiments.baselines.BOCPDDetector
+    display_name: "BOCPD"
+    params:
+      hazard_rate: 250.0
+    supervised: false
+
+  isolation_forest:
+    class: experiments.baselines.IsolationForestDetector
+    display_name: "Isolation Forest"
+    params:
+      n_estimators: 100
+      seed: 42
+    supervised: false
+
+  random_forest:
+    class: experiments.baselines.RandomForestRegimeDetector
+    display_name: "Random Forest"
+    params:
+      n_estimators: 200
+      max_depth: 6
+      seed: 42
+      lookback: 20
+    supervised: true
+    evaluation: leave_one_crisis_out
+
+# ---------------------------------------------------------------------------
+# Evaluation protocol
+# ---------------------------------------------------------------------------
+evaluation:
+  window_size: 10             # rolling window for Cohen's d computation
+  n_bootstrap: 10000          # bootstrap resamples for CIs
+  seed: 42
+  min_pre_crisis_rows: 100    # minimum rows before crisis start
+  persistence_filter: 3       # consecutive-day persistence threshold
+  significance_alpha: 0.05    # Holm-Bonferroni family-wise alpha
+
+# ---------------------------------------------------------------------------
+# Method category groupings — used for aggregate statistics and tables
+# ---------------------------------------------------------------------------
+method_categories:
+  geometric:
+    - berry_phase_rate
+    - qfi_determinant
+    - multi_lag_fidelity
+    - qcml_chern
+    - geometric_consensus
+    - spectral_gap
+    - metric_condition
+    - geometric_ensemble
+    - geodesic_velocity
+    - spectral_flow
+    - commutator_norm
+    - ricci_scalar
+    - sectional_curvature
+    - speed_limit_ratio
+    - dimensionality_collapse
+    - sectional_curvature_sign
+  info_geometry:
+    - fisher_rao
+    - wasserstein
+    - kl_divergence
+    - sinkhorn
+  classical:
+    - rolling_vol_z
+    - cusum
+    - hmm
+    - bocpd
+    - isolation_forest
+  supervised:
+    - random_forest
+
+# ---------------------------------------------------------------------------
+# Experiment presets — select methods + crisis subset for common run profiles
+# ---------------------------------------------------------------------------
+experiments:
+  default:
+    methods:
+      - berry_phase_rate
+      - qfi_determinant
+      - multi_lag_fidelity
+      - qcml_chern
+      - geometric_consensus
+      - spectral_gap
+      - metric_condition
+      - geometric_ensemble
+      - rolling_vol_z
+      - cusum
+      - hmm
+      # - bocpd          # O(T^2) — too slow for 12-crisis sweep, d≈0.02 on all crises
+      - isolation_forest
+      - random_forest
+    crisis_subset: post_2005
+
+  quick:
+    methods:
+      - berry_phase_rate
+      - qfi_determinant
+      - multi_lag_fidelity
+      - rolling_vol_z
+      - random_forest
+    crisis_subset: quick
+
+  full:
+    methods:
+      - berry_phase_rate
+      - qfi_determinant
+      - multi_lag_fidelity
+      - qcml_chern
+      - geometric_consensus
+      - spectral_gap
+      - metric_condition
+      - geometric_ensemble
+      - rolling_vol_z
+      - cusum
+      - hmm
+      - bocpd
+      - isolation_forest
+      - random_forest
+    crisis_subset: all
+
+  top_three:
+    methods:
+      - berry_phase_rate
+      - qfi_determinant
+      - multi_lag_fidelity
+      - random_forest
+    crisis_subset: post_2005
+
+  paper:
+    methods:
+      - berry_phase_rate
+      - qfi_determinant
+      - multi_lag_fidelity
+      - qcml_chern
+      - geometric_consensus
+      - spectral_gap
+      - metric_condition
+      - geometric_ensemble
+      - speed_limit_ratio
+      - dimensionality_collapse
+      - sectional_curvature_sign
+      - geodesic_velocity
+      - rolling_vol_z
+      - cusum
+      - hmm
+      # - bocpd          # O(T^2), d≈0.02 — excluded
+      - isolation_forest
+      - random_forest
+    crisis_subset: paper
+
+  # New methods evaluation
+  new_geometric:
+    methods:
+      - geodesic_velocity
+      - spectral_flow
+      - commutator_norm
+      - berry_phase_rate
+      - qfi_determinant
+      - rolling_vol_z
+      - random_forest
+    crisis_subset: quick
+
+  info_geo:
+    methods:
+      - fisher_rao
+      - wasserstein
+      - kl_divergence
+      - sinkhorn
+      - rolling_vol_z
+      - random_forest
+    crisis_subset: quick
+
+  observatory:
+    methods:
+      - berry_phase_rate
+      - qfi_determinant
+      - multi_lag_fidelity
+      - speed_limit_ratio
+      - dimensionality_collapse
+      - sectional_curvature_sign
+      - geodesic_velocity
+      - rolling_vol_z
+      - random_forest
+    crisis_subset: quick
+
+  all_new:
+    methods:
+      - berry_phase_rate
+      - qfi_determinant
+      - multi_lag_fidelity
+      - geodesic_velocity
+      - spectral_flow
+      - commutator_norm
+      - fisher_rao
+      - wasserstein
+      - kl_divergence
+      - sinkhorn
+      - rolling_vol_z
+      - random_forest
+    crisis_subset: post_2005

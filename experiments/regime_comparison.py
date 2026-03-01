@@ -37,6 +37,10 @@ from qcml_geometry import (
     SpectralGapDetector,
     MetricConditionDetector,
     GeometricEnsembleDetector,
+    SpeedLimitRatioDetector,
+    DimensionalityCollapseDetector,
+    SectionalCurvatureDetector,
+    GeodesicVelocityDetector,
 )
 from qcml_geometry.observables import BaseRegimeDetector
 
@@ -147,6 +151,41 @@ HPO_CONFIGS = {
         'params': dict(
             hilbert_dim=8, n_pca_components=15, rolling_window=20,
             operator_method='random', seed=42,
+            normalization='sphere',
+        ),
+    },
+    'Speed Limit Ratio': {
+        'class': SpeedLimitRatioDetector,
+        'params': dict(
+            hilbert_dim=8, n_pca_components=8, rolling_window=20,
+            operator_method='random', seed=42,
+            normalization='soft', adaptive_epsilon=True,
+        ),
+    },
+    'Dimensionality Collapse': {
+        'class': DimensionalityCollapseDetector,
+        'params': dict(
+            hilbert_dim=8, n_pca_components=8, rolling_window=20,
+            operator_method='random', seed=42,
+            normalization='soft', adaptive_epsilon=True,
+            subsample=5,
+        ),
+    },
+    'Sectional Curvature Sign': {
+        'class': SectionalCurvatureDetector,
+        'params': dict(
+            hilbert_dim=6, n_pca_components=3,
+            operator_method='pca_inspired', seed=42,
+            normalization='soft', adaptive_epsilon=True,
+            score_mode='neg_fraction', neg_fraction_window=20,
+            subsample=10,
+        ),
+    },
+    'Geodesic Velocity': {
+        'class': GeodesicVelocityDetector,
+        'params': dict(
+            hilbert_dim=8, n_pca_components=8, rolling_window=15,
+            operator_method='pca_inspired', seed=42,
             normalization='sphere',
         ),
     },

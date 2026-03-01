@@ -710,6 +710,92 @@ class QCMLGeometry:
 
         return eigenvalues[1] - eigenvalues[0]
 
+    def full_spectrum(self, x: np.ndarray) -> np.ndarray:
+        """Compute the full sorted eigenvalue spectrum of H(x).
+
+        Args:
+            x: Data point of shape (n_features,).
+
+        Returns:
+            eigenvalues: Sorted eigenvalues of shape (hilbert_dim,).
+        """
+        H = self.error_hamiltonian(x)
+        return np.sort(np.linalg.eigvalsh(H))
+
+    def sectional_curvature(self, x: np.ndarray, i: int = 0, j: int = 1,
+                            epsilon_metric: float = 1e-5,
+                            epsilon_christoffel: float = 1e-4,
+                            epsilon_riemann: float = 1e-3) -> float:
+        """Compute sectional curvature K(e_i, e_j) from the Riemann tensor.
+
+        K(e_i, e_j) = R_{ijij} / (g_{ii} g_{jj} - g_{ij}^2)
+
+        Uses finite differences on Christoffel symbols.
+
+        Args:
+            x: Data point of shape (n_features,).
+            i: First coordinate index.
+            j: Second coordinate index.
+            epsilon_metric: Step size for quantum_metric.
+            epsilon_christoffel: Step size for Christoffel symbols.
+            epsilon_riemann: Step size for Christoffel derivative.
+
+        Returns:
+            K: Sectional curvature (can be positive, negative, or zero).
+        """
+        x = np.asarray(x).flatten()
+        n = len(x)
+        if i == j or i >= n or j >= n:
+            return 0.0
+
+        christoffel, g, _ = self._christoffel_symbols(x, epsilon_metric, epsilon_christoffel)
+
+        # Compute dGamma for directions i and j only (not all n)
+        dGamma = {}
+        for rho in [i, j]:
+            x_plus, x_minus = x.copy(), x.copy()
+            x_plus[rho] += epsilon_riemann
+            x_minus[rho] -= epsilon_riemann
+            G_plus, _, _ = self._christoffel_symbols(x_plus, epsilon_metric, epsilon_christoffel)
+            G_minus, _, _ = self._christoffel_symbols(x_minus, epsilon_metric, epsilon_christoffel)
+            dGamma[rho] = (G_plus - G_minus) / (2 * epsilon_riemann)
+
+        # R^i_{jij} = dGamma^i_{ij,j} - dGamma^i_{jj,i}
+        #           + sum_lam Gamma^i_{j,lam} Gamma^lam_{i,j}
+        #           - sum_lam Gamma^i_{i,lam} Gamma^lam_{j,j}
+        R_ijij = 0.0
+        R_ijij += dGamma[j][i, i, j] - dGamma[i][i, j, j]
+        for lam in range(n):
+            R_ijij += christoffel[i, j, lam] * christoffel[lam, i, j]
+            R_ijij -= christoffel[i, i, lam] * christoffel[lam, j, j]
+
+        # Contract with metric: R_{ijij} = g_{i,sigma} R^sigma_{jij}
+        R_lower = g[i, i] * R_ijij  # approximate: use diagonal component
+
+        denom = g[i, i] * g[j, j] - g[i, j] ** 2
+        if abs(denom) < 1e-15:
+            return 0.0
+
+        return float(R_lower / denom)
+
+    def hamiltonian_commutator_norm(self, x1: np.ndarray, x2: np.ndarray) -> float:
+        """Compute Frobenius norm of the commutator [H(x1), H(x2)].
+
+        Measures geometric incompatibility between two data points.
+        Zero when Hamiltonians share eigenstates, large when they don't.
+
+        Args:
+            x1: First data point of shape (n_features,).
+            x2: Second data point of shape (n_features,).
+
+        Returns:
+            norm: ||[H(x1), H(x2)]||_F (non-negative).
+        """
+        H1 = self.error_hamiltonian(x1)
+        H2 = self.error_hamiltonian(x2)
+        commutator = H1 @ H2 - H2 @ H1
+        return float(np.linalg.norm(commutator, 'fro'))
+
 
 # ---------------------------------------------------------------------------
 # Test data generators (known topology)
