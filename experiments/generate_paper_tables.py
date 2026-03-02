@@ -46,6 +46,8 @@ METHOD_CATEGORIES = {
     'BOCPD': 'Classical',
     'Isolation Forest': 'Classical',
     'Random Forest': 'Supervised',
+    'Rolling RF (VIX)': 'Supervised',
+    'VIX Level': 'Classical',
 }
 
 LATEX_NAMES = {
@@ -67,6 +69,8 @@ LATEX_NAMES = {
     'BOCPD': 'BOCPD',
     'Isolation Forest': 'Isolation Forest',
     'Random Forest': 'Random Forest',
+    'Rolling RF (VIX)': 'Rolling RF (VIX)',
+    'VIX Level': 'VIX Level',
 }
 
 

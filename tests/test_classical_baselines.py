@@ -30,6 +30,8 @@ from experiments.baselines import (
     CUSUMDetector,
     HMMRegimeDetector,
     RandomForestRegimeDetector,
+    RollingWindowRFDetector,
+    VIXThresholdDetector,
 )
 from experiments.additional_detectors import (
     QCMLChernDetector,
@@ -382,3 +384,93 @@ class TestEvaluationHelpers:
         scores = np.random.randn(200)
         thresholds = compute_adaptive_threshold(scores, min_expanding=20, quantile=0.95)
         assert len(thresholds) == len(scores)
+
+
+# ---------------------------------------------------------------------------
+# Rolling Window RF Detector
+# ---------------------------------------------------------------------------
+
+class TestRollingWindowRFDetector:
+
+    def test_fit_rolling_creates_model(self):
+        """fit_rolling with synthetic VIX should create a trained model."""
+        np.random.seed(42)
+        X = np.random.randn(300, 8)
+        vix = np.random.uniform(15, 35, size=300)
+        det = RollingWindowRFDetector(n_estimators=10, seed=42)
+        det.fit_rolling(X, vix)
+        assert det._model is not None
+
+    def test_scores_in_0_1(self):
+        """All valid scores should be in [0, 1]."""
+        np.random.seed(42)
+        X = np.random.randn(300, 8)
+        vix = np.random.uniform(15, 35, size=300)
+        det = RollingWindowRFDetector(n_estimators=10, seed=42)
+        det.fit_rolling(X, vix)
+        scores = det.compute_regime_scores(X)
+        valid = scores[~np.isnan(scores)]
+        assert len(valid) > 0
+        assert np.all(valid >= 0.0)
+        assert np.all(valid <= 1.0)
+
+    def test_scores_correct_length(self):
+        """Output length should match input length."""
+        np.random.seed(42)
+        X = np.random.randn(300, 8)
+        vix = np.random.uniform(15, 35, size=300)
+        det = RollingWindowRFDetector(n_estimators=10, seed=42)
+        det.fit_rolling(X, vix)
+        scores = det.compute_regime_scores(X)
+        assert len(scores) == len(X)
+
+    def test_raises_without_fit(self):
+        """Should raise RuntimeError if fit_rolling not called."""
+        det = RollingWindowRFDetector()
+        with pytest.raises(RuntimeError, match="fit_rolling"):
+            det.compute_regime_scores(np.random.randn(100, 8))
+
+    def test_name_property(self):
+        det = RollingWindowRFDetector()
+        assert det.name == "Rolling RF (VIX)"
+
+
+# ---------------------------------------------------------------------------
+# VIX Threshold Detector
+# ---------------------------------------------------------------------------
+
+class TestVIXThresholdDetector:
+
+    def test_set_vix_and_score(self):
+        """set_vix + compute_regime_scores should return correct shape."""
+        np.random.seed(42)
+        vix = np.random.uniform(12, 40, size=200)
+        det = VIXThresholdDetector(min_expanding=60)
+        det.set_vix(vix)
+        scores = det.compute_regime_scores(np.empty((200, 4)))
+        assert len(scores) == 200
+        # First min_expanding entries should be NaN
+        assert np.isnan(scores[0])
+        # Should have valid scores after burn-in
+        valid = scores[~np.isnan(scores)]
+        assert len(valid) > 0
+
+    def test_raises_without_vix(self):
+        """Should raise RuntimeError if set_vix not called."""
+        det = VIXThresholdDetector()
+        with pytest.raises(RuntimeError, match="set_vix"):
+            det.compute_regime_scores(np.random.randn(100, 4))
+
+    def test_z_scores_finite(self):
+        """All non-NaN scores should be finite (no inf)."""
+        np.random.seed(42)
+        vix = np.random.uniform(10, 50, size=300)
+        det = VIXThresholdDetector(min_expanding=30)
+        det.set_vix(vix)
+        scores = det.compute_regime_scores(np.empty((300, 4)))
+        valid = scores[~np.isnan(scores)]
+        assert np.all(np.isfinite(valid))
+
+    def test_name_property(self):
+        det = VIXThresholdDetector()
+        assert det.name == "VIX Level"

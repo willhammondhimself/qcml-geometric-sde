@@ -8,12 +8,14 @@ qcml_geometry.observables:
     - name (property) -> str
 
 Detectors:
-    RollingVolatilityDetector  — 20-day rolling vol z-score
-    CUSUMDetector              — Cumulative sum changepoint
-    HMMRegimeDetector          — 2-state Gaussian HMM
-    BOCPDDetector              — Bayesian Online Changepoint Detection
-    IsolationForestDetector    — Isolation Forest anomaly scores
-    RandomForestRegimeDetector — Supervised RF with fit_with_labels()
+    RollingVolatilityDetector    — 20-day rolling vol z-score
+    CUSUMDetector                — Cumulative sum changepoint
+    HMMRegimeDetector            — 2-state Gaussian HMM
+    BOCPDDetector                — Bayesian Online Changepoint Detection
+    IsolationForestDetector      — Isolation Forest anomaly scores
+    RandomForestRegimeDetector   — Supervised RF with fit_with_labels()
+    RollingWindowRFDetector      — RF trained on rolling VIX > threshold labels
+    VIXThresholdDetector         — Expanding z-score of raw VIX close
 """
 
 import logging
@@ -354,3 +356,162 @@ class RandomForestRegimeDetector(BaseRegimeDetector):
         # Pad front with NaN to match original length
         pad = np.full(self.lookback - 1, np.nan)
         return np.concatenate([pad, proba])
+
+
+class RollingWindowRFDetector(BaseRegimeDetector):
+    """Random Forest trained on a rolling window with VIX > threshold labels.
+
+    Unlike RandomForestRegimeDetector (leave-one-crisis-out with hand-labeled
+    crises), this detector uses continuous VIX-based labels: any day where
+    VIX > vix_threshold is labeled as crisis. Training uses a trailing window
+    of `train_window` days before the evaluation point.
+
+    VIX is used ONLY for labels, not as a feature.
+
+    Args:
+        n_estimators: Number of trees.
+        max_depth: Max tree depth.
+        seed: Random seed.
+        lookback: Feature enrichment window (must match pipeline).
+        train_window: Number of trailing days for training.
+        vix_threshold: VIX level above which a day is labeled crisis.
+    """
+
+    def __init__(self, n_estimators: int = 200, max_depth: int = 6,
+                 seed: int = 42, lookback: int = 20,
+                 train_window: int = 250, vix_threshold: float = 25.0):
+        self.n_estimators = n_estimators
+        self.max_depth = max_depth
+        self.seed = seed
+        self.lookback = lookback
+        self.train_window = train_window
+        self.vix_threshold = vix_threshold
+        self._model = None
+
+    @property
+    def name(self) -> str:
+        return "Rolling RF (VIX)"
+
+    def fit(self, X: np.ndarray, **kwargs) -> 'RollingWindowRFDetector':
+        return self
+
+    def fit_rolling(self, X_train: np.ndarray, vix_train: np.ndarray) -> 'RollingWindowRFDetector':
+        """Fit RF on trailing window with VIX-based labels.
+
+        Args:
+            X_train: Enriched feature matrix for the training window.
+            vix_train: VIX close values aligned to X_train rows.
+        """
+        if len(X_train) != len(vix_train):
+            raise ValueError(
+                f"X_train ({len(X_train)}) and vix_train ({len(vix_train)}) length mismatch"
+            )
+
+        # Create binary labels from VIX threshold
+        valid_mask = ~np.isnan(vix_train)
+        if np.sum(valid_mask) < 10:
+            logger.warning("Rolling RF: fewer than 10 valid VIX values in training window")
+            return self
+
+        y = (vix_train[valid_mask] > self.vix_threshold).astype(float)
+        X_valid = X_train[valid_mask]
+
+        # Handle single-class edge case
+        if len(np.unique(y)) < 2:
+            logger.warning(
+                f"Rolling RF: single class in training window "
+                f"(all {'crisis' if y[0] == 1 else 'normal'}), model will predict constant"
+            )
+
+        self._model = RandomForestClassifier(
+            n_estimators=self.n_estimators,
+            max_depth=self.max_depth,
+            random_state=self.seed,
+            n_jobs=-1,
+        )
+        self._model.fit(X_valid, y)
+        return self
+
+    def compute_regime_scores(self, X: np.ndarray) -> np.ndarray:
+        """Return P(crisis) from the trained RF.
+
+        Args:
+            X: Enriched feature matrix (T, d). Must already be enriched.
+
+        Returns:
+            1-D array of length T with P(crisis) scores.
+        """
+        if self._model is None:
+            raise RuntimeError("Must call fit_rolling(X_train, vix_train) before compute_regime_scores()")
+
+        if X.ndim == 1:
+            X = X.reshape(-1, 1)
+
+        if len(self._model.classes_) < 2:
+            return np.zeros(len(X))
+
+        return self._model.predict_proba(X)[:, 1]
+
+
+class VIXThresholdDetector(BaseRegimeDetector):
+    """Expanding z-score of raw VIX close.
+
+    Oracle-like upper bound since VIX directly measures implied volatility.
+    Score = expanding z-score of VIX, floored at 0 (only elevated VIX
+    contributes to regime score).
+
+    The feature matrix X is ignored; scores come from stored VIX values.
+
+    Args:
+        min_expanding: Minimum history before computing z-score.
+    """
+
+    def __init__(self, min_expanding: int = 60):
+        self.min_expanding = min_expanding
+        self._vix = None
+
+    @property
+    def name(self) -> str:
+        return "VIX Level"
+
+    def set_vix(self, vix_aligned: np.ndarray) -> 'VIXThresholdDetector':
+        """Store VIX values aligned to evaluation dates.
+
+        Args:
+            vix_aligned: 1-D array of VIX close values, same length as X
+                         that will be passed to compute_regime_scores().
+        """
+        self._vix = np.asarray(vix_aligned, dtype=float)
+        return self
+
+    def fit(self, X: np.ndarray, **kwargs) -> 'VIXThresholdDetector':
+        return self
+
+    def compute_regime_scores(self, X: np.ndarray) -> np.ndarray:
+        """Compute expanding z-score of stored VIX values.
+
+        Args:
+            X: Feature matrix (ignored, scores come from VIX).
+
+        Returns:
+            1-D array of length T with z-scores (NaN before min_expanding).
+        """
+        if self._vix is None:
+            raise RuntimeError("Must call set_vix(vix_aligned) before compute_regime_scores()")
+
+        T = len(self._vix)
+        scores = np.full(T, np.nan)
+
+        for t in range(self.min_expanding, T):
+            past = self._vix[:t]
+            valid = past[~np.isnan(past)]
+            if len(valid) < 2:
+                continue
+            mu = np.mean(valid)
+            sigma = np.std(valid, ddof=1)
+            if sigma > 1e-12:
+                scores[t] = max(0.0, (self._vix[t] - mu) / sigma)
+            else:
+                scores[t] = 0.0
+
+        return scores

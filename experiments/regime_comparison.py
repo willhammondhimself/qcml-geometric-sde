@@ -54,6 +54,8 @@ from experiments.baselines import (
     BOCPDDetector,
     IsolationForestDetector,
     RandomForestRegimeDetector,
+    RollingWindowRFDetector,
+    VIXThresholdDetector,
 )
 from experiments.additional_detectors import (
     QCMLChernDetector,
@@ -304,11 +306,20 @@ def run_comparison(
     logger.info("=" * 70)
 
     # ---- Data ----
-    logger.info("\n[1] Fetching data from Polygon...")
+    logger.info("\n[1] Fetching data...")
     symbols = ['SPY', 'DIA']
     start = '1995-01-01' if full else '1995-01-01'
-    raw = fetch_data(symbols, start, '2024-12-31')
+    raw = fetch_data(symbols + ['^VIX'], start, '2024-12-31')
     prices_df = raw['close'].unstack('symbol').dropna()
+
+    # Separate VIX from equity prices
+    if '^VIX' in prices_df.columns:
+        vix_series = prices_df['^VIX'].copy()
+        prices_df = prices_df.drop(columns=['^VIX'])
+    else:
+        logger.warning("VIX data not available; VIX-based baselines will be skipped")
+        vix_series = None
+
     X, dates = create_feature_matrix(prices_df)
     logger.info(f"  Feature matrix: {X.shape}, dates: {dates[0]} to {dates[-1]}")
 
@@ -316,6 +327,14 @@ def run_comparison(
     X_enriched = BaseRegimeDetector.build_enriched_features(X, lookback=20)
     dates_enriched = dates[19:]
     logger.info(f"  Enriched features: {X_enriched.shape}")
+
+    # Align VIX to dates, then trim to dates_enriched
+    if vix_series is not None:
+        vix_aligned = vix_series.reindex(dates).values  # align to full dates
+        vix_enriched = vix_aligned[19:]  # trim to match dates_enriched
+        logger.info(f"  VIX aligned: {np.sum(~np.isnan(vix_enriched))}/{len(vix_enriched)} valid values")
+    else:
+        vix_enriched = None
 
     # ---- Crisis selection ----
     if quick:
@@ -396,6 +415,27 @@ def run_comparison(
             logger.info(f"    {method_name:25s}  d = {d:.3f}" if not np.isnan(d) else
                         f"    {method_name:25s}  d = N/A")
 
+        # --- VIX Threshold baseline (expanding z-score) ---
+        if vix_enriched is not None:
+            method_name = 'VIX Level'
+            vix_det = VIXThresholdDetector(min_expanding=60)
+            vix_det.set_vix(vix_enriched)
+            scores = vix_det.compute_regime_scores(X_enriched)
+
+            d, ci_lo, ci_hi = compute_cohens_d_with_ci(
+                scores[crisis_mask], scores[normal_mask], n_bootstrap=n_bootstrap,
+            )
+
+            if method_name not in results:
+                results[method_name] = {}
+            results[method_name][ck] = {
+                'd': float(d) if not np.isnan(d) else None,
+                'ci_lo': float(ci_lo) if not np.isnan(ci_lo) else None,
+                'ci_hi': float(ci_hi) if not np.isnan(ci_hi) else None,
+            }
+            logger.info(f"    {method_name:25s}  d = {d:.3f}" if not np.isnan(d) else
+                        f"    {method_name:25s}  d = N/A")
+
     # ---- RF with leave-one-crisis-out ----
     logger.info("\n[3] Fitting RF (leave-one-crisis-out, causal per-crisis)...")
     rf_results = {}
@@ -459,6 +499,66 @@ def run_comparison(
                     f"    RF on {held_out_key:20s}  d = N/A")
 
     results['Random Forest'] = rf_results
+
+    # ---- Rolling RF with VIX labels ----
+    if vix_enriched is not None:
+        logger.info("\n[3b] Fitting Rolling RF (VIX > 25 labels, trailing 250-day window)...")
+        rolling_rf_results = {}
+        for held_out_key in crises:
+            ci = crises[held_out_key]
+            crisis_start = pd.Timestamp(ci['start'])
+            crisis_end = pd.Timestamp(ci['end'])
+
+            # Same causal cutoff as leave-one-crisis-out RF
+            cutoff_date = crisis_start - pd.Timedelta(days=window_size)
+            fit_end_idx = int(np.searchsorted(dates_enriched, cutoff_date))
+
+            if fit_end_idx < 100:
+                logger.warning(f"  Rolling RF skipping {held_out_key}: insufficient pre-crisis data")
+                continue
+
+            # Trailing train_window days before cutoff
+            train_window = 250
+            train_start = max(0, fit_end_idx - train_window)
+            X_train_window = X_enriched[train_start:fit_end_idx]
+            vix_train_window = vix_enriched[train_start:fit_end_idx]
+
+            rf_rolling = RollingWindowRFDetector(
+                n_estimators=200, max_depth=6, seed=42, lookback=20,
+                train_window=train_window, vix_threshold=25.0,
+            )
+            rf_rolling.fit_rolling(X_train_window, vix_train_window)
+
+            if rf_rolling._model is None:
+                logger.warning(f"  Rolling RF {held_out_key}: training failed, skipping")
+                continue
+
+            scores = rf_rolling.compute_regime_scores(X_enriched)
+
+            # Compute Cohen's d
+            cs = crisis_start - pd.Timedelta(days=window_size)
+            ce = crisis_end + pd.Timedelta(days=window_size)
+            crisis_mask = (dates_enriched >= cs) & (dates_enriched <= ce)
+            normal_mask = ~crisis_mask
+
+            if len(scores) == len(dates_enriched):
+                d, ci_lo, ci_hi = compute_cohens_d_with_ci(
+                    scores[crisis_mask], scores[normal_mask], n_bootstrap=n_bootstrap,
+                )
+            else:
+                d, ci_lo, ci_hi = np.nan, np.nan, np.nan
+
+            rolling_rf_results[held_out_key] = {
+                'd': float(d) if not np.isnan(d) else None,
+                'ci_lo': float(ci_lo) if not np.isnan(ci_lo) else None,
+                'ci_hi': float(ci_hi) if not np.isnan(ci_hi) else None,
+            }
+            logger.info(f"    Rolling RF on {held_out_key:20s}  d = {d:.3f}" if not np.isnan(d) else
+                        f"    Rolling RF on {held_out_key:20s}  d = N/A")
+
+        results['Rolling RF (VIX)'] = rolling_rf_results
+    else:
+        logger.warning("  Skipping Rolling RF: VIX data not available")
 
     # ---- Summary statistics ----
     logger.info("\n[4] Computing summary statistics...")

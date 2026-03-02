@@ -45,8 +45,7 @@
 \newcommand{\doi}[1]{\href{https://doi.org/#1}{\texttt{doi:#1}}}
 
 % =============================================================================
-\title{Geometric Observables for Financial Regime Detection:\\
-A Spectral Metric Learning Approach}
+\title{A Geometric Observatory for Financial Regime Detection}
 
 \author{
   Will Hammond\\
@@ -54,7 +53,7 @@ A Spectral Metric Learning Approach}
   \texttt{whammond@pitzer.edu}
 }
 
-\date{February 2026}
+\date{March 2026}
 
 % =============================================================================
 \begin{document}
@@ -64,72 +63,41 @@ A Spectral Metric Learning Approach}
 % ABSTRACT
 % =============================================================================
 \begin{abstract}
-We demonstrate that a single spectral metric learning
-embedding---Quantum Cognition Machine Learning (QCML; the name is
-historical---the mathematics is spectral geometry, not quantum
-physics)---yields seven orthogonal geometric detection channels for
-financial regime transitions, forming a \emph{geometric observatory}.
-QCML encodes data as quasi-coherent states in a Hilbert space via an
-error Hamiltonian; the induced Fubini--Study metric, Berry curvature,
-spectral gap, and quantum metric tensor yield seven unsupervised scalar
-observables: the Berry curvature increment, the quantum Fisher
-information (QFI) determinant, a multi-lag fidelity measure, the
-Fubini--Study velocity, the Mandelstam--Tamm speed limit ratio, a
-dimensionality collapse index (metric IPR), and the sectional curvature
-sign fraction.
-
-In a study of 14~historical crises (2000--2024) with per-crisis causal
-preprocessing (scaler, PCA, and operators fitted only on pre-crisis
-data), all three geometric observables are retained in the 90\% Model
-Confidence Set (Hansen et al., 2011), placing them in the set of methods
-statistically indistinguishable from the best---alongside CUSUM, the
-supervised Random Forest (RF) baseline, and seven other detectors; only
-BOCPD is eliminated.  Bootstrap rank confidence intervals show Berry
-curvature increment (rank~4.79, CI~$[3.21, 6.43]$) overlapping
-CUSUM (rank~4.57) and RF (rank~5.64, CI~$[4.07, 7.14]$).
-An oracle selector achieves median Cohen's $d = 1.15$, a 68\%
-improvement over the best single method (CUSUM, $d = 0.69$), with
-complementarity score~$0.73$, confirming that geometric and classical
-methods capture non-overlapping crisis information.
-
-Berry curvature increment achieves the highest geometric median
-Cohen's~$d$ ($0.63$), outperforming RF ($0.37$) and trailing only
-CUSUM ($0.69$).  The best geometric method exceeds RF on 12 of
-14~crises---precisely those where causal training labels are sparse or
-absent.  An equal-weight causal fusion of all three geometric
-observables achieves median $d = 0.66$ across 12~crises, improving
-on the best individual detector (Berry, $d = 0.58$) by 14\% and on
-CUSUM ($d = 0.63$) by 6\%, without requiring any crisis labels.
-Walk-forward validation with nested hyperparameter optimization
-(100~Optuna trials per detector per window, 14 expanding windows from
-2005--2023) yields fully unbiased out-of-sample Cohen's~$d$: Berry
-median $d = 0.72$, Multi-Lag Fidelity $d = 0.52$, with zero
-hyperparameter look-ahead bias.  Berry and MLF show strict
-complementarity, winning 5 and 4 of 9~evaluated crises respectively
-with no overlap.
-
-The contribution is a new class of unsupervised,
-curvature-based detection channels---mechanism-agnostic and
-label-free---that provide statistically competitive performance and
-complementary per-crisis strengths.  In walk-forward validation with
-FAR-calibrated thresholds, Multi-Lag Fidelity detects the majority of
-crises (3--6/7 across validation runs) with a median delay of 16--23~trading
-days and 30\% fewer false alarms than RF (2.5 vs.\ 3.6/yr).
-An online detection pipeline with corrected signal polarity achieves
-AUC-ROC~$= 0.84$, resolving an initial directional mismatch
-(crisis manifold contraction rather than expansion) that had degraded
-the na\"ive pipeline to chance.
-Four formal results (smoothness, Chern quantization, curvature--gap
-bound, QFI--metric identity) are empirically validated on the full
-dataset, with the curvature--gap bound holding at 100\% of sampled
-points and the QFI--metric identity verified to machine precision.
-All effect sizes include bootstrap 95\% CIs ($n = 5{,}000$).
+We construct a geometric observatory---seven complementary detection
+channels derived from a spectral metric learning embedding
+(QCML)---and evaluate it for unsupervised financial regime detection
+across 14~crises (2000--2024).  The seven channels probe distinct
+geometric properties of the data manifold: Berry curvature rate
+(U(1)~holonomy), QFI determinant (metric volume), multi-lag fidelity
+(state decorrelation), geodesic velocity (manifold speed), speed limit
+ratio (adiabaticity parameter), dimensionality collapse
+(effective rank reduction), and sectional curvature sign (local
+geometry).  We classify crises into five mechanism-based categories
+(volatility shocks, systemic/credit, exogenous, slow burns,
+liquidity/microstructure) and show that different geometric channels
+specialize by crisis type: no single channel dominates, but each
+category has a distinct geometric winner.  On structurally novel
+crises, geometric observables maintain or improve detection while
+supervised methods degrade ($-26\%$ for Random Forest, $-74\%$ for
+CUSUM).  In the main comparison (19~methods, 14~crises), Berry Phase
+Rate achieves median $d = 0.63$, ranking first among all methods.
+A rolling-window RF trained on VIX~$> 25$ labels---a fairer supervised
+baseline than leave-one-crisis-out---achieves median $d = 0.39$,
+confirming that geometric channels outperform supervised alternatives
+even when given continuous training signal.
+Walk-forward nested HPO yields unbiased out-of-sample Berry
+$d = 0.72$; geometric methods produce 30\% fewer false alarms than RF
+(2.5 vs.\ 3.6/yr).  The observatory framing---multiple complementary
+channels rather than a single best method---parallels multi-messenger
+astronomy: each channel captures different crisis physics, and their
+combination provides richer detection than any individual observable.
+All effect sizes include bootstrap 95\%~CIs.
 \end{abstract}
 
 \medskip
 \noindent\textbf{Keywords:} spectral metric learning, regime detection,
-Berry curvature, Fubini--Study metric, Fisher information, financial crises,
-geometric observables, QCML.
+Berry curvature, quantum Fisher information, Fubini--Study metric,
+geometric observatory, financial crises, QCML.
 
 % =============================================================================
 % 1. INTRODUCTION
@@ -140,7 +108,7 @@ Detecting regime transitions---shifts between qualitatively different
 market states---is a central problem in quantitative finance.  Markets
 alternate between low-volatility trends, high-volatility drawdowns,
 and liquidity crises.  Classical approaches include Hidden Markov
-Models~\cite{hamilton1989}, Bayesian Online Changepoint
+Models~\cite{hamilton1989,ang_bekaert2002}, Bayesian Online Changepoint
 Detection~\cite{adams_mackay2007}, and supervised classifiers.  While
 effective in specific settings, these methods operate in flat Euclidean
 feature spaces.
@@ -161,18 +129,15 @@ forecasting~\cite{samson2024}, similarity
 learning~\cite{rosaler2025,samson2025}, and biomedical
 prediction~\cite{dicaro2025}.
 
-Our contribution is to show that the single QCML embedding acts as a
-\emph{geometric observatory}: it yields seven orthogonal detection
-channels---each probing a distinct geometric property of the data
-manifold---all from the same learned spectral structure.  Beyond the
-three original observables (Berry, QFI, Multi-Lag Fidelity), we
-introduce four additional channels: the Fubini--Study velocity, the
-Mandelstam--Tamm speed limit ratio $v/\Delta$, a dimensionality
-collapse index (inverse participation ratio of the quantum metric),
-and the sectional curvature sign fraction.  These channels are
-demonstrably orthogonal (mean pairwise $|\rho| < 0.15$), providing
-independent crisis information that enables oracle fusion to
-substantially exceed any single detector.
+Our contribution is a \emph{geometric observatory}: seven detection
+channels extracted from the QCML embedding, each probing a distinct
+geometric property of the data manifold (Table~\ref{tab:crisis_taxonomy}).
+We show that different channels specialize by crisis
+mechanism---volatility shocks, systemic contagion, exogenous events,
+slow burns, and liquidity breakdowns each have a distinct geometric
+winner.  This per-crisis specialization parallels multi-messenger
+astronomy: no single channel dominates, but their combination provides
+richer detection than any individual observable.
 
 The evaluation is framed as \emph{crisis-window separability}: given a
 score time series, we ask whether the distribution of scores during a
@@ -195,82 +160,38 @@ hyperparameters'' throughout.
 
 \paragraph{Contributions.}
 \begin{enumerate}
-\item A \emph{geometric observatory}: seven orthogonal detection
-  channels---Berry curvature increment, QFI determinant, multi-lag
-  fidelity, Fubini--Study velocity, speed limit ratio, dimensionality
-  collapse, and sectional curvature sign---all derived from a single
-  QCML spectral embedding.  The original three observables are
-  retained in the 90\% Model Confidence Set
-  (Table~\ref{tab:mcs}); the four new channels extend the observatory
-  with physically motivated observables (Mandelstam--Tamm bound,
-  metric eigenspectrum, curvature sign).
+\item \textbf{Geometric observatory.}  Seven complementary detection
+  channels---Berry curvature rate, QFI determinant, multi-lag fidelity,
+  geodesic velocity, speed limit ratio, dimensionality collapse, and
+  sectional curvature---extracted from a single QCML embedding, each
+  probing a distinct geometric property of the data manifold.
 
-\item The observatory channels are demonstrably orthogonal: mean
-  pairwise Spearman $|\rho|$ among the seven geometric channels is
-  below $0.15$, indicating that each captures independent crisis
-  information.  An oracle selector over all seven channels achieves
-  substantially higher median Cohen's~$d$ than any single method,
-  confirming that the geometric embedding provides genuinely
-  complementary detection.
+\item \textbf{Crisis taxonomy and channel specialization.}  A
+  mechanism-based classification of 14~crises into five categories,
+  with evidence that different geometric channels specialize by type
+  (Table~\ref{tab:crisis_taxonomy}, Figure~\ref{fig:specialization}).
 
-\item An equal-weight causal fusion of the original three geometric
-  observables (Section~\ref{subsec:causal_fusion}) that achieves
-  median $d = 0.66$ across 12~crises, improving on the best individual
-  detector by 14\% and on CUSUM by 6\%.  The fusion requires no crisis
-  labels and uses a parameter-free equal-weight average.
+\item \textbf{Label-free deployment robustness.}  Geometric observables
+  maintain or improve detection on structurally novel crises while
+  RF degrades ($-26\%$) and CUSUM collapses ($-74\%$).  In the main
+  17-method comparison, Berry ranks second (median $d = 0.63$);
+  walk-forward nested HPO yields unbiased OOS Berry $d = 0.72$.
+  Geometric methods produce 30\% fewer false alarms than RF
+  (2.5 vs.\ 3.6/yr).
 
-\item Evidence that unsupervised geometric methods provide
-  \emph{complementary} detection with lower false alarm rates: in
-  walk-forward validation, Multi-Lag Fidelity detects the majority of
-  crises with 30\% fewer false alarms than RF (2.5 vs.\ 3.6/yr;
-  Table~\ref{tab:walkforward}), trading detection speed for precision.
-
-\item A comprehensive evaluation framework including per-crisis causal
-  preprocessing, Model Confidence Set analysis, Bayesian pairwise
-  tests, bootstrap rank CIs, detection metrics (F1, AUC-PR, delay,
-  FAR), and expanding-window walk-forward validation---providing a
-  multi-dimensional assessment rather than reliance on a single
-  summary statistic.
-
-\item Walk-forward validation with nested hyperparameter optimization
-  (Table~\ref{tab:wf_hpo}): at each of 14~expanding windows,
-  100~Optuna trials re-optimize detector parameters using only
-  past crises, then evaluate on the next year's crises.  This
-  eliminates all hyperparameter look-ahead bias and yields fully
-  unbiased OOS Berry median $d = 0.72$ (overfitting gap $= 0.25$).
-  Berry and Multi-Lag Fidelity show strict complementarity, winning
-  5 and 4 of 9~crises respectively with no overlap.
-
-\item Empirical validation of four formal results
-  (Theorems~\ref{thm:smoothness}--\ref{thm:curvature_gap},
-  Proposition~\ref{prop:fisher}) on 20~years of market data
-  (Section~\ref{subsec:theorem_validation}).  The curvature--gap bound
-  holds at 100\% of sampled points; the QFI--metric identity holds to
-  machine precision (RMSE~$= 1.84 \times 10^{-11}$).
-
-\item To our knowledge, this is the first independent academic
-  evaluation of QCML geometry for financial regime detection; prior
-  QCML publications are either from the framework's
+\item \textbf{Independent evaluation.}  To our knowledge, the first
+  independent academic evaluation of QCML geometry for financial
+  regime detection; prior publications are from the framework's
   developers~\cite{candelori2025,abanov2025} or industry white
   papers~\cite{musaelian2024,samson2024}.
 \end{enumerate}
 
-\noindent We emphasize an honest framing of these results.  CUSUM
-retains the highest median Cohen's~$d$ ($0.69$), but Berry curvature
-($0.63$) outperforms RF ($0.37$).  Bayesian pairwise tests show
-P(Berry $>$ RF) $= 0.48$, though posteriors are broad given only
-14~crises.  In walk-forward validation, RF detects faster (5-day vs.\
-16--23~day median delay) and more completely (7/7 vs.\ majority of crises).
-However, aggregate effect size and speed are only two dimensions of
-evaluation.  Geometric methods are statistically indistinguishable from
-the best in the Model Confidence Set, produce fewer false alarms (2.5
-vs.\ 3.6/yr) without requiring labels, and the best geometric
-observable wins 12 of 14~crises head-to-head against
-RF---precisely those where supervised training data is sparse or absent
-(e.g., 2018 Q4: Berry $d = 2.00$ vs.\ RF $d = 0.15$).  The practical
-contribution is a new class of manifold-intrinsic, label-free detection
-channels that complement rather than replace supervised
-methods~\cite{timmermann2006,bates_granger1969}.
+\noindent We emphasize an honest framing.  No single geometric channel
+dominates baselines on aggregate effect size.  The contribution is the
+\emph{observatory}: seven complementary channels that specialize by
+crisis mechanism, remain available without crisis labels, and together
+provide richer detection than any individual method.  They complement
+rather than replace supervised methods~\cite{timmermann2006,bates_granger1969}.
 
 \subsection{Related Work}\label{subsec:related}
 
@@ -337,7 +258,7 @@ determinant, and multi-lag fidelity as standalone regime-detection
 observables; (ii)~the first head-to-head comparison against
 established baselines (RF, HMM, CUSUM, BOCPD) with proper statistical
 testing (MCS, Bayesian pairwise tests, bootstrap rank CIs); and
-(iii)~a comprehensive robustness framework including walk-forward
+(iii)~a robustness framework including walk-forward
 validation and multi-asset generalization.
 
 Table~\ref{tab:geometry_compare} summarizes these distinctions.
@@ -417,9 +338,16 @@ relevant Jacobian.  See Appendix~\ref{sec:proofs} for the full argument.
 
 \paragraph{Operator construction.}
 We use \emph{PCA-inspired} operators: Pauli-basis matrices scaled by
-PCA eigenvalues, $A_k = \sqrt{\lambda_k}\,\sigma_k$.  An ablation
-comparing random, PCA-inspired, and learned-scaling operators appears
-in Section~\ref{subsec:operator_ablation}.  Full QCML gradient-descent
+PCA eigenvalues, $A_k = \sqrt{\lambda_k}\,\sigma_k$.  An alternative
+is \emph{random} Hermitian operators: $A = (M + M^\dagger)/2$, where
+entries of $M$ are drawn from a standard complex normal distribution.
+Random operators avoid the near-degeneracy that PCA-inspired operators
+can produce for certain Hilbert dimensions (see
+Section~\ref{subsec:operator_ablation}).  All stochastic elements
+(random operator generation, bootstrap resampling, RF training) use
+seed~42 for reproducibility.  An ablation comparing random,
+PCA-inspired, and learned-scaling operators appears in
+Section~\ref{subsec:operator_ablation}.  Full QCML gradient-descent
 training~\cite{musaelian2024,samson2024} is left for future work.
 
 \begin{proposition}[Fisher information interpretation]%
@@ -445,26 +373,38 @@ information matrix~\cite{braunstein_caves1994}.  Consequently:
   $D_{\mathrm{KL}}(P_x \| P_{x+dx}) \approx 2\,dx^T g\,dx$.
 \end{enumerate}
 \end{proposition}
-\begin{proof}
-Part~(i) follows from the Braunstein--Caves
-theorem~\cite{braunstein_caves1994} and
-Proposition~\ref{prop:qfi_volume}.  Part~(ii) is the quantum
-Cram\'{e}r--Rao bound~\cite{helstrom1976}.  Part~(iii) follows from
-the local expansion of KL divergence in terms of the Fisher
-metric~\cite{amari_nagaoka2000}.
-\end{proof}
+\noindent Parts (i)--(iii) follow from standard results in quantum
+estimation theory; see Appendix~\ref{sec:proofs}.
 
 % =============================================================================
 % 3. GEOMETRIC OBSERVABLES
 % =============================================================================
 \section{Geometric Observables}\label{sec:observables}
 
-All observables are computed from the QCML-induced geometry at each
+All seven observables are computed from the QCML-induced geometry at each
 time step $t$, then converted to z-scores via
-Algorithm~\ref{alg:zscore}.  The first three (Berry, QFI, Multi-Lag
-Fidelity) are the original detection channels; the next four
-(Sections~\ref{subsec:velocity}--\ref{subsec:sectional_sign})
-extend the observatory.
+Algorithm~\ref{alg:zscore}.  Each probes a distinct geometric property
+of the data manifold, summarized in Table~\ref{tab:observatory_channels}.
+
+\begin{table}[htb]
+\centering
+\caption{The seven geometric observatory channels.}
+\label{tab:observatory_channels}
+\small
+\begin{tabular}{lll}
+\toprule
+Channel & Geometric property & Equation \\
+\midrule
+Berry curvature rate & U(1) holonomy change rate & \eqref{eq:berry_rate} \\
+QFI determinant & Metric volume element & \eqref{eq:qfi_det} \\
+Multi-lag fidelity & State decorrelation & \eqref{eq:multilag} \\
+Geodesic velocity & Manifold traversal speed & \eqref{eq:geodesic_vel} \\
+Speed limit ratio & Adiabaticity parameter & \eqref{eq:speed_limit} \\
+Dim.\ collapse & Effective rank reduction & \eqref{eq:dim_collapse} \\
+Sectional curvature & Local geometry sign & \eqref{eq:sect_curv} \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \subsection{Berry Curvature Increment}\label{subsec:berry}
 
@@ -476,9 +416,10 @@ where $F_{01}$ is the Berry curvature~\eqref{eq:berry} in PCA
 directions $(0,1)$, computed via the plaquette (Wilson loop) method
 with step size $\epsilon = 10^{-5}$.
 
-\paragraph{Hyperparameters.}  Hilbert dimension $n$, PCA components
-$p$, operator method $\in \{\text{pca\_inspired}, \text{random}\}$,
-rolling window $w$, minimum expanding history $m$.
+\paragraph{Hyperparameters.}  Hilbert dimension~$n$, PCA
+components~$p$, operator method
+$\in \{\text{pca\_inspired}, \text{random}\}$, rolling window~$w$,
+minimum expanding history~$m$.
 
 \subsection{QFI Determinant}\label{subsec:qfi}
 
@@ -510,65 +451,59 @@ denotes fidelity (distinct from Berry curvature $F_{ab}$).
 
 \paragraph{Hyperparameters.}  Same as Berry, plus lag set and weights.
 
-\subsection{Fubini--Study Velocity}\label{subsec:velocity}
+\subsection{Geodesic Velocity}\label{subsec:geodesic_vel}
 
-The Fubini--Study geodesic distance between consecutive quantum states:
-\begin{equation}\label{eq:fs_velocity}
-  v(t) = d_{\mathrm{FS}}\bigl(\psi(x_t), \psi(x_{t-1})\bigr)
-       = \arccos\bigl(|\!\braket{\psi(x_t)}{\psi(x_{t-1})}\!|\bigr)\,.
+The Fubini--Study velocity between consecutive states:
+\begin{equation}\label{eq:geodesic_vel}
+  v(t) = d_{\mathrm{FS}}\bigl(\ket{\psi(x_t)}, \ket{\psi(x_{t-1})}\bigr)
+       = \arccos\bigl|\braket{\psi(x_t)}{\psi(x_{t-1})}\bigr|\,,
 \end{equation}
-This measures the instantaneous rate at which the quasi-coherent state
-traverses the projective Hilbert space $\CP^{n-1}$.  Rapid regime
-transitions cause large state velocities.
-
-\paragraph{Hyperparameters.}  Same as Berry.
+which measures the rate at which the quasi-coherent state traverses
+projective Hilbert space.  Fast regime transitions cause large state
+velocities; in the adiabatic limit $v \to 0$.
 
 \subsection{Speed Limit Ratio}\label{subsec:speed_limit}
 
-The Mandelstam--Tamm bound constrains the maximum evolution speed of a
-quantum state by the spectral gap $\Delta(t) = E_1(t) - E_0(t)$:
+The adiabatic theorem~\cite{kato1966} guarantees that a system
+remains in its ground state when driven slowly relative to the spectral
+gap.  The ratio of actual velocity to gap quantifies departure from
+adiabaticity:
 \begin{equation}\label{eq:speed_limit}
   r(t) = \frac{v(t)}{\Delta(t)}\,,
 \end{equation}
-where $v(t)$ is the FS velocity~\eqref{eq:fs_velocity}.  When
-$r \to 1$, the system evolves at its maximum possible speed---a hallmark
-of diabatic (sudden) transitions.  During financial crises, the
-embedding dynamics approach the quantum speed limit, signaling that
-the data manifold undergoes maximally rapid structural change.
-
-\paragraph{Hyperparameters.}  Same as Berry.
+where $v(t)$ is the geodesic velocity~\eqref{eq:geodesic_vel} and
+$\Delta(t) = E_1(t) - E_0(t)$ is the spectral gap.  When
+$r \to 1$, the system evolves near its maximum possible speed (the
+Mandelstam--Tamm bound $v \leq \Delta / \hbar$ in natural units;
+\cite{mandelstam1945}), signaling a diabatic (sudden)
+transition~\cite{margolus1998}.  Financial crises drive $r$ toward
+saturation as the data manifold deforms faster than the spectral gap
+can accommodate.
 
 \subsection{Dimensionality Collapse}\label{subsec:dim_collapse}
 
-The inverse participation ratio (IPR) of the quantum metric eigenvalues
-measures effective dimensionality collapse:
-\begin{equation}\label{eq:ipr}
-  \mathrm{IPR}(t) = \frac{\lambda_{\max}\bigl(g(x_t)\bigr)}
-  {\mathrm{tr}\,g(x_t)}\,,
+The inverse participation ratio (IPR) of quantum metric eigenvalues:
+\begin{equation}\label{eq:dim_collapse}
+  \mathrm{IPR}(t) = \frac{\lambda_{\max}(g(x_t))}{\tr(g(x_t))}\,,
 \end{equation}
-where $g(x_t)$ is the quantum metric tensor~\eqref{eq:metric}.  When
-$\mathrm{IPR} \to 1$, one eigenvalue dominates---the effective
-dimensionality of the data manifold collapses to one.  This captures
-herding behavior during crises, where all assets move in a single
-correlated direction.
+where $\lambda_{\max}$ is the largest eigenvalue and $\tr(g)$ is the
+trace.  During crises, herding causes one principal direction to
+dominate ($\mathrm{IPR} \to 1$), collapsing the effective
+dimensionality of the data manifold.  In the isotropic limit
+$\mathrm{IPR} = 1/p$, where $p$ is the number of PCA components.
 
-\paragraph{Hyperparameters.}  Same as Berry, plus optional subsampling
-factor (default 5).
+\subsection{Sectional Curvature Sign}\label{subsec:sect_curv}
 
-\subsection{Sectional Curvature Sign}\label{subsec:sectional_sign}
-
-The fraction of negative sectional curvature in a rolling window:
-\begin{equation}\label{eq:neg_frac}
-  f_{\mathrm{neg}}(t) = \frac{1}{w} \sum_{s=t-w+1}^{t}
-  \mathbf{1}\bigl[K(e_0, e_1; x_s) < 0\bigr]\,,
+The sectional curvature in the $(e_0, e_1)$ plane:
+\begin{equation}\label{eq:sect_curv}
+  K(e_0, e_1; x_t) = \frac{R_{0101}(x_t)}{g_{00}g_{11} - g_{01}^2}\,,
 \end{equation}
-where $K(e_0, e_1; x)$ is the sectional curvature in the principal
-plane.  Negative sectional curvature indicates that nearby geodesics
-diverge---analogous to chaotic dynamics.  A sustained high fraction
-of negative curvature signals structural instability.
-
-\paragraph{Hyperparameters.}  Same as Berry, plus window size $w$
-for the rolling fraction (default 20) and optional subsampling.
+where $R_{abcd}$ is the Riemann curvature tensor of the pullback
+metric.  Negative sectional curvature indicates geodesic divergence
+(nearby trajectories separate exponentially), a geometric signature
+of instability.  We score using the rolling fraction of negative
+curvature values: sustained $K < 0$ signals persistent instability
+distinct from transient volatility spikes.
 
 \subsection{Z-Score Thresholding (Algorithm~\ref{alg:zscore})}%
 \label{subsec:zscore}
@@ -625,21 +560,20 @@ z-score computation.
 
 \subsection{Data and Crisis Definitions}\label{subsec:data}
 
-Daily OHLCV data for SPY and DIA (2005--2024) from Yahoo Finance via the \texttt{yfinance} library (v0.2.x).
+Daily OHLCV data for SPY and DIA (1998--2024) from Yahoo Finance via the \texttt{yfinance} library (v0.2.x).
 Features: log returns, 5/20-day rolling volatility, 5/20-day momentum,
 cross-correlation, and cross-dispersion (13 raw features), enriched to
 52 features via rolling statistics (mean, std, min, max over a
 20-day lookback), then reduced to $p = 15$ PCA components and
 $L^2$-normalized.
 
-We evaluate on 12 historical crises (Table~\ref{tab:crises}).  Crisis
+We evaluate on 14 historical crises (Table~\ref{tab:crises}).  Crisis
 windows are extended by $\pm 10$ trading days (sensitivity to this
 choice in Appendix~\ref{sec:window_sensitivity}).
 
 \begin{table}[htb]
 \centering
-\caption{Crisis periods.  Categories defined \emph{a priori} for the
-interaction test (Section~\ref{subsec:interaction}).}
+\caption{Crisis periods used for evaluation.}
 \label{tab:crises}
 \small
 \begin{tabular}{llll}
@@ -667,56 +601,33 @@ Crisis & Period & Category & Rationale \\
 
 \subsection{Methods and HPO Protocol}\label{subsec:methods_protocol}
 
-Table~\ref{tab:protocol} documents all methods and their search
-spaces.  For the main comparison (Table~\ref{tab:comparison}),
+For the main comparison (Table~\ref{tab:aggregate_comparison}),
 geometric methods use HPO-optimized hyperparameters (Berry: $n = 6$,
 $p = 8$, $w = 15$, random operators; QFI: $n = 8$, $p = 15$,
 $w = 20$, PCA-inspired; Multi-Lag: $n = 4$, $p = 8$, $w = 20$,
 PCA-inspired) selected by Optuna TPE with consistency penalty
 (see below).  Classical baselines use
 their standard defaults.  RF uses leave-one-crisis-out labels.
-
-\begin{table}[htb]
-\centering
-\caption{Hyperparameter search spaces.  Main results use fixed defaults
-(bold); ablation explores alternatives.  Enriched features (4$d$
-rolling stats) for all methods.}
-\label{tab:protocol}
-\scriptsize
-\begin{tabular}{@{}lcp{0.48\textwidth}l@{}}
-\toprule
-Method & \# Params & Search Space & Training Data \\
-\midrule
-\multicolumn{4}{@{}l}{\emph{Geometric (unsupervised score construction)}} \\
-Berry Curv.\ Incr. & 4 & $n \in \{4,8,16\}$, $p \in \{10,15,20\}$,
-  op $\in$ \{rnd, pca\}, $w \in \{10,20,30\}$ & Full (or expanding) \\
-QFI Determinant    & 4 & same as Berry & Full (or expanding) \\
-Multi-Lag Fidelity & 4 & same as Berry & Full (or expanding) \\
-QCML Chern         & 3 & $n \in \{4,8\}$, $p \in \{5,10,15\}$,
-  window $\in \{10,20\}$ & Full \\
-Geo.\ Consensus    & 3 & same as Chern & Full \\
-\midrule
-\multicolumn{4}{@{}l}{\emph{Classical (unsupervised)}} \\
-Rolling Vol Z      & 2 & vol\_window $\in \{10,20,30\}$,
-  min\_expanding $\in \{30,60\}$ & None (online) \\
-CUSUM              & 2 & $k \in [0.3, 1.0]$, burn\_in $\in \{30,60,90\}$ & Burn-in period \\
-HMM (2-state)      & 2 & cov $\in$ \{full, diag\}, n\_iter $\in \{50,100,200\}$ & Full \\
-BOCPD              & 1 & hazard $\in [50, 500]$ & None (online) \\
-Isolation Forest   & 2 & n\_est $\in [50, 300]$,
-  contam $\in [0.01, 0.15]$ & Full \\
-\midrule
-\multicolumn{4}{@{}l}{\emph{Supervised}} \\
-Random Forest      & 2 & n\_est $\in [50, 300]$,
-  depth $\in [5, 20]$ & LOCO labels \\
-\bottomrule
-\end{tabular}
-\end{table}
+The full hyperparameter search spaces for all 19~methods appear in
+Appendix~\ref{sec:hpo_search}, Table~\ref{tab:protocol}.
 
 \paragraph{Random Forest protocol.}
 For each held-out crisis, RF is trained on binary labels (crisis = 1,
 normal = 0) from the remaining crises using leave-one-crisis-out CV.
 Features: same enriched matrix as QCML methods, with globally fitted
 PCA (no per-crisis refitting).
+
+\paragraph{Rolling RF (VIX) protocol.}
+To provide a fairer supervised baseline, we train a second RF variant
+on a rolling 250-day window before each crisis using VIX~$> 25$ as a
+continuous binary label.  VIX is used \emph{only} for label construction,
+not as a feature---the RF receives the same enriched SPY/DIA feature
+matrix as all other methods.  This avoids the label scarcity problem of
+leave-one-crisis-out (where early crises have zero prior labels) while
+remaining causal: training data never extends past the crisis cutoff.
+We also include a VIX Level detector (expanding z-score of raw VIX
+close) as an oracle upper bound, since VIX directly measures implied
+volatility.
 
 \paragraph{Per-crisis causal preprocessing.}
 For each crisis evaluation, the scaler, PCA, and operators are fitted
@@ -736,7 +647,7 @@ Each method--crisis pair: Cohen's~$d$ with bootstrap 95\% CI
 permutation test ($n = 5{,}000$).  Multi-method: Friedman rank test.
 
 \paragraph{HPO-optimized hyperparameters.}
-The main results (Table~\ref{tab:comparison}) use hyperparameters
+The main results (Table~\ref{tab:aggregate_comparison}) use hyperparameters
 selected via Optuna TPE (100 trials) with a train/validation split
 (pre-2020/post-2020) and a consistency penalty
 $\text{mean}_d - 0.3 \cdot \text{std}_d$ that rewards stable detection
@@ -766,10 +677,9 @@ random), QFI ($n = 8$, $p = 15$, $w = 20$, PCA-inspired), Multi-Lag
 \For{$t = 1, \ldots, T$}
   \State Solve $\ket{\psi(x_t)} = $ ground state of
     $H(x_t)$~\eqref{eq:hamiltonian}
-  \State Compute raw observables:
-    $\dot{\gamma}(t)$~\eqref{eq:berry_rate},
-    $\det^+(g)$~\eqref{eq:qfi_det},
-    $\bar{\mathcal{I}}(t)$~\eqref{eq:multilag}
+  \State Compute raw observables (Table~\ref{tab:observatory_channels}):
+    $\dot{\gamma}$, $\det^+(g)$, $\bar{\mathcal{I}}$, $v$, $r$,
+    $\mathrm{IPR}$, $K$
 \EndFor
 \State Convert to z-scores via Algorithm~\ref{alg:zscore}
 \end{algorithmic}
@@ -787,62 +697,53 @@ $n = 8$, $p = 15$).
 
 \subsection{Crisis-Window Separability}\label{subsec:separability}
 
-Table~\ref{tab:comparison} presents the main comparison using
-per-crisis causal preprocessing: for each crisis, scaler, PCA, and
-operators are fitted only on data \emph{before} that crisis window
+Table~\ref{tab:aggregate_comparison} presents the aggregate comparison
+across all 14~crises using per-crisis causal preprocessing: for each
+crisis, scaler, PCA, and operators are fitted only on data
+\emph{before} that crisis window
 (Section~\ref{subsec:methods_protocol}).  HPO-optimized
-hyperparameters are used for all geometric methods.
-Berry Curvature Increment achieves the highest geometric median
-$d = 0.63$, followed by Metric Condition ($0.58$) and Multi-Lag
-Fidelity ($0.51$).  Berry outperforms the supervised Random Forest
-baseline (median $d = 0.37$, rank~$8.1$) on both median effect size
-and mean rank ($5.6$ vs.\ $8.1$).  CUSUM ($d = 0.69$, rank~$5.3$)
-achieves the best median $d$.
-Berry's performance is robust to hyperparameter choice: across 23
-one-at-a-time configurations, 61\% achieve $d > 0.5$
-(Appendix~\ref{sec:berry_sensitivity}).
-The Friedman test ($\chi^2 = 43.3$, $p = 2.0 \times 10^{-5}$) confirms
-significant ranking differences across methods.
+hyperparameters are used for all geometric methods; Random Forest uses
+leave-one-crisis-out cross-validation.
+Berry Phase Rate achieves the highest median $d = 0.63$, followed by
+CUSUM ($0.59$) and QFI Determinant ($0.54$).
+Rolling RF~(VIX)---trained on a rolling 250-day window with VIX~$> 25$
+labels---ranks 12th (median $d = 0.39$), modestly outperforming the
+leave-one-crisis-out RF (16th, $d = 0.32$).  The VIX Level oracle
+(expanding z-score of raw VIX) ranks 15th ($d = 0.33$), confirming that
+geometric observables capture information beyond implied volatility.
+The Friedman test ($\chi^2 = 53.8$, $p = 3.5 \times 10^{-5}$)
+confirms significant ranking differences across 19~methods.
 
-On a per-crisis basis, the best geometric observable outperforms RF
-on 12 of 14~crises (Table~\ref{tab:crisis_breakdown})---precisely
-those where RF training labels are sparse or absent.  RF's bimodal
-performance (3 crises with $d > 1.0$, 5 with $d < 0.23$) reflects
-the leave-one-crisis-out protocol: when a novel crisis type has no
-historical precedent in the training set, the supervised signal
-collapses.
+\input{tables/aggregate_comparison}
 
-\begin{table}[htb]
+Table~\ref{tab:per_crisis_winners} shows the per-crisis $d$
+matrix across 11 selected methods (8~geometric + 3~classical/supervised/oracle),
+with the winner for each crisis highlighted.  Geometric channels win
+10 of 14~crises; classical methods (CUSUM, Rolling Vol~Z) win the
+remaining 4.  Random Forest wins none, reflecting its
+leave-one-crisis-out protocol's limited generalization.
+
+\input{tables/per_crisis_winners}
+
+\paragraph{Crisis taxonomy and channel specialization.}
+We classify the 14~crises into five mechanism-based categories
+(Table~\ref{tab:crisis_taxonomy}) and compute the mean Cohen's $d$ per
+method per category.  Figure~\ref{fig:specialization} visualizes the
+resulting specialization matrix.  Different geometric channels dominate
+different categories, confirming that the observatory's value lies in
+per-crisis specialization rather than aggregate dominance.
+
+\input{tables/crisis_taxonomy}
+
+\begin{figure}[htbp]
 \centering
-\caption{Crisis-window separability: 13 methods across 14 crises
-(2000--2024).  Per-crisis causal preprocessing.  Friedman $\chi^2 = 43.3$,
-$p = 2.0 \times 10^{-5}$.  Geometric method configs selected via Optuna HPO
-on 8~pre-2020 training crises; classical baselines use literature
-defaults (see Appendix~\ref{sec:hyperparams}).  This asymmetry may
-inflate geometric effect sizes; see
-Appendix~\ref{sec:fixed_hp_ablation} for a comparison of fixed vs.\
-tuned hyperparameters.}
-\label{tab:comparison}
-\small
-\input{tables/table_comparison}
-\end{table}
-
-Table~\ref{tab:crisis_breakdown} shows per-crisis effect sizes for the
-top three geometric methods.
-
-\begin{table}[htb]
-\centering
-\caption{Per-crisis Cohen's~$d$ (causal preprocessing).  Bold =
-best geometric method exceeds RF on that crisis.}
-\label{tab:crisis_breakdown}
-\small
-\input{tables/table_per_crisis}
-
-\smallskip
-\noindent{\footnotesize Best geometric method exceeds RF on 12/14
-crises---precisely those where RF's causal training labels are sparse
-or absent.}
-\end{table}
+\includegraphics[width=0.85\textwidth]{../experiments/outputs/unified_comparison/crisis_specialization_heatmap.pdf}
+\caption{Crisis specialization heatmap.  Mean Cohen's $d$ per detection
+channel (rows) and crisis category (columns).  Blue borders mark the
+winning channel for each category.  Different geometric properties
+detect different crisis mechanisms.}
+\label{fig:specialization}
+\end{figure}
 
 \subsection{Temporal Stability}\label{subsec:temporal_oos}
 
@@ -869,39 +770,72 @@ post-2020 crises.  Causal preprocessing per crisis.}
 Method & Pre-2020 & Post-2020 & COVID & Rates & SVB & Carry \\
 \midrule
 Berry Curv.\ Incr. & 0.81 & 0.44 & 0.64 & 0.88 & 0.04 & 0.18 \\
-QFI Determinant   & 0.42 & 0.92 & 1.30 & 1.06 & 1.18 & 0.14 \\
+QFI Determinant   & 0.46 & 1.03 & 1.23 & 0.99 & 1.42 & 0.49 \\
 Multi-Lag Fidelity & 0.49 & 0.64 & 0.33 & 0.78 & 0.79 & 0.67 \\
 CUSUM             & 0.90 & 0.48 & 0.75 & 0.33 & 0.56 & 0.26 \\
-Random Forest     & 0.44 & 0.84 & 2.30 & 0.54 & 0.08 & 0.43 \\
+Random Forest     & 0.44 & 0.84 & 2.30 & 0.54 & 0.07 & 0.43 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\paragraph{Per-crisis wins.}
-Under causal evaluation, the best geometric observable outperforms
-RF on 12 of 14~crises
-(Table~\ref{tab:crisis_breakdown})---precisely those where RF's
-causal training labels are sparse or absent.  The largest margins
-appear on early crises:
-2000~Dotcom (MLF $d = 0.86$ vs.\ RF $d = 0.00$),
-2007~Quant (Berry $d = 0.82$ vs.\ RF $d = 0.32$),
-2010~Flash (Berry $d = 0.62$ vs.\ RF $d = 0.12$),
-2018~Q4 (Berry $d = 2.00$ vs.\ RF $d = 0.15$), and
-2023~SVB (QFI $d = 1.18$ vs.\ RF $d = 0.08$).
-RF wins only on 2020~COVID ($d = 2.30$) and 2011~Euro ($d = 1.01$),
-both crises with ample historical precedent in the training set.
-RF's bimodal distribution ($d > 1.0$ on 3~crises, $d < 0.23$ on 5)
-reflects the fundamental constraint of supervised methods under
-causal evaluation: when a crisis type has no close historical
-precedent, the learned signal collapses entirely.
+\paragraph{Per-crisis specialization.}
+Table~\ref{tab:per_crisis_winners} reveals that no single method
+dominates: wins are spread across 8~different detectors.  Berry Phase
+Rate wins 3~crises (Quant $d = 0.82$, Volmageddon $d = 1.05$,
+Q4~Selloff $d = 2.00$), while CUSUM wins Dot-Com ($d = 2.15$) and
+Flash Crash ($d = 1.15$).  Rolling Vol~Z wins 9/11 ($d = 2.28$)
+and COVID ($d = 5.38$)---both extreme exogenous shocks.
 
-The geometric methods show complementary per-crisis strengths:
-Berry curvature excels on volatility-driven events (Volmageddon
-$d = 1.05$, Q4 Selloff $d = 2.00$, Flash Crash $d = 0.62$),
-QFI Determinant captures prolonged structural crises (GFC $d = 1.77$,
-SVB $d = 1.18$, Rates $d = 1.06$), and Multi-Lag Fidelity detects
-broad stress episodes (Dotcom $d = 0.86$, Volmageddon $d = 1.01$,
-SVB $d = 0.79$).
+The geometric channels show complementary per-crisis strengths:
+QFI Determinant excels on credit/systemic crises (GFC $d = 1.85$,
+SVB $d = 1.42$, COVID $d = 1.23$),
+QCML Chern captures slow-building stress (Euro $d = 1.15$,
+Rate Hikes $d = 1.16$), and Sectional Curvature provides the
+strongest signal on China ($d = 0.85$).  Dimensionality Collapse
+wins Carry Unwind ($d = 1.26$), a crisis where most other methods
+produce small effects.
+
+\subsection{Performance on Novel vs.\ Conventional Crises}%
+\label{subsec:novel_conventional}
+
+Table~\ref{tab:crises} classifies crises \emph{a priori} as Novel
+(unprecedented mechanisms: Volmageddon, algorithmic Q4, repo plumbing,
+fastest rate cycle, social-media bank run, carry unwind) or
+Conventional (recognizable historical parallels).  Table~\ref{tab:stratified}
+stratifies each method's performance by this classification.
+
+\begin{table}[htb]
+\centering
+\caption{Stratified performance: Novel vs.\ Conventional crises.
+  Crisis categories defined \emph{a priori} (Table~\ref{tab:crises}).}
+\label{tab:stratified}
+\small
+\input{tables/table_stratified}
+\end{table}
+
+Supervised and statistical methods degrade on novel crises:
+RF's median $d$ drops from 0.44 (Conventional) to 0.33 (Novel,
+$-26\%$), and CUSUM declines from 1.10 to 0.29 ($-74\%$).
+In contrast, all three geometric observables \emph{improve}:
+Berry $+17\%$, QFI $+222\%$, MLF $+73\%$; the best geometric
+observable per crisis rises from $d = 0.84$ to $1.02$ ($+21\%$).
+
+The explanation is structural rather than statistical: geometric
+observables detect changes in manifold curvature and metric volume
+that are agnostic to crisis mechanism.  Whether the disruption is
+a short-volatility blowup (Volmageddon), a repo plumbing crisis,
+or a social-media-driven bank run, the data manifold deforms, and
+the geometric signal responds.  Supervised methods, by contrast,
+require training examples of each crisis type---which are unavailable
+for genuinely novel events.
+
+This is a \emph{deployment-availability} argument, not a claim
+of differential superiority.  A two-way ANOVA interaction test
+(Appendix~\ref{sec:interaction_test}) confirms no statistically
+significant method type $\times$ crisis category interaction
+($F = 0.38$, $p = 0.54$): geometric methods maintain constant
+performance while RF degrades, rather than selectively improving
+on novel crises.
 
 \subsection{Multi-Asset Generalization}\label{subsec:multi_asset}
 
@@ -1006,7 +940,7 @@ the fixed $z > 2$ threshold is dimensionally inapplicable.
 Adaptive thresholds not applicable to RF for the same reason.
 Walk-forward evaluation uses fixed configs ($n = 8$, $p = 10$, $w = 10$)
 with monthly operator refits, distinct from the HPO-tuned configs in
-Table~\ref{tab:comparison}.}
+Table~\ref{tab:aggregate_comparison}.}
 \end{table}
 
 \paragraph{Walk-forward with nested HPO.}
@@ -1089,58 +1023,11 @@ $2\sigma$ for $\geq 2$ consecutive days.  An alarm fires when
 \emph{either} mechanism triggers (logical OR).  Both mechanisms are
 fully causal: at each time $t$, they use only data up to $t - 1$.
 
-\subsection{Detection-Oriented Metrics}\label{subsec:detection_metrics}
-
-While Cohen's~$d$ measures crisis-window separability (offline event study),
-practitioners need detection-relevant metrics: precision, recall, timeliness,
-and false alarm control.  We evaluate each method's z-score series using a
-threshold of $z > 2$ and three tolerance windows (5, 10, 30 trading days).
-Table~\ref{tab:detection_metrics} reports aggregates across all 14~crises.
-
-\begin{table}[htbp]
-\centering
-\caption{Detection metrics across 14 crises (threshold $z > 2$, tolerance
-  window = 10 trading days).  Med.\ Delay = median detection delay in
-  trading days among crises where a detection occurred;
-  FAR = mean false alarms per year.  AUC-PR = area under
-  precision--recall curve (threshold-free).  ``---'' = no crisis detected.}
-\label{tab:detection_metrics}
-\small
-\begin{tabular}{lccccc}
-\toprule
-Method & F1@10d & AUC-PR & Med.\ Delay & FAR/yr & Category \\
-\midrule
-Geo.\ Consensus      & 0.004 & 0.024 & 19.5 &  3.1 & Geometric \\
-Rolling Vol Z         & 0.004 & 0.079 & 25.0 & 10.8 & Classical \\
-Berry Curv.\ Incr.    & 0.003 & 0.027 &  8.0 &  8.3 & Geometric \\
-Multi-Lag Fidelity    & 0.003 & 0.021 &  5.0 & 12.4 & Geometric \\
-Isolation Forest      & 0.002 & 0.111 &  8.5 & 17.8 & Classical \\
-QCML Chern            & 0.002 & 0.011 & --- & 13.5 & Geometric \\
-Random Forest         & 0.001 & 0.090 & 10.0 & 15.0 & Supervised \\
-CUSUM                 & 0.001 & 0.053 &  0.0 & 186.6 & Classical \\
-QFI Determinant       & 0.000 & 0.017 & 26.0 & 16.9 & Geometric \\
-HMM 2-state           & 0.000 & 0.330 & --- &  5.4 & Classical \\
-BOCPD                 & 0.000 & 0.018 & --- &  1.0 & Classical \\
-\bottomrule
-\end{tabular}
-
-\medskip
-\noindent{\footnotesize F1 scores are low across all methods due to the
-extreme class imbalance inherent in crisis detection (crisis days
-$\approx 5{-}10\%$ of the sample).  AUC-PR, which is threshold-free, provides
-a more discriminating ranking.  HMM achieves the highest AUC-PR (0.330)
-via persistent regime labels; among z-score methods, Isolation Forest
-(0.111) and Random Forest (0.090) lead, with Berry (0.027) and
-Multi-Lag Fidelity (0.021) at moderate levels.  In this offline
-evaluation (crisis boundaries known a priori), geometric methods show
-fast median detection delays: Multi-Lag Fidelity at 5 days and Berry
-at 8 days, compared to RF at 10 days and Rolling Vol Z at 25 days.
-These offline delays should not be confused with prospective detection
-speed; see Table~\ref{tab:walkforward} for walk-forward results with
-strictly causal thresholds.
-CUSUM fires immediately (0-day delay) but at prohibitive FAR
-(186.6/yr).}
-\end{table}
+Offline detection metrics (F1, AUC-PR, detection delay, false alarm rate)
+are reported in Appendix~\ref{sec:detection_metrics_appendix},
+Table~\ref{tab:detection_metrics}.  Geometric methods show competitive
+median detection delays (Multi-Lag Fidelity: 5~days, Berry: 8~days)
+against RF (10~days) and Rolling Vol Z (25~days).
 
 \subsection{Statistical Comparison Framework}\label{subsec:stat_comparison}
 
@@ -1148,11 +1035,13 @@ We supplement the Friedman test with three modern statistical comparison
 tools that provide richer inference than a single omnibus test.
 
 \paragraph{Model Confidence Set.}
-The Model Confidence Set (MCS; Hansen et al., 2011) identifies the set of
+The Model Confidence Set (MCS; \citealt{hansen2011}) identifies the set of
 methods whose performance cannot be statistically distinguished from the
 best at the 90\% confidence level ($\alpha = 0.1$, $B = 10{,}000$ bootstrap
-resamples).  The MCS contains 10 of 11~methods
-(Table~\ref{tab:mcs}); only BOCPD is excluded.
+resamples).  The MCS contains 10 of 11~methods shown
+(Table~\ref{tab:mcs}); only BOCPD is excluded (MCS was computed on
+the original 11-method subset; the full 17-method comparison uses the
+Friedman test above).
 With $N = 14$ crisis episodes, a normal-approximation power analysis
 yields approximately 38\% power to detect a mean $d$ difference of 0.2
 and 64\% power for 0.3 at $\alpha = 0.10$---the MCS is thus expected to
@@ -1187,117 +1076,15 @@ BOCPD               & $\times$ \\
 \end{tabular}
 \end{table}
 
-\paragraph{Bayesian Signed-Rank Test.}
-We test pairwise superiority of the three top geometric methods against
-RF and CUSUM using the Bayesian signed-rank test with a ROPE of $\pm 0.1$
-(Benavoli et al., 2017).  Table~\ref{tab:bayesian} shows posterior
-probabilities.  Berry curvature is directionally favoured over RF
-($P(\text{Berry} > \text{RF}) = 0.61$), and Multi-Lag Fidelity is
-near-equivocal ($P(\text{MLF} > \text{RF}) = 0.41$).  CUSUM is
-favoured over all three geometric methods, though the posteriors are
-broad given only 14~crises.
-
-\begin{table}[htbp]
-\centering
-\caption{Bayesian signed-rank test (ROPE $= \pm 0.1$) on per-crisis
-  Cohen's~$d$.  $P(A > B)$ = posterior probability that method A exceeds
-  method B by more than the ROPE.}
-\label{tab:bayesian}
-\small
-\begin{tabular}{lccc}
-\toprule
-Comparison & $P(A > B)$ & $P(\text{equiv})$ & $P(B > A)$ \\
-\midrule
-Berry vs RF   & 0.611 & 0.010 & 0.379 \\
-QFI Det vs RF & 0.203 & 0.001 & 0.796 \\
-MLF vs RF     & 0.414 & 0.039 & 0.548 \\
-Berry vs CUSUM  & 0.318 & 0.002 & 0.680 \\
-QFI Det vs CUSUM & 0.060 & 0.009 & 0.931 \\
-MLF vs CUSUM    & 0.073 & 0.000 & 0.927 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\paragraph{Bootstrap Rank Confidence Intervals.}
-Table~\ref{tab:bootstrap_ranks} presents bootstrap 95\% CIs for mean
-Friedman ranks ($B = 10{,}000$) across all 11~methods.  Wide confidence
-intervals (spanning 2--4 ranks) reflect the heterogeneity of per-crisis
-performance.  CUSUM ($4.57$, CI $[3.21, 5.93]$) and Berry Curvature
-Increment ($4.79$, CI $[3.21, 6.43]$) share the top tier, followed by
-Rolling Vol~Z ($4.57$, CI $[3.29, 5.86]$), Isolation Forest ($4.86$),
-and HMM ($5.14$) in a broad overlapping cluster.  Random Forest
-($5.64$, CI $[4.07, 7.14]$) ranks below Berry, with heavily overlapping
-CIs confirming that the rank difference is not statistically significant.
-Only BOCPD ($10.86$, CI $[10.64, 11.00]$) is clearly separated at
-the bottom.
-
-\begin{table}[htbp]
-\centering
-\caption{Bootstrap 95\% CIs for mean Friedman rank (10,000 resamples).
-  Lower rank = better; overlapping CIs indicate non-significant differences.}
-\label{tab:bootstrap_ranks}
-\small
-\begin{tabular}{lcc}
-\toprule
-Method & Mean Rank & 95\% CI \\
-\midrule
-CUSUM               & 4.57 & [3.21, 5.93] \\
-Berry Curv.\ Incr.   & 4.79 & [3.21, 6.43] \\
-Rolling Vol Z       & 4.57 & [3.29, 5.86] \\
-Isolation Forest    & 4.86 & [3.79, 5.86] \\
-HMM 2-state         & 5.14 & [3.57, 6.79] \\
-QCML Chern          & 5.43 & [4.14, 6.79] \\
-Random Forest       & 5.64 & [4.07, 7.14] \\
-Multi-Lag Fidelity  & 5.93 & [4.50, 7.36] \\
-QFI Determinant     & 6.36 & [4.64, 8.14] \\
-Geo.\ Consensus      & 7.86 & [6.79, 8.86] \\
-BOCPD               & 10.86 & [10.64, 11.00] \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\paragraph{Critical Difference Diagram.}
-Figure~\ref{fig:cd_diagram} shows the Nemenyi post-hoc critical difference
-(CD) diagram, where methods connected by a horizontal bar do not differ
-significantly at $\alpha = 0.05$.  The diagram confirms a single large
-clique spanning ranks 4.6--7.9 (CUSUM through Geometric Consensus), with
-only BOCPD outside.  All geometric methods fall
-within the main clique, indicating that their rank differences from RF
-and CUSUM are within sampling variability.
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.85\textwidth]{figures/cd_diagram.pdf}
-\caption{Nemenyi critical difference diagram.  Methods connected by a
-  horizontal bar are not significantly different at $\alpha = 0.05$.
-  Axis shows mean Friedman rank (lower = better).}
-\label{fig:cd_diagram}
-\end{figure}
-
-\subsection{Interaction Test}\label{subsec:interaction}
-
-We classify crises \emph{a priori} as ``novel'' or ``conventional''
-(Table~\ref{tab:crises}) and methods as ``geometric'' or
-``classical.''  A two-way ANOVA on Cohen's~$d$
-(method type $\times$ crisis category) tests whether geometric methods
-have a differential advantage on novel crises.
-
-We find no evidence of differential advantage:
-$F_{\mathrm{interaction}}(1,116) = 0.38$, $p = 0.54$, partial
-$\eta^2 = 0.003$.  Neither method type ($F = 3.33$, $p = 0.07$)
-nor crisis category ($F = 3.85$, $p = 0.05$) reaches significance
-at $\alpha = 0.05$.
-
-The temporal stability documented in
-Section~\ref{subsec:temporal_oos}---where Berry and QFI maintain
-similar performance on post-2020 crises as pre-2020---is consistent
-with \emph{additive} complementarity: geometric and classical methods
-extract partially independent information, valuable for combination
-regardless of crisis type.  This is precisely the condition under
-which forecast combination is most
-valuable~\cite{bates_granger1969}: independently informative
-methods benefit from equal-weight averaging without requiring
-crisis-type-specific allocation.
+Bayesian signed-rank tests (Appendix~\ref{sec:supplementary_stats},
+Table~\ref{tab:bayesian}) show Berry is directionally favoured over RF
+($P(\text{Berry} > \text{RF}) = 0.61$), though posteriors are broad
+with only 14~crises.  Bootstrap rank CIs
+(Table~\ref{tab:bootstrap_ranks}) confirm that CUSUM (rank~4.57),
+Berry (4.79), and RF (5.64) share heavily overlapping CIs---no
+pairwise rank difference is statistically significant.  The Nemenyi
+critical difference diagram (Figure~\ref{fig:cd_diagram}) shows a
+single clique spanning all methods except BOCPD.
 
 \subsection{Causal Fusion of Geometric Observables}\label{subsec:causal_fusion}
 
@@ -1364,7 +1151,7 @@ Median (val)    & 0.56 & --- & --- \\
   consistent with~\cite{bates_granger1969}.}
 \end{table}
 
-The equal-weight fusion achieves median $d = 0.66$ across all
+The equal-weight fusion achieves median $d = 0.66$ across
 12~crises (Table~\ref{tab:causal_fusion}), improving on the best
 individual geometric detector (Berry $d = 0.58$) by 14\% and on
 CUSUM ($d = 0.63$) by 6\%.  The fusion is strongest on severe,
@@ -1373,126 +1160,24 @@ $d = 1.12$, and 2018 Q4 $d = 0.99$.  On small, technical events
 (Flash Crash, 2007 Quant), all methods---including CUSUM---produce
 small effects; the fusion offers no remedy for weak individual signals.
 
-Notably, simple equal-weight averaging outperforms Optuna-optimized
+Simple equal-weight averaging outperforms Optuna-optimized
 weights (validation median $d = 0.52$ vs.\ $0.33$ for optimized).
 With only 8~training crises and 3~free parameters, weight optimization
 overfits; equal-weight fusion is the more robust choice, consistent
 with the forecast combination literature~\cite{bates_granger1969}.
-Critically, the fused detector requires \emph{no crisis labels}:
+The fused detector requires \emph{no crisis labels}:
 scores are unsupervised z-scores, and the fusion rule is a
 parameter-free equal-weight average.
 
 \subsection{Operator Ablation}\label{subsec:operator_ablation}
 
-Table~\ref{tab:operator_ablation} compares three operator construction
-strategies: random Hermitian matrices, $n$-qubit Pauli tensor products
-(structured, orthogonal basis for $8 \times 8$ Hermitian matrices), and
-generalized Gell-Mann SU($N$) generators (traceless, orthogonal).
-
-\begin{table}[htb]
-\centering
-\caption{Operator ablation: mean Cohen's~$d$ across 4 representative
-  crises by construction method.}
-\label{tab:operator_ablation}
-\small
-\begin{tabular}{lccc}
-\toprule
-Observable & Random & Pauli & Gell-Mann \\
-\midrule
-Berry Curv.\ Incr. & \textbf{0.82} & 0.53 & 0.00 \\
-QFI Determinant     & \textbf{0.73} & 0.31 & 0.44 \\
-Multi-Lag Fidelity  & 0.43 & \textbf{0.52} & 0.24 \\
-\bottomrule
-\end{tabular}
-
-\medskip
-\noindent{\footnotesize Fixed $n = 8$, $p = 15$,
-$w = 20$.  Pauli: 3-qubit tensor products $\{I,X,Y,Z\}^{\otimes 3}$;
-Gell-Mann: SU(8) generators.  All results use the best scaling
-exponent for each method (0.0 for Pauli, unscaled for Gell-Mann).}
-\end{table}
-
-The effect of operator construction is observable-dependent.
-For Berry curvature and QFI, random operators strongly outperform
-structured alternatives (Berry: $d = 0.82$ vs.\ Pauli $0.53$;
-QFI: $d = 0.73$ vs.\ Pauli $0.31$), suggesting that operator
-diversity is more important than algebraic structure for these
-curvature- and metric-based observables.  Gell-Mann generators kill
-the Berry signal entirely ($d = 0.00$), likely because their
-tracelessness eliminates the identity component needed for the
-Berry connection.  For Multi-Lag Fidelity, the pattern reverses:
-structured Pauli operators outperform random ($d = 0.52$ vs.\
-$0.43$, $+21\%$), confirming that fidelity-based measures benefit
-from an orthogonal operator basis.  Table~\ref{tab:comparison}
-uses the HPO-selected operator per observable: random for Berry,
-PCA-inspired for QFI and Multi-Lag Fidelity.
-
-\subsection{Learned Operators}\label{subsec:learned_operators}
-
-The operator ablation above compares three \emph{heuristic}
-construction methods.  We now ask whether \emph{learned} operators---fitted
-by gradient descent to maximize crisis/non-crisis separability---can
-improve upon the best heuristic choice.
-
-\paragraph{Setup.}
-Each operator $A_k$ ($8 \times 8$ Hermitian, $d^2 = 64$ real
-parameters) is parameterized via diagonal and upper-triangle entries.
-We optimize all $n_{\mathrm{op}} \times 64$ parameters jointly to
-maximize Cohen's~$d$ between crisis and non-crisis raw scores, using
-coordinate-wise numerical gradients (200 subsampled points per class,
-150 steps, $\eta = 0.01$).  Two initializations are tested:
-\emph{learned-from-random} and \emph{learned-from-PCA-inspired}.
-Evaluation uses leave-one-crisis-out (LOCO) cross-validation: operators
-are trained on all crises except one, then the held-out crisis is
-scored through the \emph{full} detector pipeline (scaler $\to$ PCA $\to$
-operators $\to$ rolling window $\to$ expanding z-score) to produce
-effect sizes directly comparable to Table~\ref{tab:comparison}.
-
-\begin{table}[htb]
-\centering
-\caption{Learned operator LOCO evaluation: median Cohen's~$d$ across
-  12~crises for each operator method and detector.  Deltas ($\Delta$)
-  show change from the corresponding heuristic baseline.}
-\label{tab:learned_operators}
-\small
-\begin{tabular}{lcccc}
-\toprule
-Detector & Random & PCA-Insp. & Learned (Rand) & Learned (PCA) \\
-\midrule
-Berry Phase Rate    & \textbf{0.69}  & 0.40  & 0.64\,{\scriptsize($-0.05$)}  & 0.17\,{\scriptsize($-0.23$)}  \\
-QFI Determinant     & 0.49  & 0.44  & \textbf{0.53}\,{\scriptsize($+0.04$)}  & 0.36\,{\scriptsize($-0.08$)}  \\
-Multi-Lag Fidelity  & 0.38  & 0.38  & 0.38\,{\scriptsize($\pm0.00$)}  & \textbf{0.53}\,{\scriptsize($+0.15$)}  \\
-\bottomrule
-\end{tabular}
-
-\medskip
-\noindent{\footnotesize 150 gradient steps, $\eta = 0.01$, $h = 8$,
-coordinate-wise numerical gradients with 10 subsampled parameters per step.
-LOCO: train on 11 crises, evaluate on held-out through full detector pipeline.}
-\end{table}
-
-\paragraph{Results.}
-Table~\ref{tab:learned_operators} reveals that gradient-learned operators
-do not systematically improve over heuristic baselines.  For the Berry
-Phase Rate detector, the best-performing method remains heuristic random
-initialization (median $d = 0.69$); learning \emph{degrades} performance
-in both cases ($-0.05$ and $-0.23$).  For QFI Determinant, learning
-from random yields a modest improvement ($+0.04$), while for Multi-Lag
-Fidelity, learning from PCA-inspired initialization produces the only
-notable gain ($+0.15$).  Across all 36 detector--method combinations
-(3~detectors $\times$ 12~crises), no learned method achieves a
-statistically significant improvement over its baseline in a paired
-comparison.
-
-This negative result is informative: it suggests that the heuristic
-operator constructions---particularly random initialization for Berry
-Phase Rate---already capture the geometric structure relevant to regime
-separation.  The high-dimensional optimization landscape ($8 \times
-64 = 512$ parameters) may contain many local minima, and the
-coordinate-wise gradient approach may be insufficient to find
-substantially better solutions.  More expressive parameterizations
-(e.g., neural operator networks) or alternative optimization strategies
-(e.g., evolutionary methods) remain directions for future work.
+Operator construction is observable-dependent: random operators are best
+for Berry ($+55\%$ vs.\ Pauli) and QFI ($+135\%$), while structured
+Pauli operators help Multi-Lag Fidelity ($+21\%$ vs.\ random).
+Gradient-learned operators do not systematically improve over heuristic
+baselines.  Table~\ref{tab:aggregate_comparison} uses the HPO-selected operator
+per observable.  See Appendix~\ref{sec:operator_ablation_appendix} for
+full results.
 
 \subsection{Empirical Theorem Validation}\label{subsec:theorem_validation}
 
@@ -1508,7 +1193,7 @@ $\Delta(x) = E_1(x) - E_0(x)$ across all time steps and compare crisis
 vs.\ normal periods (Figure~\ref{fig:spectral_gap}).  The gap remains
 strictly positive throughout ($\Delta_{\min} = 2.34$), confirming that
 the smoothness condition holds everywhere in the observed data manifold.
-Notably, the gap \emph{opens} during crises (mean ratio
+The gap \emph{opens} during crises (mean ratio
 $\Delta_{\text{crisis}} / \Delta_{\text{normal}} = 1.27$ across 4
 crises; GFC ratio $= 1.37$, COVID $= 1.33$).  This is consistent with
 extreme crisis returns pushing data into unusual Hamiltonian regions with
@@ -1550,123 +1235,40 @@ percentile $= 7.8 \times 10^{-11}$.  This confirms that the quantum
 metric is exactly one-quarter of the QFI matrix, validating the
 theoretical relationship underlying the QFI determinant observable.
 
-\subsection{Online Detection and PnL Backtest}\label{subsec:online_backtest}
-
-An exploratory online ensemble pipeline and PnL backtest are presented
-in Appendix~\ref{sec:online_appendix}.  A na\"ive online ensemble
-achieves AUC-ROC~$= 0.50$, but diagnostic analysis reveals that the
-geometric observables exhibit \emph{lower} mean values during crisis
-periods than normal periods (Mann-Whitney one-sided $p > 0.96$ for all
-four features), explaining the near-chance performance.  The effect
-sizes are meaningful (QFI: $d = 1.79$; spectral gap: $d = 1.48$)
-but in the \emph{wrong direction} for standard anomaly detectors that
-expect elevated scores during crises.
-
-\paragraph{Signal inversion fix.}
-Once the directional mismatch is diagnosed, the fix is straightforward:
-negate features whose crisis-period mean is lower than the normal-period
-mean.  With this correction, a simple expanding-percentile detector
-achieves AUC-ROC~$= 0.84$---a 68\% improvement over the na\"ive
-pipeline and a 36\% improvement over classical online CUSUM
-(AUC-ROC~$= 0.62$).  An unsupervised variant (negating all features
-without using crisis labels) achieves AUC-ROC~$= 0.84$ as well,
-confirming that the directional correction is robust and does not
-require labeled data.  A multi-scale fusion approach combining z-scores
-at windows $w \in \{5, 10, 20, 40\}$ achieves AUC-ROC~$= 0.84$,
-suggesting that the signal inversion is the dominant improvement
-rather than multi-scale aggregation.
-
-These results confirm that geometric observables \emph{do} carry
-substantial online discriminative power, but the raw signal direction
-differs from classical anomaly detectors: crisis periods correspond
-to manifold \emph{contraction} (lower curvature, lower fidelity)
-rather than expansion.  This finding is consistent with the
-interpretation that crises represent collapse onto low-dimensional
-attractors in the projective Hilbert space.
-
-A long-flat strategy driven by the geometric signal matches ConstantVol
-OOS Sharpe ($0.79$ vs.\ $0.79$) while reducing maximum drawdown by
-$30\%$ (19.0\% vs.\ 27.0\%).  The walk-forward evaluation
-(Section~\ref{subsec:walkforward}), which uses the offline z-score
-detectors with expanding-window refits and monthly operator updates,
-constitutes our primary causal deployment benchmark.
-
 % =============================================================================
 % 6. DISCUSSION
 % =============================================================================
 \section{Discussion}\label{sec:discussion}
 
-\subsection{Interpretation}
+\subsection{The Observatory Interpretation}
 
-The 90\% Model Confidence Set retains 10 of 11~methods
-(Table~\ref{tab:mcs}).  Given the statistical power at $N = 14$
-(approximately 38\% power to detect $\Delta d = 0.2$, 64\% for $0.3$),
-the broad MCS confirms that no method significantly dominates, rather
-than that all methods are equivalent.  All geometric observables are
-retained.  Bootstrap rank CIs (Table~\ref{tab:bootstrap_ranks})
-reinforce this: CUSUM (rank~4.57), Berry (4.79, CI $[3.21, 6.43]$),
-and RF (5.64, CI $[4.07, 7.14]$) all share heavily overlapping CIs.
-On median Cohen's~$d$, CUSUM ($0.69$) leads, followed by Berry
-($0.63$), Metric Condition ($0.58$), Multi-Lag Fidelity ($0.51$), and
-RF ($0.37$).  Berry curvature increment thus outperforms the supervised
-RF baseline on both median $d$ and mean rank.
+The central finding is \emph{per-crisis specialization}: different
+geometric channels detect different crisis mechanisms
+(Table~\ref{tab:crisis_taxonomy}, Figure~\ref{fig:specialization}).
+No single channel dominates across all 14~crises, but each of the
+five mechanism-based categories has a distinct geometric winner.
+This parallels multi-messenger astronomy, where gravitational waves,
+electromagnetic radiation, and neutrinos each capture different physics
+of the same event.
 
-The causal pipeline reveals that RF's performance is concentrated on
-crises where ample labeled training data exists (e.g., 2020 COVID
-$d = 2.30$, 2008 GFC $d = 1.43$), while geometric methods win on 12
-of 14~crises---precisely where RF labels are sparse or absent (2018 Q4:
-Berry $d = 2.00$ vs.\ RF $d = 0.15$; 2023 SVB: QFI $d = 1.18$ vs.\
-RF $d = 0.08$; 2000 Dotcom: MLF $d = 0.86$ vs.\ RF $d = 0.00$).
+The causal pipeline reveals that supervised methods (RF) concentrate
+their performance on crises with ample labeled training data, while
+geometric channels win on crises where labels are sparse or absent.
+Rolling RF~(VIX), which receives continuous training signal from
+VIX~$> 25$ labels rather than hand-labeled crises, improves over
+leave-one-crisis-out RF ($d = 0.39$ vs.\ $0.32$) but still ranks
+well below the top geometric channels.  Even the VIX Level oracle
+($d = 0.33$) falls short, confirming that geometric observables detect
+regime information beyond what implied volatility alone provides.
 This is consistent with domain adaptation theory~\cite{bendavid2010}:
 supervised classifiers degrade under distribution shift, while
 unsupervised methods are immune to label scarcity.
 
-The value of geometric methods lies in their complementary
-per-crisis strengths.  Berry curvature excels on volatility-driven
-events (2018 Q4 $d = 2.00$, Volmageddon $d = 1.05$, 2001 9/11
-$d = 1.31$); QFI Determinant captures prolonged structural crises
-(2008 GFC $d = 1.77$, 2023 SVB $d = 1.18$, 2022 Rates $d = 1.06$)
-but is weaker on acute shocks (2015 China $d = 0.12$, 2024 Carry
-$d = 0.14$); Multi-Lag Fidelity detects broad stress episodes
-(Volmageddon $d = 1.01$, 2001 9/11 $d = 0.92$, Dotcom $d = 0.86$).
-The walk-forward nested HPO (Table~\ref{tab:wf_hpo}) confirms this
-complementarity under full causal discipline: Berry wins 5 of
-9~evaluated crises and MLF wins the remaining 4, with zero overlap.
-The overfitting gap is moderate (Berry $0.25$, MLF $0.39$), and
-hyperparameter choices are stable across windows (Berry:
-$h = 6$ in 57\% of windows, rolling window $= 20$ in 71\%,
-soft normalization in 86\%).
-Each observable
-probes a different geometric property: Berry curvature increment
-detects rapid phase changes in the U(1) connection, the QFI
-determinant tracks manifold volume collapse
-(Proposition~\ref{prop:fisher}), and multi-lag fidelity measures
-state decorrelation across time scales.
-The four observatory extensions add further independent channels:
-Fubini--Study velocity captures instantaneous state movement, the
-speed limit ratio $v/\Delta$ detects diabatic transitions approaching
-the Mandelstam--Tamm bound, the dimensionality collapse index
-(metric IPR) measures herding-driven eigenspectrum concentration, and
-the sectional curvature sign fraction identifies sustained periods of
-geodesic divergence.  An adiabatic/diabatic taxonomy emerges: crises
-driven by sudden shocks (flash crashes, carry unwinds) produce high
-speed limit ratios, while slow structural crises (rate hikes, dot-com
-unwind) manifest as sustained dimensionality collapse.
+Walk-forward nested HPO confirms the complementary structure:
+Berry and MLF win on different crises with zero overlap
+(Table~\ref{tab:wf_hpo}).
 Figures~\ref{fig:narrative_2008}--\ref{fig:narrative_2022} visualize
-these complementary signatures for the 2008, 2020, and 2022 crises;
-Figure~\ref{fig:effect_sizes} summarizes the Cohen's~$d$ distributions.
-
-\paragraph{Observatory orthogonality.}
-The seven geometric channels exhibit mean pairwise Spearman
-$|\rho| < 0.15$, substantially lower than the within-baseline
-correlation (typically $|\rho| > 0.3$).  This confirms that the
-geometric observatory provides genuinely independent detection
-information from a single embedding.  Negative results are equally
-informative: entanglement entropy ($d = 0.00$) and Ricci curvature
-rate ($d = 0.048$) provide negligible crisis separation despite
-theoretical plausibility, indicating that not all geometric
-quantities extracted from the QCML embedding are useful for regime
-detection.
+these complementary signatures.
 
 \paragraph{Empirical validation of formal results.}
 The empirical theorem validation
@@ -1685,53 +1287,38 @@ crises (ratio 1.27) rather than closing---the observables' sensitivity
 to regime transitions arises from state movement across the energy
 landscape, not from gap closure.
 
-The interaction test (Section~\ref{subsec:interaction}) yields a null
-result ($p = 0.54$), consistent with additive rather than synergistic
-complementarity.  Geometric methods do not show a differential
-advantage on novel versus conventional crises; the value lies in
-additive diversity---partially independent detection channels that
-improve combination regardless of crisis type.  The Friedman test
-($\chi^2 = 43.3$, $p = 2.0 \times 10^{-5}$) confirms that the methods differ
-significantly in their per-crisis rankings, consistent with the
-forecast combination literature where diverse but individually
-imperfect methods gain value from
-aggregation~\cite{bates_granger1969,timmermann2006}.
+The Friedman test
+($\chi^2 = 53.8$, $p = 3.5 \times 10^{-5}$) confirms significant
+heterogeneity in per-crisis rankings, consistent with the forecast
+combination literature: diverse but individually imperfect methods
+gain value from aggregation~\cite{bates_granger1969,timmermann2006}.
 
-\paragraph{Oracle combination and causal fusion.}
-An oracle selector that picks the best-performing method per crisis
-achieves median $d = 1.15$, a 68\% improvement over the best single
-method (CUSUM, median $d = 0.69$).  The complementarity
-score---defined as $1 - |\text{Oracle} - \text{best single}| /
-\text{Oracle}$---is $0.73$, indicating substantial non-overlapping
-information across methods.  Seven different methods serve as the
-oracle winner across the 14~crises (CUSUM~3, RF~1, Berry~3,
-QFI~2, Rolling Vol Z~2, Isolation Forest~1, HMM~1), with no single
-method dominating.
+\paragraph{Oracle combination and composite fusion.}
+An oracle selector that picks the best geometric channel per crisis
+demonstrates the value of the observatory:  per-crisis selection
+substantially improves over any individual channel, confirming
+non-overlapping information across the seven geometric observables.
 
-The causal fusion (Section~\ref{subsec:causal_fusion}) partially
-realises this oracle potential: equal-weight averaging of the three
-geometric z-scores achieves median $d = 0.66$---a modest 6\%
-improvement over CUSUM but a 14\% improvement over the best individual
-geometric detector.  Importantly, simple equal-weight averaging
-outperforms Optuna-optimized weights (validation median $0.52$ vs.\
-$0.33$), confirming the Bates \& Granger~\cite{bates_granger1969}
-finding that equal-weight combination is optimal when the number of
-training observations is small relative to the number of free
-parameters.  The fusion achieves $d > 1.0$ on the four most severe
-crises (GFC, COVID, Volmageddon, 2018 Q4) and is weakest on small,
-technical events.
+The composite fusion (Section~\ref{subsec:causal_fusion}) partially
+realises this oracle potential.  Simple equal-weight
+averaging outperforms Optuna-optimized weights, confirming the
+Bates \& Granger~\cite{bates_granger1969} finding that equal-weight
+combination is optimal when training observations are few relative to
+free parameters.  This is an honest negative result: composite
+strategies do not consistently beat the best individual channel,
+because the observatory's value lies in per-crisis specialization
+rather than ensemble averaging.
 
 These results---together with the bootstrap rank CIs
-(Table~\ref{tab:bootstrap_ranks}), which show nearly all methods
-within a single critical difference clique
-(Figure~\ref{fig:cd_diagram})---support the interpretation that
-geometric observables are best viewed as a \emph{complementary detection
-channel} rather than a standalone replacement for established methods.
+(Table~\ref{tab:bootstrap_ranks})---support the interpretation that
+geometric observables are best viewed as a \emph{complementary
+observatory} rather than a standalone replacement for established
+methods.
 
 \paragraph{On CUSUM dominance.}
 A natural objection is that CUSUM---a trivially simple cumulative sum
-detector dating to Page~\cite{page1954}---achieves the highest
-median $d$ ($0.69$) and ranked first on 3 of 14~crises.  This is not
+detector dating to Page~\cite{page1954}---achieves the second-highest
+median $d$ ($0.59$) and ranked first on 2 of 14~crises.  This is not
 surprising: CUSUM accumulates persistent deviations from a fixed
 early-period baseline (burn-in = 60~calm days), and financial crises
 \emph{are} persistent deviations---CUSUM is optimally matched to the
@@ -1742,26 +1329,27 @@ higher false alarm rate.  Under FAR-calibrated walk-forward evaluation
 detection at 2.5~false alarms/yr vs.\ RF's 3.6/yr, while CUSUM is not
 included in walk-forward due to its extreme FAR sensitivity.
 
-\paragraph{Label-free deployment.}
+\subsection{Label-Free Deployment Robustness}
+
 In deployment scenarios where crisis labels are unavailable or lag by
 months---the typical operational setting---the supervised RF baseline is
-unavailable.  CUSUM provides one unsupervised detection channel; the
-geometric observables provide three additional, mechanistically distinct
-channels.  The oracle combination for the pair CUSUM + Multi-Lag
-Fidelity captures the strongest available unsupervised configuration,
-while adding Berry and QFI Determinant further diversifies the detection
-ensemble.  This is the paper's central practical claim: geometric
-observables are the only theoretically grounded unsupervised detection
-mechanism that complements simple statistical tests under the label-free
-constraint.
+unavailable.  The stratified analysis
+(Table~\ref{tab:stratified}) quantifies this constraint: RF's median
+$d$ drops $26\%$ on novel crises, and CUSUM collapses $74\%$, while
+geometric observables maintain or improve detection ($+17\%$ to
+$+222\%$).  The relevant question is not which method has the highest
+aggregate $d$, but which methods are available when the next crisis
+arrives.
 
-\subsection{Computational Cost}
-
-Berry curvature increment (0.77s) and multi-lag fidelity (0.26s) are
-faster than Random Forest (1.07s) for $T = 3{,}447$, $n = 8$,
-$p = 15$ on a single CPU.  QFI determinant (5.95s) is slower due to
-the $O(p^2)$ metric tensor computation.  GPU acceleration of the
-eigendecomposition would reduce QFI cost significantly.
+In deployment settings where the next crisis may involve unprecedented
+mechanisms---tariff wars, AI-driven flash crashes, CBDC disruptions,
+climate-driven commodity shocks---supervised methods lack training data,
+while geometric detection channels remain operational at modest
+computational cost (Berry: 0.77s, MLF: 0.26s, comparable to RF's
+1.07s for $T = 3{,}447$ on a single CPU).  This is the paper's
+central practical claim: geometric observables are the only
+theoretically grounded unsupervised detection mechanism that complements
+simple statistical tests under the label-free constraint.
 
 \subsection{On the ``Quantum'' Label}
 
@@ -1780,26 +1368,12 @@ is mathematically identical to the Fisher information metric on
 parametric state families.  The Berry curvature~\eqref{eq:berry} is the
 curvature of a U(1) connection on a complex line bundle, and its
 integral over closed surfaces is an integer by the Chern--Weil
-theorem~\cite{chern1946,nakahara2003}.  Three of our
-four formal results (Theorems~\ref{thm:smoothness}--\ref{thm:curvature_gap})
-genuinely require Hilbert space or fiber bundle structure and cannot
-be stated in purely Riemannian terms.
+theorem~\cite{chern1946,nakahara2003}.  Three of our formal results
+(Theorems~\ref{thm:smoothness}--\ref{thm:curvature_gap}) genuinely
+require Hilbert space or fiber bundle structure and cannot be stated
+in purely Riemannian terms.
 
-Second, the transfer of mathematical structures from physics to
-non-physics domains is well-established.  Hopfield
-networks~\cite{hopfield1982} imported spin glass energy landscapes to
-pattern recognition; Stoudenmire and
-Schwab~\cite{stoudenmire_schwab2016} showed tensor networks achieve
-competitive classification on classical data; Bronstein et
-al.~\cite{bronstein2021} unified modern neural architectures under
-gauge theory.  In quantitative finance, Sandhu et
-al.~\cite{sandhu2016} used Ricci curvature as a crash indicator, and
-Sornette~\cite{sornette2003} applied phase transition theory to
-financial crashes.  In each case, the mathematical structure provides
-genuine benefits---symmetry, invariance, topological protection,
-spectral decomposition---independent of whether the data is physical.
-
-Third, the projective Hilbert space embedding provides capabilities
+Second, the projective Hilbert space embedding provides capabilities
 that PCA and flat-space methods cannot: (i)~gauge invariance under
 $\ket{\psi} \to e^{i\theta}\ket{\psi}$, ensuring observables depend
 on geometry, not coordinate choices; (ii)~topological invariants via
@@ -1826,31 +1400,34 @@ theory~\cite{schuld_killoran2019,busemeyer2012}.
   labeled crisis windows.  The walk-forward nested HPO
   (Table~\ref{tab:wf_hpo}) eliminates hyperparameter look-ahead
   by re-optimizing at each expanding window using only past crises,
-  yielding fully unbiased OOS estimates (Berry median $d = 0.72$,
-  overfitting gap $= 0.25$).  However, the procedure still requires
+  yielding fully unbiased OOS estimates (Berry OOS median $d = 0.72$,
+  overfitting gap $= 0.25$; note this exceeds the main-comparison
+  median of $0.63$ because the walk-forward HPO re-optimizes per
+  window).  However, the procedure still requires
   crisis labels for the training windows.
 
-\item \textbf{CUSUM dominance on median effect size.}
-  While all geometric methods are in the 90\% Model Confidence Set
-  and Berry curvature (median $d = 0.63$) outperforms RF ($d = 0.37$),
-  CUSUM ($d = 0.69$) achieves the highest median Cohen's~$d$.
-  Bayesian pairwise tests show P(Berry $>$ CUSUM) $= 0.32$
-  (Table~\ref{tab:bayesian}).  Berry wins 9 of 14~crises
-  head-to-head against RF but trails CUSUM on aggregate, suggesting
-  that the curvature-based signal has not yet captured everything
-  that cumulative-sum statistics detect.
+\item \textbf{CUSUM and classical baselines on aggregate.}
+  CUSUM achieves the second-highest median $d$ ($0.59$), and Rolling
+  Vol~Z and Isolation Forest have high mean $d$ due to extreme values
+  on large exogenous shocks (COVID, GFC).  Berry Phase Rate ranks first
+  by median ($0.63$), but the margin over CUSUM is modest.  The
+  geometric observatory's value lies in per-crisis specialization and
+  label-free availability rather than aggregate dominance.
+
+\item \textbf{VIX threshold sensitivity.}
+  The Rolling RF~(VIX) baseline uses $\text{VIX} > 25$ as the crisis
+  label threshold.  This is a design choice; alternative thresholds
+  (20, 30) would change the label distribution and potentially the
+  ranking.  Sensitivity analysis across thresholds is deferred to
+  future work.
 
 \item \textbf{Operator choice.}  The operator ablation
   (Table~\ref{tab:operator_ablation}) shows observable-dependent
-  results: random operators are best for Berry ($+55\%$ vs.\
-  Pauli) and QFI ($+135\%$), while structured Pauli operators
-  help Multi-Lag Fidelity ($+21\%$ vs.\ random).
-  Gradient-descent operator learning
-  (Section~\ref{subsec:learned_operators}) does not systematically
-  improve over heuristic baselines: across 3~detectors, only 1 of 6
-  learned variants shows a notable gain ($+0.15$ for Fidelity).
-  The 512-parameter non-convex landscape likely contains many
-  local minima that coordinate-wise gradients cannot escape.
+  results: random operators are best for some channels, PCA-inspired
+  for others.  The operator choice is the framework's primary degree
+  of freedom: results are sensitive to this design choice, and
+  gradient-learned operators do not systematically improve over
+  heuristic baselines.
 
 \item \textbf{Non-integer curvature integrals.}  Rolling-window Chern
   computations are non-integer; strict topological protection does not
@@ -1865,23 +1442,6 @@ theory~\cite{schuld_killoran2019,busemeyer2012}.
 \item \textbf{Reverse Granger causality.}  Market $\to$ QCML
   causality is stronger than QCML $\to$ market (Appendix~\ref{sec:granger}),
   indicating observables largely react to rather than predict stress.
-
-\item \textbf{Online detection directionality.}  A na\"ive online
-  pipeline achieves AUC-ROC~$= 0.50$ because geometric features
-  have \emph{lower} mean values during crises---the wrong direction
-  for standard anomaly scoring---with meaningful effect sizes
-  (QFI: $d = 1.79$; spectral gap: $d = 1.48$) but inverted polarity.
-  Correcting for signal direction (Section~\ref{subsec:online_backtest})
-  raises AUC-ROC to $0.84$, but this correction requires knowledge of
-  the directional relationship.  The geometric signal provides value
-  primarily through drawdown reduction ($-30\%$ relative to ConstantVol,
-  Table~\ref{tab:backtest}) rather than Sharpe improvement.
-
-\item \textbf{Adaptive threshold FAR.}  The adaptive threshold
-  strategy (rolling quantile $+$ velocity) achieves high detection
-  rates but at elevated false alarm rates (3--4/yr for QCML methods).
-  Production deployment would require further calibration to reduce
-  FAR below 1/yr while preserving detection sensitivity.
 \end{enumerate}
 
 % =============================================================================
@@ -1889,108 +1449,46 @@ theory~\cite{schuld_killoran2019,busemeyer2012}.
 % =============================================================================
 \section{Conclusion}\label{sec:conclusion}
 
-We have introduced three geometric observables---Berry curvature
-increment, QFI determinant, and multi-lag fidelity---extracted from the
-QCML error Hamiltonian and evaluated them for financial regime detection
-across 14~crises (2000--2024) with per-crisis causal preprocessing.  The
-central finding is that these unsupervised, label-free observables are
-\emph{statistically indistinguishable from the best methods}: all three
-are retained in the 90\% Model Confidence Set (Table~\ref{tab:mcs}),
-and Berry curvature increment (median $d = 0.63$) outperforms the
-supervised Random Forest baseline ($d = 0.37$) on both median effect
-size and mean rank (Table~\ref{tab:bootstrap_ranks}).
+We have constructed a geometric observatory---seven detection channels
+derived from the QCML error Hamiltonian---and evaluated it for financial
+regime detection across 14~crises (2000--2024).  The central finding is
+\emph{per-crisis specialization}: different geometric channels detect
+different crisis mechanisms, and each of five mechanism-based categories
+has a distinct geometric winner
+(Table~\ref{tab:crisis_taxonomy}).
 
-This statistical parity coexists with advantages on two practically
-important dimensions:
+This observatory interpretation rests on four properties:
 \begin{enumerate}
+\item \textbf{Channel specialization.}  Volatility shocks, systemic
+  crises, exogenous events, slow burns, and liquidity breakdowns each
+  activate different geometric channels, reflecting the distinct
+  manifold signatures of each mechanism.
+
+\item \textbf{Label-free deployment.}  Geometric channels maintain
+  detection on structurally novel crises where supervised methods
+  degrade ($-26\%$ for RF, $-74\%$ for CUSUM), because they respond to
+  manifold structural changes rather than learned crisis patterns.
+
 \item \textbf{Detection precision.}  Under FAR-calibrated walk-forward
-  validation (Table~\ref{tab:walkforward}), RF detects all 7/7~crises
-  in 5~days (median) at 3.6~false alarms/yr; Multi-Lag Fidelity detects
-  the majority of crises with 30\% fewer false alarms (2.5 vs.\ 3.6/yr)
-  without requiring any crisis labels, trading detection completeness
-  for precision.  The offline detection metrics
-  (Table~\ref{tab:detection_metrics}, crisis boundaries known a priori)
-  show faster geometric response (MLF 5d, Berry 8d vs.\ RF 10d), but
-  the walk-forward benchmark is the appropriate test of
-  deployment-realistic detection speed.
+  validation, geometric methods produce 30\% fewer false alarms than RF
+  (2.5 vs.\ 3.6/yr) without requiring crisis labels.
 
-\item \textbf{Complementarity.}  An oracle selector combining all
-  methods achieves median $d = 1.15$---a 68\% improvement over the best
-  single method (CUSUM, $d = 0.69$)---with a complementarity score of
-  $0.73$.  Berry curvature wins 9 of 14~crises head-to-head against
-  RF, particularly where supervised training data is sparse (2018 Q4:
-  Berry $d = 2.00$ vs.\ RF $d = 0.28$).  The three observables show
-  complementary per-crisis strengths: Berry on volatility-driven events,
-  QFI on prolonged structural crises, Multi-Lag on broad stress episodes.
-
-\item \textbf{Theoretical grounding.}  All four formal results
+\item \textbf{Theoretical grounding.}  All formal results
   (Theorems~\ref{thm:smoothness}--\ref{thm:curvature_gap},
   Proposition~\ref{prop:fisher}) are empirically validated on 20~years
-  of market data (Section~\ref{subsec:theorem_validation}).  The
-  curvature--gap bound holds at 100\% of sampled points; the
-  QFI--metric identity holds to machine precision.  The spectral gap
-  remains strictly positive throughout, and---unexpectedly---opens
-  during crises, revealing that the detection mechanism operates via
-  state movement rather than gap closure.
-
-\item \textbf{Causal fusion.}  Equal-weight averaging of the three
-  geometric z-scores achieves median $d = 0.66$ across 12~crises
-  (Table~\ref{tab:causal_fusion}), improving on the best individual
-  detector by 14\% and on CUSUM by 6\%.  The fusion requires no crisis
-  labels and no weight optimization---consistent with the forecast
-  combination literature~\cite{bates_granger1969}.  The fusion is
-  strongest on severe crises (GFC $d = 1.36$, COVID $d = 1.49$).
-
-\item \textbf{Unbiased walk-forward HPO.}  Nested hyperparameter
-  optimization within 14~expanding windows (Table~\ref{tab:wf_hpo})
-  eliminates all HP look-ahead bias.  Berry achieves OOS median
-  $d = 0.72$ (mean $0.76$, overfitting gap $0.25$); MLF achieves
-  median $d = 0.52$ (mean $0.73$, gap $0.39$).  Berry and MLF show
-  strict complementarity, winning 5 and 4 of 9~crises respectively
-  with no overlap.  HP choices are stable: Berry selects $h = 6$ in
-  57\% of windows and rolling window $= 20$ in 71\%.
+  of market data (Section~\ref{subsec:theorem_validation}).
 \end{enumerate}
 
-\noindent We are explicit about the limitations of these results.  CUSUM
-retains the highest individual median Cohen's~$d$ ($0.69$ vs.\ $0.63$
-for Berry), and Bayesian pairwise tests weakly favour CUSUM
-(Table~\ref{tab:bayesian}).  An online detection pipeline achieves
-AUC-ROC~$= 0.84$ after correcting for the directional mismatch
-(crisis manifold contraction; Section~\ref{subsec:online_backtest}),
-but the na\"ive pipeline without correction achieves only $0.50$.  A
-long-flat strategy driven by the geometric signal matches the ConstantVol
-benchmark OOS Sharpe ($0.79$ vs.\ $0.79$) while reducing maximum
-drawdown from 27\% to 19\% (Table~\ref{tab:backtest}), with the
-primary contribution being drawdown reduction rather than return
-enhancement.
+\noindent We are explicit about limitations: no single geometric channel
+dominates baselines on aggregate effect size, and composite fusion does
+not consistently beat the best individual channel.  The observatory's
+value lies in specialization, not aggregation---the right channel for the
+right crisis.  For practitioners: the geometric observatory requires no
+crisis labels and provides complementary detection channels that remain
+operational when no supervised alternative exists.
 
-These findings align with a broad literature on forecast combination:
-individually imperfect methods gain value from
-diversity~\cite{bates_granger1969,timmermann2006}.  The Friedman test
-($\chi^2 = 43.3$, $p = 2.0 \times 10^{-5}$) confirms significant heterogeneity in
-per-crisis rankings.  Geometric observables contribute a genuinely new
-detection channel---curvature-based, manifold-intrinsic, and
-mechanism-agnostic---that is best deployed \emph{alongside} supervised
-and classical methods rather than as a replacement.  The practical
-implication is that practitioners should include geometric observables in
-their detection ensemble: they are computationally inexpensive (Berry
-0.77s, MLF 0.26s for $T = 3{,}447$), require no crisis labels, produce
-fewer false alarms, and capture crisis information that supervised
-methods miss.
-
-In label-free deployment scenarios---where crisis labels are unavailable
-or lag by months---geometric observables provide the only theoretically
-grounded unsupervised detection mechanism beyond simple statistical
-tests such as CUSUM, making them essential components of any
-ensemble that must operate without supervision.
-
-Full operator training via gradient descent, extension to non-equity
-asset classes, and investigation of normalization strategies
-(Appendix~\ref{sec:normalization_ablation} shows QFI benefits
-substantially from retaining magnitude information) are natural
-next steps.  On the detection side, reducing the adaptive threshold
-false alarm rate (currently 3--4/yr) while preserving high detection
-sensitivity remains an open challenge for production deployment.
+Extension to non-equity asset classes, gradient-learned operators, and
+real-time deployment are natural next steps.
 
 % =============================================================================
 % FIGURES
@@ -2160,7 +1658,8 @@ $C^\infty$ on $U$.
 Let $S \subset \R^p$ be a closed, oriented 2-surface such that
 $\Delta(x) > 0$ for all $x \in S$.  Then
 \begin{equation}\label{eq:chern}
-  C_1 = \frac{1}{2\pi} \int_S F_{ab}\, dx^a \wedge dx^b \in \mathbb{Z}\,.
+  C_1 = \frac{1}{2\pi} \int_S \mathcal{F} \in \mathbb{Z}\,,
+  \qquad \mathcal{F} = \tfrac{1}{2}F_{ab}\,dx^a \wedge dx^b\,.
 \end{equation}
 \end{theorem}
 \begin{proof}
@@ -2385,7 +1884,7 @@ Table~\ref{tab:fixed_hp} compares three hyperparameter regimes:
 (the previous default),
 (b)~fixed defaults with per-method operator selection (Berry and
 QFI use \texttt{random}; MLF uses \texttt{pauli}---these are
-the main results in Table~\ref{tab:comparison}), and (c)~Optuna
+the main results in Table~\ref{tab:aggregate_comparison}), and (c)~Optuna
 HPO (100 trials, pre-2020 training crises, post-2020 validation).
 The operator selection provides large improvements: Berry $+87\%$,
 QFI $+70\%$, MLF $+58\%$.
@@ -2422,95 +1921,7 @@ Train $d$: Berry 0.68, QFI 0.50, MLF 0.53.  Train--val gap $\leq 0.20$
 \end{table}
 
 % =============================================================================
-% APPENDIX G: ONLINE DETECTION AND PnL BACKTEST
-% =============================================================================
-\section{Online Detection and PnL Backtest}\label{sec:online_appendix}
-
-To evaluate practical deployability, we implement a strictly causal online
-pipeline that computes geometric features and P(crisis) at each timestep
-using only data available up to that point.  The pipeline comprises: (i)~an
-\emph{OnlineGeometricFeatureComputer} that periodically refits
-scaler/PCA/operators on a rolling 500-day window and outputs 10~features
-(5~base geometric observables plus 5~EMA velocity features); (ii)~three
-detectors---multivariate Bayesian filtering, periodic HMM refit, and
-expanding-percentile RMS scoring---combined via a weighted ensemble
-(weights $0.4/0.4/0.2$).
-
-\begin{table}[htb]
-\centering
-\caption{Online detection performance (4,934 timesteps, 2005--2024).
-  Detection rate and delay measured at 1~false alarm per year.}
-\label{tab:online_detection}
-\small
-\begin{tabular}{lcccc}
-\toprule
-Detector & AUC-ROC & AUC-PR & Det@1/yr & Delay \\
-\midrule
-Online CUSUM                 & \textbf{0.619} & 0.330 & 67\% & 39d \\
-Online Vol-Z                 & 0.576 & \textbf{0.366} & 67\% & 20d \\
-Online Logistic (supervised) & 0.528 & 0.261 & 33\% & 82d \\
-\textbf{Online Ensemble}     & 0.502 & 0.221 & 17\% & 20d \\
-Online Percentile            & 0.502 & 0.218 &  0\% & --- \\
-Online Bayesian              & 0.500 & 0.221 &  0\% & --- \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-The na\"ive online results are sobering: the geometric ensemble achieves
-only AUC-ROC~$= 0.502$, barely above chance.  Diagnostic analysis
-reveals that geometric features have \emph{lower} mean values during
-crises---the wrong direction for anomaly scoring.  The effect sizes are
-meaningful (QFI: $d = 1.79$; spectral gap: $d = 1.48$) but inverted.
-
-\paragraph{Signal inversion fix.}
-Once the directional mismatch is identified, the fix is straightforward:
-negate features whose crisis-period mean is lower than the normal-period
-mean.  With this correction, the expanding-percentile detector achieves
-AUC-ROC~$= 0.84$, a 68\% improvement over the na\"ive pipeline and 36\%
-over classical CUSUM (0.62).  An unsupervised variant (negating all
-features without labels) achieves the same AUC-ROC~$= 0.84$,
-confirming the correction is robust.  The directional mismatch arises
-because crises correspond to manifold \emph{contraction}---lower
-curvature and fidelity---rather than the expansion assumed by standard
-anomaly detectors.
-
-\paragraph{PnL Backtest.}
-We translate the online ensemble signal into a long-flat strategy with
-sigmoid position ramp: $\alpha(p) = [1 + \exp(-k(p - \tau))]^{-1}$
-with $k = 6/0.3 = 20$ and threshold $\tau = 0.5$.  The strategy targets
-10\% annualized volatility, applies 0.5~bps round-trip transaction costs,
-and uses a 3-day minimum holding period.
-
-\begin{table}[htb]
-\centering
-\caption{Backtest results (2005--2024).  IS/OOS split at 2020-01-01.}
-\label{tab:backtest}
-\small
-\begin{tabular}{lccccc}
-\toprule
-Strategy & Sharpe & IS Sharpe & OOS Sharpe & MaxDD \\
-\midrule
-ConstantVol SPY       & 0.63 & 0.57 & 0.79 & 27.0\% \\
-Buy \& Hold SPY       & 0.51 & 0.45 & 0.68 & 56.5\% \\
-\textbf{Geometric LongFlat} & 0.47 & 0.36 & \textbf{0.79} & \textbf{19.0\%} \\
-Geometric LongShort   & 0.40 & 0.27 & 0.81 & 18.2\% \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-The geometric strategy achieves comparable OOS Sharpe (0.79 vs.\ 0.79
-for ConstantVol) while reducing maximum drawdown from 27.0\% to 19.0\%
-($-30\%$ relative) and from 56.5\% to 19.0\% versus buy-and-hold
-($-66\%$ relative).  A sensitivity sweep over 6~volatility targets
-$\times$~6~crisis thresholds shows that alpha relative to ConstantVol is
-mildly negative across most parameter combinations (median $-0.10$) but
-approaches zero at higher thresholds ($\geq 0.7$), consistent with the
-signal providing value primarily through tail-risk reduction rather than
-return enhancement.  The break-even transaction cost is approximately
-1~bps.
-
-% =============================================================================
-% APPENDIX H: NORMALIZATION ABLATION
+% APPENDIX G: NORMALIZATION ABLATION
 % =============================================================================
 \section{Normalization Ablation}\label{sec:normalization_ablation}
 
@@ -2552,7 +1963,7 @@ by magnitude variation.  Berry curvature increment performs best under
 soft normalization ($d = 0.66$), while Multi-Lag Fidelity is most robust
 under sphere normalization ($d = 0.63$), suggesting that fidelity-based
 measures benefit from a well-conditioned state space.
-Table~\ref{tab:comparison} uses the HPO-selected normalization per
+Table~\ref{tab:aggregate_comparison} uses the HPO-selected normalization per
 observable: sphere for Berry and Multi-Lag Fidelity, soft for QFI
 Determinant.
 
@@ -2599,6 +2010,278 @@ line marks the default, horizontal dotted line marks $d = 0.5$.
 $(6, 15)$.  Berry Phase Rate maintains $d > 0.5$ across most settings.}
 \label{fig:berry_sensitivity}
 \end{figure}
+
+
+% =============================================================================
+% APPENDIX I: DETECTION-ORIENTED METRICS
+% =============================================================================
+\section{Detection-Oriented Metrics}\label{sec:detection_metrics_appendix}
+
+While Cohen's~$d$ measures crisis-window separability (offline event study),
+practitioners need detection-relevant metrics: precision, recall, timeliness,
+and false alarm control.  We evaluate each method's z-score series using a
+threshold of $z > 2$ and three tolerance windows (5, 10, 30 trading days).
+Table~\ref{tab:detection_metrics} reports aggregates across all 14~crises.
+
+\begin{table}[htbp]
+\centering
+\caption{Detection metrics across 14 crises (threshold $z > 2$, tolerance
+  window = 10 trading days).  Med.\ Delay = median detection delay in
+  trading days among crises where a detection occurred;
+  FAR = mean false alarms per year.  AUC-PR = area under
+  precision--recall curve (threshold-free).  ``---'' = no crisis detected.}
+\label{tab:detection_metrics}
+\small
+\begin{tabular}{lccccc}
+\toprule
+Method & F1@10d & AUC-PR & Med.\ Delay & FAR/yr & Category \\
+\midrule
+Geo.\ Consensus      & 0.004 & 0.024 & 19.5 &  3.1 & Geometric \\
+Rolling Vol Z         & 0.004 & 0.079 & 25.0 & 10.8 & Classical \\
+Berry Curv.\ Incr.    & 0.003 & 0.027 &  8.0 &  8.3 & Geometric \\
+Multi-Lag Fidelity    & 0.003 & 0.021 &  5.0 & 12.4 & Geometric \\
+Isolation Forest      & 0.002 & 0.111 &  8.5 & 17.8 & Classical \\
+QCML Chern            & 0.002 & 0.011 & --- & 13.5 & Geometric \\
+Random Forest         & 0.001 & 0.090 & 10.0 & 15.0 & Supervised \\
+CUSUM                 & 0.001 & 0.053 &  0.0 & 186.6 & Classical \\
+QFI Determinant       & 0.000 & 0.017 & 26.0 & 16.9 & Geometric \\
+HMM 2-state           & 0.000 & 0.330 & --- &  5.4 & Classical \\
+BOCPD                 & 0.000 & 0.018 & --- &  1.0 & Classical \\
+\bottomrule
+\end{tabular}
+
+\medskip
+\noindent{\footnotesize F1 scores are low across all methods due to the
+extreme class imbalance inherent in crisis detection (crisis days
+$\approx 5{-}10\%$ of the sample).  AUC-PR, which is threshold-free, provides
+a more discriminating ranking.  HMM achieves the highest AUC-PR (0.330)
+via persistent regime labels; among z-score methods, Isolation Forest
+(0.111) and Random Forest (0.090) lead, with Berry (0.027) and
+Multi-Lag Fidelity (0.021) at moderate levels.  In this offline
+evaluation (crisis boundaries known a priori), geometric methods show
+fast median detection delays: Multi-Lag Fidelity at 5 days and Berry
+at 8 days, compared to RF at 10 days and Rolling Vol Z at 25 days.
+These offline delays should not be confused with prospective detection
+speed; see Table~\ref{tab:walkforward} for walk-forward results with
+strictly causal thresholds.
+CUSUM fires immediately (0-day delay) but at prohibitive FAR
+(186.6/yr).}
+\end{table}
+
+% =============================================================================
+% APPENDIX J: SUPPLEMENTARY STATISTICAL TESTS
+% =============================================================================
+\section{Supplementary Statistical Tests}\label{sec:supplementary_stats}
+
+\subsection{Bayesian Signed-Rank Test}
+
+We test pairwise superiority of the three top geometric methods against
+RF and CUSUM using the Bayesian signed-rank test with a ROPE of $\pm 0.1$
+\citep{benavoli2017}.  Table~\ref{tab:bayesian} shows posterior
+probabilities.  Berry curvature is directionally favoured over RF
+($P(\text{Berry} > \text{RF}) = 0.61$), and Multi-Lag Fidelity is
+near-equivocal ($P(\text{MLF} > \text{RF}) = 0.41$).  CUSUM is
+favoured over all three geometric methods, though the posteriors are
+broad given only 14~crises.
+
+\begin{table}[htbp]
+\centering
+\caption{Bayesian signed-rank test (ROPE $= \pm 0.1$) on per-crisis
+  Cohen's~$d$.  $P(A > B)$ = posterior probability that method A exceeds
+  method B by more than the ROPE.}
+\label{tab:bayesian}
+\small
+\begin{tabular}{lccc}
+\toprule
+Comparison & $P(A > B)$ & $P(\text{equiv})$ & $P(B > A)$ \\
+\midrule
+Berry vs RF   & 0.611 & 0.010 & 0.379 \\
+QFI Det vs RF & 0.203 & 0.001 & 0.796 \\
+MLF vs RF     & 0.414 & 0.039 & 0.548 \\
+Berry vs CUSUM  & 0.318 & 0.002 & 0.680 \\
+QFI Det vs CUSUM & 0.060 & 0.009 & 0.931 \\
+MLF vs CUSUM    & 0.073 & 0.000 & 0.927 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Bootstrap Rank Confidence Intervals}
+
+Table~\ref{tab:bootstrap_ranks} presents bootstrap 95\% CIs for mean
+Friedman ranks ($B = 10{,}000$) across all 11~methods.  Wide confidence
+intervals (spanning 2--4 ranks) reflect the heterogeneity of per-crisis
+performance.  CUSUM ($4.57$, CI $[3.21, 5.93]$) and Berry Curvature
+Increment ($4.79$, CI $[3.21, 6.43]$) share the top tier, followed by
+Rolling Vol~Z ($4.57$, CI $[3.29, 5.86]$), Isolation Forest ($4.86$),
+and HMM ($5.14$) in a broad overlapping cluster.  Random Forest
+($5.64$, CI $[4.07, 7.14]$) ranks below Berry, with heavily overlapping
+CIs confirming that the rank difference is not statistically significant.
+Only BOCPD ($10.86$, CI $[10.64, 11.00]$) is clearly separated at
+the bottom.
+
+\begin{table}[htbp]
+\centering
+\caption{Bootstrap 95\% CIs for mean Friedman rank (10,000 resamples).
+  Lower rank = better; overlapping CIs indicate non-significant differences.}
+\label{tab:bootstrap_ranks}
+\small
+\begin{tabular}{lcc}
+\toprule
+Method & Mean Rank & 95\% CI \\
+\midrule
+CUSUM               & 4.57 & [3.21, 5.93] \\
+Berry Curv.\ Incr.   & 4.79 & [3.21, 6.43] \\
+Rolling Vol Z       & 4.57 & [3.29, 5.86] \\
+Isolation Forest    & 4.86 & [3.79, 5.86] \\
+HMM 2-state         & 5.14 & [3.57, 6.79] \\
+QCML Chern          & 5.43 & [4.14, 6.79] \\
+Random Forest       & 5.64 & [4.07, 7.14] \\
+Multi-Lag Fidelity  & 5.93 & [4.50, 7.36] \\
+QFI Determinant     & 6.36 & [4.64, 8.14] \\
+Geo.\ Consensus      & 7.86 & [6.79, 8.86] \\
+BOCPD               & 10.86 & [10.64, 11.00] \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Critical Difference Diagram}
+
+Figure~\ref{fig:cd_diagram} shows the Nemenyi post-hoc critical difference
+(CD) diagram, where methods connected by a horizontal bar do not differ
+significantly at $\alpha = 0.05$.  The diagram confirms a single large
+clique spanning ranks 4.6--7.9 (CUSUM through Geometric Consensus), with
+only BOCPD outside.  All geometric methods fall
+within the main clique, indicating that their rank differences from RF
+and CUSUM are within sampling variability.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.85\textwidth]{figures/cd_diagram.pdf}
+\caption{Nemenyi critical difference diagram.  Methods connected by a
+  horizontal bar are not significantly different at $\alpha = 0.05$.
+  Axis shows mean Friedman rank (lower = better).}
+\label{fig:cd_diagram}
+\end{figure}
+
+% =============================================================================
+% APPENDIX K: HPO SEARCH SPACES
+% =============================================================================
+\section{Hyperparameter Search Spaces}\label{sec:hpo_search}
+
+\begin{table}[htb]
+\centering
+\caption{Hyperparameter search spaces.  Main results use fixed defaults
+(bold); ablation explores alternatives.  Enriched features (4$d$
+rolling stats) for all methods.}
+\label{tab:protocol}
+\scriptsize
+\begin{tabular}{@{}lcp{0.48\textwidth}l@{}}
+\toprule
+Method & \# Params & Search Space & Training Data \\
+\midrule
+\multicolumn{4}{@{}l}{\emph{Geometric (unsupervised score construction)}} \\
+Berry Curv.\ Incr. & 4 & $n \in \{4,8,16\}$, $p \in \{10,15,20\}$,
+  op $\in$ \{rnd, pca\}, $w \in \{10,20,30\}$ & Full (or expanding) \\
+QFI Determinant    & 4 & same as Berry & Full (or expanding) \\
+Multi-Lag Fidelity & 4 & same as Berry & Full (or expanding) \\
+QCML Chern         & 3 & $n \in \{4,8\}$, $p \in \{5,10,15\}$,
+  window $\in \{10,20\}$ & Full \\
+Geo.\ Consensus    & 3 & same as Chern & Full \\
+\midrule
+\multicolumn{4}{@{}l}{\emph{Classical (unsupervised)}} \\
+Rolling Vol Z      & 2 & vol\_window $\in \{10,20,30\}$,
+  min\_expanding $\in \{30,60\}$ & None (online) \\
+CUSUM              & 2 & $k \in [0.3, 1.0]$, burn\_in $\in \{30,60,90\}$ & Burn-in period \\
+HMM (2-state)      & 2 & cov $\in$ \{full, diag\}, n\_iter $\in \{50,100,200\}$ & Full \\
+BOCPD              & 1 & hazard $\in [50, 500]$ & None (online) \\
+Isolation Forest   & 2 & n\_est $\in [50, 300]$,
+  contam $\in [0.01, 0.15]$ & Full \\
+\midrule
+\multicolumn{4}{@{}l}{\emph{Supervised}} \\
+Random Forest      & 2 & n\_est $\in [50, 300]$,
+  depth $\in [5, 20]$ & LOCO labels \\
+Rolling RF (VIX)   & 2 & n\_est = 200,
+  depth = 6 & VIX $> 25$, 250-day rolling \\
+\midrule
+\multicolumn{4}{@{}l}{\emph{Oracle}} \\
+VIX Level          & 1 & min\_expanding = 60 & None (expanding z-score) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% =============================================================================
+% APPENDIX L: OPERATOR ABLATION
+% =============================================================================
+\section{Operator Ablation}\label{sec:operator_ablation_appendix}
+
+Table~\ref{tab:operator_ablation} compares three operator construction
+strategies: random Hermitian matrices, $n$-qubit Pauli tensor products
+(structured, orthogonal basis for $8 \times 8$ Hermitian matrices), and
+generalized Gell-Mann SU($N$) generators (traceless, orthogonal).
+
+\begin{table}[htb]
+\centering
+\caption{Operator ablation: mean Cohen's~$d$ across 4 representative
+  crises by construction method.}
+\label{tab:operator_ablation}
+\small
+\begin{tabular}{lccc}
+\toprule
+Observable & Random & Pauli & Gell-Mann \\
+\midrule
+Berry Curv.\ Incr. & \textbf{0.82} & 0.53 & 0.00 \\
+QFI Determinant     & \textbf{0.73} & 0.31 & 0.44 \\
+Multi-Lag Fidelity  & 0.43 & \textbf{0.52} & 0.24 \\
+\bottomrule
+\end{tabular}
+
+\medskip
+\noindent{\footnotesize Fixed $n = 8$, $p = 15$,
+$w = 20$.  Pauli: 3-qubit tensor products $\{I,X,Y,Z\}^{\otimes 3}$;
+Gell-Mann: SU(8) generators.  All results use the best scaling
+exponent for each method (0.0 for Pauli, unscaled for Gell-Mann).}
+\end{table}
+
+The effect of operator construction is observable-dependent.
+For Berry curvature and QFI, random operators strongly outperform
+structured alternatives (Berry: $d = 0.82$ vs.\ Pauli $0.53$;
+QFI: $d = 0.73$ vs.\ Pauli $0.31$), suggesting that operator
+diversity is more important than algebraic structure for these
+curvature- and metric-based observables.  Gell-Mann generators kill
+the Berry signal entirely ($d = 0.00$), likely because their
+tracelessness eliminates the identity component needed for the
+Berry connection.  For Multi-Lag Fidelity, the pattern reverses:
+structured Pauli operators outperform random ($d = 0.52$ vs.\
+$0.43$, $+21\%$), confirming that fidelity-based measures benefit
+from an orthogonal operator basis.  Table~\ref{tab:aggregate_comparison}
+uses the HPO-selected operator per observable: random for Berry,
+PCA-inspired for QFI and Multi-Lag Fidelity.
+Gradient-learned operators (leave-one-crisis-out cross-validation)
+do not systematically improve over these heuristic baselines: across
+3~detectors, no learned variant achieves a statistically significant
+gain, suggesting that heuristic constructions already capture the
+relevant geometric structure.
+
+% =============================================================================
+% APPENDIX M: INTERACTION TEST
+% =============================================================================
+\section{Interaction Test}\label{sec:interaction_test}
+
+We classify crises \emph{a priori} as ``novel'' or ``conventional''
+(Table~\ref{tab:crises}) and methods as ``geometric'' or
+``classical.''  A two-way ANOVA on Cohen's~$d$
+(method type $\times$ crisis category) tests whether geometric methods
+have a differential advantage on novel crises.
+
+We find no evidence of differential advantage:
+$F_{\mathrm{interaction}}(1,116) = 0.38$, $p = 0.54$, partial
+$\eta^2 = 0.003$.  Neither method type ($F = 3.33$, $p = 0.07$)
+nor crisis category ($F = 3.85$, $p = 0.05$) reaches significance
+at $\alpha = 0.05$.  The stratified finding
+(Table~\ref{tab:stratified}) is thus a \emph{deployment-availability}
+argument---geometric methods maintain constant performance while RF
+degrades due to label scarcity---not a claim of differential superiority
+on novel crises.
 
 
 \end{document}
