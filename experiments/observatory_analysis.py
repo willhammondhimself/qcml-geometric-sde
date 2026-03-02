@@ -45,6 +45,7 @@ from qcml_geometry import (
     DimensionalityCollapseDetector,
     SectionalCurvatureDetector,
 )
+from qcml_geometry.fusion import RankFusionDetector
 from experiments.data_loader import fetch_data, create_feature_matrix, ALL_CRISES
 from experiments.baselines import RollingVolatilityDetector, RandomForestRegimeDetector
 from experiments.evaluation import compute_cohens_d_with_ci, welch_t_test
@@ -234,6 +235,209 @@ def oracle_fusion(score_dict, dates, crisis_masks, any_crisis, geometric_names):
     }
 
 
+def _rank_channels_by_d(score_dict, geometric_names, any_crisis):
+    """Rank geometric channels by aggregate Cohen's d (descending).
+
+    Returns:
+        List of (name, d) tuples sorted by d descending.
+    """
+    valid_normal = ~any_crisis
+    ranked = []
+    for name in geometric_names:
+        scores = score_dict[name]
+        valid = ~np.isnan(scores)
+        c = scores[valid & any_crisis]
+        n = scores[valid & valid_normal]
+        if len(c) >= 5 and len(n) >= 10:
+            d, _, _ = compute_cohens_d_with_ci(c, n, n_bootstrap=500)
+        else:
+            d = 0.0
+        ranked.append((name, d))
+    ranked.sort(key=lambda x: -x[1])
+    return ranked
+
+
+def _evaluate_strategies(strategies, crisis_masks, any_crisis):
+    """Compute aggregate and per-crisis Cohen's d for each composite strategy.
+
+    Args:
+        strategies: {name: 1-D score array}.
+        crisis_masks: {crisis_key: boolean mask}.
+        any_crisis: Aggregate boolean mask.
+
+    Returns:
+        Dict with per-strategy aggregate d, CI, and per-crisis breakdown.
+    """
+    valid_normal_mask = ~any_crisis
+    results = {}
+    for strat_name, composite_scores in strategies.items():
+        valid = ~np.isnan(composite_scores)
+        c = composite_scores[valid & any_crisis]
+        n = composite_scores[valid & valid_normal_mask]
+
+        if len(c) >= 5 and len(n) >= 10:
+            d, ci_lo, ci_hi = compute_cohens_d_with_ci(c, n)
+        else:
+            d, ci_lo, ci_hi = np.nan, np.nan, np.nan
+
+        per_crisis = {}
+        for ck, mask in crisis_masks.items():
+            cc = composite_scores[valid & mask]
+            nn = composite_scores[valid & valid_normal_mask]
+            if len(cc) >= 3 and len(nn) >= 10:
+                cd, _, _ = compute_cohens_d_with_ci(cc, nn, n_bootstrap=500)
+            else:
+                cd = np.nan
+            per_crisis[ck] = round(float(cd), 3) if not np.isnan(cd) else None
+
+        results[strat_name] = {
+            'cohens_d': round(float(d), 3),
+            'ci': [round(float(ci_lo), 3), round(float(ci_hi), 3)],
+            'per_crisis': per_crisis,
+        }
+    return results
+
+
+def composite_fusion(score_dict, dates, crisis_masks, any_crisis, geometric_names):
+    """Build and evaluate composite strategies from geometric detector scores.
+
+    Two groups of strategies are tested:
+
+    All-7: composites across all 7 channels.
+        - Max Score, RMS, Rank Fusion, Top-3 Mean.
+
+    Top-4: composites across the 4 strongest channels (by aggregate d),
+    dropping the 3 weakest to reduce dilution.
+        - Top-4 Max, Top-4 RMS, Top-4 d-Weighted, Top-4 Rank Fusion.
+
+    Args:
+        score_dict: {name: 1-D score array} from run_detectors().
+        dates: DatetimeIndex of length T.
+        crisis_masks: {crisis_key: boolean mask}.
+        any_crisis: Aggregate boolean mask.
+        geometric_names: List of the 7 geometric channel names.
+
+    Returns:
+        Dict with 'all_7' and 'top_4' sub-dicts, each mapping strategy name
+        to {cohens_d, ci, per_crisis}. Also includes 'top_4_channels' and
+        'dropped_channels' metadata.
+    """
+    # Rank channels by individual d
+    ranked = _rank_channels_by_d(score_dict, geometric_names, any_crisis)
+    top4_names = [name for name, _ in ranked[:4]]
+    dropped_names = [name for name, _ in ranked[4:]]
+
+    # Score matrices
+    all7_matrix = np.column_stack([score_dict[n] for n in geometric_names])
+    top4_matrix = np.column_stack([score_dict[n] for n in top4_names])
+    T = all7_matrix.shape[0]
+
+    # d-weights for top-4 channels (normalized to sum to 1)
+    top4_d = np.array([d for _, d in ranked[:4]])
+    top4_weights = top4_d / top4_d.sum()
+
+    # ---- All-7 strategies ----
+    all7_strategies = {}
+
+    all7_strategies['Max Score'] = np.nanmax(all7_matrix, axis=1)
+    all7_strategies['RMS'] = np.sqrt(np.nanmean(all7_matrix ** 2, axis=1))
+
+    rf7 = RankFusionDetector(rolling_window=15, min_expanding=60)
+    rf7.set_precomputed_scores(all7_matrix)
+    all7_strategies['Rank Fusion'] = rf7.compute_regime_scores(all7_matrix)
+
+    top3_scores = np.full(T, np.nan)
+    for t in range(T):
+        row = all7_matrix[t]
+        valid_row = row[~np.isnan(row)]
+        if len(valid_row) >= 3:
+            top3_scores[t] = np.mean(np.sort(valid_row)[-3:])
+        elif len(valid_row) > 0:
+            top3_scores[t] = np.mean(valid_row)
+    all7_strategies['Top-3 Mean'] = top3_scores
+
+    # ---- Top-4 strategies ----
+    top4_strategies = {}
+
+    top4_strategies['Top-4 Max'] = np.nanmax(top4_matrix, axis=1)
+    top4_strategies['Top-4 RMS'] = np.sqrt(np.nanmean(top4_matrix ** 2, axis=1))
+
+    # d-weighted mean (handles NaN channels at each timestep)
+    weight_sums = np.nansum(
+        np.where(~np.isnan(top4_matrix), top4_weights, 0), axis=1
+    )
+    weighted_scores = np.where(weight_sums > 0,
+                               np.nansum(top4_matrix * top4_weights, axis=1) / weight_sums,
+                               np.nan)
+    top4_strategies['Top-4 d-Weighted'] = weighted_scores
+
+    rf4 = RankFusionDetector(rolling_window=15, min_expanding=60)
+    rf4.set_precomputed_scores(top4_matrix)
+    top4_strategies['Top-4 Rank Fusion'] = rf4.compute_regime_scores(top4_matrix)
+
+    # Evaluate both groups
+    all7_results = _evaluate_strategies(all7_strategies, crisis_masks, any_crisis)
+    top4_results = _evaluate_strategies(top4_strategies, crisis_masks, any_crisis)
+
+    return {
+        'all_7': all7_results,
+        'top_4': top4_results,
+        'top_4_channels': top4_names,
+        'dropped_channels': dropped_names,
+        'channel_ranking': [{'name': n, 'cohens_d': round(d, 3)} for n, d in ranked],
+    }
+
+
+def plot_composite_comparison(detector_stats, composite_results, output_path):
+    """Bar chart comparing individual detector d vs composite strategy d.
+
+    Args:
+        detector_stats: {name: {'cohens_d': float}} for individual detectors.
+        composite_results: Dict from composite_fusion() with 'all_7' and 'top_4' keys.
+        output_path: Path for saved figure.
+    """
+    from matplotlib.patches import Patch
+
+    # Collect entries: (name, d, category)
+    # category: 'individual', 'all_7', 'top_4'
+    entries = []
+    for name, st in detector_stats.items():
+        entries.append((name, st['cohens_d'], 'individual'))
+    for name, st in composite_results['all_7'].items():
+        entries.append((f'[All-7] {name}', st['cohens_d'], 'all_7'))
+    for name, st in composite_results['top_4'].items():
+        entries.append((f'[Top-4] {name}', st['cohens_d'], 'top_4'))
+
+    # Sort by d ascending (horizontal bars, highest at top)
+    entries.sort(key=lambda x: x[1])
+    names = [e[0] for e in entries]
+    d_vals = [e[1] for e in entries]
+    color_map = {'individual': '#90CAF9', 'all_7': '#42A5F5', 'top_4': '#1565C0'}
+    colors = [color_map[e[2]] for e in entries]
+
+    fig, ax = plt.subplots(figsize=(10, max(6, len(entries) * 0.35)))
+    ax.barh(range(len(names)), d_vals, color=colors, edgecolor='white', height=0.7)
+    ax.set_yticks(range(len(names)))
+    ax.set_yticklabels(names, fontsize=9)
+    ax.set_xlabel("Cohen's d (aggregate)", fontsize=11)
+    ax.set_title('Observatory: Individual vs Composite Effect Sizes', fontsize=12)
+    ax.axvline(x=0, color='grey', linewidth=0.5)
+
+    legend_elements = [
+        Patch(facecolor='#90CAF9', label='Individual detector'),
+        Patch(facecolor='#42A5F5', label='Composite (all 7)'),
+        Patch(facecolor='#1565C0', label='Composite (top 4)'),
+    ]
+    ax.legend(handles=legend_elements, loc='lower right', fontsize=9)
+
+    plt.tight_layout()
+    fig.savefig(output_path, dpi=300, bbox_inches='tight')
+    pdf_path = output_path.with_suffix('.pdf')
+    fig.savefig(pdf_path, bbox_inches='tight')
+    plt.close(fig)
+    logger.info(f"Saved composite comparison: {output_path} and {pdf_path}")
+
+
 def plot_orthogonality_heatmap(names, corr, output_path):
     """Plot and save the orthogonality heatmap."""
     fig, ax = plt.subplots(figsize=(10, 8))
@@ -335,6 +539,10 @@ def main():
     geometric_names = list(OBSERVATORY_DETECTORS.keys())
     oracle = oracle_fusion(score_dict, dates, crisis_masks, any_crisis, geometric_names)
 
+    # Composite fusion strategies
+    logger.info("Computing composite fusion strategies...")
+    composite = composite_fusion(score_dict, dates, crisis_masks, any_crisis, geometric_names)
+
     # Complementarity score: mean |rho| among geometric channels
     geo_indices = [names.index(n) for n in geometric_names if n in names]
     geo_corr = corr[np.ix_(geo_indices, geo_indices)]
@@ -361,6 +569,11 @@ def main():
         names, corr, output_dir / 'orthogonality_heatmap.png'
     )
 
+    # Plot composite comparison
+    plot_composite_comparison(
+        detector_stats, composite, output_dir / 'composite_comparison.png'
+    )
+
     # Save results
     results = {
         'timestamp': datetime.now().isoformat(),
@@ -374,6 +587,7 @@ def main():
             'mean_abs_rho_geo_vs_baseline': round(mean_geo_baseline_rho, 3),
         },
         'oracle_fusion': oracle,
+        'composite_fusion': composite,
         'complementarity': {
             'n_geometric_channels': len(geometric_names),
             'mean_intra_geometric_abs_rho': round(mean_abs_rho, 3),
@@ -397,6 +611,25 @@ def main():
     for name, st in sorted(detector_stats.items(), key=lambda x: -x[1]['cohens_d']):
         logger.info(f"  {name:25s}  d={st['cohens_d']:.3f}  "
                     f"CI=[{st['ci'][0]:.3f}, {st['ci'][1]:.3f}]")
+
+    # Composite summary
+    logger.info("\n=== COMPOSITE FUSION RESULTS ===")
+    best_individual = max(
+        (st['cohens_d'] for n, st in detector_stats.items() if n in geometric_names),
+        default=0,
+    )
+    logger.info(f"Best individual geometric d: {best_individual:.3f}")
+    logger.info(f"Top-4 channels: {composite['top_4_channels']}")
+    logger.info(f"Dropped: {composite['dropped_channels']}")
+
+    for group_key, group_label in [('all_7', 'All-7'), ('top_4', 'Top-4')]:
+        group = composite[group_key]
+        logger.info(f"\n  --- {group_label} composites ---")
+        for strat, st in sorted(group.items(), key=lambda x: -x[1]['cohens_d']):
+            logger.info(
+                f"  {strat:22s}  d={st['cohens_d']:.3f}  "
+                f"CI=[{st['ci'][0]:.3f}, {st['ci'][1]:.3f}]"
+            )
 
 
 if __name__ == '__main__':
