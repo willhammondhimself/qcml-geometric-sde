@@ -10,6 +10,7 @@ build/
 *.log
 *.out
 *.blg
+*.bbl
 *.synctex.gz
 *.fls
 *.fdb_latexmk
@@ -24,14 +25,28 @@ Thumbs.db
 demo/data/*.npz
 data/wrds_cache/
 *.pkl
+experiments/outputs/.cache/
 
 # Environment
 .env
 
-# Experiment outputs (keep authoritative results)
-experiments/outputs/regime_detection/*.json
-!experiments/outputs/regime_detection/causal_comparison_20260222_225143.json
-!experiments/outputs/regime_detection/AUTHORITATIVE_RESULTS.md
+# Experiment outputs (regenerable — keep only paper figures)
+experiments/outputs/**/*.json
+experiments/outputs/**/*.log
+experiments/outputs/**/*.png
+experiments/outputs/**/*.pdf
+experiments/outputs/**/*.txt
+experiments/outputs/**/*.tex
+!experiments/outputs/regime_detection/narratives/
+!experiments/outputs/regime_detection/narratives/**
+!experiments/outputs/observatory/orthogonality_heatmap.*
+
+# Temporary files
+experiments/_tmp_*
+*/_tmp_*
+
+# Paper review artifacts (archived)
+paper/review/
 
 # IDE
 .vscode/
