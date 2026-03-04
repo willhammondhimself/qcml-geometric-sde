@@ -9,6 +9,7 @@ differential geometry — without labeled data.
 - **Reduced Purity** (d = 0.834) ranks #1 overall, followed by Hamilton MS (d = 0.713) and CUSUM (d = 0.625)
 - Friedman chi² = 219.31, p < 0.0001 — methods are not interchangeable
 - QCML observables are **orthogonal** to classical baselines (mean |ρ| = 0.13), enabling complementary fusion
+- **Regime-Adaptive fusion** generalizes to holdout crises (d = 0.783) while top individuals collapse (Reduced Purity drops 66%)
 - Berry Phase Rate leads regime transitions by **90 days** vs. Random Forest's 6 days
 
 ## How It Works
@@ -42,6 +43,7 @@ qcml_geometry/              Core library (pure math, no I/O)
 
 experiments/                Reproducible experiment scripts
   regime_comparison.py      Main 36-method × 17-crisis pipeline
+  fusion_experiments.py     Multi-channel fusion experiments
   runner.py                 Incremental cell-based experiment runner
   config.yaml               Experiment configuration
   baselines.py              RF, VolZ, CUSUM, HMM, BOCPD, IF, GARCH, Hamilton MS, EWMA, ...
@@ -55,10 +57,10 @@ demo/                       Interactive Streamlit app
   app.py                    Main demo (dark navy theme, Plotly charts)
   cache_data.py             One-time data caching
 
-paper/                      LaTeX paper (~45 pages, 3 theorems, 1 proposition, 40+ refs)
+paper/                      LaTeX paper (~48 pages, 3 theorems, 1 proposition, 45+ refs)
   qcml_geometric_sde.tex    Main document
   references.bib            Bibliography
-  tables/                   Auto-generated LaTeX tables (7 files)
+  tables/                   Auto-generated LaTeX tables (9 files)
 
 poster/                     APS Global Physics Summit 2026 poster
 tests/                      pytest suite (14 test files)
@@ -96,7 +98,7 @@ make clean             # Remove build artifacts
 
 ## Paper
 
-~45-page paper with 3 theorems, 1 proposition, and 40+ references.
+~48-page paper with 3 theorems, 1 proposition, and 45+ references.
 Source: `paper/qcml_geometric_sde.tex`
 
 ### Citation
