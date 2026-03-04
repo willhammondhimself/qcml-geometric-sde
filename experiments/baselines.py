@@ -16,6 +16,12 @@ Detectors:
     RandomForestRegimeDetector   — Supervised RF with fit_with_labels()
     RollingWindowRFDetector      — RF trained on rolling VIX > threshold labels
     VIXThresholdDetector         — Expanding z-score of raw VIX close
+    GARCHDetector                — GARCH(1,1) conditional volatility z-score
+    HamiltonMSDetector           — Hamilton (1989) Markov-switching model
+    EWMADetector                 — EWMA (RiskMetrics) volatility z-score
+    MahalanobisDetector          — Mahalanobis distance anomaly score
+    StructuralBreakDetector      — Bai-Perron / PELT structural break proximity
+    TransferEntropyDetector      — Rolling transfer entropy between assets
 """
 
 import logging
@@ -515,3 +521,497 @@ class VIXThresholdDetector(BaseRegimeDetector):
                 scores[t] = 0.0
 
         return scores
+
+
+class GARCHDetector(BaseRegimeDetector):
+    """GARCH(1,1) conditional volatility z-score (Bollerslev 1986).
+
+    Fits a GARCH(1,1) model to portfolio returns and uses the expanding
+    z-score of the conditional variance as a regime score.  High
+    conditional volatility relative to history signals a stress regime.
+
+    Args:
+        min_expanding: Minimum history before computing z-score.
+        return_col: Column index for log returns (default: 0, first PC).
+    """
+
+    def __init__(self, min_expanding: int = 60, return_col: int = 0):
+        self.min_expanding = min_expanding
+        self.return_col = return_col
+        self._omega = None
+        self._alpha = None
+        self._beta = None
+
+    @property
+    def name(self) -> str:
+        return "GARCH(1,1)"
+
+    def fit(self, X: np.ndarray, **kwargs) -> 'GARCHDetector':
+        """Fit GARCH(1,1) to returns using the arch package.
+
+        Args:
+            X: Feature matrix of shape (T, d).  Column ``return_col``
+               is treated as the return series.
+        """
+        try:
+            from arch import arch_model
+        except ImportError:
+            logger.warning("arch package not installed; using fallback EWMA.")
+            self._omega, self._alpha, self._beta = None, None, None
+            return self
+
+        returns = np.asarray(X[:, self.return_col], dtype=float) * 100
+        valid = returns[~np.isnan(returns)]
+        if len(valid) < 50:
+            self._omega, self._alpha, self._beta = None, None, None
+            return self
+
+        am = arch_model(valid, vol='Garch', p=1, q=1, dist='normal',
+                        rescale=False)
+        res = am.fit(disp='off', show_warning=False)
+        self._omega = res.params.get('omega', 0.01)
+        self._alpha = res.params.get('alpha[1]', 0.05)
+        self._beta = res.params.get('beta[1]', 0.90)
+        return self
+
+    def compute_regime_scores(self, X: np.ndarray) -> np.ndarray:
+        """Compute expanding z-score of GARCH conditional variance.
+
+        Returns:
+            1-D array of length T with z-scores (NaN before min_expanding).
+        """
+        returns = np.asarray(X[:, self.return_col], dtype=float)
+        T = len(returns)
+        cond_var = np.full(T, np.nan)
+
+        if self._omega is not None:
+            omega, alpha, beta = self._omega, self._alpha, self._beta
+        else:
+            omega, alpha, beta = 0.0, 0.06, 0.94
+
+        var_init = np.nanvar(returns[:max(20, self.min_expanding)])
+        sigma2 = var_init
+        for t in range(T):
+            if t == 0:
+                sigma2 = var_init
+            else:
+                r = returns[t - 1] if np.isfinite(returns[t - 1]) else 0.0
+                sigma2 = omega + alpha * r**2 + beta * sigma2
+            cond_var[t] = sigma2
+
+        scores = np.full(T, np.nan)
+        for t in range(self.min_expanding, T):
+            past = cond_var[:t]
+            valid = past[np.isfinite(past)]
+            if len(valid) < 2:
+                continue
+            mu = np.mean(valid)
+            sigma = np.std(valid, ddof=1)
+            if sigma > 1e-15:
+                scores[t] = max(0.0, (cond_var[t] - mu) / sigma)
+            else:
+                scores[t] = 0.0
+
+        return scores
+
+
+class HamiltonMSDetector(BaseRegimeDetector):
+    """Hamilton (1989) Markov-switching autoregression.
+
+    Fits a 2-regime Markov-switching model to the first principal
+    component of returns.  The smoothed probability of the high-variance
+    regime is the regime score.
+
+    Args:
+        k_regimes: Number of regimes (default: 2).
+        order: Autoregressive order (default: 1).
+        min_history: Minimum observations before fitting.
+    """
+
+    def __init__(self, k_regimes: int = 2, order: int = 1,
+                 min_history: int = 100):
+        self.k_regimes = k_regimes
+        self.order = order
+        self.min_history = min_history
+        self._params = None
+        self._high_regime_idx = None
+
+    @property
+    def name(self) -> str:
+        return "Hamilton MS"
+
+    def fit(self, X: np.ndarray, **kwargs) -> 'HamiltonMSDetector':
+        """Fit Markov-switching AR model via statsmodels.
+
+        Args:
+            X: Feature matrix of shape (T, d). First column is used.
+        """
+        try:
+            from statsmodels.tsa.regime_switching.markov_autoregression import (
+                MarkovAutoregression,
+            )
+        except ImportError:
+            logger.warning("statsmodels MarkovAutoregression not available.")
+            self._params = None
+            return self
+
+        series = np.asarray(X[:, 0], dtype=float)
+        valid = series[np.isfinite(series)]
+        if len(valid) < self.min_history:
+            self._params = None
+            return self
+
+        try:
+            mod = MarkovAutoregression(
+                valid,
+                k_regimes=self.k_regimes,
+                order=self.order,
+                switching_variance=True,
+            )
+            res = mod.fit(maxiter=200, disp=False)
+            self._params = res.params
+            param_names = mod.param_names
+            sigma_indices = [i for i, n in enumerate(param_names)
+                             if 'sigma2' in n]
+            variances = [res.params[i] for i in sigma_indices]
+            self._high_regime_idx = int(np.argmax(variances))
+        except Exception as e:
+            logger.warning("Hamilton MS fit failed: %s. Using fallback.", e)
+            self._params = None
+
+        return self
+
+    def compute_regime_scores(self, X: np.ndarray) -> np.ndarray:
+        """Compute smoothed probability of high-variance regime.
+
+        Returns:
+            1-D array of length T with P(high-vol regime) or NaN if unfitted.
+        """
+        from statsmodels.tsa.regime_switching.markov_autoregression import (
+            MarkovAutoregression,
+        )
+
+        series = np.asarray(X[:, 0], dtype=float)
+        T = len(series)
+
+        if self._params is None:
+            return np.full(T, np.nan)
+
+        try:
+            mod = MarkovAutoregression(
+                series,
+                k_regimes=self.k_regimes,
+                order=self.order,
+                switching_variance=True,
+            )
+            res = mod.smooth(self._params)
+            probs = res.smoothed_marginal_probabilities[:, self._high_regime_idx]
+            scores = np.asarray(probs, dtype=float)
+            if len(scores) < T:
+                scores = np.concatenate([np.full(T - len(scores), np.nan),
+                                         scores])
+            return scores[:T]
+        except Exception as e:
+            logger.warning("Hamilton MS scoring failed: %s", e)
+            return np.full(T, np.nan)
+
+
+class EWMADetector(BaseRegimeDetector):
+    """EWMA (RiskMetrics) volatility z-score (J.P. Morgan 1996).
+
+    Exponentially weighted moving average of squared returns with
+    decay factor lambda.  Score = expanding z-score of EWMA variance.
+
+    Args:
+        decay: EWMA decay factor (lambda). Default: 0.94 (RiskMetrics daily).
+        min_expanding: Minimum history before computing z-score.
+        return_col: Column index for returns (default: 0).
+    """
+
+    def __init__(self, decay: float = 0.94, min_expanding: int = 60,
+                 return_col: int = 0):
+        self.decay = decay
+        self.min_expanding = min_expanding
+        self.return_col = return_col
+
+    @property
+    def name(self) -> str:
+        return "EWMA Vol"
+
+    def fit(self, X: np.ndarray, **kwargs) -> 'EWMADetector':
+        return self
+
+    def compute_regime_scores(self, X: np.ndarray) -> np.ndarray:
+        if X.ndim == 1:
+            X = X.reshape(-1, 1)
+        returns = X[:, self.return_col]
+        T = len(returns)
+
+        ewma_var = np.full(T, np.nan)
+        sigma2 = np.nanvar(returns[:max(20, self.min_expanding)])
+        for t in range(T):
+            r = returns[t] if np.isfinite(returns[t]) else 0.0
+            sigma2 = self.decay * sigma2 + (1 - self.decay) * r ** 2
+            ewma_var[t] = sigma2
+
+        scores = np.full(T, np.nan)
+        for t in range(self.min_expanding, T):
+            past = ewma_var[:t]
+            valid = past[np.isfinite(past)]
+            if len(valid) < 2:
+                continue
+            mu = np.mean(valid)
+            sigma = np.std(valid, ddof=1)
+            if sigma > 1e-15:
+                scores[t] = max(0.0, (ewma_var[t] - mu) / sigma)
+            else:
+                scores[t] = 0.0
+        return scores
+
+
+class MahalanobisDetector(BaseRegimeDetector):
+    """Mahalanobis distance anomaly detector (Mahalanobis 1936).
+
+    Computes the Mahalanobis distance of each observation from the
+    expanding-window mean, using the expanding covariance matrix.
+    Direct comparator to QFI determinant.
+
+    Ref: Kritzman et al. (2011) "Principal Components as a Measure of
+    Systemic Risk", Journal of Portfolio Management.
+
+    Args:
+        min_expanding: Minimum history before computing distance.
+        regularization: Ridge regularization for covariance inversion.
+    """
+
+    def __init__(self, min_expanding: int = 60, regularization: float = 1e-6):
+        self.min_expanding = min_expanding
+        self.regularization = regularization
+
+    @property
+    def name(self) -> str:
+        return "Mahalanobis"
+
+    def fit(self, X: np.ndarray, **kwargs) -> 'MahalanobisDetector':
+        return self
+
+    def compute_regime_scores(self, X: np.ndarray) -> np.ndarray:
+        if X.ndim == 1:
+            X = X.reshape(-1, 1)
+        T, d = X.shape
+        scores = np.full(T, np.nan)
+
+        # Use incremental mean and covariance for O(T*d^2) instead of O(T^2*d)
+        # Running sums for Welford-like incremental covariance
+        sum_x = np.zeros(d)
+        sum_xx = np.zeros((d, d))
+        n_valid = 0
+
+        for t in range(T):
+            x_t = X[t]
+            if np.all(np.isfinite(x_t)):
+                sum_x += x_t
+                sum_xx += np.outer(x_t, x_t)
+                n_valid += 1
+
+            if t < self.min_expanding or n_valid < d + 2:
+                continue
+
+            mu = sum_x / n_valid
+            cov = sum_xx / n_valid - np.outer(mu, mu)
+            cov += self.regularization * np.eye(d)
+            try:
+                cov_inv = np.linalg.inv(cov)
+                diff = x_t - mu
+                scores[t] = np.sqrt(np.clip(diff @ cov_inv @ diff, 0, None))
+            except np.linalg.LinAlgError:
+                scores[t] = np.nan
+        return scores
+
+
+class StructuralBreakDetector(BaseRegimeDetector):
+    """Structural break proximity detector (Bai & Perron 1998).
+
+    Uses the PELT algorithm (via ``ruptures``) to detect changepoints.
+    Score = inverse distance (in days) to the nearest detected changepoint,
+    computed via expanding z-score for causal consistency.
+
+    Args:
+        model: Cost model for PELT ('rbf', 'l2', 'l1'). Default: 'rbf'.
+        penalty: Penalty parameter for PELT. Default: 3.0.
+        min_expanding: Minimum history before scoring.
+    """
+
+    def __init__(self, model: str = 'rbf', penalty: float = 3.0,
+                 min_expanding: int = 60):
+        self.model = model
+        self.penalty = penalty
+        self.min_expanding = min_expanding
+
+    @property
+    def name(self) -> str:
+        return "Structural Break"
+
+    def fit(self, X: np.ndarray, **kwargs) -> 'StructuralBreakDetector':
+        return self
+
+    def compute_regime_scores(self, X: np.ndarray) -> np.ndarray:
+        try:
+            import ruptures as rpt
+        except ImportError:
+            logger.warning("ruptures package not installed; returning NaN.")
+            return np.full(X.shape[0], np.nan)
+
+        if X.ndim == 1:
+            X = X.reshape(-1, 1)
+        T = X.shape[0]
+
+        # Detect changepoints on full series
+        algo = rpt.Pelt(model=self.model).fit(X)
+        try:
+            changepoints = algo.predict(pen=self.penalty)
+        except Exception:
+            return np.full(T, np.nan)
+
+        # Remove the last element (always T)
+        changepoints = [cp for cp in changepoints if cp < T]
+
+        if len(changepoints) == 0:
+            return np.full(T, np.nan)
+
+        # Compute inverse distance to nearest changepoint
+        cp_arr = np.array(changepoints)
+        inv_dist = np.zeros(T)
+        for t in range(T):
+            min_dist = np.min(np.abs(t - cp_arr))
+            inv_dist[t] = 1.0 / (1.0 + min_dist)
+
+        # Expanding z-score
+        scores = np.full(T, np.nan)
+        for t in range(self.min_expanding, T):
+            mu = np.mean(inv_dist[:t])
+            sigma = np.std(inv_dist[:t], ddof=1)
+            if sigma > 1e-12:
+                scores[t] = (inv_dist[t] - mu) / sigma
+            else:
+                scores[t] = 0.0
+        return scores
+
+
+class TransferEntropyDetector(BaseRegimeDetector):
+    """Rolling transfer entropy between assets (Schreiber 2000).
+
+    Computes binned transfer entropy between the first two features
+    (e.g. SPY and DIA returns) using a rolling window.  Score = expanding
+    z-score of rolling TE.  Elevated TE signals increased information
+    flow during stress.
+
+    Args:
+        te_window: Rolling window for TE estimation. Default: 60.
+        n_bins: Number of bins for discretization. Default: 5.
+        lag: Transfer entropy lag. Default: 1.
+        min_expanding: Minimum history before z-scoring.
+    """
+
+    def __init__(self, te_window: int = 60, n_bins: int = 5, lag: int = 1,
+                 min_expanding: int = 60):
+        self.te_window = te_window
+        self.n_bins = n_bins
+        self.lag = lag
+        self.min_expanding = min_expanding
+
+    @property
+    def name(self) -> str:
+        return "Transfer Entropy"
+
+    def fit(self, X: np.ndarray, **kwargs) -> 'TransferEntropyDetector':
+        return self
+
+    def compute_regime_scores(self, X: np.ndarray) -> np.ndarray:
+        if X.ndim == 1 or X.shape[1] < 2:
+            logger.warning("TransferEntropyDetector requires >= 2 features.")
+            return np.full(X.shape[0], np.nan)
+
+        x = X[:, 0]
+        y = X[:, 1]
+        T = len(x)
+
+        # Rolling transfer entropy (Y -> X)
+        te_vals = np.full(T, np.nan)
+        for t in range(self.te_window + self.lag, T):
+            win_x = x[t - self.te_window:t]
+            win_y = y[t - self.te_window:t]
+            if np.any(~np.isfinite(win_x)) or np.any(~np.isfinite(win_y)):
+                continue
+            te_vals[t] = self._binned_transfer_entropy(win_x, win_y)
+
+        # Expanding z-score
+        scores = np.full(T, np.nan)
+        start = max(self.min_expanding, self.te_window + self.lag)
+        for t in range(start, T):
+            past = te_vals[:t]
+            valid = past[np.isfinite(past)]
+            if len(valid) < 2:
+                continue
+            mu = np.mean(valid)
+            sigma = np.std(valid, ddof=1)
+            if sigma > 1e-12 and np.isfinite(te_vals[t]):
+                scores[t] = (te_vals[t] - mu) / sigma
+            else:
+                scores[t] = 0.0
+        return scores
+
+    def _binned_transfer_entropy(self, x: np.ndarray, y: np.ndarray) -> float:
+        """Compute TE(Y -> X) using binned estimator.
+
+        TE(Y -> X) = H(X_t | X_{t-1}) - H(X_t | X_{t-1}, Y_{t-1})
+        """
+        n = len(x) - self.lag
+        if n < 10:
+            return 0.0
+
+        # Discretize
+        x_bins = np.clip(
+            np.digitize(x, np.linspace(x.min(), x.max(), self.n_bins + 1)[1:-1]),
+            0, self.n_bins - 1,
+        )
+        y_bins = np.clip(
+            np.digitize(y, np.linspace(y.min(), y.max(), self.n_bins + 1)[1:-1]),
+            0, self.n_bins - 1,
+        )
+
+        x_t = x_bins[self.lag:]
+        x_past = x_bins[:-self.lag]
+        y_past = y_bins[:-self.lag]
+
+        # Joint counts with small pseudocount to avoid log(0)
+        eps = 1e-10
+        nb = self.n_bins
+
+        # P(x_t, x_past)
+        joint_xx = np.zeros((nb, nb))
+        for i in range(n):
+            joint_xx[x_t[i], x_past[i]] += 1
+        joint_xx = joint_xx / n + eps
+
+        # P(x_t, x_past, y_past)
+        joint_xxy = np.zeros((nb, nb, nb))
+        for i in range(n):
+            joint_xxy[x_t[i], x_past[i], y_past[i]] += 1
+        joint_xxy = joint_xxy / n + eps
+
+        # Marginals
+        p_xpast = joint_xx.sum(axis=0)
+        p_xpast_ypast = joint_xxy.sum(axis=0)
+
+        # TE = sum p(x_t, x_past, y_past) * log(p(x_t|x_past,y_past) / p(x_t|x_past))
+        te = 0.0
+        for xt in range(nb):
+            for xp in range(nb):
+                for yp in range(nb):
+                    p_joint = joint_xxy[xt, xp, yp]
+                    p_cond_xy = p_joint / p_xpast_ypast[xp, yp]
+                    p_cond_x = joint_xx[xt, xp] / p_xpast[xp]
+                    if p_cond_xy > eps and p_cond_x > eps:
+                        te += p_joint * np.log(p_cond_xy / p_cond_x)
+        return max(0.0, te)

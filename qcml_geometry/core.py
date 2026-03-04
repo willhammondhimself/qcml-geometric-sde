@@ -760,23 +760,311 @@ class QCMLGeometry:
             G_minus, _, _ = self._christoffel_symbols(x_minus, epsilon_metric, epsilon_christoffel)
             dGamma[rho] = (G_plus - G_minus) / (2 * epsilon_riemann)
 
-        # R^i_{jij} = dGamma^i_{ij,j} - dGamma^i_{jj,i}
-        #           + sum_lam Gamma^i_{j,lam} Gamma^lam_{i,j}
-        #           - sum_lam Gamma^i_{i,lam} Gamma^lam_{j,j}
-        R_ijij = 0.0
-        R_ijij += dGamma[j][i, i, j] - dGamma[i][i, j, j]
-        for lam in range(n):
-            R_ijij += christoffel[i, j, lam] * christoffel[lam, i, j]
-            R_ijij -= christoffel[i, i, lam] * christoffel[lam, j, j]
+        # R^sigma_{jij} for all sigma, using do Carmo convention:
+        # R^sigma_{jij} = d_i Gamma^sigma_{jj} - d_j Gamma^sigma_{ij}
+        #               + sum_lam Gamma^sigma_{i,lam} Gamma^lam_{jj}
+        #               - sum_lam Gamma^sigma_{j,lam} Gamma^lam_{ij}
+        R_up = np.zeros(n)
+        for sigma in range(n):
+            R_up[sigma] += dGamma[i][sigma, j, j] - dGamma[j][sigma, i, j]
+            for lam in range(n):
+                R_up[sigma] += christoffel[sigma, i, lam] * christoffel[lam, j, j]
+                R_up[sigma] -= christoffel[sigma, j, lam] * christoffel[lam, i, j]
 
-        # Contract with metric: R_{ijij} = g_{i,sigma} R^sigma_{jij}
-        R_lower = g[i, i] * R_ijij  # approximate: use diagonal component
+        # Full metric lowering: R_{ijij} = sum_sigma g[i, sigma] * R^sigma_{jij}
+        R_lower = g[i, :] @ R_up
 
         denom = g[i, i] * g[j, j] - g[i, j] ** 2
         if abs(denom) < 1e-15:
             return 0.0
 
         return float(R_lower / denom)
+
+    def spectral_entropy(self, x: np.ndarray, c: float = 1.0) -> float:
+        """Compute Shannon entropy of excitation-energy-weighted spectrum.
+
+        Weights w_n = (E_n - E_0) for n >= 1, normalized to sum to 1.
+        High entropy = many modes active (normal); low entropy = spectral
+        collapse toward ground state (crisis).
+
+        Args:
+            x: Data point of shape (n_features,).
+            c: Temperature parameter (unused, kept for API symmetry with spectral_complexity).
+
+        Returns:
+            S: Shannon entropy of excitation weights (non-negative).
+        """
+        eigenvalues = self.full_spectrum(x)
+        E0 = eigenvalues[0]
+        excitations = eigenvalues[1:] - E0
+        excitations = np.maximum(excitations, 1e-15)
+        weights = excitations / np.sum(excitations)
+        return float(-np.sum(weights * np.log(weights + 1e-15)))
+
+    def geometric_phase_rate(self, x_curr: np.ndarray, x_next: np.ndarray) -> float:
+        """Compute geometric phase per step with dynamic phase subtracted.
+
+        gamma_geom = arg(<psi_t|psi_{t+1}>) - E_0(t) * dt
+
+        The dynamic phase E_0*dt is subtracted to isolate the purely
+        geometric (Berry-like) contribution. Large geometric phase rates
+        indicate rapid change in the state's geometric structure.
+
+        Args:
+            x_curr: Current data point of shape (n_features,).
+            x_next: Next data point of shape (n_features,).
+
+        Returns:
+            gamma: Geometric phase rate (radians per step).
+        """
+        psi_curr, E0 = self.quasi_coherent_state(x_curr, return_energy=True)
+        psi_next = self.quasi_coherent_state(x_next)
+        overlap = np.vdot(psi_curr, psi_next)
+        total_phase = np.angle(overlap)
+        dynamic_phase = -E0  # dt = 1 step
+        return float(total_phase - dynamic_phase)
+
+    def hamiltonian_sensitivity(self, x_curr: np.ndarray, x_next: np.ndarray) -> float:
+        """Compute variance of Hamiltonian perturbation in ground state.
+
+        Var_psi(DeltaH) = <psi|DH^2|psi> - <psi|DH|psi>^2
+        where DH = H(x_next) - H(x_curr).
+
+        Large variance indicates the state is highly sensitive to the
+        parameter change — a precursor to regime transitions.
+
+        Args:
+            x_curr: Current data point of shape (n_features,).
+            x_next: Next data point of shape (n_features,).
+
+        Returns:
+            var: Variance of DeltaH in ground state (non-negative).
+        """
+        psi = self.quasi_coherent_state(x_curr)
+        H_curr = self.error_hamiltonian(x_curr)
+        H_next = self.error_hamiltonian(x_next)
+        DH = H_next - H_curr
+
+        DH_psi = DH @ psi
+        mean_DH = np.real(np.vdot(psi, DH_psi))
+        mean_DH2 = np.real(np.vdot(DH_psi, DH_psi))
+        return float(max(mean_DH2 - mean_DH ** 2, 0.0))
+
+    def geodesic_curvature(self, x_prev: np.ndarray, x_curr: np.ndarray,
+                           x_next: np.ndarray,
+                           epsilon_metric: float = 1e-5,
+                           epsilon_christoffel: float = 1e-4) -> float:
+        """Compute geodesic curvature (covariant acceleration norm).
+
+        kappa = ||nabla_{gamma'} gamma'||_g where gamma is the discrete
+        path x_prev -> x_curr -> x_next. Non-zero geodesic curvature
+        means the path deviates from a geodesic — the manifold is
+        forcing the trajectory to curve.
+
+        Args:
+            x_prev: Previous data point of shape (n_features,).
+            x_curr: Current data point of shape (n_features,).
+            x_next: Next data point of shape (n_features,).
+            epsilon_metric: Step size for quantum_metric.
+            epsilon_christoffel: Step size for Christoffel symbols.
+
+        Returns:
+            kappa: Geodesic curvature (non-negative).
+        """
+        x_prev = np.asarray(x_prev).flatten()
+        x_curr = np.asarray(x_curr).flatten()
+        x_next = np.asarray(x_next).flatten()
+        n = len(x_curr)
+
+        christoffel, g, _ = self._christoffel_symbols(
+            x_curr, epsilon_metric, epsilon_christoffel
+        )
+
+        # Discrete velocity and acceleration
+        v = x_next - x_prev  # central difference (2*dt)
+        a = x_next - 2 * x_curr + x_prev  # second difference (dt^2)
+
+        # Covariant acceleration: D^2 gamma / dt^2 = a^sigma + Gamma^sigma_{mu nu} v^mu v^nu
+        cov_acc = np.zeros(n)
+        for sigma in range(n):
+            cov_acc[sigma] = a[sigma]
+            for mu in range(n):
+                for nu in range(n):
+                    cov_acc[sigma] += christoffel[sigma, mu, nu] * v[mu] * v[nu]
+
+        # Norm with metric: ||cov_acc||_g = sqrt(g_{ij} a^i a^j)
+        norm_sq = cov_acc @ g @ cov_acc
+        return float(np.sqrt(max(norm_sq, 0.0)))
+
+    def effective_state_dimension(self, states: List[np.ndarray]) -> float:
+        """Compute effective dimension via IPR of time-averaged density matrix.
+
+        D_eff = W^2 / sum_{s,s'} |<psi_s|psi_{s'}>|^2
+
+        where W is the number of states in the window. Low D_eff means
+        states are clustered (normal market); high D_eff means states
+        explore many directions (crisis/transition).
+
+        Args:
+            states: List of W state vectors, each of shape (hilbert_dim,).
+
+        Returns:
+            D_eff: Effective state dimension (1 <= D_eff <= W).
+        """
+        W = len(states)
+        if W < 2:
+            return 1.0
+
+        # Build Gram matrix G_{ss'} = |<psi_s|psi_{s'}>|^2
+        gram_sum = 0.0
+        for s in range(W):
+            for sp in range(W):
+                overlap = np.abs(np.vdot(states[s], states[sp])) ** 2
+                gram_sum += overlap
+
+        if gram_sum < 1e-15:
+            return float(W)
+        return float(W ** 2 / gram_sum)
+
+    def qgt_phase_rigidity(self, x: np.ndarray, epsilon: float = 1e-5) -> float:
+        """Compute Berry-to-metric Frobenius ratio ||F||_F / ||g||_F.
+
+        The quantum geometric tensor Q = g + iF/2 splits into symmetric
+        (metric) and antisymmetric (Berry curvature) parts. Their ratio
+        measures "phase rigidity": how much of the geometry is topological
+        vs. metric. During crises, this ratio changes as the Berry
+        curvature structure reorganizes.
+
+        Args:
+            x: Data point of shape (n_features,).
+            epsilon: Step size for numerical differentiation.
+
+        Returns:
+            ratio: ||F||_F / (||g||_F + epsilon) in [0, inf).
+        """
+        g = self.quantum_metric(x, epsilon=epsilon)
+        F = self.berry_curvature(x, epsilon=epsilon)
+        norm_F = np.linalg.norm(F, 'fro')
+        norm_g = np.linalg.norm(g, 'fro')
+        return float(norm_F / (norm_g + 1e-10))
+
+    def reduced_state_purity(self, x: np.ndarray,
+                             partition: Tuple[int, int] = (2, 4)) -> float:
+        """Compute purity of reduced density matrix under bipartition.
+
+        Tr(rho_A^2) where rho_A = Tr_B(|psi><psi|). Low purity indicates
+        entanglement between subsystems. For financial data, subsystem
+        entanglement changing during crises captures cross-sector coupling.
+
+        Args:
+            x: Data point of shape (n_features,).
+            partition: (dim_A, dim_B) such that dim_A * dim_B = hilbert_dim.
+
+        Returns:
+            purity: Tr(rho_A^2) in [1/dim_A, 1].
+        """
+        dim_A, dim_B = partition
+        if dim_A * dim_B != self.hilbert_dim:
+            raise ValueError(
+                f"Partition ({dim_A}, {dim_B}) doesn't match hilbert_dim={self.hilbert_dim}"
+            )
+
+        psi = self.quasi_coherent_state(x)
+        # Reshape state vector into bipartite form
+        psi_matrix = psi.reshape(dim_A, dim_B)
+        # Reduced density matrix: rho_A = psi_matrix @ psi_matrix^dagger
+        rho_A = psi_matrix @ psi_matrix.conj().T
+        # Purity = Tr(rho_A^2)
+        return float(np.real(np.trace(rho_A @ rho_A)))
+
+    def spectral_complexity(self, x: np.ndarray, c: float = 1.0) -> float:
+        """Compute Gibbs entropy with adaptive temperature.
+
+        p_n = exp(-beta * (E_n - E_0)) / Z where beta = c / Delta.
+        Delta is the spectral gap. Adaptive temperature ensures the
+        partition function is sensitive to spectral structure regardless
+        of overall energy scale.
+
+        Args:
+            x: Data point of shape (n_features,).
+            c: Temperature scaling constant.
+
+        Returns:
+            S: Gibbs entropy (non-negative).
+        """
+        eigenvalues = self.full_spectrum(x)
+        E0 = eigenvalues[0]
+        gap = eigenvalues[1] - E0 if len(eigenvalues) > 1 else 1.0
+        beta = c / max(gap, 1e-10)
+
+        energies = eigenvalues - E0
+        log_weights = -beta * energies
+        # Numerically stable softmax
+        log_weights -= np.max(log_weights)
+        weights = np.exp(log_weights)
+        Z = np.sum(weights)
+        probs = weights / Z
+        return float(-np.sum(probs * np.log(probs + 1e-15)))
+
+    def berry_velocity_coupling(self, x_curr: np.ndarray, x_prev: np.ndarray,
+                                epsilon: float = 1e-5) -> float:
+        """Compute Berry curvature contracted with velocity: ||iota_v F||_g.
+
+        (iota_v F)_a = F_{ab} v^b, then ||iota_v F||_g = sqrt(g^{ac} (iota_v F)_a (iota_v F)_c).
+
+        This measures how strongly the Berry curvature couples to the
+        current direction of motion. Large values indicate the trajectory
+        is crossing a region of strong topological character.
+
+        Args:
+            x_curr: Current data point of shape (n_features,).
+            x_prev: Previous data point of shape (n_features,).
+            epsilon: Step size for metric/curvature computation.
+
+        Returns:
+            coupling: Berry-velocity coupling magnitude (non-negative).
+        """
+        x_curr = np.asarray(x_curr).flatten()
+        x_prev = np.asarray(x_prev).flatten()
+
+        v = x_curr - x_prev  # velocity
+        F = self.berry_curvature(x_curr, epsilon=epsilon)
+        g = self.quantum_metric(x_curr, epsilon=epsilon)
+
+        # iota_v F: contract F with velocity
+        iota = F @ v  # (n,) vector
+
+        # Compute g_inv for norm
+        eigvals, eigvecs = np.linalg.eigh(g)
+        eigvals = np.maximum(eigvals, 1e-8)
+        g_inv = eigvecs @ np.diag(1.0 / eigvals) @ eigvecs.T
+
+        norm_sq = iota @ g_inv @ iota
+        return float(np.sqrt(max(norm_sq, 0.0)))
+
+    def ricci_scalar_rate(self, x_curr: np.ndarray, x_prev: np.ndarray,
+                          epsilon_metric: float = 1e-5,
+                          epsilon_christoffel: float = 1e-4,
+                          epsilon_ricci: float = 1e-3) -> float:
+        """Compute absolute rate of change of Ricci scalar curvature.
+
+        |R(t) - R(t-1)| where R is the Ricci scalar. Captures how fast
+        the overall manifold curvature is changing. Rapid curvature
+        changes indicate the geometry is reorganizing.
+
+        Args:
+            x_curr: Current data point of shape (n_features,).
+            x_prev: Previous data point of shape (n_features,).
+            epsilon_metric: Step size for quantum_metric.
+            epsilon_christoffel: Step size for Christoffel symbols.
+            epsilon_ricci: Step size for Christoffel derivative.
+
+        Returns:
+            rate: |R(t) - R(t-1)| (non-negative).
+        """
+        R_curr = self.ricci_scalar(x_curr, epsilon_metric, epsilon_christoffel, epsilon_ricci)
+        R_prev = self.ricci_scalar(x_prev, epsilon_metric, epsilon_christoffel, epsilon_ricci)
+        return float(abs(R_curr - R_prev))
 
     def hamiltonian_commutator_norm(self, x1: np.ndarray, x2: np.ndarray) -> float:
         """Compute Frobenius norm of the commutator [H(x1), H(x2)].

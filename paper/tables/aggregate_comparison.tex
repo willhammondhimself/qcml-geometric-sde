@@ -1,6 +1,6 @@
 \begin{table}[htbp]
 \centering
-\caption{Aggregate effect sizes across 14 crises (17 methods). Mean and median Cohen's $d$,
+\caption{Aggregate effect sizes across 14 crises (22 methods). Mean and median Cohen's $d$,
   with number of crises where bootstrap 95\% CI excludes zero.}
 \label{tab:aggregate_comparison}
 \small
@@ -8,23 +8,28 @@
 \toprule
 Method & Mean $d$ & Median $d$ & Max $d$ & $n_{\text{sig}}$ \\
 \midrule
-\textit{CUSUM} & 0.782 & \textbf{0.685} & 2.155 & 14/14 \\
-Berry Phase Rate & 0.704 & 0.631 & 1.995 & 14/14 \\
-Metric Condition & 0.550 & 0.543 & 1.318 & 14/14 \\
+\textit{Hamilton MS} & 0.891 & \textbf{0.848} & 1.934 & 14/14 \\
+\textit{CUSUM} & 0.782 & 0.685 & 2.155 & 14/14 \\
+Berry Curv.\ Incr. & 0.704 & 0.631 & 1.995 & 14/14 \\
+Metric Condition & 0.584 & 0.558 & 1.412 & 14/14 \\
+\textit{Rolling RF (VIX)} & 0.586 & 0.548 & 1.661 & 14/14 \\
 Multi-Lag Fidelity & 0.531 & 0.509 & 1.010 & 14/14 \\
+Sect.\ Curv.\ Sign & 0.543 & 0.501 & 1.082 & 14/14 \\
 \textit{Rolling Vol Z} & 0.965 & 0.469 & 5.377 & 14/14 \\
-\textit{Isolation Forest} & 0.917 & 0.459 & 3.566 & 14/14 \\
-Speed Limit Ratio & 0.473 & 0.450 & 1.228 & 14/14 \\
+\textit{Isolation Forest} & 0.914 & 0.454 & 3.557 & 14/14 \\
+Speed Limit Ratio & 0.474 & 0.450 & 1.228 & 14/14 \\
 QCML Chern & 0.639 & 0.444 & 1.833 & 14/14 \\
-\textit{HMM} & 0.622 & 0.425 & 2.349 & 14/14 \\
-Sect.\ Curvature & 0.458 & 0.418 & 1.147 & 14/14 \\
-Dim.\ Collapse & 0.492 & 0.412 & 1.262 & 14/14 \\
-QFI Determinant & 0.626 & 0.394 & 1.852 & 14/14 \\
-\textit{Random Forest} & 0.553 & 0.369 & 2.302 & 13/14 \\
+Dim.\ Collapse & 0.494 & 0.416 & 1.262 & 14/14 \\
+Geodesic Velocity & 0.421 & 0.392 & 0.745 & 14/14 \\
+QFI Determinant & 0.617 & 0.375 & 2.089 & 14/14 \\
+\textit{Random Forest} & 0.715 & 0.373 & 2.417 & 14/14 \\
 Spectral Gap & 0.531 & 0.350 & 1.242 & 14/14 \\
-Geodesic Velocity & 0.346 & 0.276 & 1.172 & 14/14 \\
-Geo.\ Consensus & 0.198 & 0.088 & 0.938 & 14/14 \\
-Geo.\ Ensemble & 0.138 & 0.013 & 0.649 & 14/14 \\
+\textit{VIX Level} & 0.961 & 0.331 & 4.544 & 14/14 \\
+\textit{HMM} & 0.503 & 0.323 & 1.858 & 14/14 \\
+\textit{GARCH(1,1)} & 0.762 & 0.282 & 6.214 & 14/14 \\
+Geometric Consensus & 0.198 & 0.088 & 0.938 & 14/14 \\
+\textit{BOCPD} & 0.023 & 0.023 & 0.024 & 14/14 \\
+Geometric Ensemble & 0.142 & 0.012 & 0.648 & 14/14 \\
 \bottomrule
 \end{tabular}
 \end{table}

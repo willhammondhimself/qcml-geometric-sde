@@ -2422,3 +2422,535 @@ class CommutatorNormDetector(ExpandingWindowMixin, BaseRegimeDetector):
                 z_scores[t] = 0.0
 
         return z_scores
+
+
+# =============================================================================
+# Shared fit logic for new observatory detectors
+# =============================================================================
+
+def _standard_qcml_fit(detector, X: np.ndarray):
+    """Shared fit logic for ExpandingWindowMixin + BaseRegimeDetector subclasses."""
+    if detector.expanding_refit_interval is not None:
+        return detector._fit_expanding(X)
+
+    from .core import QCMLGeometry
+
+    np.random.seed(detector.seed)
+    n_components = min(detector.n_pca_components, X.shape[1])
+    fit_end = detector.causal_fit_length or X.shape[0]
+
+    detector._scaler = StandardScaler()
+    detector._scaler.fit(X[:fit_end])
+
+    detector._pca = PCA(n_components=n_components)
+    X_scaled_fit = detector._scaler.transform(X[:fit_end])
+    detector._pca.fit(X_scaled_fit)
+
+    X_pca_raw = detector._pca.transform(X_scaled_fit)
+    detector._train_norms = np.linalg.norm(X_pca_raw, axis=1)
+    detector._train_std = np.std(X_pca_raw, axis=0)
+    X_pca_fit = _apply_normalization(
+        X_pca_raw, detector.normalization, detector._train_norms, detector._train_std,
+    )
+
+    if detector.adaptive_epsilon:
+        detector._epsilon = 1e-3 * np.median(np.abs(X_pca_fit))
+    else:
+        detector._epsilon = 1e-5
+
+    detector._geometry = QCMLGeometry(
+        n_features=X_pca_fit.shape[1], hilbert_dim=detector.hilbert_dim
+    )
+    custom_ops = getattr(detector, 'custom_operators', None)
+    if custom_ops is not None:
+        detector._geometry.set_operators(custom_ops)
+    else:
+        detector._geometry.fit_operators(
+            X_pca_fit, method=detector.operator_method,
+            scale_exponent=detector.scale_exponent,
+        )
+    return detector
+
+
+def _standard_init(detector, **kwargs):
+    """Shared __init__ logic for new observatory detectors."""
+    for k, v in kwargs.items():
+        setattr(detector, k, v)
+    detector._geometry = None
+    detector._scaler = None
+    detector._pca = None
+    detector._snapshots = None
+    detector._train_norms = None
+    detector._train_std = None
+    detector._epsilon = 1e-5
+
+
+def _expanding_zscore(raw_values, rolling_window, min_expanding, T,
+                      skip_nan_start=0):
+    """Compute expanding-window z-score of rolling-mean values."""
+    import pandas as pd
+    rolling_vals = (
+        pd.Series(raw_values)
+        .rolling(window=rolling_window, min_periods=1)
+        .mean()
+        .values
+    )
+    z_scores = np.full(T, np.nan)
+    start = max(min_expanding, skip_nan_start)
+    for t in range(start, T):
+        past = rolling_vals[skip_nan_start:t]
+        past_valid = past[~np.isnan(past)]
+        if len(past_valid) < 10:
+            continue
+        mu = np.mean(past_valid)
+        sigma = np.std(past_valid, ddof=1)
+        if sigma > 1e-12:
+            z_scores[t] = (rolling_vals[t] - mu) / sigma
+        else:
+            z_scores[t] = 0.0
+    return z_scores
+
+
+# =============================================================================
+# New Observatory Detectors (10 new detection channels)
+# =============================================================================
+
+class SpectralEntropyDetector(ExpandingWindowMixin, BaseRegimeDetector):
+    """Regime detection via Shannon entropy of excitation energy weights.
+
+    Score = z-score of rolling-mean spectral entropy.
+    """
+
+    def __init__(self, hilbert_dim=8, n_pca_components=8, operator_method='random',
+                 scale_exponent=None, rolling_window=20, min_expanding=60, seed=42,
+                 causal_fit_length=None, expanding_refit_interval=None,
+                 normalization='soft', adaptive_epsilon=True, custom_operators=None,
+                 c=1.0):
+        _standard_init(self, hilbert_dim=hilbert_dim, n_pca_components=n_pca_components,
+                        operator_method=operator_method, scale_exponent=scale_exponent,
+                        rolling_window=rolling_window, min_expanding=min_expanding,
+                        seed=seed, causal_fit_length=causal_fit_length,
+                        expanding_refit_interval=expanding_refit_interval,
+                        normalization=normalization, adaptive_epsilon=adaptive_epsilon,
+                        custom_operators=custom_operators, c=c)
+
+    @property
+    def name(self):
+        return "Spectral Entropy"
+
+    def fit(self, X, **kwargs):
+        return _standard_qcml_fit(self, X)
+
+    def compute_regime_scores(self, X):
+        if self._geometry is None:
+            raise RuntimeError("Call fit() before compute_regime_scores().")
+        Xt = _transform_array(X, self._scaler, self._pca,
+                              normalization=self.normalization,
+                              train_norms=self._train_norms, train_std=self._train_std)
+        T = len(Xt)
+        vals = np.empty(T)
+        for t in range(T):
+            geo, xt = (self._transform_point_at(X[t], t) if self._snapshots
+                       else (self._geometry, Xt[t]))
+            vals[t] = geo.spectral_entropy(xt, c=self.c)
+        return _expanding_zscore(vals, self.rolling_window, self.min_expanding, T)
+
+
+class GeometricPhaseRateDetector(ExpandingWindowMixin, BaseRegimeDetector):
+    """Regime detection via geometric phase rate (Berry-like phase per step).
+
+    Score = z-score of abs(geometric phase rate), smoothed.
+    """
+
+    def __init__(self, hilbert_dim=8, n_pca_components=8, operator_method='random',
+                 scale_exponent=None, rolling_window=20, min_expanding=60, seed=42,
+                 causal_fit_length=None, expanding_refit_interval=None,
+                 normalization='soft', adaptive_epsilon=True, custom_operators=None):
+        _standard_init(self, hilbert_dim=hilbert_dim, n_pca_components=n_pca_components,
+                        operator_method=operator_method, scale_exponent=scale_exponent,
+                        rolling_window=rolling_window, min_expanding=min_expanding,
+                        seed=seed, causal_fit_length=causal_fit_length,
+                        expanding_refit_interval=expanding_refit_interval,
+                        normalization=normalization, adaptive_epsilon=adaptive_epsilon,
+                        custom_operators=custom_operators)
+
+    @property
+    def name(self):
+        return "Geometric Phase Rate"
+
+    def fit(self, X, **kwargs):
+        return _standard_qcml_fit(self, X)
+
+    def compute_regime_scores(self, X):
+        if self._geometry is None:
+            raise RuntimeError("Call fit() before compute_regime_scores().")
+        Xt = _transform_array(X, self._scaler, self._pca,
+                              normalization=self.normalization,
+                              train_norms=self._train_norms, train_std=self._train_std)
+        T = len(Xt)
+        vals = np.full(T, np.nan)
+        for t in range(1, T):
+            if self._snapshots:
+                geo, xt = self._transform_point_at(X[t], t)
+                _, xt_prev = self._transform_point_at(X[t - 1], t - 1)
+            else:
+                geo, xt, xt_prev = self._geometry, Xt[t], Xt[t - 1]
+            vals[t] = abs(geo.geometric_phase_rate(xt_prev, xt))
+        return _expanding_zscore(vals, self.rolling_window, self.min_expanding, T, 1)
+
+
+class HamiltonianSensitivityDetector(ExpandingWindowMixin, BaseRegimeDetector):
+    """Regime detection via Var_psi(DeltaH) — ground-state sensitivity.
+
+    Score = z-score of Var_psi(DH), smoothed.
+    """
+
+    def __init__(self, hilbert_dim=8, n_pca_components=8, operator_method='random',
+                 scale_exponent=None, rolling_window=20, min_expanding=60, seed=42,
+                 causal_fit_length=None, expanding_refit_interval=None,
+                 normalization='soft', adaptive_epsilon=True, custom_operators=None):
+        _standard_init(self, hilbert_dim=hilbert_dim, n_pca_components=n_pca_components,
+                        operator_method=operator_method, scale_exponent=scale_exponent,
+                        rolling_window=rolling_window, min_expanding=min_expanding,
+                        seed=seed, causal_fit_length=causal_fit_length,
+                        expanding_refit_interval=expanding_refit_interval,
+                        normalization=normalization, adaptive_epsilon=adaptive_epsilon,
+                        custom_operators=custom_operators)
+
+    @property
+    def name(self):
+        return "Hamiltonian Sensitivity"
+
+    def fit(self, X, **kwargs):
+        return _standard_qcml_fit(self, X)
+
+    def compute_regime_scores(self, X):
+        if self._geometry is None:
+            raise RuntimeError("Call fit() before compute_regime_scores().")
+        Xt = _transform_array(X, self._scaler, self._pca,
+                              normalization=self.normalization,
+                              train_norms=self._train_norms, train_std=self._train_std)
+        T = len(Xt)
+        vals = np.full(T, np.nan)
+        for t in range(1, T):
+            if self._snapshots:
+                geo, xt = self._transform_point_at(X[t], t)
+                _, xt_prev = self._transform_point_at(X[t - 1], t - 1)
+            else:
+                geo, xt, xt_prev = self._geometry, Xt[t], Xt[t - 1]
+            vals[t] = geo.hamiltonian_sensitivity(xt_prev, xt)
+        return _expanding_zscore(vals, self.rolling_window, self.min_expanding, T, 1)
+
+
+class GeodesicCurvatureDetector(ExpandingWindowMixin, BaseRegimeDetector):
+    """Regime detection via geodesic curvature (covariant acceleration).
+
+    Uses small n_pca_components (3) due to Christoffel symbol cost.
+    Score = z-score of geodesic curvature, smoothed.
+    """
+
+    def __init__(self, hilbert_dim=6, n_pca_components=3, operator_method='pca_inspired',
+                 scale_exponent=None, rolling_window=20, min_expanding=60, seed=42,
+                 causal_fit_length=None, expanding_refit_interval=None,
+                 normalization='soft', adaptive_epsilon=True, custom_operators=None,
+                 subsample=5):
+        _standard_init(self, hilbert_dim=hilbert_dim, n_pca_components=n_pca_components,
+                        operator_method=operator_method, scale_exponent=scale_exponent,
+                        rolling_window=rolling_window, min_expanding=min_expanding,
+                        seed=seed, causal_fit_length=causal_fit_length,
+                        expanding_refit_interval=expanding_refit_interval,
+                        normalization=normalization, adaptive_epsilon=adaptive_epsilon,
+                        custom_operators=custom_operators, subsample=subsample)
+
+    @property
+    def name(self):
+        return "Geodesic Curvature"
+
+    def fit(self, X, **kwargs):
+        return _standard_qcml_fit(self, X)
+
+    def compute_regime_scores(self, X):
+        if self._geometry is None:
+            raise RuntimeError("Call fit() before compute_regime_scores().")
+        Xt = _transform_array(X, self._scaler, self._pca,
+                              normalization=self.normalization,
+                              train_norms=self._train_norms, train_std=self._train_std)
+        T = len(Xt)
+        import pandas as pd
+        vals = np.full(T, np.nan)
+        ss = self.subsample
+        for t in range(ss, T - ss, ss):
+            if self._snapshots:
+                geo, xt = self._transform_point_at(X[t], t)
+                _, xt_prev = self._transform_point_at(X[t - ss], t - ss)
+                _, xt_next = self._transform_point_at(X[t + ss], t + ss)
+            else:
+                geo = self._geometry
+                xt, xt_prev, xt_next = Xt[t], Xt[t - ss], Xt[t + ss]
+            vals[t] = geo.geodesic_curvature(xt_prev, xt, xt_next)
+        if ss > 1:
+            vals = pd.Series(vals).interpolate(method='linear').values
+        return _expanding_zscore(vals, self.rolling_window, self.min_expanding, T, ss)
+
+
+class EffectiveStateDimensionDetector(ExpandingWindowMixin, BaseRegimeDetector):
+    """Regime detection via IPR of time-averaged density matrix.
+
+    D_eff = W^2 / sum|<psi_s|psi_{s'}>|^2.
+    Score = z-score of rolling D_eff.
+    """
+
+    def __init__(self, hilbert_dim=8, n_pca_components=8, operator_method='random',
+                 scale_exponent=None, rolling_window=20, min_expanding=60, seed=42,
+                 causal_fit_length=None, expanding_refit_interval=None,
+                 normalization='soft', adaptive_epsilon=True, custom_operators=None,
+                 state_window=20):
+        _standard_init(self, hilbert_dim=hilbert_dim, n_pca_components=n_pca_components,
+                        operator_method=operator_method, scale_exponent=scale_exponent,
+                        rolling_window=rolling_window, min_expanding=min_expanding,
+                        seed=seed, causal_fit_length=causal_fit_length,
+                        expanding_refit_interval=expanding_refit_interval,
+                        normalization=normalization, adaptive_epsilon=adaptive_epsilon,
+                        custom_operators=custom_operators, state_window=state_window)
+
+    @property
+    def name(self):
+        return "Effective State Dimension"
+
+    def fit(self, X, **kwargs):
+        return _standard_qcml_fit(self, X)
+
+    def compute_regime_scores(self, X):
+        if self._geometry is None:
+            raise RuntimeError("Call fit() before compute_regime_scores().")
+        Xt = _transform_array(X, self._scaler, self._pca,
+                              normalization=self.normalization,
+                              train_norms=self._train_norms, train_std=self._train_std)
+        T = len(Xt)
+        W = self.state_window
+        states = []
+        for t in range(T):
+            geo, xt = (self._transform_point_at(X[t], t) if self._snapshots
+                       else (self._geometry, Xt[t]))
+            states.append(geo.quasi_coherent_state(xt))
+        vals = np.full(T, np.nan)
+        for t in range(W, T):
+            vals[t] = self._geometry.effective_state_dimension(states[t - W:t])
+        return _expanding_zscore(vals, self.rolling_window, self.min_expanding, T, W)
+
+
+class QGTPhaseRigidityDetector(ExpandingWindowMixin, BaseRegimeDetector):
+    """Regime detection via Berry-to-metric Frobenius ratio ||F||/||g||.
+
+    Score = z-score of rolling-mean phase rigidity.
+    """
+
+    def __init__(self, hilbert_dim=8, n_pca_components=8, operator_method='random',
+                 scale_exponent=None, rolling_window=20, min_expanding=60, seed=42,
+                 causal_fit_length=None, expanding_refit_interval=None,
+                 normalization='soft', adaptive_epsilon=True, custom_operators=None):
+        _standard_init(self, hilbert_dim=hilbert_dim, n_pca_components=n_pca_components,
+                        operator_method=operator_method, scale_exponent=scale_exponent,
+                        rolling_window=rolling_window, min_expanding=min_expanding,
+                        seed=seed, causal_fit_length=causal_fit_length,
+                        expanding_refit_interval=expanding_refit_interval,
+                        normalization=normalization, adaptive_epsilon=adaptive_epsilon,
+                        custom_operators=custom_operators)
+
+    @property
+    def name(self):
+        return "QGT Phase Rigidity"
+
+    def fit(self, X, **kwargs):
+        return _standard_qcml_fit(self, X)
+
+    def compute_regime_scores(self, X):
+        if self._geometry is None:
+            raise RuntimeError("Call fit() before compute_regime_scores().")
+        Xt = _transform_array(X, self._scaler, self._pca,
+                              normalization=self.normalization,
+                              train_norms=self._train_norms, train_std=self._train_std)
+        T = len(Xt)
+        eps = self._epsilon
+        vals = np.empty(T)
+        for t in range(T):
+            geo, xt = (self._transform_point_at(X[t], t) if self._snapshots
+                       else (self._geometry, Xt[t]))
+            vals[t] = geo.qgt_phase_rigidity(xt, epsilon=eps)
+        return _expanding_zscore(vals, self.rolling_window, self.min_expanding, T)
+
+
+class ReducedPurityDetector(ExpandingWindowMixin, BaseRegimeDetector):
+    """Regime detection via purity of reduced density matrix Tr(rho_A^2).
+
+    Uses operator_method='random' to avoid Kramers degeneracy.
+    Score = z-score of rolling-mean purity.
+    """
+
+    def __init__(self, hilbert_dim=8, n_pca_components=8, operator_method='random',
+                 scale_exponent=None, rolling_window=20, min_expanding=60, seed=42,
+                 causal_fit_length=None, expanding_refit_interval=None,
+                 normalization='soft', adaptive_epsilon=True, custom_operators=None,
+                 partition=(2, 4)):
+        _standard_init(self, hilbert_dim=hilbert_dim, n_pca_components=n_pca_components,
+                        operator_method=operator_method, scale_exponent=scale_exponent,
+                        rolling_window=rolling_window, min_expanding=min_expanding,
+                        seed=seed, causal_fit_length=causal_fit_length,
+                        expanding_refit_interval=expanding_refit_interval,
+                        normalization=normalization, adaptive_epsilon=adaptive_epsilon,
+                        custom_operators=custom_operators, partition=partition)
+
+    @property
+    def name(self):
+        return "Reduced Purity"
+
+    def fit(self, X, **kwargs):
+        return _standard_qcml_fit(self, X)
+
+    def compute_regime_scores(self, X):
+        if self._geometry is None:
+            raise RuntimeError("Call fit() before compute_regime_scores().")
+        Xt = _transform_array(X, self._scaler, self._pca,
+                              normalization=self.normalization,
+                              train_norms=self._train_norms, train_std=self._train_std)
+        T = len(Xt)
+        vals = np.empty(T)
+        for t in range(T):
+            geo, xt = (self._transform_point_at(X[t], t) if self._snapshots
+                       else (self._geometry, Xt[t]))
+            vals[t] = geo.reduced_state_purity(xt, partition=self.partition)
+        return _expanding_zscore(vals, self.rolling_window, self.min_expanding, T)
+
+
+class SpectralComplexityDetector(ExpandingWindowMixin, BaseRegimeDetector):
+    """Regime detection via adaptive-temperature Gibbs entropy.
+
+    Score = z-score of rolling-mean spectral complexity.
+    """
+
+    def __init__(self, hilbert_dim=8, n_pca_components=8, operator_method='random',
+                 scale_exponent=None, rolling_window=20, min_expanding=60, seed=42,
+                 causal_fit_length=None, expanding_refit_interval=None,
+                 normalization='soft', adaptive_epsilon=True, custom_operators=None,
+                 c=1.0):
+        _standard_init(self, hilbert_dim=hilbert_dim, n_pca_components=n_pca_components,
+                        operator_method=operator_method, scale_exponent=scale_exponent,
+                        rolling_window=rolling_window, min_expanding=min_expanding,
+                        seed=seed, causal_fit_length=causal_fit_length,
+                        expanding_refit_interval=expanding_refit_interval,
+                        normalization=normalization, adaptive_epsilon=adaptive_epsilon,
+                        custom_operators=custom_operators, c=c)
+
+    @property
+    def name(self):
+        return "Spectral Complexity"
+
+    def fit(self, X, **kwargs):
+        return _standard_qcml_fit(self, X)
+
+    def compute_regime_scores(self, X):
+        if self._geometry is None:
+            raise RuntimeError("Call fit() before compute_regime_scores().")
+        Xt = _transform_array(X, self._scaler, self._pca,
+                              normalization=self.normalization,
+                              train_norms=self._train_norms, train_std=self._train_std)
+        T = len(Xt)
+        vals = np.empty(T)
+        for t in range(T):
+            geo, xt = (self._transform_point_at(X[t], t) if self._snapshots
+                       else (self._geometry, Xt[t]))
+            vals[t] = geo.spectral_complexity(xt, c=self.c)
+        return _expanding_zscore(vals, self.rolling_window, self.min_expanding, T)
+
+
+class BerryVelocityCouplingDetector(ExpandingWindowMixin, BaseRegimeDetector):
+    """Regime detection via Berry curvature-velocity coupling ||iota_v F||_g.
+
+    Score = z-score of rolling-mean coupling.
+    """
+
+    def __init__(self, hilbert_dim=8, n_pca_components=8, operator_method='random',
+                 scale_exponent=None, rolling_window=20, min_expanding=60, seed=42,
+                 causal_fit_length=None, expanding_refit_interval=None,
+                 normalization='soft', adaptive_epsilon=True, custom_operators=None):
+        _standard_init(self, hilbert_dim=hilbert_dim, n_pca_components=n_pca_components,
+                        operator_method=operator_method, scale_exponent=scale_exponent,
+                        rolling_window=rolling_window, min_expanding=min_expanding,
+                        seed=seed, causal_fit_length=causal_fit_length,
+                        expanding_refit_interval=expanding_refit_interval,
+                        normalization=normalization, adaptive_epsilon=adaptive_epsilon,
+                        custom_operators=custom_operators)
+
+    @property
+    def name(self):
+        return "Berry Velocity Coupling"
+
+    def fit(self, X, **kwargs):
+        return _standard_qcml_fit(self, X)
+
+    def compute_regime_scores(self, X):
+        if self._geometry is None:
+            raise RuntimeError("Call fit() before compute_regime_scores().")
+        Xt = _transform_array(X, self._scaler, self._pca,
+                              normalization=self.normalization,
+                              train_norms=self._train_norms, train_std=self._train_std)
+        T = len(Xt)
+        eps = self._epsilon
+        vals = np.full(T, np.nan)
+        for t in range(1, T):
+            if self._snapshots:
+                geo, xt = self._transform_point_at(X[t], t)
+                _, xt_prev = self._transform_point_at(X[t - 1], t - 1)
+            else:
+                geo, xt, xt_prev = self._geometry, Xt[t], Xt[t - 1]
+            vals[t] = geo.berry_velocity_coupling(xt, xt_prev, epsilon=eps)
+        return _expanding_zscore(vals, self.rolling_window, self.min_expanding, T, 1)
+
+
+class CurvatureRateDetector(ExpandingWindowMixin, BaseRegimeDetector):
+    """Regime detection via Ricci scalar curvature rate |dR/dt|.
+
+    Computationally expensive; use small n_pca_components.
+    Score = z-score of rolling-mean |dR/dt|.
+    """
+
+    def __init__(self, hilbert_dim=6, n_pca_components=3, operator_method='pca_inspired',
+                 scale_exponent=None, rolling_window=20, min_expanding=60, seed=42,
+                 causal_fit_length=None, expanding_refit_interval=None,
+                 normalization='soft', adaptive_epsilon=True, custom_operators=None,
+                 subsample=10):
+        _standard_init(self, hilbert_dim=hilbert_dim, n_pca_components=n_pca_components,
+                        operator_method=operator_method, scale_exponent=scale_exponent,
+                        rolling_window=rolling_window, min_expanding=min_expanding,
+                        seed=seed, causal_fit_length=causal_fit_length,
+                        expanding_refit_interval=expanding_refit_interval,
+                        normalization=normalization, adaptive_epsilon=adaptive_epsilon,
+                        custom_operators=custom_operators, subsample=subsample)
+
+    @property
+    def name(self):
+        return "Curvature Rate"
+
+    def fit(self, X, **kwargs):
+        return _standard_qcml_fit(self, X)
+
+    def compute_regime_scores(self, X):
+        if self._geometry is None:
+            raise RuntimeError("Call fit() before compute_regime_scores().")
+        Xt = _transform_array(X, self._scaler, self._pca,
+                              normalization=self.normalization,
+                              train_norms=self._train_norms, train_std=self._train_std)
+        T = len(Xt)
+        import pandas as pd
+        ricci_vals = np.full(T, np.nan)
+        for t in range(0, T, self.subsample):
+            geo, xt = (self._transform_point_at(X[t], t) if self._snapshots
+                       else (self._geometry, Xt[t]))
+            ricci_vals[t] = geo.ricci_scalar(xt)
+        if self.subsample > 1:
+            ricci_vals = pd.Series(ricci_vals).interpolate(method='linear').values
+        rate = np.full(T, np.nan)
+        for t in range(1, T):
+            if not np.isnan(ricci_vals[t]) and not np.isnan(ricci_vals[t - 1]):
+                rate[t] = abs(ricci_vals[t] - ricci_vals[t - 1])
+        return _expanding_zscore(rate, self.rolling_window, self.min_expanding, T, 1)

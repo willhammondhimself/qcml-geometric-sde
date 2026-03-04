@@ -20,7 +20,7 @@ data:
   enrichment_lookback: 20
 
 # ---------------------------------------------------------------------------
-# Crisis definitions — 16 episodes used in the comparison pipeline
+# Crisis definitions — 19 episodes used in the comparison pipeline
 # Each entry carries start/end dates, a human-readable label, and a category
 # tag (conventional = well-studied in literature, novel = post-sample / rare).
 # ---------------------------------------------------------------------------
@@ -73,11 +73,23 @@ crises:
     label: "Euro Crisis 2011"
     category: conventional
 
+  2013_taper:
+    start: "2013-05-20"
+    end: "2013-07-15"
+    label: "Taper Tantrum 2013"
+    category: conventional
+
   2015_china:
     start: "2015-07-01"
     end: "2015-09-30"
     label: "China Crash 2015"
     category: conventional
+
+  2016_brexit:
+    start: "2016-06-20"
+    end: "2016-07-31"
+    label: "Brexit 2016"
+    category: novel
 
   2018_volmageddon:
     start: "2018-01-26"
@@ -102,6 +114,12 @@ crises:
     end: "2020-04-30"
     label: "COVID 2020"
     category: conventional
+
+  2021_meme:
+    start: "2021-01-25"
+    end: "2021-04-15"
+    label: "Meme/Archegos 2021"
+    category: novel
 
   2022_rates:
     start: "2022-01-01"
@@ -132,11 +150,14 @@ crisis_subsets:
     - 2008_gfc
     - 2010_flash
     - 2011_euro
+    - 2013_taper
     - 2015_china
+    - 2016_brexit
     - 2018_volmageddon
     - 2018_q4
     - 2019_repo
     - 2020_covid
+    - 2021_meme
     - 2022_rates
     - 2023_svb
     - 2024_carry
@@ -150,11 +171,14 @@ crisis_subsets:
     - 2008_gfc
     - 2010_flash
     - 2011_euro
+    - 2013_taper
     - 2015_china
+    - 2016_brexit
     - 2018_volmageddon
     - 2018_q4
     - 2019_repo
     - 2020_covid
+    - 2021_meme
     - 2022_rates
     - 2023_svb
     - 2024_carry
@@ -166,19 +190,24 @@ crisis_subsets:
     - 2008_gfc
     - 2010_flash
     - 2011_euro
+    - 2013_taper
     - 2015_china
+    - 2016_brexit
     - 2018_volmageddon
     - 2018_q4
     - 2019_repo
     - 2020_covid
+    - 2021_meme
     - 2022_rates
     - 2023_svb
     - 2024_carry
 
   novel:
+    - 2016_brexit
     - 2018_volmageddon
     - 2018_q4
     - 2019_repo
+    - 2021_meme
     - 2022_rates
     - 2023_svb
     - 2024_carry
@@ -192,6 +221,7 @@ crisis_subsets:
     - 2008_gfc
     - 2010_flash
     - 2011_euro
+    - 2013_taper
     - 2015_china
     - 2020_covid
 
@@ -406,6 +436,136 @@ detectors:
       subsample: 10
     hpo_source: "exploration_sprint_20260228"
 
+  # --- New observatory expansion (Mar 2026) ---
+  spectral_entropy:
+    class: qcml_geometry.SpectralEntropyDetector
+    display_name: "Spectral Entropy"
+    params:
+      hilbert_dim: 8
+      n_pca_components: 8
+      rolling_window: 20
+      operator_method: random
+      seed: 42
+      normalization: soft
+      adaptive_epsilon: true
+    hpo_source: "observatory_expansion_20260303"
+
+  geometric_phase_rate:
+    class: qcml_geometry.GeometricPhaseRateDetector
+    display_name: "Geometric Phase Rate"
+    params:
+      hilbert_dim: 6
+      n_pca_components: 8
+      rolling_window: 15
+      operator_method: random
+      seed: 42
+      normalization: sphere
+    hpo_source: "observatory_expansion_20260303"
+
+  hamiltonian_sensitivity:
+    class: qcml_geometry.HamiltonianSensitivityDetector
+    display_name: "Hamiltonian Sensitivity"
+    params:
+      hilbert_dim: 8
+      n_pca_components: 8
+      rolling_window: 20
+      operator_method: random
+      seed: 42
+      normalization: soft
+      adaptive_epsilon: true
+    hpo_source: "observatory_expansion_20260303"
+
+  geodesic_curvature:
+    class: qcml_geometry.GeodesicCurvatureDetector
+    display_name: "Geodesic Curvature"
+    params:
+      hilbert_dim: 6
+      n_pca_components: 3
+      operator_method: pca_inspired
+      seed: 42
+      normalization: soft
+      adaptive_epsilon: true
+      subsample: 5
+    hpo_source: "observatory_expansion_20260303"
+
+  effective_state_dim:
+    class: qcml_geometry.EffectiveStateDimensionDetector
+    display_name: "Effective State Dim"
+    params:
+      hilbert_dim: 8
+      n_pca_components: 8
+      rolling_window: 20
+      operator_method: random
+      seed: 42
+      normalization: soft
+      adaptive_epsilon: true
+    hpo_source: "observatory_expansion_20260303"
+
+  qgt_phase_rigidity:
+    class: qcml_geometry.QGTPhaseRigidityDetector
+    display_name: "QGT Phase Rigidity"
+    params:
+      hilbert_dim: 8
+      n_pca_components: 8
+      rolling_window: 20
+      operator_method: random
+      seed: 42
+      normalization: soft
+      adaptive_epsilon: true
+    hpo_source: "observatory_expansion_20260303"
+
+  reduced_purity:
+    class: qcml_geometry.ReducedPurityDetector
+    display_name: "Reduced Purity"
+    params:
+      hilbert_dim: 8
+      n_pca_components: 8
+      rolling_window: 20
+      operator_method: random
+      seed: 42
+      normalization: soft
+      adaptive_epsilon: true
+      partition: [2, 4]
+    hpo_source: "observatory_expansion_20260303"
+
+  spectral_complexity:
+    class: qcml_geometry.SpectralComplexityDetector
+    display_name: "Spectral Complexity"
+    params:
+      hilbert_dim: 8
+      n_pca_components: 8
+      rolling_window: 20
+      operator_method: random
+      seed: 42
+      normalization: soft
+      adaptive_epsilon: true
+    hpo_source: "observatory_expansion_20260303"
+
+  berry_velocity_coupling:
+    class: qcml_geometry.BerryVelocityCouplingDetector
+    display_name: "Berry Velocity Coupling"
+    params:
+      hilbert_dim: 6
+      n_pca_components: 8
+      rolling_window: 15
+      operator_method: random
+      seed: 42
+      normalization: sphere
+    hpo_source: "observatory_expansion_20260303"
+
+  curvature_rate:
+    class: qcml_geometry.CurvatureRateDetector
+    display_name: "Curvature Rate"
+    params:
+      hilbert_dim: 6
+      n_pca_components: 3
+      operator_method: pca_inspired
+      seed: 42
+      normalization: soft
+      adaptive_epsilon: true
+      subsample: 5
+    hpo_source: "observatory_expansion_20260303"
+
 # ---------------------------------------------------------------------------
 # Information geometry detectors (Workstream B)
 # ---------------------------------------------------------------------------
@@ -510,6 +670,58 @@ baselines:
     supervised: true
     evaluation: leave_one_crisis_out
 
+  # --- New baselines (Mar 2026) ---
+  garch:
+    class: experiments.baselines.GARCHDetector
+    display_name: "GARCH(1,1)"
+    params:
+      min_expanding: 60
+    supervised: false
+
+  hamilton_ms:
+    class: experiments.baselines.HamiltonMSDetector
+    display_name: "Hamilton MS"
+    params:
+      k_regimes: 2
+      order: 1
+      min_history: 100
+    supervised: false
+
+  ewma_vol:
+    class: experiments.baselines.EWMADetector
+    display_name: "EWMA Vol"
+    params:
+      decay: 0.94
+      min_expanding: 60
+    supervised: false
+
+  mahalanobis:
+    class: experiments.baselines.MahalanobisDetector
+    display_name: "Mahalanobis"
+    params:
+      min_expanding: 60
+      regularization: 1.0e-6
+    supervised: false
+
+  structural_break:
+    class: experiments.baselines.StructuralBreakDetector
+    display_name: "Structural Break"
+    params:
+      model: rbf
+      penalty: 3.0
+      min_expanding: 60
+    supervised: false
+
+  transfer_entropy:
+    class: experiments.baselines.TransferEntropyDetector
+    display_name: "Transfer Entropy"
+    params:
+      te_window: 60
+      n_bins: 5
+      lag: 1
+      min_expanding: 60
+    supervised: false
+
 # ---------------------------------------------------------------------------
 # Evaluation protocol
 # ---------------------------------------------------------------------------
@@ -542,6 +754,16 @@ method_categories:
     - speed_limit_ratio
     - dimensionality_collapse
     - sectional_curvature_sign
+    - spectral_entropy
+    - geometric_phase_rate
+    - hamiltonian_sensitivity
+    - geodesic_curvature
+    - effective_state_dim
+    - qgt_phase_rigidity
+    - reduced_purity
+    - spectral_complexity
+    - berry_velocity_coupling
+    - curvature_rate
   info_geometry:
     - fisher_rao
     - wasserstein
@@ -553,6 +775,12 @@ method_categories:
     - hmm
     - bocpd
     - isolation_forest
+    - garch
+    - hamilton_ms
+    - ewma_vol
+    - mahalanobis
+    - structural_break
+    - transfer_entropy
   supervised:
     - random_forest
 

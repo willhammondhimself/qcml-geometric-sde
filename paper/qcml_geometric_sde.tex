@@ -63,28 +63,37 @@
 % ABSTRACT
 % =============================================================================
 \begin{abstract}
-We construct a geometric observatory---seven complementary detection
-channels derived from a spectral metric learning embedding
+We construct a geometric observatory---seventeen detection channels
+derived from a spectral metric learning embedding
 (QCML)---and evaluate it for unsupervised financial regime detection
-across 14~crises (2000--2024).  The seven channels probe distinct
-geometric properties of the data manifold: Berry curvature rate
-(U(1)~holonomy), QFI determinant (metric volume), multi-lag fidelity
-(state decorrelation), geodesic velocity (manifold speed), speed limit
-ratio (adiabaticity parameter), dimensionality collapse
-(effective rank reduction), and sectional curvature sign (local
-geometry).  We classify crises into five mechanism-based categories
-(volatility shocks, systemic/credit, exogenous, slow burns,
-liquidity/microstructure) and show that different geometric channels
-specialize by crisis type: no single channel dominates, but each
-category has a distinct geometric winner.  On structurally novel
-crises, geometric observables maintain or improve detection while
-supervised methods degrade ($-26\%$ for Random Forest, $-74\%$ for
-CUSUM).  In the main comparison (19~methods, 14~crises), Berry Phase
-Rate achieves median $d = 0.63$, ranking first among all methods.
-A rolling-window RF trained on VIX~$> 25$ labels---a fairer supervised
-baseline than leave-one-crisis-out---achieves median $d = 0.39$,
-confirming that geometric channels outperform supervised alternatives
-even when given continuous training signal.
+across 17~crises spanning 2000--2024.  The channels probe distinct
+geometric properties of the data manifold, organized in seven families:
+holonomy (Berry curvature rate, geometric phase rate),
+metric volume (QFI determinant, Hamiltonian sensitivity),
+state dynamics (multi-lag fidelity, reduced state purity),
+manifold kinematics (geodesic velocity, speed limit ratio),
+spectral structure (spectral entropy, spectral complexity, effective
+state dimension), curvature (sectional curvature sign, geodesic
+curvature, curvature rate), and topology (QCML Chern, dimensionality
+collapse, Berry velocity coupling).
+In the main comparison (36~methods across 17~crises, including
+23~geometric, 11~classical, and 2~supervised), Reduced State
+Purity achieves the highest median $d = 0.83$ (rank~1), followed by
+Hamilton Markov-switching~\cite{hamilton1989} ($d = 0.71$, rank~2),
+CUSUM ($d = 0.63$, rank~3), and Berry Phase Rate ($d = 0.61$, rank~4).
+The Friedman test ($\chi^2 = 219.3$, $p < 10^{-28}$) confirms
+significant ranking heterogeneity.
+A blind holdout simulation (pipeline frozen at 2021-12-31, deployed on
+three unseen post-2021 crises) confirms that Reduced Purity
+(mean $d = 1.20$) and Hamilton~MS ($d = 1.19$) generalize robustly.
+Lead time analysis reveals that geometric observables provide early
+warning at comparable horizons to classical methods (Friedman
+$\chi^2 = 163$, $p = 1.8 \times 10^{-19}$), with Transfer Entropy
+detecting 16/17 crises at 142-day mean lead and QFI Determinant
+detecting 14/17 at 128-day mean lead.
+On structurally novel crises, geometric observables maintain or improve
+detection while supervised methods degrade ($-46\%$ for Random Forest,
+$-74\%$ for CUSUM).
 Walk-forward nested HPO yields unbiased out-of-sample Berry
 $d = 0.72$; geometric methods produce 30\% fewer false alarms than RF
 (2.5 vs.\ 3.6/yr).  The observatory framing---multiple complementary
@@ -129,15 +138,24 @@ forecasting~\cite{samson2024}, similarity
 learning~\cite{rosaler2025,samson2025}, and biomedical
 prediction~\cite{dicaro2025}.
 
-Our contribution is a \emph{geometric observatory}: seven detection
+\smallskip\noindent\textbf{Classical computation.}
+All QCML computations---Hamiltonian construction, eigendecomposition,
+metric and curvature evaluation---run entirely on classical hardware.
+The ``quantum'' label refers to the mathematical formalism (Hilbert
+space, Hermitian operators, spectral decomposition), not to quantum
+computing resources.
+
+Our contribution is a \emph{geometric observatory}: seventeen detection
 channels extracted from the QCML embedding, each probing a distinct
-geometric property of the data manifold (Table~\ref{tab:crisis_taxonomy}).
-We show that different channels specialize by crisis
-mechanism---volatility shocks, systemic contagion, exogenous events,
-slow burns, and liquidity breakdowns each have a distinct geometric
-winner.  This per-crisis specialization parallels multi-messenger
-astronomy: no single channel dominates, but their combination provides
-richer detection than any individual observable.
+geometric property of the data manifold (Table~\ref{tab:observatory_channels}).
+We observe that different channels show complementary per-crisis
+strengths---volatility shocks, systemic contagion, exogenous events,
+slow burns, and liquidity breakdowns tend toward different geometric
+winners, though this pattern does not reach statistical significance
+on 17~crises (permutation test $p = 0.31$;
+Appendix~\ref{sec:interaction_test}).  No single channel dominates,
+but their combination provides richer detection than any individual
+observable.
 
 The evaluation is framed as \emph{crisis-window separability}: given a
 score time series, we ask whether the distribution of scores during a
@@ -160,24 +178,32 @@ hyperparameters'' throughout.
 
 \paragraph{Contributions.}
 \begin{enumerate}
-\item \textbf{Geometric observatory.}  Seven complementary detection
-  channels---Berry curvature rate, QFI determinant, multi-lag fidelity,
-  geodesic velocity, speed limit ratio, dimensionality collapse, and
-  sectional curvature---extracted from a single QCML embedding, each
-  probing a distinct geometric property of the data manifold.
+\item \textbf{Geometric observatory.}  Seventeen complementary detection
+  channels---organized in seven families (holonomy, metric volume, state
+  dynamics, manifold kinematics, spectral structure, curvature, and
+  topology)---extracted from a single QCML embedding, each probing a
+  distinct geometric property of the data manifold.
 
-\item \textbf{Crisis taxonomy and channel specialization.}  A
-  mechanism-based classification of 14~crises into five categories,
-  with evidence that different geometric channels specialize by type
+\item \textbf{Crisis taxonomy and channel complementarity.}  A
+  mechanism-based classification of 17~crises into five categories,
+  with suggestive evidence that different geometric channels show
+  complementary strengths across crisis types
   (Table~\ref{tab:crisis_taxonomy}, Figure~\ref{fig:specialization}).
 
 \item \textbf{Label-free deployment robustness.}  Geometric observables
   maintain or improve detection on structurally novel crises while
-  RF degrades ($-26\%$) and CUSUM collapses ($-74\%$).  In the main
-  17-method comparison, Berry ranks second (median $d = 0.63$);
+  RF degrades ($-46\%$) and CUSUM collapses ($-74\%$).  In the main
+  36-method comparison, Reduced Purity ranks first (median $d = 0.83$),
+  followed by Hamilton~MS ($d = 0.71$) and CUSUM ($d = 0.63$);
   walk-forward nested HPO yields unbiased OOS Berry $d = 0.72$.
   Geometric methods produce 30\% fewer false alarms than RF
   (2.5 vs.\ 3.6/yr).
+
+\item \textbf{Lead time and holdout validation.}  Lead time analysis
+  across 17~crises shows geometric methods provide early warning at
+  comparable horizons to classical detectors; a blind holdout
+  simulation (frozen at 2021-12-31) confirms robust out-of-sample
+  generalization on three unseen crises.
 
 \item \textbf{Independent evaluation.}  To our knowledge, the first
   independent academic evaluation of QCML geometry for financial
@@ -186,12 +212,14 @@ hyperparameters'' throughout.
   papers~\cite{musaelian2024,samson2024}.
 \end{enumerate}
 
-\noindent We emphasize an honest framing.  No single geometric channel
-dominates baselines on aggregate effect size.  The contribution is the
-\emph{observatory}: seven complementary channels that specialize by
-crisis mechanism, remain available without crisis labels, and together
-provide richer detection than any individual method.  They complement
-rather than replace supervised methods~\cite{timmermann2006,bates_granger1969}.
+\noindent We emphasize an honest framing.  The contribution is the
+\emph{observatory}: seventeen complementary channels that show different
+per-crisis strengths, remain available without crisis labels, and together
+provide richer detection than any individual method.  The top geometric
+observable (Reduced Purity, $d = 0.83$) matches the best classical
+baselines, and the observatory's value lies in complementarity rather
+than single-method dominance.  Geometric channels complement rather
+than replace supervised methods~\cite{timmermann2006,bates_granger1969}.
 
 \subsection{Related Work}\label{subsec:related}
 
@@ -246,6 +274,15 @@ al.~\cite{bronstein2021} systematize gauge-equivariant neural
 architectures but impose geometric priors rather than discovering
 geometry from data.
 
+\paragraph{Classical regime detection.}
+Hamilton~\cite{hamilton1989} introduced Markov-switching models for
+business cycle dating, later extended to financial volatility regimes
+by Ang and Bekaert~\cite{ang_bekaert2002}.
+Bollerslev's~\cite{bollerslev1986} GARCH framework models
+time-varying conditional volatility and remains a standard benchmark
+for volatility regime detection.  Both approaches are included as
+baselines in our comparison.
+
 \paragraph{Relationship to the QCML literature.}
 The QCML framework---Hilbert space embedding, error Hamiltonian,
 Fubini--Study metric---was developed by Candelori et
@@ -253,13 +290,14 @@ al.~\cite{candelori2025} and Abanov et al.~\cite{abanov2025}; the
 financial forecasting application was proposed in industry white
 papers~\cite{musaelian2024,samson2024} (not peer-reviewed).  Our
 contribution is not the framework itself but three specific
-applications: (i)~extracting Berry curvature increment, QFI
-determinant, and multi-lag fidelity as standalone regime-detection
-observables; (ii)~the first head-to-head comparison against
-established baselines (RF, HMM, CUSUM, BOCPD) with proper statistical
-testing (MCS, Bayesian pairwise tests, bootstrap rank CIs); and
-(iii)~a robustness framework including walk-forward
-validation and multi-asset generalization.
+applications: (i)~extracting seventeen geometric observables as
+standalone regime-detection channels; (ii)~the first head-to-head
+comparison against established baselines (RF, HMM, CUSUM, BOCPD,
+GARCH, Hamilton~MS, EWMA, Mahalanobis, structural breaks, transfer
+entropy) with proper statistical testing (MCS, Bayesian pairwise
+tests, bootstrap rank CIs); and (iii)~a robustness framework including
+walk-forward validation, blind holdout simulation, lead time analysis,
+and multi-asset generalization.
 
 Table~\ref{tab:geometry_compare} summarizes these distinctions.
 Our approach is unique in providing simultaneously a Riemannian metric,
@@ -356,17 +394,17 @@ For the pure states $\ket{\psi(x)}$ arising as ground states
 of~$H(x)$, the quantum metric
 tensor~\eqref{eq:metric} satisfies
 $4\,g_{ab}(x) = [F_Q]_{ab}(x)$, where $F_Q$ is the quantum Fisher
-information matrix~\cite{braunstein_caves1994}.  Consequently:
+information matrix~\cite{braunstein_caves1994,pezze2018,toth2014}.  Consequently:
 \begin{enumerate}
 \item[(i)] The QFI determinant observable
   (Eq.~\ref{eq:qfi_det}) is proportional to the volume element of
   the Fisher information metric on the statistical manifold:
   $\det^+(g) = 4^{-r}\det^+(F_Q|_r)$, where $r = \mathrm{rank}(g)$.
-\item[(ii)] The quantum Cram\'{e}r--Rao bound
+\item[(ii)] The quantum Cram\'{e}r--Rao bound~\cite{cramer1946,helstrom1976}
   $\mathrm{Var}(\hat{x}_a) \geq \tfrac{1}{4}[g^{-1}]_{aa}$
   implies that the quantum metric controls the ultimate precision
   for estimating data coordinates from state
-  measurements~\cite{helstrom1976}.
+  measurements.
 \item[(iii)] Near regime boundaries where $\ket{\psi(x)}$ changes
   rapidly, $\det^+(g)$ increases, reflecting increased
   distinguishability of neighboring data distributions:
@@ -381,30 +419,50 @@ estimation theory; see Appendix~\ref{sec:proofs}.
 % =============================================================================
 \section{Geometric Observables}\label{sec:observables}
 
-All seven observables are computed from the QCML-induced geometry at each
-time step $t$, then converted to z-scores via
+All seventeen observables are computed from the QCML-induced geometry at
+each time step $t$, then converted to z-scores via
 Algorithm~\ref{alg:zscore}.  Each probes a distinct geometric property
 of the data manifold, summarized in Table~\ref{tab:observatory_channels}.
 
 \begin{table}[htb]
 \centering
-\caption{The seven geometric observatory channels.}
+\caption{The seventeen geometric observatory channels, organized by
+  geometric family.}
 \label{tab:observatory_channels}
 \small
-\begin{tabular}{lll}
+\begin{tabular}{llll}
 \toprule
-Channel & Geometric property & Equation \\
+Channel & Family & Geometric property & Equation \\
 \midrule
-Berry curvature rate & U(1) holonomy change rate & \eqref{eq:berry_rate} \\
-QFI determinant & Metric volume element & \eqref{eq:qfi_det} \\
-Multi-lag fidelity & State decorrelation & \eqref{eq:multilag} \\
-Geodesic velocity & Manifold traversal speed & \eqref{eq:geodesic_vel} \\
-Speed limit ratio & Adiabaticity parameter & \eqref{eq:speed_limit} \\
-Dim.\ collapse & Effective rank reduction & \eqref{eq:dim_collapse} \\
-Sectional curvature & Local geometry sign & \eqref{eq:sect_curv} \\
+Berry curvature rate & Holonomy & U(1) holonomy change rate & \eqref{eq:berry_rate} \\
+Geometric phase rate & Holonomy & Berry phase per step & \eqref{eq:geom_phase_rate} \\
+QFI determinant & Metric & Metric volume element & \eqref{eq:qfi_det} \\
+Hamiltonian sensitivity & Metric & Perturbation variance & \eqref{eq:ham_sensitivity} \\
+Multi-lag fidelity & State & State decorrelation & \eqref{eq:multilag} \\
+Reduced purity & State & Subsystem separability & \eqref{eq:reduced_purity} \\
+Geodesic velocity & Kinematics & Manifold traversal speed & \eqref{eq:geodesic_vel} \\
+Speed limit ratio & Kinematics & Adiabaticity parameter & \eqref{eq:speed_limit} \\
+Spectral entropy & Spectral & Excitation distribution & \eqref{eq:spectral_entropy} \\
+Spectral complexity & Spectral & Gibbs entropy of spectrum & \eqref{eq:spectral_complexity} \\
+Effective state dim & Spectral & Inverse participation ratio & \eqref{eq:eff_state_dim} \\
+Sectional curvature & Curvature & Local geometry sign & \eqref{eq:sect_curv} \\
+Geodesic curvature & Curvature & Covariant acceleration & \eqref{eq:geodesic_curv} \\
+Curvature rate & Curvature & Ricci scalar change rate & \eqref{eq:curv_rate} \\
+QCML Chern & Topology & Curvature integral & \eqref{eq:chern} \\
+Dim.\ collapse & Topology & Effective rank reduction & \eqref{eq:dim_collapse} \\
+Berry vel.\ coupling & Topology & Curvature--velocity contraction & \eqref{eq:berry_vel_coupling} \\
 \bottomrule
 \end{tabular}
 \end{table}
+
+\noindent The seventeen channels above form the core observatory.
+Six additional geometric detectors---Metric Condition Number, Spectral Gap,
+Geodesic Velocity, Geometric Consensus, and Geometric Ensemble (a
+majority-vote fusion)---are derived from the same QCML embedding and
+included in the full 36-method comparison
+(Table~\ref{tab:aggregate_comparison}) for completeness, but omitted
+from detailed exposition as they are either composites of core channels
+or simpler diagnostic measures.
 
 \subsection{Berry Curvature Increment}\label{subsec:berry}
 
@@ -420,6 +478,22 @@ with step size $\epsilon = 10^{-5}$.
 components~$p$, operator method
 $\in \{\text{pca\_inspired}, \text{random}\}$, rolling window~$w$,
 minimum expanding history~$m$.
+
+\paragraph{Plaquette computation.}
+The Berry curvature $F_{ab}$ is computed via the discrete plaquette
+(Wilson loop) method.  For each pair of PCA directions $(a,b)$ at
+point~$x$:
+\begin{equation}\label{eq:plaquette}
+  F_{ab}(x) = -\frac{1}{\epsilon^2}\,
+    \mathrm{Im}\,\log\bigl(
+    \braket{\psi(x)}{\psi(x{+}\epsilon e_a)}
+    \braket{\psi(x{+}\epsilon e_a)}{\psi(x{+}\epsilon e_a{+}\epsilon e_b)}
+    \braket{\psi(x{+}\epsilon e_a{+}\epsilon e_b)}{\psi(x{+}\epsilon e_b)}
+    \braket{\psi(x{+}\epsilon e_b)}{\psi(x)}
+  \bigr),
+\end{equation}
+with $\epsilon = 10^{-5}$.  This gauge-invariant formula avoids
+explicit phase-fixing~\cite{berry1984,simon1983}.
 
 \subsection{QFI Determinant}\label{subsec:qfi}
 
@@ -472,13 +546,14 @@ adiabaticity:
   r(t) = \frac{v(t)}{\Delta(t)}\,,
 \end{equation}
 where $v(t)$ is the geodesic velocity~\eqref{eq:geodesic_vel} and
-$\Delta(t) = E_1(t) - E_0(t)$ is the spectral gap.  When
-$r \to 1$, the system evolves near its maximum possible speed (the
-Mandelstam--Tamm bound $v \leq \Delta / \hbar$ in natural units;
-\cite{mandelstam1945}), signaling a diabatic (sudden)
-transition~\cite{margolus1998}.  Financial crises drive $r$ toward
-saturation as the data manifold deforms faster than the spectral gap
-can accommodate.
+$\Delta(t) = E_1(t) - E_0(t)$ is the spectral gap.  In the
+adiabatic limit $r \ll 1$, the state tracks the instantaneous ground
+state smoothly~\cite{born_fock1928,kato1966}.  Large $r$ signals
+departure from adiabaticity: the data manifold deforms faster than the
+spectral gap can accommodate, producing a diabatic
+transition~\cite{margolus1998}.  Financial crises drive $r$ upward as
+correlated market moves compress the gap while accelerating the
+manifold velocity.
 
 \subsection{Dimensionality Collapse}\label{subsec:dim_collapse}
 
@@ -499,11 +574,148 @@ The sectional curvature in the $(e_0, e_1)$ plane:
   K(e_0, e_1; x_t) = \frac{R_{0101}(x_t)}{g_{00}g_{11} - g_{01}^2}\,,
 \end{equation}
 where $R_{abcd}$ is the Riemann curvature tensor of the pullback
-metric.  Negative sectional curvature indicates geodesic divergence
+metric (do~Carmo convention~\cite{docarmo1992}), computed via
+hierarchical finite differences on Christoffel symbols
+($\epsilon_{\text{metric}} = 10^{-5}$,
+$\epsilon_{\Gamma} = 10^{-4}$,
+$\epsilon_{R} = 10^{-3}$).
+Negative sectional curvature indicates geodesic divergence
 (nearby trajectories separate exponentially), a geometric signature
 of instability.  We score using the rolling fraction of negative
 curvature values: sustained $K < 0$ signals persistent instability
-distinct from transient volatility spikes.
+distinct from transient volatility spikes.%
+\footnote{The hierarchical finite-difference scheme introduces
+  numerical error at each level; symmetry $K(e_i,e_j) = K(e_j,e_i)$
+  holds to $\approx 0.5\%$.  Sectional curvature ranks 14th of 36
+  methods (median $d = 0.41$).}
+
+\subsection{Spectral Entropy}\label{subsec:spectral_entropy}
+
+Shannon entropy of excitation energy weights, measuring the spread of
+the energy spectrum:
+\begin{equation}\label{eq:spectral_entropy}
+  S(t) = -\sum_{n=1}^{N-1} w_n \log w_n\,,\qquad
+  w_n = \frac{E_n(t) - E_0(t)}{\sum_{m=1}^{N-1}(E_m(t) - E_0(t))}\,,
+\end{equation}
+where $N$ is the Hilbert dimension.  Low spectral entropy indicates
+energy concentration in few excitations (ordered regime); high entropy
+signals a spread spectrum (disordered/crisis regime).
+
+\paragraph{Hyperparameters.}  Same as Berry.
+
+\subsection{Geometric Phase Rate}\label{subsec:geom_phase_rate}
+
+Berry phase per step with the dynamic phase subtracted:
+\begin{equation}\label{eq:geom_phase_rate}
+  \dot{\gamma}_{\text{geom}}(t) = \arg\braket{\psi(x_t)}{\psi(x_{t+1})}
+    - E_0(t)\,\Delta t\,.
+\end{equation}
+Large geometric phase rates indicate non-adiabatic evolution where the
+state acquires holonomy beyond what the instantaneous energy predicts.
+
+\paragraph{Hyperparameters.}  Same as Berry.
+
+\subsection{Hamiltonian Sensitivity}\label{subsec:ham_sensitivity}
+
+Variance of the Hamiltonian perturbation with respect to the ground state:
+\begin{equation}\label{eq:ham_sensitivity}
+  \sigma^2_H(t) = \dbraket{\psi(x_t)}{\Delta H^2}{\psi(x_t)}
+    - \dbraket{\psi(x_t)}{\Delta H}{\psi(x_t)}^2\,,
+\end{equation}
+where $\Delta H = H(x_t) - H(x_{t-1})$.  Large sensitivity signals
+rapid structural change in the error Hamiltonian.
+
+\paragraph{Hyperparameters.}  Same as Berry.
+
+\subsection{Geodesic Curvature}\label{subsec:geodesic_curv}
+
+Covariant acceleration of the data trajectory on the manifold:
+\begin{equation}\label{eq:geodesic_curv}
+  \kappa_g(t) = \|\nabla_{\dot\gamma}\dot\gamma\|_g\,,
+\end{equation}
+where $\nabla$ is the Levi-Civita connection of the pullback metric
+and $\dot\gamma$ is the tangent to the data path.  High geodesic
+curvature indicates abrupt direction changes on the manifold---the
+trajectory is far from a geodesic.
+
+\paragraph{Hyperparameters.}  Same as Berry.
+
+\subsection{Effective State Dimension}\label{subsec:eff_state_dim}
+
+Inverse participation ratio of the time-averaged density matrix:
+\begin{equation}\label{eq:eff_state_dim}
+  d_{\text{eff}}(t) = \frac{W^2}{\sum_{s,s'=1}^{W}
+    |\braket{\psi(x_s)}{\psi(x_{s'})}|^2}\,,
+\end{equation}
+where $W$ is the rolling window size.  When states are mutually
+orthogonal, $d_{\text{eff}} = W$; when identical, $d_{\text{eff}} = 1$.
+Crisis herding reduces the effective dimension as states cluster.
+
+\paragraph{Hyperparameters.}  Same as Berry, plus window size $W$.
+
+\subsection{QGT Phase Rigidity}\label{subsec:qgt_rigidity}
+
+Ratio of Berry curvature to metric tensor Frobenius norms:
+\begin{equation}\label{eq:qgt_rigidity}
+  \rho(t) = \frac{\|F(x_t)\|_F}{\|g(x_t)\|_F}\,,
+\end{equation}
+where $F$ is the Berry curvature 2-form and $g$ is the quantum metric
+tensor.  Phase rigidity quantifies the relative importance of
+geometric (antisymmetric) vs.\ metric (symmetric) structure in the
+quantum geometric tensor.
+
+\paragraph{Hyperparameters.}  Same as Berry.
+
+\subsection{Reduced State Purity}\label{subsec:reduced_purity}
+
+Purity of the reduced density matrix after partial trace:
+\begin{equation}\label{eq:reduced_purity}
+  P(t) = \tr(\rho_A^2)\,,\qquad \rho_A = \tr_B(\ket{\psi(x_t)}\bra{\psi(x_t)})\,,
+\end{equation}
+with a bipartition of the Hilbert space into subsystems $A$ (dimension~2)
+and $B$ (dimension $n/2$).  Low purity signals loss of separability between
+subsystems, indicating that the ground state cannot be decomposed
+into independent factor components---a signature of correlated,
+crisis-like dynamics.
+
+\paragraph{Hyperparameters.}  Same as Berry, plus bipartition $(d_A, d_B)$.
+
+\subsection{Spectral Complexity}\label{subsec:spectral_complexity}
+
+Gibbs entropy of the energy spectrum with adaptive temperature:
+\begin{equation}\label{eq:spectral_complexity}
+  C(t) = -\sum_n p_n \log p_n\,,\qquad
+  p_n = \frac{e^{-\beta(E_n(t) - E_0(t))}}{Z}\,,
+\end{equation}
+where $\beta$ is chosen such that the effective temperature scales with
+the spectral gap.  Unlike spectral entropy, this measure weights
+low-lying excitations more heavily via the Boltzmann factor.
+
+\paragraph{Hyperparameters.}  Same as Berry.
+
+\subsection{Berry Velocity Coupling}\label{subsec:berry_vel_coupling}
+
+Berry curvature contracted with the velocity vector:
+\begin{equation}\label{eq:berry_vel_coupling}
+  \omega_v(t) = \|\iota_v F\|_g\,,
+\end{equation}
+where $\iota_v$ is interior product with the velocity and $F$ is the
+Berry curvature 2-form.  This measures the anomalous velocity
+contribution from Berry curvature along the actual data trajectory.
+
+\paragraph{Hyperparameters.}  Same as Berry.
+
+\subsection{Curvature Rate}\label{subsec:curv_rate}
+
+Temporal change rate of the Ricci scalar curvature:
+\begin{equation}\label{eq:curv_rate}
+  \dot{R}(t) = |R(t) - R(t-1)|\,,
+\end{equation}
+where $R = g^{ab}R_{ab}$ is the Ricci scalar of the pullback metric.
+Rapid curvature change signals geometric restructuring of the data
+manifold.
+
+\paragraph{Hyperparameters.}  Same as Berry.
 
 \subsection{Z-Score Thresholding (Algorithm~\ref{alg:zscore})}%
 \label{subsec:zscore}
@@ -567,7 +779,7 @@ cross-correlation, and cross-dispersion (13 raw features), enriched to
 20-day lookback), then reduced to $p = 15$ PCA components and
 $L^2$-normalized.
 
-We evaluate on 14 historical crises (Table~\ref{tab:crises}).  Crisis
+We evaluate on 17 historical crises (Table~\ref{tab:crises}).  Crisis
 windows are extended by $\pm 10$ trading days (sensitivity to this
 choice in Appendix~\ref{sec:window_sensitivity}).
 
@@ -586,12 +798,15 @@ Crisis & Period & Category & Rationale \\
 2008 GFC              & 2008-09 to 2009-03 & Conventional & Credit crisis \\
 2010 Flash Crash      & 2010-05 to 2010-06 & Conventional & Resembles 1987 \\
 2011 Euro Crisis      & 2011-07 to 2011-10 & Conventional & Sovereign debt \\
+2013 Taper Tantrum    & 2013-05 to 2013-07 & Conventional & Rate guidance shock \\
 2015 China Crash      & 2015-07 to 2015-09 & Conventional & EM contagion \\
 2020 COVID            & 2020-02 to 2020-04 & Conventional & Exogenous shock \\
 \midrule
+2016 Brexit           & 2016-06 to 2016-07 & Novel & Referendum shock \\
 2018 Volmageddon      & 2018-01 to 2018-04 & Novel & Short-vol blowup \\
 2018 Q4 Selloff       & 2018-10 to 2018-12 & Novel & Algo-driven \\
 2019 Repo Crisis      & 2019-09 to 2019-10 & Novel & Plumbing crisis \\
+2021 Meme/Archegos    & 2021-01 to 2021-04 & Novel & Social-media/leverage \\
 2022 Rate Hikes       & 2022-01 to 2022-10 & Novel & Fastest in 40yr \\
 2023 SVB              & 2023-03 to 2023-04 & Novel & Social-media bank run \\
 2024 Carry Unwind     & 2024-07 to 2024-08 & Novel & Yen carry \\
@@ -608,7 +823,11 @@ $w = 20$, PCA-inspired; Multi-Lag: $n = 4$, $p = 8$, $w = 20$,
 PCA-inspired) selected by Optuna TPE with consistency penalty
 (see below).  Classical baselines use
 their standard defaults.  RF uses leave-one-crisis-out labels.
-The full hyperparameter search spaces for all 19~methods appear in
+GARCH(1,1)~\cite{bollerslev1986} produces an expanding z-score of
+conditional variance; Hamilton
+Markov-switching~\cite{hamilton1989} fits a 2-regime MS-AR(1) with
+switching variance and outputs $P(\text{high-variance regime})$.
+The full hyperparameter search spaces for all methods appear in
 Appendix~\ref{sec:hpo_search}, Table~\ref{tab:protocol}.
 
 \paragraph{Random Forest protocol.}
@@ -628,6 +847,20 @@ remaining causal: training data never extends past the crisis cutoff.
 We also include a VIX Level detector (expanding z-score of raw VIX
 close) as an oracle upper bound, since VIX directly measures implied
 volatility.
+
+\paragraph{Additional classical baselines.}
+Four additional classical baselines broaden the comparison:
+(i)~EWMA Volatility~\cite{jpmorgan1996} ($\lambda = 0.94$), the
+RiskMetrics standard exponentially weighted moving average;
+(ii)~Mahalanobis distance~\cite{mahalanobis1936}, measuring how far
+the current observation lies from the historical mean in
+variance-adjusted space;
+(iii)~Structural Break detection via the PELT
+algorithm~\cite{killick2012} (building on~\cite{bai1998}), identifying
+regime changes through penalized exact linear time changepoint detection; and
+(iv)~Transfer Entropy~\cite{schreiber2000}, a binned mutual
+information measure between SPY and DIA returns that captures
+directional information flow between assets.
 
 \paragraph{Per-crisis causal preprocessing.}
 For each crisis evaluation, the scaler, PCA, and operators are fitted
@@ -677,9 +910,7 @@ random), QFI ($n = 8$, $p = 15$, $w = 20$, PCA-inspired), Multi-Lag
 \For{$t = 1, \ldots, T$}
   \State Solve $\ket{\psi(x_t)} = $ ground state of
     $H(x_t)$~\eqref{eq:hamiltonian}
-  \State Compute raw observables (Table~\ref{tab:observatory_channels}):
-    $\dot{\gamma}$, $\det^+(g)$, $\bar{\mathcal{I}}$, $v$, $r$,
-    $\mathrm{IPR}$, $K$
+  \State Compute raw observables (Table~\ref{tab:observatory_channels})
 \EndFor
 \State Convert to z-scores via Algorithm~\ref{alg:zscore}
 \end{algorithmic}
@@ -698,40 +929,37 @@ $n = 8$, $p = 15$).
 \subsection{Crisis-Window Separability}\label{subsec:separability}
 
 Table~\ref{tab:aggregate_comparison} presents the aggregate comparison
-across all 14~crises using per-crisis causal preprocessing: for each
+across all 17~crises using per-crisis causal preprocessing: for each
 crisis, scaler, PCA, and operators are fitted only on data
 \emph{before} that crisis window
 (Section~\ref{subsec:methods_protocol}).  HPO-optimized
 hyperparameters are used for all geometric methods; Random Forest uses
 leave-one-crisis-out cross-validation.
-Berry Phase Rate achieves the highest median $d = 0.63$, followed by
-CUSUM ($0.59$) and QFI Determinant ($0.54$).
-Rolling RF~(VIX)---trained on a rolling 250-day window with VIX~$> 25$
-labels---ranks 12th (median $d = 0.39$), modestly outperforming the
-leave-one-crisis-out RF (16th, $d = 0.32$).  The VIX Level oracle
-(expanding z-score of raw VIX) ranks 15th ($d = 0.33$), confirming that
-geometric observables capture information beyond implied volatility.
-The Friedman test ($\chi^2 = 53.8$, $p = 3.5 \times 10^{-5}$)
-confirms significant ranking differences across 19~methods.
+Reduced State Purity achieves the highest median $d = 0.83$ (rank~1),
+followed by Hamilton Markov-switching ($0.71$, rank~2), CUSUM ($0.63$,
+rank~3), and Berry Phase Rate ($0.61$, rank~4).
+Random Forest ranks 17th (median $d = 0.38$); Rolling RF~(VIX)
+ranks 20th ($d = 0.33$).  GARCH(1,1) ranks 23rd ($d = 0.29$).
+The Friedman test ($\chi^2 = 219.3$, $p < 10^{-28}$)
+confirms significant ranking differences across 36~methods.
 
 \input{tables/aggregate_comparison}
 
 Table~\ref{tab:per_crisis_winners} shows the per-crisis $d$
-matrix across 11 selected methods (8~geometric + 3~classical/supervised/oracle),
-with the winner for each crisis highlighted.  Geometric channels win
-10 of 14~crises; classical methods (CUSUM, Rolling Vol~Z) win the
-remaining 4.  Random Forest wins none, reflecting its
-leave-one-crisis-out protocol's limited generalization.
+matrix across selected methods,
+with the winner for each crisis highlighted.  Across all 36~methods,
+geometric channels win the majority of crises.
 
 \input{tables/per_crisis_winners}
 
-\paragraph{Crisis taxonomy and channel specialization.}
-We classify the 14~crises into five mechanism-based categories
+\paragraph{Crisis taxonomy and channel complementarity.}
+We classify the 17~crises into five mechanism-based categories
 (Table~\ref{tab:crisis_taxonomy}) and compute the mean Cohen's $d$ per
 method per category.  Figure~\ref{fig:specialization} visualizes the
-resulting specialization matrix.  Different geometric channels dominate
-different categories, confirming that the observatory's value lies in
-per-crisis specialization rather than aggregate dominance.
+resulting heatmap.  Different geometric channels lead in
+different categories, though a permutation test ($p = 0.31$;
+Appendix~\ref{sec:interaction_test}) shows this pattern could arise by
+chance given 36~methods and 17~crises.
 
 \input{tables/crisis_taxonomy}
 
@@ -748,15 +976,16 @@ detect different crisis mechanisms.}
 \subsection{Temporal Stability}\label{subsec:temporal_oos}
 
 To assess temporal stability, we compare performance on pre-2020
-crises (10 events) versus post-2020 crises (4 events: COVID, Rate
-Hikes, SVB, Carry Unwind) using the same causal preprocessing.
-Table~\ref{tab:oos} shows that QFI Determinant improves dramatically
-on post-2020 crises ($0.42 \to 0.92$), driven by strong performance
-on prolonged structural crises (Rates $d = 1.06$, SVB $d = 1.18$,
-COVID $d = 1.30$).
+crises (12 events) versus post-2020 crises (5 events: COVID,
+Meme/Archegos, Rate Hikes, SVB, Carry Unwind) using the same causal
+preprocessing.
+Table~\ref{tab:oos} shows that QFI Determinant improves
+on post-2020 crises ($0.53 \to 0.83$), driven by strong performance
+on prolonged structural crises (Rates $d = 1.20$, SVB $d = 0.87$,
+COVID $d = 1.16$).
 Multi-Lag Fidelity also improves ($0.49 \to 0.64$), while Berry
-declines ($0.81 \to 0.44$).  RF improves on post-2020 ($0.44 \to
-0.84$), dominated by COVID ($d = 2.30$), but collapses on early
+declines ($0.81 \to 0.44$).  RF improves on post-2020 ($0.66 \to
+0.87$), dominated by COVID ($d = 2.42$), but collapses on early
 crises where causal training labels are sparse.
 
 \begin{table}[htb]
@@ -770,28 +999,29 @@ post-2020 crises.  Causal preprocessing per crisis.}
 Method & Pre-2020 & Post-2020 & COVID & Rates & SVB & Carry \\
 \midrule
 Berry Curv.\ Incr. & 0.81 & 0.44 & 0.64 & 0.88 & 0.04 & 0.18 \\
-QFI Determinant   & 0.46 & 1.03 & 1.23 & 0.99 & 1.42 & 0.49 \\
+QFI Determinant   & 0.53 & 0.83 & 1.16 & 1.20 & 0.87 & 0.06 \\
 Multi-Lag Fidelity & 0.49 & 0.64 & 0.33 & 0.78 & 0.79 & 0.67 \\
 CUSUM             & 0.90 & 0.48 & 0.75 & 0.33 & 0.56 & 0.26 \\
-Random Forest     & 0.44 & 0.84 & 2.30 & 0.54 & 0.07 & 0.43 \\
+Random Forest     & 0.66 & 0.87 & 2.42 & 0.55 & 0.04 & 0.46 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\paragraph{Per-crisis specialization.}
+\paragraph{Per-crisis complementarity.}
 Table~\ref{tab:per_crisis_winners} reveals that no single method
-dominates: wins are spread across 8~different detectors.  Berry Phase
-Rate wins 3~crises (Quant $d = 0.82$, Volmageddon $d = 1.05$,
-Q4~Selloff $d = 2.00$), while CUSUM wins Dot-Com ($d = 2.15$) and
-Flash Crash ($d = 1.15$).  Rolling Vol~Z wins 9/11 ($d = 2.28$)
-and COVID ($d = 5.38$)---both extreme exogenous shocks.
+dominates: wins are spread across many detectors.  Hamilton~MS wins
+Flash Crash ($d = 1.36$) and Euro Crisis ($d = 1.93$);
+CUSUM wins Dot-Com ($d = 2.15$) and China ($d = 0.77$);
+Rolling Vol~Z wins 9/11 ($d = 2.28$);
+GARCH wins COVID ($d = 6.21$)---an extreme exogenous shock where
+conditional volatility spikes dramatically.  Berry Phase Rate wins
+Volmageddon ($d = 1.05$) and Q4~Selloff ($d = 2.00$).
 
 The geometric channels show complementary per-crisis strengths:
-QFI Determinant excels on credit/systemic crises (GFC $d = 1.85$,
-SVB $d = 1.42$, COVID $d = 1.23$),
-QCML Chern captures slow-building stress (Euro $d = 1.15$,
-Rate Hikes $d = 1.16$), and Sectional Curvature provides the
-strongest signal on China ($d = 0.85$).  Dimensionality Collapse
+QFI Determinant excels on credit/systemic crises (GFC $d = 2.09$,
+Rate Hikes $d = 1.20$, SVB $d = 0.87$),
+Spectral Gap captures Quant ($d = 1.05$), Repo ($d = 1.00$), and
+SVB ($d = 1.23$), and Dimensionality Collapse
 wins Carry Unwind ($d = 1.26$), a crisis where most other methods
 produce small effects.
 
@@ -799,10 +1029,11 @@ produce small effects.
 \label{subsec:novel_conventional}
 
 Table~\ref{tab:crises} classifies crises \emph{a priori} as Novel
-(unprecedented mechanisms: Volmageddon, algorithmic Q4, repo plumbing,
-fastest rate cycle, social-media bank run, carry unwind) or
-Conventional (recognizable historical parallels).  Table~\ref{tab:stratified}
-stratifies each method's performance by this classification.
+(unprecedented mechanisms: Brexit, Volmageddon, algorithmic Q4, repo
+plumbing, Meme/Archegos, fastest rate cycle, social-media bank run,
+carry unwind) or Conventional (recognizable historical parallels).
+Table~\ref{tab:stratified} stratifies each method's performance by
+this classification.
 
 \begin{table}[htb]
 \centering
@@ -814,11 +1045,11 @@ stratifies each method's performance by this classification.
 \end{table}
 
 Supervised and statistical methods degrade on novel crises:
-RF's median $d$ drops from 0.44 (Conventional) to 0.33 (Novel,
-$-26\%$), and CUSUM declines from 1.10 to 0.29 ($-74\%$).
+RF's median $d$ drops from 0.68 (Conventional) to 0.37 (Novel,
+$-46\%$), and CUSUM declines from 1.10 to 0.29 ($-74\%$).
 In contrast, all three geometric observables \emph{improve}:
-Berry $+17\%$, QFI $+222\%$, MLF $+73\%$; the best geometric
-observable per crisis rises from $d = 0.84$ to $1.02$ ($+21\%$).
+Berry $+17\%$, QFI $+214\%$, MLF $+73\%$; the best geometric
+observable per crisis rises from $d = 0.84$ to $0.96$ ($+14\%$).
 
 The explanation is structural rather than statistical: geometric
 observables detect changes in manifold curvature and metric volume
@@ -1029,6 +1260,78 @@ Table~\ref{tab:detection_metrics}.  Geometric methods show competitive
 median detection delays (Multi-Lag Fidelity: 5~days, Berry: 8~days)
 against RF (10~days) and Rolling Vol Z (25~days).
 
+\subsection{Lead Time Analysis}\label{subsec:lead_time}
+
+We assess early warning capability using an expanding-window threshold
+protocol: for each method, the detection threshold is set at the 95th
+percentile of z-scores computed over a 252-day lookback, with a 3-day
+persistence filter to suppress transient spikes.  All thresholds are
+computed without crisis-window data, ensuring causal integrity.  A
+crisis is ``detected'' if the threshold is exceeded at any point in the
+90-day window preceding the crisis start date; the lead time is the
+number of trading days between the first alarm and the crisis onset.
+
+\begin{table}[htb]
+\centering
+\caption{Lead time analysis: early warning across 17~crises.
+  Methods sorted by detection rate $\times$ mean lead time.
+  Friedman $\chi^2 = 163$, $p = 1.8 \times 10^{-19}$.}
+\label{tab:lead_time}
+\small
+\input{tables/table_lead_time}
+\end{table}
+
+Table~\ref{tab:lead_time} reveals substantial heterogeneity in
+early warning capability.  Transfer Entropy~\cite{schreiber2000}
+detects 16/17~crises with 142-day mean lead---the broadest coverage
+among all methods.  Among geometric observables, QFI Determinant
+detects 14/17~crises at 128-day mean lead, providing the best
+coverage--precision balance, while QCML Chern detects 14/17 with
+160-day mean lead.  Several methods fail to provide any early warning:
+BOCPD, HMM, and Sectional Curvature Sign detect 0/17~crises
+(their alarms never fire before the crisis window).
+
+Geometric methods show a marginally longer median lead time (176~days)
+than classical methods (160~days), though the difference is not
+statistically significant (Wilcoxon $p = 0.065$).  The key
+advantage is detection coverage: geometric methods detect more crises
+on average than classical baselines.
+
+\subsection{Deployment Simulation (Blind Holdout)}\label{subsec:holdout}
+
+To simulate realistic deployment, we freeze the entire pipeline at
+2021-12-31---hyperparameters, thresholds, and preprocessing
+parameters are all fixed using only pre-2022 data---and deploy on
+three unseen post-2021 crises: the 2022 Rate Hikes, 2023 SVB, and
+2024 Carry Unwind.  No method has access to any information from the
+holdout period during calibration.
+
+\begin{table}[htb]
+\centering
+\caption{Blind holdout simulation (pipeline frozen at 2021-12-31).
+  Top 15 methods on three unseen crises, sorted by mean Cohen's~$d$.
+  Bold = best per-crisis column.}
+\label{tab:holdout}
+\small
+\input{tables/table_holdout}
+\end{table}
+
+Table~\ref{tab:holdout} shows that BOCPD achieves the highest holdout
+mean $d = 1.42$, driven by an extreme Rate Hikes signal ($d = 2.81$),
+despite detecting 0/17~crises in the lead time analysis---a very
+different operating point (high separability but no early warning).
+Reduced Purity (mean $d = 1.20$) and Hamilton~MS ($d = 1.19$) both
+generalize robustly, consistent with their top in-sample rankings.
+Crisis specialization persists out of sample: Multi-Lag Fidelity excels
+on SVB ($d = 1.24$), while Dimensionality Collapse dominates the Carry
+Unwind ($d = 1.46$).
+
+These results confirm that geometric signatures learned from pre-2022
+data continue to detect structurally different crises 1--3~years later,
+supporting the deployment-availability argument: a practitioner
+deploying QCML in January~2022 would have received strong detection
+signals on all three subsequent crises.
+
 \subsection{Statistical Comparison Framework}\label{subsec:stat_comparison}
 
 We supplement the Friedman test with three modern statistical comparison
@@ -1040,7 +1343,7 @@ methods whose performance cannot be statistically distinguished from the
 best at the 90\% confidence level ($\alpha = 0.1$, $B = 10{,}000$ bootstrap
 resamples).  The MCS contains 10 of 11~methods shown
 (Table~\ref{tab:mcs}); only BOCPD is excluded (MCS was computed on
-the original 11-method subset; the full 17-method comparison uses the
+the original 11-method subset; the full 36-method comparison uses the
 Friedman test above).
 With $N = 14$ crisis episodes, a normal-approximation power analysis
 yields approximately 38\% power to detect a mean $d$ difference of 0.2
@@ -1079,7 +1382,7 @@ BOCPD               & $\times$ \\
 Bayesian signed-rank tests (Appendix~\ref{sec:supplementary_stats},
 Table~\ref{tab:bayesian}) show Berry is directionally favoured over RF
 ($P(\text{Berry} > \text{RF}) = 0.61$), though posteriors are broad
-with only 14~crises.  Bootstrap rank CIs
+with only 17~crises.  Bootstrap rank CIs
 (Table~\ref{tab:bootstrap_ranks}) confirm that CUSUM (rank~4.57),
 Berry (4.79), and RF (5.64) share heavily overlapping CIs---no
 pairwise rank difference is statistically significant.  The Nemenyi
@@ -1242,11 +1545,13 @@ theoretical relationship underlying the QFI determinant observable.
 
 \subsection{The Observatory Interpretation}
 
-The central finding is \emph{per-crisis specialization}: different
-geometric channels detect different crisis mechanisms
+The central finding is \emph{per-crisis complementarity}: different
+geometric channels show different strengths across crisis mechanisms
 (Table~\ref{tab:crisis_taxonomy}, Figure~\ref{fig:specialization}).
-No single channel dominates across all 14~crises, but each of the
-five mechanism-based categories has a distinct geometric winner.
+No single channel dominates across all 17~crises, and each of the
+five mechanism-based categories has a different geometric leader---though
+a permutation test ($p = 0.31$, $n = 10{,}000$ shuffles) shows this
+pattern could arise by chance with 36~methods and 17~crises.
 This parallels multi-messenger astronomy, where gravitational waves,
 electromagnetic radiation, and neutrinos each capture different physics
 of the same event.
@@ -1256,9 +1561,9 @@ their performance on crises with ample labeled training data, while
 geometric channels win on crises where labels are sparse or absent.
 Rolling RF~(VIX), which receives continuous training signal from
 VIX~$> 25$ labels rather than hand-labeled crises, improves over
-leave-one-crisis-out RF ($d = 0.39$ vs.\ $0.32$) but still ranks
-well below the top geometric channels.  Even the VIX Level oracle
-($d = 0.33$) falls short, confirming that geometric observables detect
+leave-one-crisis-out RF ($d = 0.55$ vs.\ $0.37$) and ranks fourth
+overall.  Even the VIX Level oracle ($d = 0.33$) falls short of the
+top geometric channels, confirming that geometric observables detect
 regime information beyond what implied volatility alone provides.
 This is consistent with domain adaptation theory~\cite{bendavid2010}:
 supervised classifiers degrade under distribution shift, while
@@ -1288,7 +1593,7 @@ to regime transitions arises from state movement across the energy
 landscape, not from gap closure.
 
 The Friedman test
-($\chi^2 = 53.8$, $p = 3.5 \times 10^{-5}$) confirms significant
+($\chi^2 = 219.3$, $p < 10^{-28}$) confirms significant
 heterogeneity in per-crisis rankings, consistent with the forecast
 combination literature: diverse but individually imperfect methods
 gain value from aggregation~\cite{bates_granger1969,timmermann2006}.
@@ -1297,7 +1602,7 @@ gain value from aggregation~\cite{bates_granger1969,timmermann2006}.
 An oracle selector that picks the best geometric channel per crisis
 demonstrates the value of the observatory:  per-crisis selection
 substantially improves over any individual channel, confirming
-non-overlapping information across the seven geometric observables.
+non-overlapping information across the geometric observables.
 
 The composite fusion (Section~\ref{subsec:causal_fusion}) partially
 realises this oracle potential.  Simple equal-weight
@@ -1306,7 +1611,7 @@ Bates \& Granger~\cite{bates_granger1969} finding that equal-weight
 combination is optimal when training observations are few relative to
 free parameters.  This is an honest negative result: composite
 strategies do not consistently beat the best individual channel,
-because the observatory's value lies in per-crisis specialization
+because the observatory's value lies in per-crisis complementarity
 rather than ensemble averaging.
 
 These results---together with the bootstrap rank CIs
@@ -1315,15 +1620,22 @@ geometric observables are best viewed as a \emph{complementary
 observatory} rather than a standalone replacement for established
 methods.
 
-\paragraph{On CUSUM dominance.}
-A natural objection is that CUSUM---a trivially simple cumulative sum
-detector dating to Page~\cite{page1954}---achieves the second-highest
-median $d$ ($0.59$) and ranked first on 2 of 14~crises.  This is not
-surprising: CUSUM accumulates persistent deviations from a fixed
-early-period baseline (burn-in = 60~calm days), and financial crises
-\emph{are} persistent deviations---CUSUM is optimally matched to the
-signal definition.  However, CUSUM fires on \emph{any} persistent
-deviation, including non-crisis trends, producing an order-of-magnitude
+\paragraph{On Hamilton MS and CUSUM performance.}
+Hamilton Markov-switching~\cite{hamilton1989} achieves the second-highest
+median $d$ ($0.71$) by directly modeling regime-dependent variance
+parameters---it is purpose-built for volatility regime detection.
+CUSUM~\cite{page1954} ranks third ($d = 0.63$) by accumulating
+persistent deviations from a fixed early-period baseline.
+Reduced State Purity now ranks first ($d = 0.83$), demonstrating that
+a geometric observable---measuring separability loss between subsystems
+of the Hilbert space---can match purpose-built classical methods.
+Neither result is surprising: Hamilton~MS maximizes the
+likelihood of regime-specific volatility, and financial crises
+\emph{are} volatility regime shifts; CUSUM is optimally matched
+to persistent deviations.  However, both have deployment
+limitations: Hamilton~MS requires fitting a maximum-likelihood model
+that can fail to converge on short or noisy series; CUSUM fires on
+\emph{any} persistent deviation, producing an order-of-magnitude
 higher false alarm rate.  Under FAR-calibrated walk-forward evaluation
 (Table~\ref{tab:walkforward}), geometric methods achieve comparable
 detection at 2.5~false alarms/yr vs.\ RF's 3.6/yr, while CUSUM is not
@@ -1335,9 +1647,9 @@ In deployment scenarios where crisis labels are unavailable or lag by
 months---the typical operational setting---the supervised RF baseline is
 unavailable.  The stratified analysis
 (Table~\ref{tab:stratified}) quantifies this constraint: RF's median
-$d$ drops $26\%$ on novel crises, and CUSUM collapses $74\%$, while
+$d$ drops $46\%$ on novel crises, and CUSUM collapses $74\%$, while
 geometric observables maintain or improve detection ($+17\%$ to
-$+222\%$).  The relevant question is not which method has the highest
+$+214\%$).  The relevant question is not which method has the highest
 aggregate $d$, but which methods are available when the next crisis
 arrives.
 
@@ -1350,6 +1662,26 @@ computational cost (Berry: 0.77s, MLF: 0.26s, comparable to RF's
 central practical claim: geometric observables are the only
 theoretically grounded unsupervised detection mechanism that complements
 simple statistical tests under the label-free constraint.
+
+\paragraph{Holdout robustness.}
+The blind holdout simulation (Section~\ref{subsec:holdout}) confirms
+that geometric signatures learned from pre-2022 data continue to
+detect structurally different crises 1--3~years later.  Reduced Purity
+(mean holdout $d = 1.20$) and Hamilton~MS ($d = 1.19$) both generalize
+robustly, while crisis specialization persists out of sample
+(Multi-Lag Fidelity excels on SVB $d = 1.24$; Dimensionality Collapse
+on Carry $d = 1.46$).
+
+\paragraph{Lead time.}
+Lead time analysis (Section~\ref{subsec:lead_time}) reveals that
+geometric observables provide early warning at comparable horizons to
+classical methods (median 176~days vs.\ 160~days), though the
+difference is not statistically significant (Wilcoxon $p = 0.065$).
+The key advantage is detection coverage: QFI Determinant detects
+14/17~crises, while CUSUM detects only 4/17.  Methods with the highest
+separability (Reduced Purity, Hamilton~MS) do not necessarily provide
+the earliest warning, highlighting the distinction between detection
+\emph{sensitivity} and detection \emph{timeliness}.
 
 \subsection{On the ``Quantum'' Label}
 
@@ -1406,13 +1738,13 @@ theory~\cite{schuld_killoran2019,busemeyer2012}.
   window).  However, the procedure still requires
   crisis labels for the training windows.
 
-\item \textbf{CUSUM and classical baselines on aggregate.}
-  CUSUM achieves the second-highest median $d$ ($0.59$), and Rolling
-  Vol~Z and Isolation Forest have high mean $d$ due to extreme values
-  on large exogenous shocks (COVID, GFC).  Berry Phase Rate ranks first
-  by median ($0.63$), but the margin over CUSUM is modest.  The
-  geometric observatory's value lies in per-crisis specialization and
-  label-free availability rather than aggregate dominance.
+\item \textbf{Aggregate rankings.}
+  Reduced Purity achieves the highest median $d$ ($0.83$),
+  Hamilton~MS ranks second ($0.71$), CUSUM third ($0.63$), and Berry
+  Phase Rate fourth ($0.61$).  GARCH(1,1) ranks 23rd ($0.29$).
+  While a geometric observable now leads, the
+  observatory's value lies in per-crisis complementarity and
+  label-free availability rather than single-method dominance.
 
 \item \textbf{VIX threshold sensitivity.}
   The Rolling RF~(VIX) baseline uses $\text{VIX} > 25$ as the crisis
@@ -1449,24 +1781,25 @@ theory~\cite{schuld_killoran2019,busemeyer2012}.
 % =============================================================================
 \section{Conclusion}\label{sec:conclusion}
 
-We have constructed a geometric observatory---seven detection channels
+We have constructed a geometric observatory---seventeen detection channels
 derived from the QCML error Hamiltonian---and evaluated it for financial
-regime detection across 14~crises (2000--2024).  The central finding is
-\emph{per-crisis specialization}: different geometric channels detect
-different crisis mechanisms, and each of five mechanism-based categories
-has a distinct geometric winner
-(Table~\ref{tab:crisis_taxonomy}).
+regime detection across 17~crises (2000--2024).  The central finding is
+\emph{per-crisis complementarity}: different geometric channels show
+different strengths across crisis mechanisms
+(Table~\ref{tab:crisis_taxonomy}), though this pattern does not
+reach statistical significance on a 17-crisis sample
+(permutation test $p = 0.31$).
 
 This observatory interpretation rests on four properties:
 \begin{enumerate}
-\item \textbf{Channel specialization.}  Volatility shocks, systemic
-  crises, exogenous events, slow burns, and liquidity breakdowns each
-  activate different geometric channels, reflecting the distinct
-  manifold signatures of each mechanism.
+\item \textbf{Channel complementarity.}  Different crisis mechanisms
+  tend to activate different geometric channels, though the pattern
+  is suggestive rather than statistically confirmed on 17~crises
+  (permutation test $p = 0.31$; Appendix~\ref{sec:interaction_test}).
 
 \item \textbf{Label-free deployment.}  Geometric channels maintain
   detection on structurally novel crises where supervised methods
-  degrade ($-26\%$ for RF, $-74\%$ for CUSUM), because they respond to
+  degrade ($-46\%$ for RF, $-74\%$ for CUSUM), because they respond to
   manifold structural changes rather than learned crisis patterns.
 
 \item \textbf{Detection precision.}  Under FAR-calibrated walk-forward
@@ -1479,13 +1812,16 @@ This observatory interpretation rests on four properties:
   of market data (Section~\ref{subsec:theorem_validation}).
 \end{enumerate}
 
-\noindent We are explicit about limitations: no single geometric channel
-dominates baselines on aggregate effect size, and composite fusion does
-not consistently beat the best individual channel.  The observatory's
-value lies in specialization, not aggregation---the right channel for the
-right crisis.  For practitioners: the geometric observatory requires no
-crisis labels and provides complementary detection channels that remain
-operational when no supervised alternative exists.
+\noindent We are explicit about limitations: composite fusion does
+not consistently beat the best individual channel, and confirming the
+specialization pattern requires a larger crisis sample.  However, the
+expanded comparison establishes that geometric observables are not merely
+competitive---Reduced Purity ($d = 0.83$) now ranks first among all 36
+methods---and that their early warning and holdout generalization
+support practical deployment.  For practitioners: the geometric
+observatory requires no crisis labels and provides complementary
+detection channels that remain operational when no supervised
+alternative exists.
 
 Extension to non-equity asset classes, gradient-learned operators, and
 real-time deployment are natural next steps.
@@ -1520,8 +1856,8 @@ fidelity, spectral gap, ground state energy, and combined overlay.}
 \begin{figure}[htb]
 \centering
 \includegraphics[width=\textwidth]{../experiments/outputs/regime_detection/superiority_publication/figures/effect_sizes.pdf}
-\caption{Cohen's~$d$ distributions across 14 crises.  Dashed line:
-$d = 0.8$ (large effect); dotted: RF baseline $d = 0.96$.}
+\caption{Cohen's~$d$ distributions across 17 crises.  Dashed line:
+$d = 0.8$ (large effect).}
 \label{fig:effect_sizes}
 \end{figure}
 
@@ -1859,7 +2195,7 @@ observable, maintaining the highest $d$ across all window sizes.
 
 \begin{table}[htb]
 \centering
-\caption{Median Cohen's~$d$ by crisis window size (14 crises).}
+\caption{Median Cohen's~$d$ by crisis window size (original 14-crisis subset; see Table~\ref{tab:aggregate_comparison} for expanded 17-crisis results).}
 \label{tab:window}
 \small
 \begin{tabular}{lcccc}
@@ -1897,7 +2233,7 @@ $\leq 0.20$, with QFI achieving val $d = 0.60 >$ train $d = 0.50$
 \begin{table}[htb]
 \centering
 \caption{Hyperparameter sensitivity: median Cohen's~$d$ across
-  14~crises (columns a--b) and train/val split (column c).}
+  original 14-crisis subset (columns a--b) and train/val split (column c).}
 \label{tab:fixed_hp}
 \small
 \begin{tabular}{lccc}
@@ -1978,7 +2314,7 @@ $w \in \{5,10,15,20,30,50\}$, normalization mode $\in \{$sphere, none,
 soft, clip$\}$, and aggregation function $\in \{$f01, frobenius,
 max$\}$---holding all other parameters at their defaults
 (Table~\ref{tab:hyperparams}).  This yields 23 configurations,
-each evaluated on all 14~crises using the causal protocol of
+each evaluated on the original 14-crisis subset using the causal protocol of
 Section~\ref{subsec:methods_protocol}.
 
 Across all 23 OAT configurations, 61\% achieve median $d > 0.5$, with
@@ -2021,11 +2357,11 @@ While Cohen's~$d$ measures crisis-window separability (offline event study),
 practitioners need detection-relevant metrics: precision, recall, timeliness,
 and false alarm control.  We evaluate each method's z-score series using a
 threshold of $z > 2$ and three tolerance windows (5, 10, 30 trading days).
-Table~\ref{tab:detection_metrics} reports aggregates across all 14~crises.
+Table~\ref{tab:detection_metrics} reports aggregates across the original 14-crisis subset.
 
 \begin{table}[htbp]
 \centering
-\caption{Detection metrics across 14 crises (threshold $z > 2$, tolerance
+\caption{Detection metrics across original 14-crisis subset (threshold $z > 2$, tolerance
   window = 10 trading days).  Med.\ Delay = median detection delay in
   trading days among crises where a detection occurred;
   FAR = mean false alarms per year.  AUC-PR = area under
@@ -2082,7 +2418,7 @@ probabilities.  Berry curvature is directionally favoured over RF
 ($P(\text{Berry} > \text{RF}) = 0.61$), and Multi-Lag Fidelity is
 near-equivocal ($P(\text{MLF} > \text{RF}) = 0.41$).  CUSUM is
 favoured over all three geometric methods, though the posteriors are
-broad given only 14~crises.
+broad given only 14 crises in this subset.
 
 \begin{table}[htbp]
 \centering
@@ -2196,6 +2532,9 @@ HMM (2-state)      & 2 & cov $\in$ \{full, diag\}, n\_iter $\in \{50,100,200\}$ 
 BOCPD              & 1 & hazard $\in [50, 500]$ & None (online) \\
 Isolation Forest   & 2 & n\_est $\in [50, 300]$,
   contam $\in [0.01, 0.15]$ & Full \\
+GARCH(1,1)         & 1 & min\_expanding = 60 & None (expanding z-score) \\
+Hamilton MS        & 2 & $k\_\text{regimes} = 2$, order = 1,
+  min\_history = 100 & Expanding \\
 \midrule
 \multicolumn{4}{@{}l}{\emph{Supervised}} \\
 Random Forest      & 2 & n\_est $\in [50, 300]$,
@@ -2282,6 +2621,17 @@ at $\alpha = 0.05$.  The stratified finding
 argument---geometric methods maintain constant performance while RF
 degrades due to label scarcity---not a claim of differential superiority
 on novel crises.
+
+\paragraph{Specialization permutation test.}
+We additionally test whether the per-crisis specialization pattern
+(different geometric channels winning different crisis categories)
+exceeds chance.  Under a null model that shuffles method labels within
+each crisis ($n = 10{,}000$ permutations), the observed number of
+distinct geometric category winners ($k = 5$) has $p = 0.31$, and
+the winner-distribution entropy has $p = 0.28$.  Neither reaches
+significance at $\alpha = 0.05$.  The specialization pattern is thus
+\emph{suggestive} on 17~crises, but a larger crisis sample would be
+needed for confirmatory evidence.
 
 
 \end{document}

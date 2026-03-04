@@ -5,7 +5,7 @@ Provides:
 - fetch_data(): Unified data fetcher (yfinance by default, WRDS optional)
 - fetch_polygon_data(): Fetch daily OHLCV from Polygon API (legacy)
 - create_feature_matrix(): Build feature matrix from close prices
-- ALL_CRISES: 16 crisis definitions with start/end dates (12 post-2005 + 4 pre-2005)
+- ALL_CRISES: 19 crisis definitions with start/end dates (15 post-2005 + 4 pre-2005)
 - CRISIS_CATEGORIES: Pre-defined novel vs conventional classification
 - PolygonDataSource / MinimalFeatureEngine: Legacy-compatible wrappers
 
@@ -64,9 +64,17 @@ ALL_CRISES = {
         'start': '2011-07-01', 'end': '2011-10-31',
         'label': 'Euro Crisis 2011',
     },
+    '2013_taper': {
+        'start': '2013-05-20', 'end': '2013-07-15',
+        'label': 'Taper Tantrum 2013',
+    },
     '2015_china': {
         'start': '2015-07-01', 'end': '2015-09-30',
         'label': 'China Crash 2015',
+    },
+    '2016_brexit': {
+        'start': '2016-06-20', 'end': '2016-07-31',
+        'label': 'Brexit 2016',
     },
     '2018_volmageddon': {
         'start': '2018-01-26', 'end': '2018-04-30',
@@ -83,6 +91,10 @@ ALL_CRISES = {
     '2020_covid': {
         'start': '2020-02-20', 'end': '2020-04-30',
         'label': 'COVID 2020',
+    },
+    '2021_meme': {
+        'start': '2021-01-25', 'end': '2021-04-15',
+        'label': 'Meme/Archegos 2021',
     },
     '2022_rates': {
         'start': '2022-01-01', 'end': '2022-10-31',
@@ -118,9 +130,11 @@ ALL_CRISES_EXTENDED = {**CRSP_ONLY_CRISES, **ALL_CRISES}
 # Conventional = crises with recognizable historical parallels.
 CRISIS_CATEGORIES = {
     'novel': [
+        '2016_brexit',       # Geopolitical shock, no prior analog
         '2018_volmageddon',  # Unprecedented short-vol blowup
         '2018_q4',           # Algorithmic-driven selloff
         '2019_repo',         # Plumbing crisis, no equity analog
+        '2021_meme',         # Hidden stress (SPY calm, internals extreme)
         '2022_rates',        # Fastest rate cycle in 40 years
         '2023_svb',          # Social-media-driven bank run
         '2024_carry',        # Yen carry unwind + AI rotation
@@ -134,6 +148,7 @@ CRISIS_CATEGORIES = {
         '2008_gfc',     # Credit crisis (resembles 1929, 1987)
         '2010_flash',   # Liquidity shock (resembles 1987)
         '2011_euro',    # Sovereign debt (resembles EM crises)
+        '2013_taper',   # Rate shock (resembles 2022, but milder)
         '2015_china',   # Emerging market contagion (resembles 1997)
         '2020_covid',   # Exogenous shock (resembles 1918, 2003)
     ],
@@ -269,24 +284,28 @@ def fetch_yfinance_data(symbols, start_date, end_date):
     return df[['open', 'high', 'low', 'close', 'volume']]
 
 
-def fetch_data(symbols, start_date, end_date, source='auto'):
-    """Unified data fetcher. Tries WRDS, then yfinance (free), then Polygon.
+def fetch_data(symbols, start_date, end_date, source='yfinance'):
+    """Unified data fetcher. Uses yfinance by default (free, reproducible).
 
     Args:
         symbols: List of ticker symbols, e.g. ['SPY', 'DIA'].
         start_date: Start date string 'YYYY-MM-DD'.
         end_date: End date string 'YYYY-MM-DD'.
-        source: 'auto' (default), 'yfinance', 'polygon', or 'wrds'.
+        source: 'yfinance' (default), 'polygon', 'wrds', or 'auto'.
             'auto' tries WRDS if configured, otherwise uses yfinance.
+            WARNING: WRDS returns split-adjusted but NOT dividend-adjusted
+            prices, which differ from yfinance's fully-adjusted prices.
 
     Returns:
         DataFrame with MultiIndex (symbol, timestamp) and columns
         [open, high, low, close, volume].
     """
     if source == 'yfinance':
+        logger.info("Data source: yfinance")
         return fetch_yfinance_data(symbols, start_date, end_date)
 
     if source == 'polygon':
+        logger.info("Data source: polygon")
         return fetch_polygon_data(symbols, start_date, end_date)
 
     # source == 'auto' or 'wrds': try WRDS first, fall back to yfinance
@@ -299,9 +318,11 @@ def fetch_data(symbols, start_date, end_date, source='auto'):
         if not os.environ.get('WRDS_USERNAME'):
             raise RuntimeError("WRDS_USERNAME not set")
         prices_wide = fetch_wrds_equities(symbols, start_date, end_date)
+        logger.info("Data source: wrds")
         return wrds_prices_to_polygon_format(prices_wide)
     except Exception as e:
         logger.warning(f"WRDS fetch failed ({e}), falling back to yfinance")
+        logger.info("Data source: yfinance (fallback from auto)")
         return fetch_yfinance_data(symbols, start_date, end_date)
 
 

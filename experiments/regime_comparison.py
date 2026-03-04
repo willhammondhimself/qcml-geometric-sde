@@ -41,6 +41,16 @@ from qcml_geometry import (
     DimensionalityCollapseDetector,
     SectionalCurvatureDetector,
     GeodesicVelocityDetector,
+    SpectralEntropyDetector,
+    GeometricPhaseRateDetector,
+    HamiltonianSensitivityDetector,
+    GeodesicCurvatureDetector,
+    EffectiveStateDimensionDetector,
+    QGTPhaseRigidityDetector,
+    ReducedPurityDetector,
+    SpectralComplexityDetector,
+    BerryVelocityCouplingDetector,
+    CurvatureRateDetector,
 )
 from qcml_geometry.observables import BaseRegimeDetector
 
@@ -56,6 +66,12 @@ from experiments.baselines import (
     RandomForestRegimeDetector,
     RollingWindowRFDetector,
     VIXThresholdDetector,
+    GARCHDetector,
+    HamiltonMSDetector,
+    EWMADetector,
+    MahalanobisDetector,
+    StructuralBreakDetector,
+    TransferEntropyDetector,
 )
 from experiments.additional_detectors import (
     QCMLChernDetector,
@@ -191,6 +207,89 @@ HPO_CONFIGS = {
             normalization='sphere',
         ),
     },
+    'Spectral Entropy': {
+        'class': SpectralEntropyDetector,
+        'params': dict(
+            hilbert_dim=8, n_pca_components=8, rolling_window=20,
+            operator_method='random', seed=42,
+            normalization='soft', adaptive_epsilon=True,
+        ),
+    },
+    'Geometric Phase Rate': {
+        'class': GeometricPhaseRateDetector,
+        'params': dict(
+            hilbert_dim=6, n_pca_components=8, rolling_window=15,
+            operator_method='random', seed=42,
+            normalization='sphere',
+        ),
+    },
+    'Hamiltonian Sensitivity': {
+        'class': HamiltonianSensitivityDetector,
+        'params': dict(
+            hilbert_dim=8, n_pca_components=8, rolling_window=20,
+            operator_method='random', seed=42,
+            normalization='soft', adaptive_epsilon=True,
+        ),
+    },
+    'Geodesic Curvature': {
+        'class': GeodesicCurvatureDetector,
+        'params': dict(
+            hilbert_dim=6, n_pca_components=3,
+            operator_method='pca_inspired', seed=42,
+            normalization='soft', adaptive_epsilon=True,
+            subsample=5,
+        ),
+    },
+    'Effective State Dim': {
+        'class': EffectiveStateDimensionDetector,
+        'params': dict(
+            hilbert_dim=8, n_pca_components=8, rolling_window=20,
+            operator_method='random', seed=42,
+            normalization='soft', adaptive_epsilon=True,
+        ),
+    },
+    'QGT Phase Rigidity': {
+        'class': QGTPhaseRigidityDetector,
+        'params': dict(
+            hilbert_dim=8, n_pca_components=8, rolling_window=20,
+            operator_method='random', seed=42,
+            normalization='soft', adaptive_epsilon=True,
+        ),
+    },
+    'Reduced Purity': {
+        'class': ReducedPurityDetector,
+        'params': dict(
+            hilbert_dim=8, n_pca_components=8, rolling_window=20,
+            operator_method='random', seed=42,
+            normalization='soft', adaptive_epsilon=True,
+            partition=(2, 4),
+        ),
+    },
+    'Spectral Complexity': {
+        'class': SpectralComplexityDetector,
+        'params': dict(
+            hilbert_dim=8, n_pca_components=8, rolling_window=20,
+            operator_method='random', seed=42,
+            normalization='soft', adaptive_epsilon=True,
+        ),
+    },
+    'Berry Velocity Coupling': {
+        'class': BerryVelocityCouplingDetector,
+        'params': dict(
+            hilbert_dim=6, n_pca_components=8, rolling_window=15,
+            operator_method='random', seed=42,
+            normalization='sphere',
+        ),
+    },
+    'Curvature Rate': {
+        'class': CurvatureRateDetector,
+        'params': dict(
+            hilbert_dim=6, n_pca_components=3,
+            operator_method='pca_inspired', seed=42,
+            normalization='soft', adaptive_epsilon=True,
+            subsample=5,
+        ),
+    },
 }
 
 
@@ -272,6 +371,30 @@ CLASSICAL_CONFIGS = {
     'Isolation Forest': {
         'class': IsolationForestDetector,
         'params': dict(n_estimators=100, seed=42),
+    },
+    'GARCH(1,1)': {
+        'class': GARCHDetector,
+        'params': dict(min_expanding=60),
+    },
+    'Hamilton MS': {
+        'class': HamiltonMSDetector,
+        'params': dict(k_regimes=2, order=1, min_history=100),
+    },
+    'EWMA Vol': {
+        'class': EWMADetector,
+        'params': dict(decay=0.94, min_expanding=60),
+    },
+    'Mahalanobis': {
+        'class': MahalanobisDetector,
+        'params': dict(min_expanding=60, regularization=1e-6),
+    },
+    'Structural Break': {
+        'class': StructuralBreakDetector,
+        'params': dict(model='rbf', penalty=3.0, min_expanding=60),
+    },
+    'Transfer Entropy': {
+        'class': TransferEntropyDetector,
+        'params': dict(te_window=60, n_bins=5, lag=1, min_expanding=60),
     },
 }
 
