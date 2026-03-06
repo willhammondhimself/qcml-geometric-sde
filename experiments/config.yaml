@@ -913,3 +913,58 @@ experiments:
       - rolling_vol_z
       - random_forest
     crisis_subset: post_2005
+
+  # --- Paper 2 Presets ---
+  paper2_quick:
+    description: "Paper 2 fusion experiments — quick evaluation on 4 crises"
+    methods:
+      - berry_phase_rate
+      - qfi_determinant
+      - multi_lag_fidelity
+      - reduced_purity
+      - geodesic_velocity
+      - speed_limit_ratio
+      - spectral_entropy
+      - spectral_complexity
+      - effective_state_dim
+      - hamiltonian_sensitivity
+      - geometric_phase_rate
+      - geodesic_curvature
+      - sectional_curvature_sign
+      - dimensionality_collapse
+      - qcml_chern
+    crisis_subset: quick
+    fusion_methods:
+      - flat_rank
+      - hierarchical_rank
+      - hierarchical_learned
+      - regime_adaptive
+      - sprt_0.995
+
+  paper2_full:
+    description: "Paper 2 fusion experiments — all 15 crises + holdout"
+    methods:
+      - berry_phase_rate
+      - qfi_determinant
+      - multi_lag_fidelity
+      - reduced_purity
+      - geodesic_velocity
+      - speed_limit_ratio
+      - spectral_entropy
+      - spectral_complexity
+      - effective_state_dim
+      - hamiltonian_sensitivity
+      - geometric_phase_rate
+      - geodesic_curvature
+      - sectional_curvature_sign
+      - dimensionality_collapse
+      - qcml_chern
+    crisis_subset: all
+    fusion_methods:
+      - flat_rank
+      - hierarchical_rank
+      - hierarchical_learned
+      - regime_adaptive
+      - sprt_0.99
+      - sprt_0.995
+      - sprt_1.0

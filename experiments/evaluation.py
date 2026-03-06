@@ -2,12 +2,15 @@
 Statistical evaluation utilities for regime detection experiments.
 
 Provides:
-    compute_cohens_d_with_ci  — Cohen's d with bootstrap CI
+    compute_cohens_d_with_ci  — Cohen's d with bootstrap CI (iid or block)
+    cliffs_delta              — Cliff's delta (non-parametric effect size)
+    compute_effect_sizes      — Cohen's d + Cliff's delta in one call
     welch_t_test              — Welch's unequal-variance t-test
     holm_bonferroni_correction — Multiple comparison correction
+    bh_fdr_correction         — Benjamini-Hochberg FDR correction
     permutation_test          — Permutation test for mean difference
     bayes_factor              — Bayesian hypothesis test (BF10)
-    friedman_test             — Friedman rank test for multi-method comparison
+    friedman_test             — Friedman rank test with Iman-Davenport F-correction
     compute_detection_metrics — Delay, FAR, precision, recall, F1
 """
 
@@ -15,7 +18,71 @@ import numpy as np
 from scipy import stats
 
 
-def compute_cohens_d_with_ci(crisis_scores, normal_scores, n_bootstrap=10000, seed=42):
+def _block_bootstrap_sample(data, block_size, n_out, rng):
+    """Draw a circular block bootstrap sample (vectorized).
+
+    Args:
+        data: 1-D array of observations.
+        block_size: Length of contiguous blocks.
+        n_out: Desired output length.
+        rng: numpy random Generator.
+
+    Returns:
+        1-D array of length n_out.
+    """
+    n = len(data)
+    n_blocks = int(np.ceil(n_out / block_size))
+    starts = rng.integers(0, n, size=n_blocks)
+    # Vectorized: build all indices at once
+    offsets = np.arange(block_size)  # (block_size,)
+    all_indices = (starts[:, None] + offsets[None, :]) % n  # (n_blocks, block_size)
+    return data[all_indices.ravel()[:n_out]]
+
+
+def _batch_block_bootstrap(data, block_size, n_out, n_bootstrap, rng):
+    """Generate all block bootstrap samples at once (fully vectorized).
+
+    Args:
+        data: 1-D array of observations.
+        block_size: Length of contiguous blocks.
+        n_out: Desired output length per sample.
+        n_bootstrap: Number of bootstrap samples.
+        rng: numpy random Generator.
+
+    Returns:
+        2-D array of shape (n_bootstrap, n_out).
+    """
+    n = len(data)
+    n_blocks = int(np.ceil(n_out / block_size))
+    # All start positions: (n_bootstrap, n_blocks)
+    starts = rng.integers(0, n, size=(n_bootstrap, n_blocks))
+    offsets = np.arange(block_size)  # (block_size,)
+    # All indices: (n_bootstrap, n_blocks, block_size)
+    all_indices = (starts[:, :, None] + offsets[None, None, :]) % n
+    # Reshape to (n_bootstrap, n_blocks * block_size) and truncate
+    flat_indices = all_indices.reshape(n_bootstrap, -1)[:, :n_out]
+    return data[flat_indices]
+
+
+def _optimal_block_size(n):
+    """Automatic block size via Politis & White (2004) rule of thumb.
+
+    Uses n^(1/3) as the default, which is the theoretical optimal rate
+    for the circular block bootstrap under weak dependence.
+
+    Args:
+        n: Sample size.
+
+    Returns:
+        Block size (int, >= 1).
+    """
+    return max(1, int(np.round(n ** (1.0 / 3.0))))
+
+
+def compute_cohens_d_with_ci(
+    crisis_scores, normal_scores, n_bootstrap=10000, seed=42, method="block",
+    block_size=None,
+):
     """Compute Cohen's d with bootstrap confidence interval.
 
     Args:
@@ -23,6 +90,11 @@ def compute_cohens_d_with_ci(crisis_scores, normal_scores, n_bootstrap=10000, se
         normal_scores: 1-D array of scores during normal periods.
         n_bootstrap: Number of bootstrap resamples.
         seed: Random seed.
+        method: Bootstrap method — 'iid' for standard iid resampling,
+            'block' for circular block bootstrap (Politis & White 2004).
+            Default 'block' to account for serial correlation in time series.
+        block_size: Block size for block bootstrap. If None, uses
+            automatic rule: max(1, round(n^(1/3))).
 
     Returns:
         (d, ci_lo, ci_hi): Point estimate and 95% CI bounds.
@@ -41,10 +113,20 @@ def compute_cohens_d_with_ci(crisis_scores, normal_scores, n_bootstrap=10000, se
 
     rng = np.random.default_rng(seed)
     boot_ds = np.empty(n_bootstrap)
-    for i in range(n_bootstrap):
-        c_boot = rng.choice(crisis_scores, size=n_c, replace=True)
-        n_boot = rng.choice(normal_scores, size=n_n, replace=True)
-        boot_ds[i] = _cohens_d(c_boot, n_boot)
+
+    if method == "block":
+        bs_c = block_size or _optimal_block_size(n_c)
+        bs_n = block_size or _optimal_block_size(n_n)
+        # Batch block bootstrap: generate all samples at once
+        c_samples = _batch_block_bootstrap(crisis_scores, bs_c, n_c, n_bootstrap, rng)
+        n_samples = _batch_block_bootstrap(normal_scores, bs_n, n_n, n_bootstrap, rng)
+        for i in range(n_bootstrap):
+            boot_ds[i] = _cohens_d(c_samples[i], n_samples[i])
+    else:
+        for i in range(n_bootstrap):
+            c_boot = rng.choice(crisis_scores, size=n_c, replace=True)
+            n_boot = rng.choice(normal_scores, size=n_n, replace=True)
+            boot_ds[i] = _cohens_d(c_boot, n_boot)
 
     ci_lo, ci_hi = np.percentile(boot_ds, [2.5, 97.5])
     return d, ci_lo, ci_hi
@@ -59,6 +141,91 @@ def _cohens_d(group1, group2):
     if pooled_std < 1e-12:
         return 0.0
     return abs(np.mean(group1) - np.mean(group2)) / pooled_std
+
+
+def cliffs_delta(group1, group2):
+    """Compute Cliff's delta — a non-parametric effect size.
+
+    Cliff's delta measures the degree of overlap between two distributions
+    without assuming normality. Unlike Cohen's d, it is robust to outliers
+    and skewed distributions.
+
+    Args:
+        group1: 1-D array (e.g., crisis scores).
+        group2: 1-D array (e.g., normal scores).
+
+    Returns:
+        (delta, label): delta in [-1, 1] and qualitative label per
+        Romano et al. (2006) thresholds:
+            |d| < 0.147 → 'negligible'
+            |d| < 0.330 → 'small'
+            |d| < 0.474 → 'medium'
+            |d| >= 0.474 → 'large'
+    """
+    group1 = np.asarray(group1, dtype=float)
+    group2 = np.asarray(group2, dtype=float)
+    group1 = group1[~np.isnan(group1)]
+    group2 = group2[~np.isnan(group2)]
+
+    n1, n2 = len(group1), len(group2)
+    if n1 == 0 or n2 == 0:
+        return np.nan, "negligible"
+
+    # Count dominance pairs
+    more = 0
+    less = 0
+    for x in group1:
+        more += np.sum(x > group2)
+        less += np.sum(x < group2)
+
+    delta = (more - less) / (n1 * n2)
+
+    abs_d = abs(delta)
+    if abs_d < 0.147:
+        label = "negligible"
+    elif abs_d < 0.330:
+        label = "small"
+    elif abs_d < 0.474:
+        label = "medium"
+    else:
+        label = "large"
+
+    return delta, label
+
+
+def compute_effect_sizes(
+    crisis_scores, normal_scores, n_bootstrap=10000, seed=42, method="block",
+    block_size=None,
+):
+    """Compute both Cohen's d (with CI) and Cliff's delta.
+
+    Convenience wrapper returning both parametric and non-parametric
+    effect sizes in a single call.
+
+    Args:
+        crisis_scores: 1-D array of scores during crisis.
+        normal_scores: 1-D array of scores during normal periods.
+        n_bootstrap: Number of bootstrap resamples.
+        seed: Random seed.
+        method: Bootstrap method ('iid' or 'block').
+        block_size: Block size for block bootstrap (None = automatic).
+
+    Returns:
+        dict with keys: d, ci_lo, ci_hi, cliff_d, cliff_label.
+    """
+    d, ci_lo, ci_hi = compute_cohens_d_with_ci(
+        crisis_scores, normal_scores,
+        n_bootstrap=n_bootstrap, seed=seed, method=method,
+        block_size=block_size,
+    )
+    cliff_d, cliff_label = cliffs_delta(crisis_scores, normal_scores)
+    return {
+        "d": d,
+        "ci_lo": ci_lo,
+        "ci_hi": ci_hi,
+        "cliff_d": cliff_d,
+        "cliff_label": cliff_label,
+    }
 
 
 def welch_t_test(group1, group2):
@@ -100,6 +267,41 @@ def holm_bonferroni_correction(p_values):
         adjusted[idx] = max(adjusted[idx], adjusted[idx_prev])
 
     rejected = adjusted < 0.05
+    return adjusted, rejected
+
+
+def bh_fdr_correction(p_values, alpha=0.05):
+    """Benjamini-Hochberg FDR correction for multiple comparisons.
+
+    Controls the False Discovery Rate at level alpha. Less conservative
+    than Holm-Bonferroni (which controls FWER), appropriate when testing
+    many hypotheses (e.g., 36 methods x 17 crises = 612 tests).
+
+    Args:
+        p_values: List or array of p-values.
+        alpha: Target FDR level (default 0.05).
+
+    Returns:
+        adjusted_p: Array of BH-adjusted p-values.
+        rejected: Boolean array indicating which hypotheses are rejected.
+    """
+    p_values = np.asarray(p_values, dtype=float)
+    m = len(p_values)
+    order = np.argsort(p_values)
+    adjusted = np.empty(m)
+
+    for rank_idx, orig_idx in enumerate(order):
+        rank = rank_idx + 1  # 1-based rank
+        adjusted[orig_idx] = p_values[orig_idx] * m / rank
+
+    # Enforce monotonicity (working backwards from largest to smallest)
+    for i in range(m - 2, -1, -1):
+        idx = order[i]
+        idx_next = order[i + 1]
+        adjusted[idx] = min(adjusted[idx], adjusted[idx_next])
+
+    adjusted = np.minimum(adjusted, 1.0)
+    rejected = adjusted < alpha
     return adjusted, rejected
 
 
@@ -173,14 +375,26 @@ def bayes_factor(group1, group2, r=0.707):
 
 
 def friedman_test(d_matrix):
-    """Friedman rank test for comparing multiple methods.
+    """Friedman rank test with Iman-Davenport F-correction.
+
+    The chi-squared approximation used by the standard Friedman test can
+    be poor when the number of groups (crises) is small. The Iman-Davenport
+    correction transforms chi_sq into an F-statistic with better small-sample
+    properties.
 
     Args:
         d_matrix: 2-D array (n_crises, n_methods) of Cohen's d values.
 
     Returns:
-        (chi_sq, p_value, mean_ranks): Test statistic, p-value, and
-        mean rank per method (lower rank = higher d).
+        dict with keys:
+            chi_sq: Friedman chi-squared statistic.
+            chi_p: p-value from chi-squared approximation.
+            f_stat: Iman-Davenport F-statistic.
+            f_p: p-value from F distribution (primary, more accurate).
+            mean_ranks: Mean rank per method (rank 1 = highest d).
+
+    For backward compatibility, can also be unpacked as (chi_sq, p_value, mean_ranks)
+    where p_value is the F-corrected p-value.
     """
     d_matrix = np.asarray(d_matrix, dtype=float)
 
@@ -188,18 +402,35 @@ def friedman_test(d_matrix):
     valid_rows = ~np.any(np.isnan(d_matrix), axis=1)
     d_clean = d_matrix[valid_rows]
 
+    nan_ranks = np.full(d_matrix.shape[1], np.nan)
     if d_clean.shape[0] < 3:
-        return np.nan, np.nan, np.full(d_matrix.shape[1], np.nan)
+        return np.nan, np.nan, nan_ranks
 
-    chi_sq, p_value = stats.friedmanchisquare(*[d_clean[:, j] for j in range(d_clean.shape[1])])
+    n = d_clean.shape[0]  # number of blocks (crises)
+    k = d_clean.shape[1]  # number of treatments (methods)
+
+    chi_sq, chi_p = stats.friedmanchisquare(
+        *[d_clean[:, j] for j in range(k)]
+    )
+
+    # Iman-Davenport F-correction
+    denom = n * (k - 1) - chi_sq
+    if abs(denom) < 1e-12:
+        f_stat = np.inf
+        f_p = 0.0
+    else:
+        f_stat = ((n - 1) * chi_sq) / denom
+        df1 = k - 1
+        df2 = (k - 1) * (n - 1)
+        f_p = 1 - stats.f.cdf(f_stat, df1, df2)
 
     # Compute mean ranks (rank 1 = highest d)
     ranks = np.zeros_like(d_clean)
-    for i in range(d_clean.shape[0]):
-        ranks[i] = stats.rankdata(-d_clean[i])  # negative: higher d gets rank 1
+    for i in range(n):
+        ranks[i] = stats.rankdata(-d_clean[i])
 
     mean_ranks = ranks.mean(axis=0)
-    return chi_sq, p_value, mean_ranks
+    return chi_sq, f_p, mean_ranks
 
 
 def compute_detection_metrics(scores, threshold, crisis_mask, lead_time_days=None):

@@ -50,20 +50,15 @@ logger = logging.getLogger(__name__)
 OUTPUT_DIR = Path(__file__).parent / "outputs" / "theorem_validation"
 QUICK_CRISES = ["2008_gfc", "2020_covid", "2022_rates", "2018_volmageddon"]
 
-# publication-quality figure defaults
-plt.rcParams.update({
-    "font.family": "serif",
-    "font.size": 10,
-    "axes.spines.top": False,
-    "axes.spines.right": False,
-    "figure.dpi": 150,
-    "savefig.dpi": 300,
-    "savefig.bbox": "tight",
-})
+from experiments.plot_style import (
+    apply_style, NAVY, TEAL, BURGUNDY, GOLD, INDIGO, SLATE,
+    CMAP_SEQUENTIAL, CMAP_DIVERGING,
+)
+apply_style()
 
-CRISIS_COLOR = "#d62728"
-NORMAL_COLOR = "#1f77b4"
-THEORY_COLOR = "#ff7f0e"
+CRISIS_COLOR = BURGUNDY
+NORMAL_COLOR = NAVY
+THEORY_COLOR = GOLD
 
 
 # ── helpers ──────────────────────────────────────────────────────────

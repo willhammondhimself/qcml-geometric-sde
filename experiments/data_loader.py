@@ -13,6 +13,7 @@ Usage:
     from experiments.data_loader import fetch_data, create_feature_matrix, ALL_CRISES
 """
 
+import hashlib
 import os
 import logging
 from pathlib import Path
@@ -23,6 +24,7 @@ import pandas as pd
 logger = logging.getLogger(__name__)
 
 ROOT = Path(__file__).resolve().parent.parent
+DATA_CACHE_DIR = ROOT / 'data'
 
 
 # =============================================================================
@@ -178,6 +180,57 @@ NARRATIVE_CRISES = {
 
 
 # =============================================================================
+# Data Caching (DVC-compatible)
+# =============================================================================
+
+def _cache_key(symbols, start_date, end_date, source='yfinance'):
+    """Generate a deterministic cache key for a data fetch request."""
+    key_str = f"{sorted(symbols)}_{start_date}_{end_date}_{source}"
+    return hashlib.sha256(key_str.encode()).hexdigest()[:16]
+
+
+def cache_data(df, symbols, start_date, end_date, source='yfinance'):
+    """Save fetched data as a parquet file in data/ for DVC tracking.
+
+    Args:
+        df: DataFrame with MultiIndex (symbol, timestamp).
+        symbols: List of ticker symbols.
+        start_date: Start date string.
+        end_date: End date string.
+        source: Data source name.
+
+    Returns:
+        Path to the saved parquet file.
+    """
+    DATA_CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    key = _cache_key(symbols, start_date, end_date, source)
+    path = DATA_CACHE_DIR / f'market_data_{key}.parquet'
+    df.to_parquet(path)
+    logger.info(f"Cached data to {path}")
+    return path
+
+
+def load_cached_data(symbols, start_date, end_date, source='yfinance'):
+    """Load cached data if available.
+
+    Args:
+        symbols: List of ticker symbols.
+        start_date: Start date string.
+        end_date: End date string.
+        source: Data source name.
+
+    Returns:
+        DataFrame if cache hit, None if cache miss.
+    """
+    key = _cache_key(symbols, start_date, end_date, source)
+    path = DATA_CACHE_DIR / f'market_data_{key}.parquet'
+    if path.exists():
+        logger.info(f"Cache hit: {path}")
+        return pd.read_parquet(path)
+    return None
+
+
+# =============================================================================
 # Data Fetching
 # =============================================================================
 
@@ -284,7 +337,7 @@ def fetch_yfinance_data(symbols, start_date, end_date):
     return df[['open', 'high', 'low', 'close', 'volume']]
 
 
-def fetch_data(symbols, start_date, end_date, source='yfinance'):
+def fetch_data(symbols, start_date, end_date, source='yfinance', use_cache=True):
     """Unified data fetcher. Uses yfinance by default (free, reproducible).
 
     Args:
@@ -295,35 +348,46 @@ def fetch_data(symbols, start_date, end_date, source='yfinance'):
             'auto' tries WRDS if configured, otherwise uses yfinance.
             WARNING: WRDS returns split-adjusted but NOT dividend-adjusted
             prices, which differ from yfinance's fully-adjusted prices.
+        use_cache: If True, check data/ for cached parquet files before fetching.
+            Cached files are DVC-tracked for reproducibility.
 
     Returns:
         DataFrame with MultiIndex (symbol, timestamp) and columns
         [open, high, low, close, volume].
     """
+    if use_cache:
+        cached = load_cached_data(symbols, start_date, end_date, source)
+        if cached is not None:
+            return cached
+
     if source == 'yfinance':
         logger.info("Data source: yfinance")
-        return fetch_yfinance_data(symbols, start_date, end_date)
-
-    if source == 'polygon':
+        df = fetch_yfinance_data(symbols, start_date, end_date)
+    elif source == 'polygon':
         logger.info("Data source: polygon")
-        return fetch_polygon_data(symbols, start_date, end_date)
+        df = fetch_polygon_data(symbols, start_date, end_date)
+    else:
+        # source == 'auto' or 'wrds': try WRDS first, fall back to yfinance
+        try:
+            from experiments.wrds_data_loader import (
+                fetch_wrds_equities, wrds_prices_to_polygon_format,
+            )
+            from dotenv import load_dotenv
+            load_dotenv(ROOT / '.env')
+            if not os.environ.get('WRDS_USERNAME'):
+                raise RuntimeError("WRDS_USERNAME not set")
+            prices_wide = fetch_wrds_equities(symbols, start_date, end_date)
+            logger.info("Data source: wrds")
+            df = wrds_prices_to_polygon_format(prices_wide)
+        except Exception as e:
+            logger.warning(f"WRDS fetch failed ({e}), falling back to yfinance")
+            logger.info("Data source: yfinance (fallback from auto)")
+            df = fetch_yfinance_data(symbols, start_date, end_date)
 
-    # source == 'auto' or 'wrds': try WRDS first, fall back to yfinance
-    try:
-        from experiments.wrds_data_loader import (
-            fetch_wrds_equities, wrds_prices_to_polygon_format,
-        )
-        from dotenv import load_dotenv
-        load_dotenv(ROOT / '.env')
-        if not os.environ.get('WRDS_USERNAME'):
-            raise RuntimeError("WRDS_USERNAME not set")
-        prices_wide = fetch_wrds_equities(symbols, start_date, end_date)
-        logger.info("Data source: wrds")
-        return wrds_prices_to_polygon_format(prices_wide)
-    except Exception as e:
-        logger.warning(f"WRDS fetch failed ({e}), falling back to yfinance")
-        logger.info("Data source: yfinance (fallback from auto)")
-        return fetch_yfinance_data(symbols, start_date, end_date)
+    if use_cache:
+        cache_data(df, symbols, start_date, end_date, source)
+
+    return df
 
 
 def create_feature_matrix(prices_df):

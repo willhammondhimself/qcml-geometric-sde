@@ -1,7 +1,8 @@
 .PHONY: install install-dev test test-unit test-integration lint format \
-       experiments paper clean help \
+       experiments paper clean help pipeline-diagram \
        rebuild rebuild-force paper-full review verify verify-citations \
-       pre-submit snapshot diff registry-summary validate clear-cache
+       pre-submit snapshot diff registry-summary validate clear-cache \
+       pipeline pipeline-quick pipeline-full canonical dashboard
 
 PYTHON ?= python
 PIP ?= pip
@@ -77,6 +78,13 @@ validate:  ## Run post-experiment validation checks
 registry-summary:  ## Show experiment registry summary
 	$(PYTHON) -m experiments.registry list
 
+# ── Figures ──────────────────────────────────────────────────────
+
+pipeline-diagram:  ## Compile TikZ pipeline diagram to PDF + PNG
+	cd $(PAPER_DIR)/figures && pdflatex -interaction=nonstopmode pipeline_diagram.tex \
+		&& pdftoppm -png -r 300 -singlefile pipeline_diagram.pdf pipeline_diagram \
+		&& rm -f pipeline_diagram.aux pipeline_diagram.log
+
 # ── Paper Pipeline ───────────────────────────────────────────────
 
 paper:  ## Compile LaTeX paper
@@ -90,8 +98,8 @@ paper-full:  ## Generate tables from latest JSON + compile paper
 
 # ── Review Pipeline ──────────────────────────────────────────────
 
-review:  ## Deploy multi-agent paper review
-	bash $(PAPER_DIR)/review/run_review.sh
+review:  ## Deploy multi-agent paper review (ARGS=--quick for 2 reviewers)
+	bash $(PAPER_DIR)/review/run_review.sh $(ARGS)
 
 # ── Verification ─────────────────────────────────────────────────
 
@@ -119,19 +127,28 @@ diff:  ## Generate latexdiff between last two snapshots
 	cd $(PAPER_DIR) && pdflatex -interaction=nonstopmode diff.tex && \
 	echo "Diff PDF: $(PAPER_DIR)/diff.pdf"
 
+# ── Pipeline ─────────────────────────────────────────────────────
+
+pipeline:  ## Full experiment pipeline (run → register → validate → compile → verify)
+	$(PYTHON) experiments/pipeline.py --mode default
+
+pipeline-quick:  ## Quick pipeline (subset of methods/crises)
+	$(PYTHON) experiments/pipeline.py --mode quick
+
+pipeline-full:  ## Full pipeline with maximum bootstrap
+	$(PYTHON) experiments/pipeline.py --mode full
+
+canonical:  ## List canonical JSON references
+	$(PYTHON) -m experiments.registry canonical list
+
+dashboard:  ## Show research status dashboard
+	@echo "=== Latest Experiments ===" && $(PYTHON) -m experiments.registry list
+	@echo "" && echo "=== Canonical JSONs ===" && $(PYTHON) -m experiments.registry canonical list
+
 # ── Pre-Submission ───────────────────────────────────────────────
 
-pre-submit:  ## Full pre-submission gate check
-	@echo "=== Gate 1: Tests ===" && $(PYTHON) -m pytest tests/ -v --ignore=tests/test_crisis_validation.py -x
-	@echo "=== Gate 2: Lint ===" && $(PYTHON) -m ruff check qcml_geometry/ experiments/ tests/
-	@echo "=== Gate 3: Paper Numbers ===" && $(PYTHON) $(SCRIPTS_DIR)/verify_paper_numbers.py
-	@echo "=== Gate 4: Paper Compile ===" && cd $(PAPER_DIR) && \
-		pdflatex -interaction=nonstopmode qcml_geometric_sde.tex && \
-		bibtex qcml_geometric_sde && \
-		pdflatex -interaction=nonstopmode qcml_geometric_sde.tex && \
-		pdflatex -interaction=nonstopmode qcml_geometric_sde.tex
-	@echo "=== Gate 5: Citation Verification ===" && $(PYTHON) $(PAPER_DIR)/verify_citations.py --dry-run
-	@echo "=== All gates passed ==="
+pre-submit:  ## Full pre-submission gate check (8 gates)
+	$(PYTHON) $(SCRIPTS_DIR)/pre_submit_gate.py
 
 # ── Cleanup ───────────────────────────────────────────────────────
 

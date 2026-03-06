@@ -30,7 +30,6 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from matplotlib.patches import Rectangle
-from matplotlib.colors import LinearSegmentedColormap
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
@@ -62,26 +61,20 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 warnings.filterwarnings('ignore')
 
-# Publication-quality settings
-plt.rcParams.update({
-    'font.family': 'serif',
-    'font.size': 10,
-    'axes.linewidth': 0.8,
-    'axes.spines.top': False,
-    'axes.spines.right': False,
-    'figure.dpi': 300,
-    'savefig.dpi': 300,
-    'savefig.bbox': 'tight',
-})
+from experiments.plot_style import (
+    apply_style, NAVY, TEAL, BURGUNDY, GOLD, INDIGO, SLATE,
+    CMAP_SEQUENTIAL, CMAP_DIVERGING, save_figure,
+)
+apply_style()
 
 COLORS = {
-    'berry': '#1f77b4',
-    'qfi': '#ff7f0e',
-    'mlf': '#2ca02c',
-    'rf': '#d62728',
-    'ensemble': '#9467bd',
-    'vol': '#8c564b',
-    'crisis': '#ffcccc',
+    'berry': BURGUNDY,
+    'qfi': NAVY,
+    'mlf': TEAL,
+    'rf': SLATE,
+    'ensemble': INDIGO,
+    'vol': SLATE,
+    'crisis': GOLD,
     'normal': '#f0f0f0',
 }
 
@@ -277,9 +270,7 @@ def generate_cross_asset_heatmap(results_path=None):
 
     fig, ax = plt.subplots(figsize=(8, 5))
 
-    # Custom colormap: white → blue → dark blue
-    cmap = LinearSegmentedColormap.from_list('custom',
-        ['#ffffff', '#c6dbef', '#6baed6', '#2171b5', '#08306b'])
+    cmap = CMAP_SEQUENTIAL
 
     im = ax.imshow(values, cmap=cmap, aspect='auto', vmin=0, vmax=1.5)
 
@@ -326,8 +317,8 @@ def generate_crisis_timeline():
     fig, ax = plt.subplots(figsize=(14, 4))
 
     y_pos = 0
-    colors_cycle = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd',
-                    '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
+    from experiments.plot_style import COLOR_CYCLE
+    colors_cycle = COLOR_CYCLE
 
     for i, (ck, ci) in enumerate(crises):
         cs = pd.Timestamp(ci['start'])
@@ -420,9 +411,9 @@ def generate_walkforward_improvement(results_path=None):
     fig, ax = plt.subplots(figsize=(10, 5))
 
     bars1 = ax.bar(x - width/2, before_rates, width, label='Before Fix',
-                   color='#c0c0c0', edgecolor='black', linewidth=0.5)
+                   color=SLATE, edgecolor='white', linewidth=0.5, alpha=0.5)
     bars2 = ax.bar(x + width/2, after_rates, width, label='After Fix',
-                   color=COLORS['berry'], edgecolor='black', linewidth=0.5)
+                   color=NAVY, edgecolor='white', linewidth=0.5)
 
     ax.set_ylabel('Detection Rate')
     ax.set_title('Walk-Forward Detection: Before vs After Fix', fontsize=12)
@@ -478,16 +469,8 @@ def generate_comparison_barchart(results_path=None):
     values = [d for _, d in sorted_methods]
 
     # Color coding
-    qcml_methods = {'Berry Phase Rate', 'QFI Determinant', 'Multi-Lag Fidelity',
-                    'QCML Chern', 'Geometric Consensus'}
-    bar_colors = []
-    for m in names:
-        if m in qcml_methods:
-            bar_colors.append('#F5A623')  # Gold for QCML
-        elif m == 'Random Forest':
-            bar_colors.append('#FF6B6B')  # Red for RF
-        else:
-            bar_colors.append('#888888')  # Gray for baselines
+    from experiments.plot_style import METHOD_COLORS
+    bar_colors = [METHOD_COLORS.get(m, SLATE) for m in names]
 
     fig, ax = plt.subplots(figsize=(14.5, 3.0))
 
@@ -508,9 +491,9 @@ def generate_comparison_barchart(results_path=None):
     rf_rank = mean_ranks.get('Random Forest', 0)
     ax.text(max(values) * 0.55, len(names) - 0.5,
             f'MLF ties RF on Friedman rank (both {mlf_rank:.2f})',
-            fontsize=8, color='#F5A623', fontweight='bold',
+            fontsize=8, color=GOLD, fontweight='bold',
             bbox=dict(boxstyle='round,pad=0.3', facecolor='#FFF8E1',
-                     edgecolor='#F5A623', alpha=0.9))
+                     edgecolor=GOLD, alpha=0.9))
 
     plt.tight_layout()
 
@@ -566,10 +549,7 @@ def generate_qcml_wins_heatmap(results_path=None):
 
     fig, ax = plt.subplots(figsize=(10, 6))
 
-    # Custom diverging colormap
-    from matplotlib.colors import TwoSlopeNorm
-    cmap_diverge = LinearSegmentedColormap.from_list(
-        'wins', ['#FF6B6B', '#ffffff', '#4CAF50'])
+    cmap_diverge = CMAP_DIVERGING
 
     # Difference from RF for geometric methods
     diff_matrix = d_matrix.copy()
@@ -577,7 +557,7 @@ def generate_qcml_wins_heatmap(results_path=None):
         if methods[j] != 'Random Forest':
             diff_matrix[:, j] = d_matrix[:, j] - rf_vals
 
-    im = ax.imshow(d_matrix, cmap='RdYlGn', aspect='auto', vmin=0, vmax=2.0)
+    im = ax.imshow(d_matrix, cmap=CMAP_SEQUENTIAL, aspect='auto', vmin=0, vmax=2.0)
 
     # Labels
     crisis_labels = [ALL_CRISES[ck]['label'] for ck in crisis_keys]

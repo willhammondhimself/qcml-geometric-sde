@@ -94,32 +94,21 @@ ALL_CRISES = {
     '2024_carry': {'start': '2024-07-15', 'end': '2024-08-31', 'label': 'Carry Unwind 2024'},
 }
 
-# Publication-quality style
-STYLE = {
-    'font.family': 'serif',
-    'font.size': 10,
-    'axes.titlesize': 11,
-    'axes.labelsize': 10,
-    'xtick.labelsize': 8,
-    'ytick.labelsize': 8,
-    'legend.fontsize': 8,
-    'figure.dpi': 150,
-    'axes.spines.top': False,
-    'axes.spines.right': False,
-    'axes.grid': True,
-    'grid.alpha': 0.3,
-    'grid.linewidth': 0.5,
-}
+from experiments.plot_style import (
+    apply_style, NAVY, TEAL, BURGUNDY, GOLD, INDIGO, SLATE,
+    CMAP_SEQUENTIAL, CMAP_DIVERGING, save_figure,
+)
+apply_style()
 
 COLORS = {
-    'berry': '#e74c3c',
-    'qfi': '#3498db',
-    'mlf': '#2ecc71',
-    'spectral_gap': '#9b59b6',
-    'energy': '#f39c12',
-    'price': '#2c3e50',
-    'returns': '#7f8c8d',
-    'crisis': '#e74c3c',
+    'berry': BURGUNDY,
+    'qfi': NAVY,
+    'mlf': TEAL,
+    'spectral_gap': TEAL,
+    'energy': GOLD,
+    'price': NAVY,
+    'returns': SLATE,
+    'crisis': BURGUNDY,
 }
 
 
@@ -229,7 +218,7 @@ def compute_all_scores(X, dates):
 
 def generate_narrative_figure(crisis_key, crisis_info, scores_dict, prices_df, output_dir):
     """Generate an 8-panel crisis narrative figure."""
-    plt.rcParams.update(STYLE)
+    apply_style()
 
     fig, axes = plt.subplots(4, 2, figsize=(14, 12))
     fig.suptitle(f'QCML Geometric Crisis Anatomy: {crisis_info["label"]}',
@@ -425,7 +414,7 @@ def compute_crisis_effect_sizes(X, dates, crisis_dict):
 
 def generate_effect_sizes_figure(d_values_df, output_dir):
     """Generate violin plot of Cohen's d distributions."""
-    plt.rcParams.update(STYLE)
+    apply_style()
 
     fig, ax = plt.subplots(figsize=(10, 5))
 
@@ -476,7 +465,7 @@ def generate_effect_sizes_figure(d_values_df, output_dir):
 
 def generate_bootstrap_ranks_figure(d_values_df, output_dir, n_bootstrap=10000):
     """Generate bootstrap ranking distribution figure."""
-    plt.rcParams.update(STYLE)
+    apply_style()
 
     methods = d_values_df.columns.tolist()
     n_crises = len(d_values_df)

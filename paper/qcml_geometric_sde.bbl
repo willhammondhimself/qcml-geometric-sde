@@ -1,4 +1,4 @@
-\begin{thebibliography}{49}
+\begin{thebibliography}{52}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -35,6 +35,7 @@ J.~Bai and P.~Perron.
 \newblock Estimating and testing linear models with multiple structural
   changes.
 \newblock \emph{Econometrica}, 66\penalty0 (1):\penalty0 47--78, 1998.
+\newblock \doi{10.2307/2998540}.
 
 \bibitem[Bates and Granger(1969)]{bates_granger1969}
 J.~M. Bates and C.~W.~J. Granger.
@@ -166,6 +167,12 @@ C.~W. Helstrom.
 \newblock \emph{Quantum Detection and Estimation Theory}.
 \newblock Academic Press, 1976.
 
+\bibitem[Hoerl and Kennard(1970)]{hoerl_kennard1970}
+A.~E. Hoerl and R.~W. Kennard.
+\newblock Ridge regression: Biased estimation for nonorthogonal problems.
+\newblock \emph{Technometrics}, 12\penalty0 (1):\penalty0 55--67, 1970.
+\newblock \doi{10.1080/00401706.1970.10488634}.
+
 \bibitem[Horvath et~al.(2024)Horvath, Issa, and Muguruza]{horvath2024}
 B.~Horvath, Z.~Issa, and A.~Muguruza.
 \newblock Clustering market regimes using the {W}asserstein distance.
@@ -255,11 +262,18 @@ V.~Plerou, P.~Gopikrishnan, B.~Rosenow, L.~A.~N. Amaral, and H.~E. Stanley.
 \newblock \emph{Physical Review E}, 65:\penalty0 066126, 2002.
 \newblock \doi{10.1103/PhysRevE.65.066126}.
 
+\bibitem[Politis and White(2004)]{politis2004}
+Dimitris~N. Politis and Halbert White.
+\newblock Automatic block-length selection for the dependent bootstrap.
+\newblock \emph{Econometric Reviews}, 23\penalty0 (1):\penalty0 53--70, 2004.
+\newblock \doi{10.1081/ETC-120028836}.
+
 \bibitem[Provost and Vallee(1980)]{provost_vallee1980}
 J.~P. Provost and G.~Vallee.
 \newblock Riemannian structure on manifolds of quantum states.
 \newblock \emph{Communications in Mathematical Physics}, 76\penalty0
   (3):\penalty0 289--301, 1980.
+\newblock \doi{10.1007/BF02193559}.
 
 \bibitem[Rosaler et~al.(2025)Rosaler, Candelori, Kirakosyan, Musaelian, Samson,
   Wells, Mehta, and Pasquali]{rosaler2025}
@@ -335,5 +349,10 @@ G.~Tóth and I.~Apellaniz.
 \newblock \emph{Journal of Physics A: Mathematical and Theoretical},
   47\penalty0 (42):\penalty0 424006, 2014.
 \newblock \doi{10.1088/1751-8113/47/42/424006}.
+
+\bibitem[Wald(1947)]{wald1947}
+A.~Wald.
+\newblock \emph{Sequential Analysis}.
+\newblock John Wiley \& Sons, 1947.
 
 \end{thebibliography}

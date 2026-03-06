@@ -29,29 +29,17 @@ from matplotlib.colors import Normalize
 
 ROOT = Path(__file__).resolve().parent.parent
 
-# Publication-quality style (from generate_paper_figures.py)
-STYLE = {
-    'font.family': 'serif',
-    'font.size': 10,
-    'axes.titlesize': 11,
-    'axes.labelsize': 10,
-    'xtick.labelsize': 8,
-    'ytick.labelsize': 8,
-    'legend.fontsize': 8,
-    'figure.dpi': 150,
-    'axes.spines.top': False,
-    'axes.spines.right': False,
-    'axes.grid': True,
-    'grid.alpha': 0.3,
-    'grid.linewidth': 0.5,
-}
+from experiments.plot_style import (
+    apply_style, NAVY, TEAL, BURGUNDY, GOLD, INDIGO, SLATE,
+    CMAP_SEQUENTIAL,
+)
 
 COLORS = {
-    'berry': '#e74c3c',
-    'default_marker': '#e74c3c',
-    'line': '#2c3e50',
-    'fill': '#3498db',
-    'threshold': '#7f8c8d',
+    'berry': BURGUNDY,
+    'default_marker': BURGUNDY,
+    'line': NAVY,
+    'fill': TEAL,
+    'threshold': SLATE,
 }
 
 PANEL_LABELS = ['(a)', '(b)', '(c)', '(d)', '(e)', '(f)']
@@ -98,7 +86,7 @@ def _bar_panel(ax, param_name, oat_data, defaults, panel_label):
     bars = ax.bar(labels, medians, color=bar_colors, alpha=0.7, edgecolor='white',
                   linewidth=0.5)
     ax.errorbar(labels, medians, yerr=[yerr_lo, yerr_hi], fmt='none',
-                ecolor='#2c3e50', capsize=3, linewidth=1.0)
+                ecolor=NAVY, capsize=3, linewidth=1.0)
 
     # d=0.5 threshold
     ax.axhline(0.5, color=COLORS['threshold'], linestyle=':', alpha=0.5, linewidth=0.8)
@@ -129,7 +117,7 @@ def _heatmap_panel(ax, grid_data, defaults, panel_label):
         if med is not None:
             matrix[i, j] = med
 
-    im = ax.imshow(matrix, cmap='viridis', aspect='auto', origin='lower',
+    im = ax.imshow(matrix, cmap=CMAP_SEQUENTIAL, aspect='auto', origin='lower',
                    norm=Normalize(vmin=max(0, np.nanmin(matrix) - 0.05),
                                   vmax=np.nanmax(matrix) + 0.05))
 
@@ -164,7 +152,7 @@ def _heatmap_panel(ax, grid_data, defaults, panel_label):
 
 def generate_figure(data, output_dir=None):
     """Generate the 2x3 sensitivity panel figure."""
-    plt.rcParams.update(STYLE)
+    apply_style()
 
     if output_dir is None:
         output_dir = ROOT / 'experiments' / 'outputs' / 'regime_detection'

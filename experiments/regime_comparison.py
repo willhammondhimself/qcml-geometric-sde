@@ -72,6 +72,10 @@ from experiments.baselines import (
     MahalanobisDetector,
     StructuralBreakDetector,
     TransferEntropyDetector,
+    KernelPCABaselineDetector,
+    LSTMAutoencoderDetector,
+    CrossSectionalDispersionDetector,
+    VRPDetector,
 )
 from experiments.additional_detectors import (
     QCMLChernDetector,
@@ -79,8 +83,10 @@ from experiments.additional_detectors import (
 )
 from experiments.evaluation import (
     compute_cohens_d_with_ci,
+    cliffs_delta,
     welch_t_test,
     holm_bonferroni_correction,
+    bh_fdr_correction,
     friedman_test,
 )
 
@@ -396,6 +402,19 @@ CLASSICAL_CONFIGS = {
         'class': TransferEntropyDetector,
         'params': dict(te_window=60, n_bins=5, lag=1, min_expanding=60),
     },
+    'Kernel PCA': {
+        'class': KernelPCABaselineDetector,
+        'params': dict(n_components=8, rolling_window=20, min_expanding=60, seed=42),
+    },
+    'LSTM Autoencoder': {
+        'class': LSTMAutoencoderDetector,
+        'params': dict(seq_len=20, latent_dim=4, n_epochs=10, min_expanding=120,
+                       retrain_interval=500, seed=42),
+    },
+    'Cross-Sect Dispersion': {
+        'class': CrossSectionalDispersionDetector,
+        'params': dict(rolling_window=20, min_expanding=60),
+    },
 }
 
 
@@ -507,6 +526,7 @@ def run_comparison(
             d, ci_lo, ci_hi = compute_cohens_d_with_ci(
                 scores[crisis_mask], scores[normal_mask], n_bootstrap=n_bootstrap,
             )
+            cliff_d, cliff_label = cliffs_delta(scores[crisis_mask], scores[normal_mask])
 
             if method_name not in results:
                 results[method_name] = {}
@@ -514,6 +534,8 @@ def run_comparison(
                 'd': float(d) if not np.isnan(d) else None,
                 'ci_lo': float(ci_lo) if not np.isnan(ci_lo) else None,
                 'ci_hi': float(ci_hi) if not np.isnan(ci_hi) else None,
+                'cliff_d': float(cliff_d) if not np.isnan(cliff_d) else None,
+                'cliff_label': cliff_label,
             }
             logger.info(f"    {method_name:25s}  d = {d:.3f}" if not np.isnan(d) else
                         f"    {method_name:25s}  d = N/A")
@@ -527,6 +549,7 @@ def run_comparison(
             d, ci_lo, ci_hi = compute_cohens_d_with_ci(
                 scores[crisis_mask], scores[normal_mask], n_bootstrap=n_bootstrap,
             )
+            cliff_d, cliff_label = cliffs_delta(scores[crisis_mask], scores[normal_mask])
 
             if method_name not in results:
                 results[method_name] = {}
@@ -534,6 +557,8 @@ def run_comparison(
                 'd': float(d) if not np.isnan(d) else None,
                 'ci_lo': float(ci_lo) if not np.isnan(ci_lo) else None,
                 'ci_hi': float(ci_hi) if not np.isnan(ci_hi) else None,
+                'cliff_d': float(cliff_d) if not np.isnan(cliff_d) else None,
+                'cliff_label': cliff_label,
             }
             logger.info(f"    {method_name:25s}  d = {d:.3f}" if not np.isnan(d) else
                         f"    {method_name:25s}  d = N/A")
@@ -548,6 +573,7 @@ def run_comparison(
             d, ci_lo, ci_hi = compute_cohens_d_with_ci(
                 scores[crisis_mask], scores[normal_mask], n_bootstrap=n_bootstrap,
             )
+            cliff_d, cliff_label = cliffs_delta(scores[crisis_mask], scores[normal_mask])
 
             if method_name not in results:
                 results[method_name] = {}
@@ -555,6 +581,32 @@ def run_comparison(
                 'd': float(d) if not np.isnan(d) else None,
                 'ci_lo': float(ci_lo) if not np.isnan(ci_lo) else None,
                 'ci_hi': float(ci_hi) if not np.isnan(ci_hi) else None,
+                'cliff_d': float(cliff_d) if not np.isnan(cliff_d) else None,
+                'cliff_label': cliff_label,
+            }
+            logger.info(f"    {method_name:25s}  d = {d:.3f}" if not np.isnan(d) else
+                        f"    {method_name:25s}  d = N/A")
+
+        # --- VRP baseline (VIX - realized vol) ---
+        if vix_enriched is not None:
+            method_name = 'VRP'
+            vrp_det = VRPDetector(vol_window=20, min_expanding=60)
+            vrp_det.set_vix(vix_enriched)
+            scores = vrp_det.compute_regime_scores(X_enriched)
+
+            d, ci_lo, ci_hi = compute_cohens_d_with_ci(
+                scores[crisis_mask], scores[normal_mask], n_bootstrap=n_bootstrap,
+            )
+            cliff_d, cliff_label = cliffs_delta(scores[crisis_mask], scores[normal_mask])
+
+            if method_name not in results:
+                results[method_name] = {}
+            results[method_name][ck] = {
+                'd': float(d) if not np.isnan(d) else None,
+                'ci_lo': float(ci_lo) if not np.isnan(ci_lo) else None,
+                'ci_hi': float(ci_hi) if not np.isnan(ci_hi) else None,
+                'cliff_d': float(cliff_d) if not np.isnan(cliff_d) else None,
+                'cliff_label': cliff_label,
             }
             logger.info(f"    {method_name:25s}  d = {d:.3f}" if not np.isnan(d) else
                         f"    {method_name:25s}  d = N/A")
@@ -610,13 +662,17 @@ def run_comparison(
             d, ci_lo, ci_hi = compute_cohens_d_with_ci(
                 rf_scores[crisis_mask], rf_scores[normal_mask], n_bootstrap=n_bootstrap,
             )
+            cliff_d, cliff_label = cliffs_delta(rf_scores[crisis_mask], rf_scores[normal_mask])
         else:
             d, ci_lo, ci_hi = np.nan, np.nan, np.nan
+            cliff_d, cliff_label = np.nan, "negligible"
 
         rf_results[held_out_key] = {
             'd': float(d) if not np.isnan(d) else None,
             'ci_lo': float(ci_lo) if not np.isnan(ci_lo) else None,
             'ci_hi': float(ci_hi) if not np.isnan(ci_hi) else None,
+            'cliff_d': float(cliff_d) if not np.isnan(cliff_d) else None,
+            'cliff_label': cliff_label,
         }
         logger.info(f"    RF on {held_out_key:20s}  d = {d:.3f}" if not np.isnan(d) else
                     f"    RF on {held_out_key:20s}  d = N/A")
@@ -668,13 +724,17 @@ def run_comparison(
                 d, ci_lo, ci_hi = compute_cohens_d_with_ci(
                     scores[crisis_mask], scores[normal_mask], n_bootstrap=n_bootstrap,
                 )
+                cliff_d, cliff_label = cliffs_delta(scores[crisis_mask], scores[normal_mask])
             else:
                 d, ci_lo, ci_hi = np.nan, np.nan, np.nan
+                cliff_d, cliff_label = np.nan, "negligible"
 
             rolling_rf_results[held_out_key] = {
                 'd': float(d) if not np.isnan(d) else None,
                 'ci_lo': float(ci_lo) if not np.isnan(ci_lo) else None,
                 'ci_hi': float(ci_hi) if not np.isnan(ci_hi) else None,
+                'cliff_d': float(cliff_d) if not np.isnan(cliff_d) else None,
+                'cliff_label': cliff_label,
             }
             logger.info(f"    Rolling RF on {held_out_key:20s}  d = {d:.3f}" if not np.isnan(d) else
                         f"    Rolling RF on {held_out_key:20s}  d = N/A")
@@ -726,7 +786,8 @@ def run_comparison(
             logger.info(f"  {rank:2d}. {mname:25s}  median d = N/A")
 
     if not np.isnan(chi_sq):
-        logger.info(f"\n  Friedman chi-sq = {chi_sq:.2f}, p = {p_val:.4f}")
+        logger.info(f"\n  Friedman chi-sq = {chi_sq:.2f}, p (Iman-Davenport F) = {p_val:.2e}")
+        logger.info(f"  Bootstrap method: block (Politis & White 2004)")
     else:
         logger.info("  Friedman test: insufficient data")
 

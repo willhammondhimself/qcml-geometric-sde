@@ -22,6 +22,10 @@ Detectors:
     MahalanobisDetector          — Mahalanobis distance anomaly score
     StructuralBreakDetector      — Bai-Perron / PELT structural break proximity
     TransferEntropyDetector      — Rolling transfer entropy between assets
+    KernelPCABaselineDetector    — Kernel PCA embedding control experiment
+    LSTMAutoencoderDetector      — LSTM autoencoder reconstruction error
+    CrossSectionalDispersionDetector — Cross-sectional return dispersion z-score
+    VRPDetector                  — Volatility Risk Premium (implied - realized)
 """
 
 import logging
@@ -173,9 +177,11 @@ class BOCPDDetector(BaseRegimeDetector):
     recent changepoint.
     """
 
-    def __init__(self, hazard_rate: float = 250.0, min_expanding: int = 30):
+    def __init__(self, hazard_rate: float = 250.0, min_expanding: int = 30,
+                 max_run_length: int = 500):
         self.hazard_rate = hazard_rate
         self.min_expanding = min_expanding
+        self.max_run_length = max_run_length
 
     @property
     def name(self) -> str:
@@ -193,7 +199,8 @@ class BOCPDDetector(BaseRegimeDetector):
 
         # Online Bayesian changepoint detection
         # R[t, r] = P(run_length = r at time t)
-        R = np.zeros((T + 1, T + 1))
+        max_r = min(self.max_run_length, T)
+        R = np.zeros((T + 1, max_r + 1))
         R[0, 0] = 1.0
 
         scores = np.full(T, np.nan)
@@ -204,8 +211,9 @@ class BOCPDDetector(BaseRegimeDetector):
 
         for t in range(T):
             # Predictive probability under each run length
-            predprobs = np.zeros(t + 1)
-            for r in range(t + 1):
+            r_max = min(t + 1, max_r)
+            predprobs = np.zeros(r_max)
+            for r in range(r_max):
                 if r == 0:
                     # Prior predictive
                     predprobs[r] = _student_t_pdf(x[t], mu_0, beta_0 * (kappa_0 + 1) / (kappa_0 * alpha_0), 2.0 * alpha_0)
@@ -227,17 +235,17 @@ class BOCPDDetector(BaseRegimeDetector):
                     )
 
             # Growth probabilities
-            R[t + 1, 1:t + 2] = R[t, :t + 1] * predprobs * (1 - h)
+            R[t + 1, 1:r_max + 1] = R[t, :r_max] * predprobs * (1 - h)
             # Changepoint probability
-            R[t + 1, 0] = np.sum(R[t, :t + 1] * predprobs * h)
+            R[t + 1, 0] = np.sum(R[t, :r_max] * predprobs * h)
 
             # Normalize
-            evidence = np.sum(R[t + 1, :t + 2])
+            evidence = np.sum(R[t + 1, :r_max + 1])
             if evidence > 0:
-                R[t + 1, :t + 2] /= evidence
+                R[t + 1, :r_max + 1] /= evidence
 
             # Score = P(changepoint in recent window)
-            scores[t] = R[t + 1, 0] + np.sum(R[t + 1, 1:min(4, t + 2)])
+            scores[t] = R[t + 1, 0] + np.sum(R[t + 1, 1:min(4, r_max + 1)])
 
         return scores
 
@@ -1015,3 +1023,367 @@ class TransferEntropyDetector(BaseRegimeDetector):
                     if p_cond_xy > eps and p_cond_x > eps:
                         te += p_joint * np.log(p_cond_xy / p_cond_x)
         return max(0.0, te)
+
+
+class KernelPCABaselineDetector(BaseRegimeDetector):
+    """Kernel PCA embedding control experiment.
+
+    Tests whether QCML observables arise from generic nonlinear embedding
+    or specifically from the Hilbert space structure. Applies kernel PCA
+    (RBF kernel) to the same input features and computes spectral gap of
+    the kernel PCA covariance as a regime score.
+
+    If QCML >> kernel-PCA: Hilbert space embedding adds genuine value.
+    If similar: geometry matters, not the embedding (weaker claim).
+
+    Score = |z-score| of rolling spectral gap from kernel PCA covariance.
+    """
+
+    def __init__(
+        self,
+        n_components: int = 8,
+        gamma: Optional[float] = None,
+        rolling_window: int = 20,
+        min_expanding: int = 60,
+        seed: int = 42,
+    ):
+        self.n_components = n_components
+        self.gamma = gamma
+        self.rolling_window = rolling_window
+        self.min_expanding = min_expanding
+        self.seed = seed
+        self._kpca = None
+        self._scaler = None
+
+    @property
+    def name(self) -> str:
+        return "Kernel PCA"
+
+    def fit(self, X: np.ndarray, **kwargs) -> 'KernelPCABaselineDetector':
+        from sklearn.preprocessing import StandardScaler
+        from sklearn.decomposition import KernelPCA
+
+        self._scaler = StandardScaler()
+        self._scaler.fit(X)
+
+        X_scaled = self._scaler.transform(X)
+        n_comp = min(self.n_components, X.shape[1])
+
+        self._kpca = KernelPCA(
+            n_components=n_comp,
+            kernel='rbf',
+            gamma=self.gamma,
+            random_state=self.seed,
+        )
+        self._kpca.fit(X_scaled)
+        return self
+
+    def compute_regime_scores(self, X: np.ndarray) -> np.ndarray:
+        if self._kpca is None:
+            raise RuntimeError("Call fit() before compute_regime_scores().")
+
+        X_scaled = self._scaler.transform(X)
+        X_kpca = self._kpca.transform(X_scaled)
+        T = X_kpca.shape[0]
+
+        # Rolling spectral gap of kernel-PCA-embedded covariance
+        vals = np.full(T, np.nan)
+        for t in range(self.rolling_window, T):
+            window = X_kpca[t - self.rolling_window:t]
+            cov = np.cov(window, rowvar=False)
+            eigvals = np.sort(np.linalg.eigvalsh(cov))[::-1]
+            if len(eigvals) >= 2 and eigvals[0] > 1e-12:
+                vals[t] = eigvals[0] / (eigvals[1] + 1e-12)
+
+        # Expanding z-score
+        z_scores = np.full(T, np.nan)
+        for t in range(self.min_expanding, T):
+            past = vals[self.rolling_window:t]
+            past = past[~np.isnan(past)]
+            if len(past) < 10:
+                continue
+            mu = np.mean(past)
+            sigma = np.std(past, ddof=1)
+            if sigma > 1e-12 and not np.isnan(vals[t]):
+                z_scores[t] = abs((vals[t] - mu) / sigma)
+
+        return z_scores
+
+
+class LSTMAutoencoderDetector(BaseRegimeDetector):
+    """LSTM autoencoder reconstruction error detector.
+
+    Trains an LSTM autoencoder on rolling windows of returns.
+    Score = z-score of reconstruction error (high error = regime change).
+    Uses expanding-window training (no future data).
+
+    Args:
+        seq_len: Length of input sequences.
+        latent_dim: Dimension of the bottleneck layer.
+        n_epochs: Training epochs.
+        min_expanding: Minimum samples before scoring.
+        retrain_interval: Retrain every N observations.
+        seed: Random seed.
+    """
+
+    def __init__(
+        self,
+        seq_len: int = 20,
+        latent_dim: int = 4,
+        n_epochs: int = 20,
+        min_expanding: int = 120,
+        retrain_interval: int = 250,
+        seed: int = 42,
+    ):
+        self.seq_len = seq_len
+        self.latent_dim = latent_dim
+        self.n_epochs = n_epochs
+        self.min_expanding = min_expanding
+        self.retrain_interval = retrain_interval
+        self.seed = seed
+        self._model = None
+        self._scaler = None
+
+    @property
+    def name(self) -> str:
+        return "LSTM Autoencoder"
+
+    def _build_model(self, n_features):
+        """Build a simple LSTM autoencoder in PyTorch."""
+        import torch
+        import torch.nn as nn
+
+        class LSTMAutoencoder(nn.Module):
+            def __init__(self, n_feat, latent):
+                super().__init__()
+                self.encoder = nn.LSTM(n_feat, latent, batch_first=True)
+                self.decoder = nn.LSTM(latent, n_feat, batch_first=True)
+
+            def forward(self, x):
+                _, (h, _) = self.encoder(x)
+                # h shape: (1, batch, latent) → (batch, seq_len, latent)
+                h_repeated = h.squeeze(0).unsqueeze(1).repeat(1, x.size(1), 1)
+                out, _ = self.decoder(h_repeated)
+                return out
+
+        torch.manual_seed(self.seed)
+        return LSTMAutoencoder(n_features, self.latent_dim)
+
+    def fit(self, X: np.ndarray, **kwargs) -> 'LSTMAutoencoderDetector':
+        from sklearn.preprocessing import StandardScaler
+
+        self._scaler = StandardScaler()
+        self._scaler.fit(X)
+        return self
+
+    def compute_regime_scores(self, X: np.ndarray) -> np.ndarray:
+        if self._scaler is None:
+            raise RuntimeError("Call fit() before compute_regime_scores().")
+
+        try:
+            import torch
+            import torch.nn as nn
+        except ImportError:
+            logger.warning("PyTorch not available; returning NaN scores")
+            return np.full(X.shape[0], np.nan)
+
+        X_scaled = self._scaler.transform(X)
+        T, n_feat = X_scaled.shape
+        recon_errors = np.full(T, np.nan)
+
+        model = None
+        last_train = 0
+
+        max_train = 2000  # Cap training data to limit runtime
+
+        for t in range(self.min_expanding, T):
+            # Retrain periodically
+            if model is None or (t - last_train) >= self.retrain_interval:
+                train_data = X_scaled[max(0, t - max_train):t]
+                if len(train_data) < self.seq_len + 10:
+                    continue
+
+                # Build sequences
+                seqs = []
+                for i in range(len(train_data) - self.seq_len):
+                    seqs.append(train_data[i:i + self.seq_len])
+                seqs = np.array(seqs)
+                seqs_t = torch.FloatTensor(seqs)
+
+                model = self._build_model(n_feat)
+                optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
+                loss_fn = nn.MSELoss()
+
+                # Mini-batch training for large datasets
+                batch_size = min(256, len(seqs))
+                model.train()
+                for _ in range(self.n_epochs):
+                    perm = torch.randperm(len(seqs_t))
+                    for start in range(0, len(seqs_t), batch_size):
+                        idx = perm[start:start + batch_size]
+                        batch = seqs_t[idx]
+                        optimizer.zero_grad()
+                        output = model(batch)
+                        loss = loss_fn(output, batch)
+                        loss.backward()
+                        optimizer.step()
+
+                model.eval()
+                last_train = t
+
+            # Score current window
+            if t >= self.seq_len:
+                window = X_scaled[t - self.seq_len:t]
+                window_t = torch.FloatTensor(window).unsqueeze(0)
+                with torch.no_grad():
+                    recon = model(window_t)
+                recon_errors[t] = float(
+                    torch.mean((window_t - recon) ** 2).item()
+                )
+
+        # Expanding z-score of reconstruction error
+        z_scores = np.full(T, np.nan)
+        for t in range(self.min_expanding, T):
+            past = recon_errors[self.min_expanding:t]
+            past = past[~np.isnan(past)]
+            if len(past) < 10:
+                continue
+            mu = np.mean(past)
+            sigma = np.std(past, ddof=1)
+            if sigma > 1e-12 and not np.isnan(recon_errors[t]):
+                z_scores[t] = abs((recon_errors[t] - mu) / sigma)
+
+        return z_scores
+
+
+class CrossSectionalDispersionDetector(BaseRegimeDetector):
+    """Cross-sectional return dispersion detector.
+
+    Computes the cross-sectional standard deviation of daily returns
+    across assets. High dispersion indicates regime stress (decoupling
+    of returns across sectors/assets).
+
+    Score = |z-score| of rolling cross-sectional dispersion.
+
+    This requires multi-asset input where different columns represent
+    different assets' returns.
+    """
+
+    def __init__(
+        self,
+        rolling_window: int = 20,
+        min_expanding: int = 60,
+    ):
+        self.rolling_window = rolling_window
+        self.min_expanding = min_expanding
+
+    @property
+    def name(self) -> str:
+        return "Cross-Sect Dispersion"
+
+    def fit(self, X: np.ndarray, **kwargs) -> 'CrossSectionalDispersionDetector':
+        return self
+
+    def compute_regime_scores(self, X: np.ndarray) -> np.ndarray:
+        if X.ndim == 1:
+            X = X.reshape(-1, 1)
+        T, d = X.shape
+
+        if d < 2:
+            logger.warning("CrossSectionalDispersion needs >= 2 features; returning NaN")
+            return np.full(T, np.nan)
+
+        # Cross-sectional std at each timestep
+        cs_std = np.std(X, axis=1, ddof=0)
+
+        # Rolling mean of cs_std
+        rolling_disp = (
+            pd.Series(cs_std)
+            .rolling(self.rolling_window, min_periods=1)
+            .mean()
+            .values
+        )
+
+        # Expanding z-score
+        z_scores = np.full(T, np.nan)
+        for t in range(self.min_expanding, T):
+            past = rolling_disp[:t]
+            mu = np.nanmean(past)
+            sigma = np.nanstd(past, ddof=1)
+            if sigma > 1e-12:
+                z_scores[t] = abs((rolling_disp[t] - mu) / sigma)
+            else:
+                z_scores[t] = 0.0
+
+        return z_scores
+
+
+class VRPDetector(BaseRegimeDetector):
+    """Volatility Risk Premium detector.
+
+    Score = |z-score| of (implied vol - realized vol).
+    Implied vol from VIX; realized vol from rolling 20-day returns std.
+    Large positive VRP = market pricing in crash risk.
+    Requires set_vix() before compute_regime_scores().
+
+    Args:
+        vol_window: Rolling window for realized vol calculation.
+        min_expanding: Minimum samples before z-scoring.
+    """
+
+    def __init__(
+        self,
+        vol_window: int = 20,
+        min_expanding: int = 60,
+    ):
+        self.vol_window = vol_window
+        self.min_expanding = min_expanding
+        self._vix = None
+
+    @property
+    def name(self) -> str:
+        return "VRP"
+
+    def set_vix(self, vix_values: np.ndarray):
+        """Set VIX values (annualized implied vol, in percent)."""
+        self._vix = np.asarray(vix_values, dtype=float)
+
+    def fit(self, X: np.ndarray, **kwargs) -> 'VRPDetector':
+        return self
+
+    def compute_regime_scores(self, X: np.ndarray) -> np.ndarray:
+        if self._vix is None:
+            logger.warning("VRP detector: VIX not set, returning NaN")
+            return np.full(X.shape[0], np.nan)
+
+        T = X.shape[0]
+
+        # Realized vol: annualized rolling std of first feature (returns)
+        rvol = (
+            pd.Series(X[:, 0])
+            .rolling(self.vol_window, min_periods=1)
+            .std()
+            .values
+            * np.sqrt(252)
+            * 100  # annualize and convert to percent to match VIX scale
+        )
+
+        # VRP = implied - realized
+        vix = self._vix[:T] if len(self._vix) > T else np.pad(
+            self._vix, (0, T - len(self._vix)), constant_values=np.nan
+        )
+        vrp = vix - rvol
+
+        # Expanding z-score
+        z_scores = np.full(T, np.nan)
+        for t in range(self.min_expanding, T):
+            past = vrp[:t]
+            past_valid = past[~np.isnan(past)]
+            if len(past_valid) < 10:
+                continue
+            mu = np.mean(past_valid)
+            sigma = np.std(past_valid, ddof=1)
+            if sigma > 1e-12 and not np.isnan(vrp[t]):
+                z_scores[t] = abs((vrp[t] - mu) / sigma)
+
+        return z_scores

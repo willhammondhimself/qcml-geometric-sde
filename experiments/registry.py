@@ -102,6 +102,14 @@ class ExperimentRegistry:
             CREATE INDEX IF NOT EXISTS idx_results_method ON results(method);
             CREATE INDEX IF NOT EXISTS idx_results_crisis ON results(crisis);
             CREATE INDEX IF NOT EXISTS idx_results_experiment ON results(experiment_id);
+
+            CREATE TABLE IF NOT EXISTS canonical (
+                name TEXT PRIMARY KEY,
+                experiment_id INTEGER NOT NULL,
+                json_path TEXT NOT NULL,
+                set_at TEXT NOT NULL,
+                FOREIGN KEY (experiment_id) REFERENCES experiments(id)
+            );
         """)
         self.conn.commit()
 
@@ -259,6 +267,58 @@ class ExperimentRegistry:
         logger.info(f"Backfilled {path.name} as experiment #{exp_id}")
         return exp_id
 
+    # ── Canonical JSON tracking ──────────────────────────────────────
+
+    def canonical_set(self, name: str, experiment_id: int) -> None:
+        """Set a canonical JSON reference.
+
+        Args:
+            name: Canonical name (e.g. 'main_comparison', 'fusion_full').
+            experiment_id: Experiment ID to mark as canonical.
+        """
+        exp = self.conn.execute(
+            "SELECT json_path FROM experiments WHERE id = ?", (experiment_id,)
+        ).fetchone()
+        if not exp:
+            raise ValueError(f"Experiment #{experiment_id} not found")
+
+        json_path = exp['json_path'] or ''
+        self.conn.execute("""
+            INSERT OR REPLACE INTO canonical (name, experiment_id, json_path, set_at)
+            VALUES (?, ?, ?, ?)
+        """, (name, experiment_id, json_path, datetime.now().isoformat()))
+        self.conn.commit()
+        logger.info(f"Canonical '{name}' set to experiment #{experiment_id} ({json_path})")
+
+    def canonical_list(self) -> list[dict]:
+        """List all canonical JSON references."""
+        rows = self.conn.execute("""
+            SELECT c.name, c.experiment_id, c.json_path, c.set_at,
+                   e.timestamp as exp_timestamp, e.n_methods, e.n_crises
+            FROM canonical c
+            JOIN experiments e ON c.experiment_id = e.id
+            ORDER BY c.name
+        """).fetchall()
+        return [dict(r) for r in rows]
+
+    def canonical_get(self, name: str) -> dict | None:
+        """Get a specific canonical reference.
+
+        Args:
+            name: Canonical name.
+
+        Returns:
+            Dict with canonical info, or None if not set.
+        """
+        row = self.conn.execute("""
+            SELECT c.name, c.experiment_id, c.json_path, c.set_at,
+                   e.timestamp as exp_timestamp, e.n_methods, e.n_crises
+            FROM canonical c
+            JOIN experiments e ON c.experiment_id = e.id
+            WHERE c.name = ?
+        """, (name,)).fetchone()
+        return dict(row) if row else None
+
     def close(self):
         self.conn.close()
 
@@ -286,6 +346,16 @@ def main():
     b.add_argument('json_path', help='Path to comparison JSON')
 
     ba = sub.add_parser('backfill-all', help='Import all existing JSON results')
+
+    # Canonical subcommands
+    cs = sub.add_parser('canonical', help='Manage canonical JSON references')
+    cs_sub = cs.add_subparsers(dest='canonical_command')
+    cs_set = cs_sub.add_parser('set', help='Set a canonical reference')
+    cs_set.add_argument('canonical_name', help='Name (main_comparison, fusion_full, etc.)')
+    cs_set.add_argument('exp_id', type=int, help='Experiment ID')
+    cs_sub.add_parser('list', help='List canonical references')
+    cs_get = cs_sub.add_parser('get', help='Get a canonical reference')
+    cs_get.add_argument('canonical_name', help='Canonical name')
 
     args = parser.parse_args()
     reg = ExperimentRegistry()
@@ -333,6 +403,28 @@ def main():
             except Exception as e:
                 logger.warning(f"  Failed to backfill {jp.name}: {e}")
         print(f"Backfilled {len(jsons)} JSON files.")
+
+    elif args.command == 'canonical':
+        if args.canonical_command == 'set':
+            reg.canonical_set(args.canonical_name, args.exp_id)
+        elif args.canonical_command == 'list':
+            entries = reg.canonical_list()
+            if not entries:
+                print("No canonical references set.")
+            else:
+                for e in entries:
+                    print(f"  {e['name']:20s}  exp#{e['experiment_id']:3d}  "
+                          f"{e['n_methods']}m x {e['n_crises']}c  "
+                          f"set {e['set_at'][:10]}  "
+                          f"{Path(e['json_path']).name if e['json_path'] else 'no path'}")
+        elif args.canonical_command == 'get':
+            entry = reg.canonical_get(args.canonical_name)
+            if entry:
+                print(json.dumps(entry, indent=2, default=str))
+            else:
+                print(f"Canonical '{args.canonical_name}' not set.")
+        else:
+            print("Usage: canonical {set|list|get}")
 
     else:
         parser.print_help()

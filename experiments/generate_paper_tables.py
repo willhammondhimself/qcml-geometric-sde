@@ -48,6 +48,29 @@ METHOD_CATEGORIES = {
     'Random Forest': 'Supervised',
     'Rolling RF (VIX)': 'Supervised',
     'VIX Level': 'Classical',
+    # New QCML observables (observatory expansion)
+    'Spectral Entropy': 'Geometric',
+    'Geometric Phase Rate': 'Geometric',
+    'Hamiltonian Sensitivity': 'Geometric',
+    'Geodesic Curvature': 'Geometric',
+    'Effective State Dim': 'Geometric',
+    'QGT Phase Rigidity': 'Geometric',
+    'Reduced Purity': 'Geometric',
+    'Spectral Complexity': 'Geometric',
+    'Berry Velocity Coupling': 'Geometric',
+    'Curvature Rate': 'Geometric',
+    # New baselines
+    'EWMA Vol': 'Classical',
+    'GARCH(1,1)': 'Classical',
+    'Hamilton MS': 'Classical',
+    'Mahalanobis': 'Classical',
+    'Structural Break': 'Classical',
+    'Transfer Entropy': 'Classical',
+    # Modern baselines
+    'Kernel PCA': 'Modern',
+    'LSTM Autoencoder': 'Modern',
+    'Cross-Sect Dispersion': 'Classical',
+    'VRP': 'Classical',
 }
 
 LATEX_NAMES = {
@@ -71,6 +94,30 @@ LATEX_NAMES = {
     'Random Forest': 'Random Forest',
     'Rolling RF (VIX)': 'Rolling RF (VIX)',
     'VIX Level': 'VIX Level',
+    'Spectral Entropy': 'Spectral Entropy',
+    'Geometric Phase Rate': r"Geom.\ Phase Rate",
+    'Hamiltonian Sensitivity': r"Ham.\ Sensitivity",
+    'Geodesic Curvature': r"Geod.\ Curvature",
+    'Effective State Dim': r"Eff.\ State Dim",
+    'QGT Phase Rigidity': 'QGT Phase Rigidity',
+    'Reduced Purity': 'Reduced Purity',
+    'Spectral Complexity': 'Spectral Complexity',
+    'Berry Velocity Coupling': r"Berry Vel.\ Coupling",
+    'Curvature Rate': 'Curvature Rate',
+    'EWMA Vol': 'EWMA Vol',
+    'GARCH(1,1)': r"GARCH(1,1)",
+    'Hamilton MS': 'Hamilton MS',
+    'Mahalanobis': 'Mahalanobis',
+    'Structural Break': 'Structural Break',
+    'Transfer Entropy': 'Transfer Entropy',
+    'HMM': 'HMM',
+    'Geometric Consensus': r"Geom.\ Consensus",
+    'Geometric Ensemble': r"Geom.\ Ensemble",
+    # Modern baselines
+    'Kernel PCA': 'Kernel PCA',
+    'LSTM Autoencoder': 'LSTM AE',
+    'Cross-Sect Dispersion': r"Cross-Sect.\ Disp.",
+    'VRP': 'VRP',
 }
 
 

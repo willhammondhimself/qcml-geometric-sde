@@ -412,7 +412,8 @@ def plot_composite_comparison(detector_stats, composite_results, output_path):
     entries.sort(key=lambda x: x[1])
     names = [e[0] for e in entries]
     d_vals = [e[1] for e in entries]
-    color_map = {'individual': '#90CAF9', 'all_7': '#42A5F5', 'top_4': '#1565C0'}
+    from experiments.plot_style import NAVY, TEAL, INDIGO
+    color_map = {'individual': TEAL, 'all_7': NAVY, 'top_4': INDIGO}
     colors = [color_map[e[2]] for e in entries]
 
     fig, ax = plt.subplots(figsize=(10, max(6, len(entries) * 0.35)))
@@ -424,9 +425,9 @@ def plot_composite_comparison(detector_stats, composite_results, output_path):
     ax.axvline(x=0, color='grey', linewidth=0.5)
 
     legend_elements = [
-        Patch(facecolor='#90CAF9', label='Individual detector'),
-        Patch(facecolor='#42A5F5', label='Composite (all 7)'),
-        Patch(facecolor='#1565C0', label='Composite (top 4)'),
+        Patch(facecolor=TEAL, label='Individual detector'),
+        Patch(facecolor=NAVY, label='Composite (all 7)'),
+        Patch(facecolor=INDIGO, label='Composite (top 4)'),
     ]
     ax.legend(handles=legend_elements, loc='lower right', fontsize=9)
 
@@ -441,7 +442,9 @@ def plot_composite_comparison(detector_stats, composite_results, output_path):
 def plot_orthogonality_heatmap(names, corr, output_path):
     """Plot and save the orthogonality heatmap."""
     fig, ax = plt.subplots(figsize=(10, 8))
-    im = ax.imshow(corr, cmap='RdBu_r', vmin=-1, vmax=1, aspect='equal')
+    from experiments.plot_style import CMAP_DIVERGING, apply_style
+    apply_style()
+    im = ax.imshow(corr, cmap=CMAP_DIVERGING, vmin=-1, vmax=1, aspect='equal')
 
     ax.set_xticks(range(len(names)))
     ax.set_yticks(range(len(names)))

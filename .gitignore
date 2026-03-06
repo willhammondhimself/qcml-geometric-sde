@@ -27,8 +27,14 @@ data/wrds_cache/
 *.pkl
 experiments/outputs/.cache/
 
+# DVC-managed data (tracked by .dvc files)
+data/*.parquet
+
 # Environment
 .env
+
+# Optuna HPO storage
+optuna-storage.db
 
 # Experiment outputs (regenerable — keep only paper figures)
 experiments/outputs/**/*.json

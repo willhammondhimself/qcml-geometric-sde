@@ -697,7 +697,9 @@ def generate_taxonomy_heatmap(taxonomy_results, output_path):
                 matrix[i, j] = d
 
     fig, ax = plt.subplots(figsize=(10, 8))
-    im = ax.imshow(matrix, cmap='YlOrRd', aspect='auto')
+    from experiments.plot_style import CMAP_SEQUENTIAL, apply_style
+    apply_style()
+    im = ax.imshow(matrix, cmap=CMAP_SEQUENTIAL, aspect='auto')
 
     ax.set_xticks(range(len(categories)))
     ax.set_yticks(range(len(methods)))
