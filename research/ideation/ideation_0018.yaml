@@ -1,0 +1,30 @@
+id: "0018"
+round: 18
+timestamp: "2026-03-06T18:15:00"
+question: "Does time-delay embedding (Takens' theorem) before quantum embedding improve dynamical fidelity?"
+theme: "embedding"
+status: "reject"
+hypothesis:
+  statement: "Takens delay embedding captures attractor geometry that multi-feature cross-sections miss."
+  mechanism: "Delay vector [r(t), r(t-1), ..., r(t-d)] reconstructs dynamical attractor before quantum embedding."
+  prior_plausibility: "medium"
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: "Catastrophic failure. Median d=0.149 vs standard d=1.215 (-87.8%). Raw returns have no integrated volatility signal — the attractor is featureless for financial data."
+    evidence: "SPY delay-embedded d=6 tau=1 vs standard 13-feature matrix"
+    confidence: 0.90
+test_results:
+  crises_tested: ["2008_gfc", "2011_euro", "2020_covid", "2022_rates"]
+  cohens_d_per_crisis: {2008_gfc: 0.060, 2011_euro: 0.210, 2020_covid: 0.088, 2022_rates: 0.343}
+  median_d: 0.149
+  passes_threshold: false
+verdict:
+  keep: false
+  reason: "Strongly rejected (-88%). Financial returns are too stochastic for Takens reconstruction. Rolling volatility statistics are the discriminative signal, and delay embedding discards them."
+  strength: "low"
+  follow_up_questions: []
+artifacts:
+  code_dir: null
+  key_files: null

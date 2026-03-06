@@ -1,0 +1,42 @@
+# Reading List — QCML Geometric SDE Project
+#
+# Status: discovered | reading | read | cited | rejected
+# Relationship: competitor | foundation | related | tangential
+# Relevance: 1-10 (10 = directly competing/foundational)
+#
+# Updated by /lit-scan skill and manually
+
+papers:
+  - title: "Geometry of quantum phase transitions"
+    authors: ["Zanardi, P.", "Paunković, N."]
+    arxiv_id: "quant-ph/0512249"
+    doi: "10.1103/PhysRevE.74.031123"
+    discovered: "2025-12-01"
+    source: "foundation"
+    status: cited
+    relevance: 10
+    relationship: foundation
+    bib_key: zanardi2006
+    notes: "Core reference for quantum geometric approach to phase transitions"
+
+  - title: "Information geometry and its applications"
+    authors: ["Amari, S."]
+    doi: "10.1007/978-4-431-55978-8"
+    discovered: "2025-12-01"
+    source: "foundation"
+    status: cited
+    relevance: 10
+    relationship: foundation
+    bib_key: amari2016
+    notes: "Foundational reference for information-geometric methods"
+
+  - title: "An elementary introduction to information geometry"
+    authors: ["Nielsen, F."]
+    arxiv_id: "1808.08271"
+    discovered: "2025-12-01"
+    source: "foundation"
+    status: cited
+    relevance: 9
+    relationship: foundation
+    bib_key: nielsen2020
+    notes: "Accessible introduction to information geometry used in our framework"

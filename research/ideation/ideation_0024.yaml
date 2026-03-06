@@ -1,0 +1,30 @@
+id: "0024"
+round: 24
+timestamp: "2026-03-06T18:15:00"
+question: "Does the choice of normalization interact with observable quality in a systematic way?"
+theme: "embedding"
+status: "keep"
+hypothesis:
+  statement: "Normalization mode (sphere/soft/clip/none) systematically affects observable performance."
+  mechanism: "Sphere projection loses magnitude info; soft preserves relative scale; clip/none leave PCA heterogeneous."
+  prior_plausibility: "high"
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: "STRONG FINDING: soft normalization adds +0.44d for BerryPhaseRate and +0.12d for SpectralEntropy vs sphere default. clip/none destroy 70-75% of signal for spectral methods. BerryPhaseRateDetector default should change from sphere to soft."
+    evidence: "Normalization sweep on BerryPhaseRate and SpectralEntropy across 4 crises"
+    confidence: 0.90
+test_results:
+  crises_tested: ["2008_gfc", "2020_covid", "2011_euro", "2018_volmageddon"]
+  cohens_d_per_crisis: {2008_gfc: 1.068, 2020_covid: 1.744, 2011_euro: 1.219, 2018_volmageddon: 0.804}
+  median_d: 1.144
+  passes_threshold: true
+verdict:
+  keep: true
+  reason: "FREE WIN: Changing BerryPhaseRate default normalization from sphere to soft recovers +0.44d average with zero computational cost. Actionable one-line code change."
+  strength: "high"
+  follow_up_questions: ["Apply soft normalization to ALL detectors", "Update config.yaml defaults"]
+artifacts:
+  code_dir: null
+  key_files: null

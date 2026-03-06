@@ -1,0 +1,160 @@
+{
+  "question": "Q17: Learned embedding via neural network mapping returns to density matrices",
+  "embedding_tested": "Gibbs state rho(x) = exp(sum_k x_k * sigma_k) / Tr(exp(...)), sigma_k = 2-qubit Pauli basis, scored by log(max_eigenvalue)",
+  "theoretical_analysis": {
+    "pca_operator_information": {
+      "n_samples": 5262,
+      "n_features": 13,
+      "explained_variance_ratio_top5": [
+        0.389189574693728,
+        0.2751768178538398,
+        0.12412043932957566,
+        0.07297914355584664,
+        0.06583811239440934
+      ],
+      "cumulative_variance_90": 0.9273040878273995,
+      "cumulative_variance_95": 0.9681130563474482,
+      "components_for_90pct": 5,
+      "components_for_95pct": 6,
+      "components_for_99pct": 8,
+      "effective_rank_pca": 5.100161395884198,
+      "max_operators_in_hilbert_dim4": 15,
+      "variance_captured_by_hilbert_operators": 1.0,
+      "variance_lost_by_hilbert_truncation": 0.0,
+      "reconstruction_error_top8_linear": 0.006462078165112641,
+      "information_captured": "PCA + random operators capture the dominant variance directions, weighted by sqrt(eigenvalue). Top 13 operators cover 100.0% of variance. The quadratic Hamiltonian H(x) = sum_k (A_k - x_k*I)^2 adds nonlinearity: ground state selection is a non-analytic function of x, so the mapping x -> |psi(x)> can represent complex surfaces in Hilbert space.",
+      "information_lost": "PCA discards 0.0% of variance when limited to 13 operators. Additionally: (1) distributional shape beyond second moments is ignored, (2) temporal ordering is discarded (i.i.d. per timestep), (3) the specific basis of random operators is arbitrary \u2014 a neural network could learn basis operators optimized for crisis discrimination."
+    },
+    "effective_rank_of_mapping": {
+      "n_sample": 200,
+      "n_components_used": 13,
+      "hilbert_dim": 4,
+      "max_possible_rank": 4,
+      "effective_rank_image_svd": 2.9737828886397066,
+      "effective_dimension_ipr": 1.3263121544094811,
+      "hilbert_space_utilization_fraction": 0.7434457221599267,
+      "singular_values_of_state_matrix": [
+        13.141756838914892,
+        4.022539805636959,
+        2.747940389564346,
+        1.8873855764789305
+      ],
+      "interpretation": "The mapping x -> |psi(x)> produces states with effective rank 2.97 in a 4-dimensional Hilbert space (utilization 74.3%). This means the current embedding explores 2.97 / 4 effective directions. A neural network could potentially saturate all directions by optimizing operators for maximum discriminability."
+    },
+    "linear_vs_nonlinear": {
+      "n_train": 300,
+      "n_test": 100,
+      "n_components": 13,
+      "hilbert_dim": 4,
+      "random_baseline_fidelity": 0.25,
+      "linear_map_train_fidelity": 0.914507265780146,
+      "linear_map_test_mean_fidelity": 0.901705041468659,
+      "linear_map_test_median_fidelity": 0.9403622943375107,
+      "linear_map_test_std_fidelity": 0.114276933948317,
+      "fidelity_gain_over_random": 0.8689400552915454,
+      "is_effectively_linear": true,
+      "interpretation": "A linear map achieves test fidelity 0.902 vs random baseline 0.250. The mapping has substantial linear character \u2014 a neural network may not need deep nonlinearity to outperform the current approach. A single linear layer with optimized weights could already improve discriminability."
+    },
+    "degrees_of_freedom": {
+      "n_features": 13,
+      "hilbert_dim": 4,
+      "hermitian_matrix_params": 16,
+      "current_qcml_params_total": 208,
+      "current_qcml_effective_params": 193,
+      "linear_neural_net_params": 104,
+      "shallow_neural_net_params": {
+        "h=16": 360,
+        "h=32": 712,
+        "h=64": 1416,
+        "h=128": 2824
+      },
+      "deep_neural_net_params": {
+        "h=16": 632,
+        "h=32": 1768,
+        "h=64": 5576,
+        "h=128": 19336
+      },
+      "gibbs_fixed_basis_params": 0,
+      "gibbs_learned_basis_params": 208,
+      "typical_training_samples": 4000,
+      "overfit_risk_analysis": {
+        "current_qcml_ratio": 0.048,
+        "linear_nn_ratio": 0.026,
+        "shallow_h32_ratio": 0.178
+      },
+      "recommendation": "Current embedding has 193 effective parameters (4.8% of training samples). A linear neural net has 104 params (2.6%). Both are well-regularized for ~4K samples. A shallow network (h=32) is marginally larger but still within overfitting-safe range. The key advantage of a neural net is not expressivity but *optimization*: gradient descent on a discriminative objective (e.g., crisis vs normal fidelity contrast) vs the current fixed random operator design."
+    }
+  },
+  "empirical_test": {
+    "per_crisis": {
+      "2008_gfc": {
+        "cohens_d": 0.3364753568150108,
+        "ci_lo": 0.03189608917966553,
+        "ci_hi": 0.75361639112512,
+        "crisis_n": 146,
+        "normal_n": 41,
+        "crisis_mean_zscore": 0.5694399000139335,
+        "normal_mean_zscore": 0.17862127890067658
+      },
+      "2020_covid": {
+        "cohens_d": 1.2400913024170965,
+        "ci_lo": 0.7360492191374324,
+        "ci_hi": 1.9641638597705622,
+        "crisis_n": 50,
+        "normal_n": 39,
+        "crisis_mean_zscore": 0.8529963420787452,
+        "normal_mean_zscore": -0.3369234964364843
+      },
+      "2022_rates": {
+        "cohens_d": 0.39739350350176617,
+        "ci_lo": 0.02962558033382229,
+        "ci_hi": 0.9312315889640983,
+        "crisis_n": 209,
+        "normal_n": 42,
+        "crisis_mean_zscore": 0.17508326145016861,
+        "normal_mean_zscore": -0.22603554309081508
+      },
+      "2023_svb": {
+        "cohens_d": 0.29315032287434184,
+        "ci_lo": 0.018227860663461628,
+        "ci_hi": 0.9711652435513559,
+        "crisis_n": 42,
+        "normal_n": 39,
+        "crisis_mean_zscore": -0.3540082034395967,
+        "normal_mean_zscore": -0.05234263075818605
+      }
+    },
+    "d_values": [
+      0.3364753568150108,
+      1.2400913024170965,
+      0.39739350350176617,
+      0.29315032287434184
+    ],
+    "median_d": 0.36693443015838845,
+    "max_d": 1.2400913024170965,
+    "n_valid_scores": 5202,
+    "n_pca_components": 13,
+    "raw_scores_stats": {
+      "mean": -0.3222437504574225,
+      "std": 0.18947528026480462,
+      "min": -0.8559148758811363,
+      "max": -1.5165183775977243e-06
+    }
+  },
+  "analysis_findings": "Current QCML uses H(x) = sum_k (A_k - x_k*I)^2 with random/PCA-scaled operators. Analysis shows: (1) PCA captures 6 components for 95% variance; d_H=4 Hilbert space limits to 15 operators covering 100.0% of variance. (2) The state-space image has effective rank 2.97 out of 4 dimensions (utilization 74.3%). (3) Linear map achieves fidelity 0.902 vs random baseline 0.250 \u2014 mapping has linear character. (4) Gibbs state (exp(sum x_k sigma_k)/Z) with PCA-scaled features achieves median Cohen's d=0.367 on 4 crises. (5) DOF comparison: current QCML ~193 effective params vs linear NN ~104 params \u2014 comparable scale, favoring supervised optimization as the primary advantage of neural nets.",
+  "empirical_d": {
+    "per_crisis": {
+      "2008_gfc": 0.3364753568150108,
+      "2020_covid": 1.2400913024170965,
+      "2022_rates": 0.39739350350176617,
+      "2023_svb": 0.29315032287434184
+    },
+    "median": 0.36693443015838845
+  },
+  "passes_threshold": true,
+  "recommendation": "future_work",
+  "timing": {
+    "total_seconds": 0.5,
+    "empirical_test_seconds": 0.3
+  }
+}

@@ -1,0 +1,68 @@
+id: "0001"
+round: 1
+timestamp: "2026-03-06T15:30:00"
+question: "Can the Loschmidt echo (fidelity decay under Hamiltonian perturbation) detect regime transitions?"
+theme: "novel_observables"
+status: "keep"
+
+hypothesis:
+  statement: "The Loschmidt echo decay rate measures how fast quantum state fidelity collapses under Hamiltonian perturbation, with faster decay indicating greater sensitivity to regime changes."
+  mechanism: "During crises, small perturbations to the error Hamiltonian cause rapid ground state fidelity decay because the spectral gap narrows and level crossings become more likely. The echo decay rate captures this sensitivity through matrix exponential time evolution."
+  prior_plausibility: "medium"
+
+knight_findings:
+  - knight: 1
+    role: "theoretical_validity"
+    workers_used: 0
+    conclusion: "Moderate theoretical soundness. The standard Loschmidt echo requires unitary time evolution which QCML lacks. The parameter-space fidelity formulation is redundant with quantum_similarity(). The operator-perturbation formulation IS novel but introduces perturbation direction as free parameter. Small Hilbert space (dim=4) prevents access to rich decay regimes (Gaussian/FGR/Lyapunov)."
+    evidence: "Gorin et al. 2006 (Physics Reports), Zanardi & Paunkovic 2006, Gu 2010 (fidelity susceptibility = quantum metric), Heyl et al. 2013 (DQPTs)"
+    confidence: 0.82
+    key_insight: "Fidelity susceptibility chi_F = -d^2M/d(epsilon)^2 is proportional to tr(quantum_metric). The echo contains the same information as the QFI at leading order."
+
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 1
+    conclusion: "Strong empirical results. Median d=0.849 across 4 smoke crises, far exceeding 0.3 threshold. COVID d=2.094 (exceptional), GFC d=0.997 (large), SVB d=0.701 (medium-large), Rate Hikes d=0.551 (medium). Computation fast: 1.3s for 5262 time steps."
+    evidence: "Smoke test on SPY/DIA 2005-2025, 13-feature matrix, n_bootstrap=1000"
+    confidence: 0.85
+
+  - knight: 3
+    role: "comparative_analysis"
+    workers_used: 0
+    conclusion: "Partially overlapping with MultiLagFidelity (predicted |rho|=0.55), HamiltonianSensitivity (0.50), CommutatorNorm (0.45). Adds a genuinely new 'dynamical' channel: TIME-INTEGRATED perturbation sensitivity vs instantaneous measures. Unique contribution is decay REGIME classification (Gaussian vs exponential vs power-law)."
+    evidence: "Detailed mechanism comparison showing echo = nonlinear combination of HamiltonianSensitivity (small tau) + SpectralGap (large tau), but intermediate tau carries novel information"
+    confidence: 0.72
+
+  - knight: 4
+    role: "failure_mode_analysis"
+    workers_used: 1
+    conclusion: "Medium overall risk. Primary concerns: (1) high redundancy with HamiltonianSensitivity and SpectralGap — must pass |rho|<0.7 gate, (2) perturbation direction delta is arbitrary (no physics motivation), (3) fidelity saturation floor of 1/d limits dynamic range, (4) physics analogy is strained (no genuine time evolution). Proceed with caution."
+    evidence: "Perturbative expansion M(tau) = 1 - tau^2*Var_psi(delta) shows short-tau echo = Hamiltonian Sensitivity exactly. False positive risk from volatility clustering, operator rotation artifacts."
+    confidence: 0.82
+
+test_results:
+  crises_tested: ["2008_gfc", "2020_covid", "2022_rates", "2023_svb"]
+  cohens_d_per_crisis:
+    2008_gfc: 0.997
+    2020_covid: 2.094
+    2022_rates: 0.551
+    2023_svb: 0.701
+  median_d: 0.849
+  max_d: 2.094
+  cliff_d: null  # not computed in smoke test
+  passes_threshold: true
+
+verdict:
+  keep: true
+  reason: "Strong empirical signal (median d=0.849) despite moderate theoretical concerns. The echo decay rate captures nonlinear spectral-gap × sensitivity interactions that neither HamiltonianSensitivity nor SpectralGap alone captures. Must verify orthogonality (|rho|<0.7) with existing dynamical detectors in full pipeline."
+  strength: "high"
+  follow_up_questions:
+    - "Does echo decay rate correlate with crisis severity?"
+    - "Optimal perturbation magnitude epsilon?"
+    - "Does higher hilbert_dim (8, 16) unlock richer decay regimes?"
+    - "Is the echo orthogonal (|rho|<0.7) to HamiltonianSensitivity and SpectralGap?"
+    - "Does the multi-tau decay curve shape carry crisis-type information?"
+
+artifacts:
+  code_dir: "research/ideation/loschmidt_echo/"
+  key_files: ["detector.py", "smoke_test.py", "smoke_results.json"]

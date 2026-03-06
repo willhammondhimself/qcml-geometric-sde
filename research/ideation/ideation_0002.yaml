@@ -1,0 +1,51 @@
+id: "0002"
+round: 2
+timestamp: "2026-03-06T16:15:00"
+question: "Does the out-of-time-order correlator (OTOC) detect financial 'scrambling' before crises?"
+theme: "novel_observables"
+status: "keep"
+
+hypothesis:
+  statement: "The OTOC measures quantum information scrambling — rapid OTOC decay indicates chaotic dynamics characteristic of regime transitions."
+  mechanism: "F(t) = <W(t)†V†W(t)V> where W(t) = e^{iHt}We^{-iHt}. During crises, the Hamiltonian landscape becomes more chaotic, causing faster scrambling of operator correlations."
+  prior_plausibility: "medium"
+
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 1
+    conclusion: "Strong empirical results. Median d=1.121, exceeding large-effect threshold. COVID d=1.657, Rate Hikes d=1.505, GFC d=0.736, SVB d=0.645. Fast computation (0.7s). SVB signal inverts (scrambling suppressed rather than elevated)."
+    evidence: "Smoke test on SPY/DIA 2005-2025 with sector ETFs"
+    confidence: 0.85
+
+  - knight: "2+3+4"
+    role: "combined_analysis"
+    workers_used: 0
+    conclusion: "Weak theoretical soundness. QCML has no natural time evolution — tau is artificial. At dim=4, scrambling saturates immediately (no Lyapunov regime). Short-tau expansion reduces to CommutatorNorm + HamiltonianSensitivity. Predicted |rho|=0.72 with CommutatorNorm. Despite strong empirical results, the signal may be a noisy weighted average of existing observables."
+    evidence: "Perturbative expansion shows F(tau) ≈ 1 - tau²/2 * ||[W,V]||² at short times"
+    confidence: 0.82
+
+test_results:
+  crises_tested: ["2008_gfc", "2020_covid", "2022_rates", "2023_svb"]
+  cohens_d_per_crisis:
+    2008_gfc: 0.736
+    2020_covid: 1.657
+    2022_rates: 1.505
+    2023_svb: 0.645
+  median_d: 1.121
+  max_d: 1.657
+  passes_threshold: true
+
+verdict:
+  keep: true
+  reason: "Strong empirical signal (median d=1.121) warrants full validation despite theoretical concerns. Must verify orthogonality with CommutatorNorm and HamiltonianSensitivity — if |rho|>0.7, signal is redundant. SVB inversion needs investigation."
+  strength: "high"
+  follow_up_questions:
+    - "Is OTOC orthogonal (|rho|<0.7) to CommutatorNorm and HamiltonianSensitivity?"
+    - "Why does SVB show inverted scrambling (suppression instead of elevation)?"
+    - "Does the multi-tau decay curve shape differ between crisis types?"
+    - "Would higher hilbert_dim unlock genuine scrambling dynamics?"
+
+artifacts:
+  code_dir: "research/ideation/otoc/"
+  key_files: ["detector.py", "smoke_test.py", "smoke_results.json"]

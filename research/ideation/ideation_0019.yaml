@@ -1,0 +1,29 @@
+id: "0019"
+round: 19
+timestamp: "2026-03-06T18:15:00"
+question: "Can we use random features (Random Kitchen Sinks) instead of exact kernel for faster embedding?"
+theme: "embedding"
+status: "reject"
+hypothesis:
+  statement: "RKS could approximate the quantum fidelity kernel for faster computation."
+  mechanism: "k(x,y) = |<psi(x)|psi(y)>|^2 approximated by z(x)·z(y) with random features."
+  prior_plausibility: "low"
+knight_findings:
+  - knight: "1+3+4"
+    role: "combined_analysis"
+    workers_used: 0
+    conclusion: "RKS requires shift-invariant kernels. QCML fidelity kernel is non-stationary (depends on operator set). 8x8 eigendecomposition already runs in ~5us per point — faster than equivalent RKS."
+    evidence: "Theoretical analysis; Rahimi & Recht 2007 requires translational invariance"
+    confidence: 0.90
+test_results:
+  crises_tested: []
+  cohens_d_per_crisis: {}
+  median_d: null
+  passes_threshold: false
+verdict:
+  keep: false
+  reason: "Theoretically inapplicable (non-stationary kernel) and unnecessary (exact eigendecomposition is already faster). No empirical test needed."
+  strength: "low"
+artifacts:
+  code_dir: null
+  key_files: null

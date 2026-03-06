@@ -1,0 +1,49 @@
+id: "0005"
+round: 5
+timestamp: "2026-03-06T16:15:00"
+question: "Can the quantum geometric tensor's off-diagonal elements (beyond just Berry curvature or QFI separately) add signal?"
+theme: "novel_observables"
+status: "reject"
+
+hypothesis:
+  statement: "The full QGT Q_ab = g_ab + i*F_ab/2 contains cross-term information between metric and curvature that neither component captures alone."
+  mechanism: "Off-diagonal elements Q_{ab} for a!=b measure geometric coupling between features in Hilbert space. During crises, feature interactions should change dramatically."
+  prior_plausibility: "medium"
+
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: "Weak empirical results. Median d=0.228, below 0.3 threshold. COVID d=2.611 (striking spike) but GFC d=0.053 and SVB d=0.112 are near zero — detector is crisis-type selective, not general. det(Q)=0 everywhere (QGT is rank-deficient at dim=4)."
+    evidence: "4 QGT observables tested: off_diagonal_coupling (0.228), frobenius (0.156), max_sv (0.153), det (0.000)"
+    confidence: 0.70
+
+  - knight: "1+3+4"
+    role: "combined_analysis"
+    workers_used: 0
+    conclusion: "Moderate theory but PROVEN redundancy for Frobenius-based approaches: ||Q||_F^2 = ||g||_F^2 + ||F/2||_F^2 EXACTLY (cross-terms cancel via Tr([g,F])=0). This mathematically explains QGT Phase Rigidity's d=0.013 failure. det(Q) has condition number ~1e11 (catastrophic). Only the commutator ||[g,F]||_F is a genuinely new observable, but prior failure patterns suggest it will also die."
+    evidence: "Analytical proof: Tr(Q†Q) = Tr(g²) + Tr(F²/4) + i*Tr([g,F]) where Tr([g,F])=0 by cyclic property"
+    confidence: 0.78
+
+test_results:
+  crises_tested: ["2008_gfc", "2020_covid", "2022_rates", "2023_svb"]
+  cohens_d_per_crisis:
+    2008_gfc: 0.053
+    2020_covid: 2.611
+    2022_rates: 0.345
+    2023_svb: 0.112
+  median_d: 0.228
+  max_d: 2.611
+  passes_threshold: false
+
+verdict:
+  keep: false
+  reason: "Below threshold (median d=0.228). Frobenius-norm approaches are provably redundant. det(Q) is numerically catastrophic (rank-deficient, cond=1e11). Only genuinely new observable is ||[g,F]||_F commutator norm, but prior failure patterns (QGT Phase Rigidity d=0.013, Berry Velocity Coupling d=0.012) suggest it will also fail."
+  strength: "low"
+  follow_up_questions:
+    - "Does the metric-curvature commutator ||[g,F]||_F carry signal at higher hilbert_dim?"
+    - "Can the phase of det(Q) (rather than magnitude) carry topological information?"
+
+artifacts:
+  code_dir: null
+  key_files: null

@@ -1,0 +1,735 @@
+{
+  "config": {
+    "tau": 0.9,
+    "rv_horizon": 5,
+    "initial_train_years": 5,
+    "har_cols": [
+      "rv_daily",
+      "rv_weekly",
+      "rv_monthly"
+    ],
+    "qcml_cols": [
+      "multi_lag_fid",
+      "spectral_gap",
+      "spectral_gap_ma20"
+    ],
+    "rf_params": {
+      "n_estimators": 200,
+      "max_depth": 10,
+      "min_samples_leaf": 20,
+      "random_state": 42
+    },
+    "n_bootstrap": 1000,
+    "dm_bandwidth": 5,
+    "block_bootstrap_size": 20
+  },
+  "data_summary": {
+    "n_total": 5201,
+    "n_oos": 3769,
+    "date_range": [
+      "2004-04-27",
+      "2024-12-23"
+    ],
+    "oos_date_range": [
+      "2010-01-04",
+      "2024-12-23"
+    ],
+    "test_years": [
+      2010,
+      2011,
+      2012,
+      2013,
+      2014,
+      2015,
+      2016,
+      2017,
+      2018,
+      2019,
+      2020,
+      2021,
+      2022,
+      2023,
+      2024
+    ]
+  },
+  "fold_results": [
+    {
+      "test_year": 2010,
+      "n_train": 1432,
+      "n_test": 252,
+      "models": {
+        "QR_HAR": {
+          "pinball_loss": 0.016520399665883624,
+          "exceedance_rate": 0.1388888888888889,
+          "n_nan": 0
+        },
+        "QR_HAR_QCML": {
+          "pinball_loss": 0.016639364286663037,
+          "exceedance_rate": 0.14285714285714285,
+          "n_nan": 0
+        },
+        "RF_HAR": {
+          "pinball_loss": 0.03007442594049809,
+          "exceedance_rate": 0.45634920634920634,
+          "n_nan": 0
+        },
+        "RF_HAR_QCML": {
+          "pinball_loss": 0.032828562024895265,
+          "exceedance_rate": 0.47619047619047616,
+          "n_nan": 0
+        }
+      }
+    },
+    {
+      "test_year": 2011,
+      "n_train": 1684,
+      "n_test": 252,
+      "models": {
+        "QR_HAR": {
+          "pinball_loss": 0.022076135876172062,
+          "exceedance_rate": 0.12301587301587301,
+          "n_nan": 0
+        },
+        "QR_HAR_QCML": {
+          "pinball_loss": 0.021215643053278443,
+          "exceedance_rate": 0.10317460317460317,
+          "n_nan": 0
+        },
+        "RF_HAR": {
+          "pinball_loss": 0.03833824222913234,
+          "exceedance_rate": 0.5198412698412699,
+          "n_nan": 0
+        },
+        "RF_HAR_QCML": {
+          "pinball_loss": 0.03940771909284987,
+          "exceedance_rate": 0.5079365079365079,
+          "n_nan": 0
+        }
+      }
+    },
+    {
+      "test_year": 2012,
+      "n_train": 1936,
+      "n_test": 250,
+      "models": {
+        "QR_HAR": {
+          "pinball_loss": 0.010841756081685226,
+          "exceedance_rate": 0.116,
+          "n_nan": 0
+        },
+        "QR_HAR_QCML": {
+          "pinball_loss": 0.011853524341847006,
+          "exceedance_rate": 0.1,
+          "n_nan": 0
+        },
+        "RF_HAR": {
+          "pinball_loss": 0.019364713680278072,
+          "exceedance_rate": 0.44,
+          "n_nan": 0
+        },
+        "RF_HAR_QCML": {
+          "pinball_loss": 0.02016431396984558,
+          "exceedance_rate": 0.42,
+          "n_nan": 0
+        }
+      }
+    },
+    {
+      "test_year": 2013,
+      "n_train": 2186,
+      "n_test": 252,
+      "models": {
+        "QR_HAR": {
+          "pinball_loss": 0.010956534107878071,
+          "exceedance_rate": 0.07142857142857142,
+          "n_nan": 0
+        },
+        "QR_HAR_QCML": {
+          "pinball_loss": 0.011229054920908657,
+          "exceedance_rate": 0.06746031746031746,
+          "n_nan": 0
+        },
+        "RF_HAR": {
+          "pinball_loss": 0.01813138819940149,
+          "exceedance_rate": 0.376984126984127,
+          "n_nan": 0
+        },
+        "RF_HAR_QCML": {
+          "pinball_loss": 0.018414745507903795,
+          "exceedance_rate": 0.36904761904761907,
+          "n_nan": 0
+        }
+      }
+    },
+    {
+      "test_year": 2014,
+      "n_train": 2438,
+      "n_test": 252,
+      "models": {
+        "QR_HAR": {
+          "pinball_loss": 0.011634241076058692,
+          "exceedance_rate": 0.15079365079365079,
+          "n_nan": 0
+        },
+        "QR_HAR_QCML": {
+          "pinball_loss": 0.011900910097859126,
+          "exceedance_rate": 0.14285714285714285,
+          "n_nan": 0
+        },
+        "RF_HAR": {
+          "pinball_loss": 0.02001327202314994,
+          "exceedance_rate": 0.3888888888888889,
+          "n_nan": 0
+        },
+        "RF_HAR_QCML": {
+          "pinball_loss": 0.0194640302766734,
+          "exceedance_rate": 0.3373015873015873,
+          "n_nan": 0
+        }
+      }
+    },
+    {
+      "test_year": 2015,
+      "n_train": 2690,
+      "n_test": 252,
+      "models": {
+        "QR_HAR": {
+          "pinball_loss": 0.015197462573654997,
+          "exceedance_rate": 0.09523809523809523,
+          "n_nan": 0
+        },
+        "QR_HAR_QCML": {
+          "pinball_loss": 0.015522879985879277,
+          "exceedance_rate": 0.10714285714285714,
+          "n_nan": 0
+        },
+        "RF_HAR": {
+          "pinball_loss": 0.026515271635906584,
+          "exceedance_rate": 0.4444444444444444,
+          "n_nan": 0
+        },
+        "RF_HAR_QCML": {
+          "pinball_loss": 0.029138368615405603,
+          "exceedance_rate": 0.46825396825396826,
+          "n_nan": 0
+        }
+      }
+    },
+    {
+      "test_year": 2016,
+      "n_train": 2942,
+      "n_test": 252,
+      "models": {
+        "QR_HAR": {
+          "pinball_loss": 0.015596819558829198,
+          "exceedance_rate": 0.07142857142857142,
+          "n_nan": 0
+        },
+        "QR_HAR_QCML": {
+          "pinball_loss": 0.015378957864504075,
+          "exceedance_rate": 0.07142857142857142,
+          "n_nan": 0
+        },
+        "RF_HAR": {
+          "pinball_loss": 0.01884969418713168,
+          "exceedance_rate": 0.30952380952380953,
+          "n_nan": 0
+        },
+        "RF_HAR_QCML": {
+          "pinball_loss": 0.019521256723487174,
+          "exceedance_rate": 0.2976190476190476,
+          "n_nan": 0
+        }
+      }
+    },
+    {
+      "test_year": 2017,
+      "n_train": 3194,
+      "n_test": 251,
+      "models": {
+        "QR_HAR": {
+          "pinball_loss": 0.008431568691704873,
+          "exceedance_rate": 0.05976095617529881,
+          "n_nan": 0
+        },
+        "QR_HAR_QCML": {
+          "pinball_loss": 0.00904034058641281,
+          "exceedance_rate": 0.05179282868525897,
+          "n_nan": 0
+        },
+        "RF_HAR": {
+          "pinball_loss": 0.008143049396949873,
+          "exceedance_rate": 0.18725099601593626,
+          "n_nan": 0
+        },
+        "RF_HAR_QCML": {
+          "pinball_loss": 0.0076170318465233495,
+          "exceedance_rate": 0.1593625498007968,
+          "n_nan": 0
+        }
+      }
+    },
+    {
+      "test_year": 2018,
+      "n_train": 3445,
+      "n_test": 251,
+      "models": {
+        "QR_HAR": {
+          "pinball_loss": 0.021318961247402082,
+          "exceedance_rate": 0.13147410358565736,
+          "n_nan": 0
+        },
+        "QR_HAR_QCML": {
+          "pinball_loss": 0.02079256514221193,
+          "exceedance_rate": 0.12350597609561753,
+          "n_nan": 0
+        },
+        "RF_HAR": {
+          "pinball_loss": 0.03255164834207621,
+          "exceedance_rate": 0.36254980079681276,
+          "n_nan": 0
+        },
+        "RF_HAR_QCML": {
+          "pinball_loss": 0.033525812957834106,
+          "exceedance_rate": 0.3784860557768924,
+          "n_nan": 0
+        }
+      }
+    },
+    {
+      "test_year": 2019,
+      "n_train": 3696,
+      "n_test": 252,
+      "models": {
+        "QR_HAR": {
+          "pinball_loss": 0.014286180306154937,
+          "exceedance_rate": 0.1111111111111111,
+          "n_nan": 0
+        },
+        "QR_HAR_QCML": {
+          "pinball_loss": 0.014831867691344827,
+          "exceedance_rate": 0.11507936507936507,
+          "n_nan": 0
+        },
+        "RF_HAR": {
+          "pinball_loss": 0.019951201640932732,
+          "exceedance_rate": 0.2976190476190476,
+          "n_nan": 0
+        },
+        "RF_HAR_QCML": {
+          "pinball_loss": 0.02021288899269323,
+          "exceedance_rate": 0.30952380952380953,
+          "n_nan": 0
+        }
+      }
+    },
+    {
+      "test_year": 2020,
+      "n_train": 3948,
+      "n_test": 253,
+      "models": {
+        "QR_HAR": {
+          "pinball_loss": 0.04263625993856802,
+          "exceedance_rate": 0.17786561264822134,
+          "n_nan": 0
+        },
+        "QR_HAR_QCML": {
+          "pinball_loss": 0.04341785502845917,
+          "exceedance_rate": 0.17786561264822134,
+          "n_nan": 0
+        },
+        "RF_HAR": {
+          "pinball_loss": 0.0648613604517185,
+          "exceedance_rate": 0.38735177865612647,
+          "n_nan": 0
+        },
+        "RF_HAR_QCML": {
+          "pinball_loss": 0.0655382268906671,
+          "exceedance_rate": 0.39920948616600793,
+          "n_nan": 0
+        }
+      }
+    },
+    {
+      "test_year": 2021,
+      "n_train": 4201,
+      "n_test": 252,
+      "models": {
+        "QR_HAR": {
+          "pinball_loss": 0.015137375232374826,
+          "exceedance_rate": 0.1349206349206349,
+          "n_nan": 0
+        },
+        "QR_HAR_QCML": {
+          "pinball_loss": 0.015418145438144758,
+          "exceedance_rate": 0.12698412698412698,
+          "n_nan": 0
+        },
+        "RF_HAR": {
+          "pinball_loss": 0.024911033487827236,
+          "exceedance_rate": 0.4365079365079365,
+          "n_nan": 0
+        },
+        "RF_HAR_QCML": {
+          "pinball_loss": 0.026209043578268955,
+          "exceedance_rate": 0.4444444444444444,
+          "n_nan": 0
+        }
+      }
+    },
+    {
+      "test_year": 2022,
+      "n_train": 4453,
+      "n_test": 251,
+      "models": {
+        "QR_HAR": {
+          "pinball_loss": 0.01874372835702177,
+          "exceedance_rate": 0.14741035856573706,
+          "n_nan": 0
+        },
+        "QR_HAR_QCML": {
+          "pinball_loss": 0.018248621215339416,
+          "exceedance_rate": 0.1394422310756972,
+          "n_nan": 0
+        },
+        "RF_HAR": {
+          "pinball_loss": 0.04514189508838093,
+          "exceedance_rate": 0.5697211155378487,
+          "n_nan": 0
+        },
+        "RF_HAR_QCML": {
+          "pinball_loss": 0.045705634264426524,
+          "exceedance_rate": 0.5976095617529881,
+          "n_nan": 0
+        }
+      }
+    },
+    {
+      "test_year": 2023,
+      "n_train": 4704,
+      "n_test": 250,
+      "models": {
+        "QR_HAR": {
+          "pinball_loss": 0.009924357958093885,
+          "exceedance_rate": 0.04,
+          "n_nan": 0
+        },
+        "QR_HAR_QCML": {
+          "pinball_loss": 0.009682700379347502,
+          "exceedance_rate": 0.044,
+          "n_nan": 0
+        },
+        "RF_HAR": {
+          "pinball_loss": 0.01747176217079587,
+          "exceedance_rate": 0.46,
+          "n_nan": 0
+        },
+        "RF_HAR_QCML": {
+          "pinball_loss": 0.01657471813356545,
+          "exceedance_rate": 0.464,
+          "n_nan": 0
+        }
+      }
+    },
+    {
+      "test_year": 2024,
+      "n_train": 4954,
+      "n_test": 247,
+      "models": {
+        "QR_HAR": {
+          "pinball_loss": 0.012090233689109707,
+          "exceedance_rate": 0.08097165991902834,
+          "n_nan": 0
+        },
+        "QR_HAR_QCML": {
+          "pinball_loss": 0.011728658911836828,
+          "exceedance_rate": 0.0728744939271255,
+          "n_nan": 0
+        },
+        "RF_HAR": {
+          "pinball_loss": 0.021813840407612695,
+          "exceedance_rate": 0.4493927125506073,
+          "n_nan": 0
+        },
+        "RF_HAR_QCML": {
+          "pinball_loss": 0.021557696838570638,
+          "exceedance_rate": 0.4331983805668016,
+          "n_nan": 0
+        }
+      }
+    }
+  ],
+  "aggregate_metrics": {
+    "per_model": {
+      "QR_HAR": {
+        "pinball_loss": {
+          "point": 0.016378600749266784,
+          "ci_95": [
+            0.014083778339212866,
+            0.019704559685547587
+          ],
+          "std": 0.001422064221412271
+        },
+        "exceedance_rate": 0.11010878217033696,
+        "christoffersen": {
+          "LR_uc": 4.157404267768015,
+          "LR_ind": 809.339027019601,
+          "LR_cc": 813.496431287369,
+          "p_uc": 0.041452884518715205,
+          "p_ind": 0.0,
+          "p_cc": 0.0,
+          "exceedance_rate": 0.11010878217033696,
+          "n_exceedances": 415,
+          "n_total": 3769
+        },
+        "n_valid": 3769
+      },
+      "QR_HAR_QCML": {
+        "pinball_loss": {
+          "point": 0.016479887237458267,
+          "ci_95": [
+            0.014166906711794032,
+            0.019886224523893166
+          ],
+          "std": 0.0014448259848963878
+        },
+        "exceedance_rate": 0.10586362430352879,
+        "christoffersen": {
+          "LR_uc": 1.4155485282276459,
+          "LR_ind": 849.2147363804843,
+          "LR_cc": 850.6302849087119,
+          "p_uc": 0.23413748532844914,
+          "p_ind": 0.0,
+          "p_cc": 0.0,
+          "exceedance_rate": 0.10586362430352879,
+          "n_exceedances": 399,
+          "n_total": 3769
+        },
+        "n_valid": 3769
+      },
+      "RF_HAR": {
+        "pinball_loss": {
+          "point": 0.027100490297717102,
+          "ci_95": [
+            0.02283552940958412,
+            0.03263475635519808
+          ],
+          "std": 0.0025260875562863696
+        },
+        "exceedance_rate": 0.40567789864685594,
+        "christoffersen": {
+          "LR_uc": 2423.3099659301624,
+          "LR_ind": 1567.2945541619383,
+          "LR_cc": 3990.6045200921008,
+          "p_uc": 0.0,
+          "p_ind": 0.0,
+          "p_cc": 0.0,
+          "exceedance_rate": 0.40567789864685594,
+          "n_exceedances": 1529,
+          "n_total": 3769
+        },
+        "n_valid": 3769,
+        "r2_oos": {
+          "point": 0.3352021359007089,
+          "ci_95": [
+            0.1565015282156447,
+            0.4481052043324255
+          ],
+          "std": 0.0790200981682451
+        },
+        "qlike": {
+          "point": 0.14424812447539137,
+          "ci_95": [
+            0.13167115197228862,
+            0.1585837026367133
+          ],
+          "std": 0.007246195616990033
+        }
+      },
+      "RF_HAR_QCML": {
+        "pinball_loss": {
+          "point": 0.027752506162709453,
+          "ci_95": [
+            0.023472671030666272,
+            0.03319244999456013
+          ],
+          "std": 0.0025371893000886623
+        },
+        "exceedance_rate": 0.4040859644468029,
+        "christoffersen": {
+          "LR_uc": 2401.5652470261766,
+          "LR_ind": 1768.3582292945675,
+          "LR_cc": 4169.923476320744,
+          "p_uc": 0.0,
+          "p_ind": 0.0,
+          "p_cc": 0.0,
+          "exceedance_rate": 0.4040859644468029,
+          "n_exceedances": 1523,
+          "n_total": 3769
+        },
+        "n_valid": 3769,
+        "r2_oos": {
+          "point": 0.3200198718318271,
+          "ci_95": [
+            0.12911227398615766,
+            0.43926764592397
+          ],
+          "std": 0.08434193533334527
+        },
+        "qlike": {
+          "point": 0.14757413881548553,
+          "ci_95": [
+            0.13503157912355068,
+            0.1624420979709118
+          ],
+          "std": 0.007146008739454105
+        }
+      }
+    },
+    "cross_model": {
+      "dm_tests": [
+        {
+          "DM": -0.9219638920251207,
+          "p": 0.35654741029080395,
+          "mean_diff": -0.00010128648819148307,
+          "se": 0.0001098594956566079,
+          "label": "Quantile HAR vs Quantile HAR+QCML",
+          "model1": "QR_HAR",
+          "model2": "QR_HAR_QCML",
+          "p_adjusted": 0.35654741029080395,
+          "rejected": false
+        },
+        {
+          "DM": -2.948926013986617,
+          "p": 0.0031888030586295635,
+          "mean_diff": -0.0006520158649923572,
+          "se": 0.0002211028224851613,
+          "label": "RF HAR vs RF HAR+QCML",
+          "model1": "RF_HAR",
+          "model2": "RF_HAR_QCML",
+          "p_adjusted": 0.006377606117259127,
+          "rejected": true
+        }
+      ],
+      "holm_bonferroni_threshold": 0.025
+    },
+    "rf_importance": {
+      "RF_HAR": {
+        "mean": {
+          "rv_daily": 0.026044464497672615,
+          "rv_weekly": 0.09922047987993295,
+          "rv_monthly": 0.8747350556223945
+        },
+        "std": {
+          "rv_daily": 0.01730258811085975,
+          "rv_weekly": 0.04772051543979954,
+          "rv_monthly": 0.06476348225483315
+        },
+        "n_folds": 15
+      },
+      "RF_HAR_QCML": {
+        "mean": {
+          "rv_daily": 0.013091807254655165,
+          "rv_weekly": 0.0807802047873377,
+          "rv_monthly": 0.8180607750781259,
+          "multi_lag_fid": 0.027495814587802085,
+          "spectral_gap": 0.024249322376814233,
+          "spectral_gap_ma20": 0.036322075915264804
+        },
+        "std": {
+          "rv_daily": 0.013347604190284358,
+          "rv_weekly": 0.04198277155528602,
+          "rv_monthly": 0.06674766490981819,
+          "multi_lag_fid": 0.005565041806103683,
+          "spectral_gap": 0.0019022930236785025,
+          "spectral_gap_ma20": 0.007269551010851754
+        },
+        "n_folds": 15
+      }
+    }
+  },
+  "regime_conditional": {
+    "median_rv_daily": 0.07818373492805754,
+    "regimes": {
+      "calm": {
+        "n": 1885,
+        "models": {
+          "QR_HAR": {
+            "pinball_loss": 0.013755572470658731,
+            "exceedance_rate": 0.12307692307692308,
+            "n_valid": 1885
+          },
+          "QR_HAR_QCML": {
+            "pinball_loss": 0.013863305758613933,
+            "exceedance_rate": 0.11777188328912466,
+            "n_valid": 1885
+          },
+          "RF_HAR": {
+            "pinball_loss": 0.02212152306117231,
+            "exceedance_rate": 0.3877984084880637,
+            "n_valid": 1885
+          },
+          "RF_HAR_QCML": {
+            "pinball_loss": 0.022312479640012792,
+            "exceedance_rate": 0.37984084880636604,
+            "n_valid": 1885
+          }
+        },
+        "dm_quantile": {
+          "DM": -0.7962950585829744,
+          "p": 0.4258605570362135,
+          "mean_diff": -0.00010773328795520301,
+          "se": 0.00013529317656060417
+        },
+        "dm_rf": {
+          "DM": -0.9216269824542045,
+          "p": 0.35672317914287954,
+          "mean_diff": -0.00019095657884048771,
+          "se": 0.00020719508269168574
+        },
+        "qr_improvement_pct": -0.7831974146114375,
+        "rf_improvement_pct": -0.863216236569391
+      },
+      "stressed": {
+        "n": 1884,
+        "models": {
+          "QR_HAR": {
+            "pinball_loss": 0.019003021293415502,
+            "exceedance_rate": 0.09713375796178345,
+            "n_valid": 1884
+          },
+          "QR_HAR_QCML": {
+            "pinball_loss": 0.01909785755997502,
+            "exceedance_rate": 0.09394904458598727,
+            "n_valid": 1884
+          },
+          "RF_HAR": {
+            "pinball_loss": 0.03208210029818787,
+            "exceedance_rate": 0.42356687898089174,
+            "n_valid": 1884
+          },
+          "RF_HAR_QCML": {
+            "pinball_loss": 0.033195420172944703,
+            "exceedance_rate": 0.428343949044586,
+            "n_valid": 1884
+          }
+        },
+        "dm_quantile": {
+          "DM": -0.6170262978478928,
+          "p": 0.5372173800476285,
+          "mean_diff": -9.483626655952337e-05,
+          "se": 0.00015369890536319098
+        },
+        "dm_rf": {
+          "DM": -3.1816972550035487,
+          "p": 0.0014641478045265277,
+          "mean_diff": -0.0011133198747568338,
+          "se": 0.0003499138307411313
+        },
+        "qr_improvement_pct": -0.49905888698014017,
+        "rf_improvement_pct": -3.4702212897816915
+      }
+    }
+  },
+  "timestamp": "20260220_204240"
+}

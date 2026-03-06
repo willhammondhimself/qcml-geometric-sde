@@ -1,0 +1,49 @@
+id: "0003"
+round: 3
+timestamp: "2026-03-06T16:15:00"
+question: "Can we compute a meaningful Chern number from the full market manifold (not just 2D slices)?"
+theme: "novel_observables"
+status: "reject"
+
+hypothesis:
+  statement: "The Chern number C = (1/2pi) integral(F_ab) over a closed manifold captures topological charge that changes during regime transitions."
+  mechanism: "Integrating Berry curvature over all 2D planes of the parameter manifold aggregates topological information across all feature interactions."
+  prior_plausibility: "medium"
+
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: "Weak empirical results. Median d=0.216, below 0.3 threshold. Best crisis: Rate Hikes d=0.43, but GFC d=0.10 and SVB d=0.13 are near zero. Required log-compression and MAD-based z-scoring to get any signal at all."
+    evidence: "Smoke test on SPY/DIA with 6 PCA dimensions, 15 curvature pairs"
+    confidence: 0.65
+
+  - knight: "1+3+4"
+    role: "combined_analysis"
+    workers_used: 0
+    conclusion: "Weak theoretical soundness. Chern number requires integration over a CLOSED, COMPACT manifold — our parameter space is open and non-compact. Result is a continuous real number (not quantized integer), losing the topological protection that makes Chern numbers meaningful. Predicted |rho|=0.72 with BerryPhaseRateDetector. The Frobenius aggregation mode already approximates this."
+    evidence: "Chern-Weil theorem requires closed manifold; test_chern_analytical already shows C≈0.5 (not integer) on open grid"
+    confidence: 0.88
+
+test_results:
+  crises_tested: ["2008_gfc", "2020_covid", "2022_rates", "2023_svb"]
+  cohens_d_per_crisis:
+    2008_gfc: 0.102
+    2020_covid: 0.304
+    2022_rates: 0.431
+    2023_svb: 0.129
+  median_d: 0.216
+  max_d: 0.431
+  passes_threshold: false
+
+verdict:
+  keep: false
+  reason: "Below smoke threshold (median d=0.216). Fundamental theoretical flaw: Chern number undefined on non-compact manifold. Empirically redundant with BerryPhaseRateDetector (predicted |rho|=0.72). The multi-plane Berry flux sum adds no information beyond Frobenius aggregation already implemented."
+  strength: "low"
+  follow_up_questions:
+    - "Would holonomy over closed temporal loops (explicitly closing the path) give a better topological signal?"
+    - "Can the Berry flux spectrum (eigenvalues of F matrix) provide orthogonal channels?"
+
+artifacts:
+  code_dir: null
+  key_files: null

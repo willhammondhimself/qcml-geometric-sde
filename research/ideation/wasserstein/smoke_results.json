@@ -1,0 +1,183 @@
+{
+  "detector": "Wasserstein State Detector",
+  "question": "Q10: Does Wasserstein distance between consecutive quantum states work better than fidelity?",
+  "config": {
+    "symbols": [
+      "SPY",
+      "DIA"
+    ],
+    "start_date": "2005-01-01",
+    "end_date": "2025-12-31",
+    "feature_shape": [
+      5262,
+      13
+    ],
+    "n_bootstrap": 1000,
+    "context_days": 60,
+    "test_crises": [
+      "2008_gfc",
+      "2020_covid",
+      "2022_rates",
+      "2023_svb"
+    ]
+  },
+  "modes_evaluated": [
+    "trace",
+    "bures",
+    "eigenvalue_wasserstein"
+  ],
+  "all_mode_results": {
+    "trace": {
+      "per_crisis": {
+        "2008_gfc": {
+          "cohens_d": 0.6714923509295,
+          "ci_lo": 0.0909468512686934,
+          "ci_hi": 1.3750755653424895,
+          "crisis_n": 146,
+          "normal_n": 41,
+          "crisis_mean": 2.045157240906084,
+          "normal_mean": 1.3256521334491138
+        },
+        "2020_covid": {
+          "cohens_d": 2.877539526002269,
+          "ci_lo": 2.066462410411734,
+          "ci_hi": 4.763409926744152,
+          "crisis_n": 50,
+          "normal_n": 39,
+          "crisis_mean": 2.2432392725213846,
+          "normal_mean": -0.5811357085553914
+        },
+        "2022_rates": {
+          "cohens_d": 0.9098317664158674,
+          "ci_lo": 0.17534540467481088,
+          "ci_hi": 1.821027271336234,
+          "crisis_n": 209,
+          "normal_n": 42,
+          "crisis_mean": 0.3633686102066867,
+          "normal_mean": -0.2296401182150833
+        },
+        "2023_svb": {
+          "cohens_d": 0.5217007945369709,
+          "ci_lo": 0.0353838404248572,
+          "ci_hi": 1.405953479148977,
+          "crisis_n": 42,
+          "normal_n": 39,
+          "crisis_mean": 0.1722337557952906,
+          "normal_mean": 0.38115765132117996
+        }
+      },
+      "median_d": 0.7906620586726837,
+      "timing": {
+        "fit_seconds": 0.0,
+        "score_seconds": 0.3
+      },
+      "n_valid_scores": 5202
+    },
+    "bures": {
+      "per_crisis": {
+        "2008_gfc": {
+          "cohens_d": 0.6667750200148624,
+          "ci_lo": 0.08656030593734756,
+          "ci_hi": 1.368781944739802,
+          "crisis_n": 146,
+          "normal_n": 41,
+          "crisis_mean": 2.0511675951107655,
+          "normal_mean": 1.331293287347434
+        },
+        "2020_covid": {
+          "cohens_d": 2.8624883836978685,
+          "ci_lo": 2.0515039940796482,
+          "ci_hi": 4.760174206780967,
+          "crisis_n": 50,
+          "normal_n": 39,
+          "crisis_mean": 2.254694083744846,
+          "normal_mean": -0.5813770531441899
+        },
+        "2022_rates": {
+          "cohens_d": 0.9077041183809975,
+          "ci_lo": 0.1757799781935455,
+          "ci_hi": 1.817096437052714,
+          "crisis_n": 209,
+          "normal_n": 42,
+          "crisis_mean": 0.3617271270117968,
+          "normal_mean": -0.22921593642525842
+        },
+        "2023_svb": {
+          "cohens_d": 0.5248175669659388,
+          "ci_lo": 0.034335699164353306,
+          "ci_hi": 1.4107701773164054,
+          "crisis_n": 42,
+          "normal_n": 39,
+          "crisis_mean": 0.16859214341701254,
+          "normal_mean": 0.37851853358775295
+        }
+      },
+      "median_d": 0.7872395691979299,
+      "timing": {
+        "fit_seconds": 0.0,
+        "score_seconds": 0.3
+      },
+      "n_valid_scores": 5202
+    },
+    "eigenvalue_wasserstein": {
+      "per_crisis": {
+        "2008_gfc": {
+          "cohens_d": 0.0,
+          "ci_lo": 0.0,
+          "ci_hi": 0.0,
+          "crisis_n": 146,
+          "normal_n": 41,
+          "crisis_mean": 0.0,
+          "normal_mean": 0.0
+        },
+        "2020_covid": {
+          "cohens_d": 0.0,
+          "ci_lo": 0.0,
+          "ci_hi": 0.0,
+          "crisis_n": 50,
+          "normal_n": 39,
+          "crisis_mean": 0.0,
+          "normal_mean": 0.0
+        },
+        "2022_rates": {
+          "cohens_d": 0.0,
+          "ci_lo": 0.0,
+          "ci_hi": 0.0,
+          "crisis_n": 209,
+          "normal_n": 42,
+          "crisis_mean": 0.0,
+          "normal_mean": 0.0
+        },
+        "2023_svb": {
+          "cohens_d": 0.0,
+          "ci_lo": 0.0,
+          "ci_hi": 0.0,
+          "crisis_n": 42,
+          "normal_n": 39,
+          "crisis_mean": 0.0,
+          "normal_mean": 0.0
+        }
+      },
+      "median_d": 0.0,
+      "timing": {
+        "fit_seconds": 0.0,
+        "score_seconds": 0.3
+      },
+      "n_valid_scores": 5202
+    }
+  },
+  "best_mode": "trace",
+  "cohens_d_per_crisis": {
+    "2008_gfc": 0.6714923509295,
+    "2020_covid": 2.877539526002269,
+    "2022_rates": 0.9098317664158674,
+    "2023_svb": 0.5217007945369709
+  },
+  "median_d": 0.7906620586726837,
+  "passes_threshold": true,
+  "implementation_issues": [],
+  "math_note": "For pure states: trace_d = sqrt(1-F), bures_d = sqrt(2(1-sqrt(F))). Both are exact quantum Wasserstein analogs. eigenvalue_wasserstein = 0 for all pure states (degenerate). fidelity-based detectors use F directly; trace/bures use 1-F transforms.",
+  "timing": {
+    "total_seconds": 1.1
+  }
+}

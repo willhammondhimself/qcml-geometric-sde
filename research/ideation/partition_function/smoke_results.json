@@ -1,0 +1,85 @@
+{
+  "detector": "Partition Function (Specific Heat)",
+  "question": "Q7: Can we define a partition function / free energy for phase transition detection?",
+  "config": {
+    "hilbert_dim": 4,
+    "n_pca_components": 8,
+    "operator_method": "random",
+    "normalization": "soft",
+    "beta": 1.0,
+    "rolling_window": 20,
+    "min_expanding": 60,
+    "n_bootstrap": 1000,
+    "symbols": [
+      "SPY",
+      "DIA"
+    ],
+    "start_date": "2005-01-01",
+    "end_date": "2025-12-31"
+  },
+  "data": {
+    "feature_shape": [
+      5262,
+      13
+    ],
+    "n_valid_scores": 5202
+  },
+  "raw_specific_heat": {
+    "mean": 0.34968005476140523,
+    "std": 0.0604651621279922,
+    "min": 0.17905882443857024,
+    "max": 0.4657371943291011
+  },
+  "cohens_d_per_crisis": {
+    "2008_gfc": 0.41903066969628266,
+    "2020_covid": 2.5470579229602994,
+    "2022_rates": 0.6542233141198978,
+    "2023_svb": 0.05544738280604124
+  },
+  "per_crisis_detail": {
+    "2008_gfc": {
+      "cohens_d": 0.41903066969628266,
+      "ci_lo": 0.029977427521789557,
+      "ci_hi": 1.1376601045963617,
+      "crisis_n": 146,
+      "normal_n": 41,
+      "crisis_mean_score": 1.4985419736045515,
+      "normal_mean_score": 1.768476202086451
+    },
+    "2020_covid": {
+      "cohens_d": 2.5470579229602994,
+      "ci_lo": 1.8294636825155726,
+      "ci_hi": 3.9920410779130715,
+      "crisis_n": 50,
+      "normal_n": 39,
+      "crisis_mean_score": 1.2302424704128208,
+      "normal_mean_score": -0.4069525368366487
+    },
+    "2022_rates": {
+      "cohens_d": 0.6542233141198978,
+      "ci_lo": 0.0589707374935869,
+      "ci_hi": 1.592793655574373,
+      "crisis_n": 209,
+      "normal_n": 42,
+      "crisis_mean_score": 0.01790284690154549,
+      "normal_mean_score": -0.5089710134538459
+    },
+    "2023_svb": {
+      "cohens_d": 0.05544738280604124,
+      "ci_lo": 0.009704376946048036,
+      "ci_hi": 0.9515030525198248,
+      "crisis_n": 42,
+      "normal_n": 39,
+      "crisis_mean_score": -0.23906771581031944,
+      "normal_mean_score": -0.2830736652665025
+    }
+  },
+  "median_d": 0.5366269919080902,
+  "max_d": 2.5470579229602994,
+  "passes_threshold": true,
+  "implementation_issues": [],
+  "timing": {
+    "total_seconds": 0.8,
+    "score_computation_seconds": 0.3
+  }
+}

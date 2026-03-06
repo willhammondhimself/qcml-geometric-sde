@@ -1,0 +1,29 @@
+id: "0023"
+round: 23
+timestamp: "2026-03-06T18:15:00"
+question: "Can we use a gauge-equivariant neural network to enforce physical symmetries?"
+theme: "embedding"
+status: "reject"
+hypothesis:
+  statement: "Gauge symmetries in the embedding could reduce variance and improve generalization."
+  mechanism: "Equivariant architecture enforces invariance under gauge transformations."
+  prior_plausibility: "low"
+knight_findings:
+  - knight: "1+3+4"
+    role: "combined_analysis"
+    workers_used: 0
+    conclusion: "U(1) gauge invariance already satisfied by construction (|<..>|^2 removes phase). No natural gauge group exists for financial feature space. Imposing ad hoc symmetries would overconstrain."
+    evidence: "Current observables are already gauge-invariant; financial data has no gauge structure"
+    confidence: 0.85
+test_results:
+  crises_tested: []
+  cohens_d_per_crisis: {}
+  median_d: null
+  passes_threshold: false
+verdict:
+  keep: false
+  reason: "Already gauge-invariant. No natural financial gauge group to enforce."
+  strength: "low"
+artifacts:
+  code_dir: null
+  key_files: null

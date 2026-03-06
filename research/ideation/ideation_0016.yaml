@@ -1,0 +1,30 @@
+id: "0016"
+round: 16
+timestamp: "2026-03-06T18:15:00"
+question: "Does a higher-dimensional Hilbert space improve detection by avoiding Kramers degeneracy?"
+theme: "embedding"
+status: "keep"
+hypothesis:
+  statement: "Higher hilbert_dim provides richer spectral structure and avoids Kramers degeneracy."
+  mechanism: "More eigenlevels = more spectral information for Berry curvature and fidelity observables."
+  prior_plausibility: "high"
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: "dim=16 gives median d=1.327, +131% over default dim=8 (d=0.573). dim=3 is dead (d=0.058). Non-monotonic middle regime (dim=6 worse than dim=4)."
+    evidence: "Sweep over dim=[3,4,6,8,16] with BerryPhaseRateDetector"
+    confidence: 0.85
+test_results:
+  crises_tested: ["2008_gfc", "2020_covid", "2011_euro", "2015_china"]
+  cohens_d_per_crisis: {2008_gfc: 1.833, 2020_covid: 1.864, 2011_euro: 0.821, 2015_china: 0.354}
+  median_d: 1.327
+  passes_threshold: true
+verdict:
+  keep: true
+  reason: "Massive improvement (+131%). dim=16 should become the new default. Test dim=32 for further gains. Power-of-2 dims (Pauli tensor product structure) outperform non-power-of-2."
+  strength: "high"
+  follow_up_questions: ["Does dim=32 continue the trend?", "Apply dim=16 across all detectors"]
+artifacts:
+  code_dir: "research/ideation/hilbert_dim_sweep/"
+  key_files: ["test_sweep.py", "smoke_results.json"]

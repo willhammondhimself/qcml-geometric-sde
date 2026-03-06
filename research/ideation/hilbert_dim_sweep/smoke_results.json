@@ -1,0 +1,72 @@
+{
+  "metadata": {
+    "symbols": [
+      "SPY",
+      "DIA"
+    ],
+    "start_date": "2005-01-01",
+    "end_date": "2025-01-01",
+    "operator_method": "random",
+    "n_pca_components": 15,
+    "rolling_window": 20,
+    "min_expanding": 60,
+    "seed": 42,
+    "normalization": "sphere",
+    "berry_aggregation": "f01",
+    "smoke_crises": [
+      "2008_gfc",
+      "2020_covid",
+      "2011_euro",
+      "2015_china"
+    ]
+  },
+  "results_by_dim": {
+    "3": {
+      "median_d": 0.057749999999999996,
+      "per_crisis": {
+        "2008_gfc": 0.0639,
+        "2020_covid": 0.0195,
+        "2011_euro": 0.1475,
+        "2015_china": 0.0516
+      }
+    },
+    "4": {
+      "median_d": 0.68445,
+      "per_crisis": {
+        "2008_gfc": 1.1491,
+        "2020_covid": 0.8681,
+        "2011_euro": 0.5008,
+        "2015_china": 0.0926
+      }
+    },
+    "6": {
+      "median_d": 0.3167,
+      "per_crisis": {
+        "2008_gfc": 0.5312,
+        "2020_covid": 0.1022,
+        "2011_euro": 0.0235,
+        "2015_china": 1.5463
+      }
+    },
+    "8": {
+      "median_d": 0.5725,
+      "per_crisis": {
+        "2008_gfc": 1.1777,
+        "2020_covid": 0.7388,
+        "2011_euro": 0.2537,
+        "2015_china": 0.4062
+      }
+    },
+    "16": {
+      "median_d": 1.327,
+      "per_crisis": {
+        "2008_gfc": 1.8326,
+        "2020_covid": 1.8638,
+        "2011_euro": 0.8214,
+        "2015_china": 0.3541
+      }
+    }
+  },
+  "best_dim": 16,
+  "improvement_over_default": "+131.8% median d"
+}

@@ -1,0 +1,247 @@
+{
+  "detector": "Thouless Energy",
+  "question": "Q11",
+  "config": {
+    "hilbert_dim": 8,
+    "n_pca_components": 15,
+    "operator_method": "random",
+    "normalization": "soft",
+    "rolling_window": 20,
+    "min_expanding": 60,
+    "seed": 42,
+    "adaptive_epsilon": true,
+    "alpha": 0.5,
+    "scoring_modes_evaluated": [
+      "thouless",
+      "lsr",
+      "combined"
+    ],
+    "best_mode": "combined",
+    "n_bootstrap": 1000,
+    "context_days": 60
+  },
+  "data": {
+    "symbols": [
+      "SPY",
+      "DIA"
+    ],
+    "start_date": "2005-01-01",
+    "end_date": "2025-12-31",
+    "feature_shape": [
+      5262,
+      13
+    ]
+  },
+  "all_modes": {
+    "thouless": {
+      "per_crisis": {
+        "2008_gfc": {
+          "cohens_d": 0.0,
+          "ci_lo": 0.0,
+          "ci_hi": 0.0,
+          "crisis_n": 146,
+          "normal_n": 41,
+          "crisis_mean": 0.0,
+          "normal_mean": 0.0
+        },
+        "2020_covid": {
+          "cohens_d": 0.0,
+          "ci_lo": 0.0,
+          "ci_hi": 0.0,
+          "crisis_n": 50,
+          "normal_n": 39,
+          "crisis_mean": 0.0,
+          "normal_mean": 0.0
+        },
+        "2022_rates": {
+          "cohens_d": 0.0,
+          "ci_lo": 0.0,
+          "ci_hi": 0.0,
+          "crisis_n": 209,
+          "normal_n": 42,
+          "crisis_mean": 0.0,
+          "normal_mean": 0.0
+        },
+        "2023_svb": {
+          "cohens_d": 0.0,
+          "ci_lo": 0.0,
+          "ci_hi": 0.0,
+          "crisis_n": 42,
+          "normal_n": 39,
+          "crisis_mean": 0.0,
+          "normal_mean": 0.0
+        }
+      },
+      "median_d": 0.0,
+      "d_values": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "score_seconds": 0.4,
+      "n_valid_scores": 5202
+    },
+    "lsr": {
+      "per_crisis": {
+        "2008_gfc": {
+          "cohens_d": 0.36334369085814466,
+          "ci_lo": 0.022967548121556942,
+          "ci_hi": 1.011441215432999,
+          "crisis_n": 146,
+          "normal_n": 41,
+          "crisis_mean": 1.231702983683127,
+          "normal_mean": 1.4884318893893014
+        },
+        "2020_covid": {
+          "cohens_d": 4.093848911236342,
+          "ci_lo": 3.296871041108308,
+          "ci_hi": 5.874251559221517,
+          "crisis_n": 50,
+          "normal_n": 39,
+          "crisis_mean": 1.4370665175731523,
+          "normal_mean": -1.112427114909887
+        },
+        "2022_rates": {
+          "cohens_d": 0.368079721625107,
+          "ci_lo": 0.01841314806649967,
+          "ci_hi": 0.9763734138960758,
+          "crisis_n": 209,
+          "normal_n": 42,
+          "crisis_mean": 0.5345450765098533,
+          "normal_mean": 0.1714816053956193
+        },
+        "2023_svb": {
+          "cohens_d": 0.9350954970147384,
+          "ci_lo": 0.23882577610095868,
+          "ci_hi": 1.9243706625732073,
+          "crisis_n": 42,
+          "normal_n": 39,
+          "crisis_mean": 0.24175540902499681,
+          "normal_mean": -0.5182016869120684
+        }
+      },
+      "median_d": 0.6515876093199227,
+      "d_values": [
+        0.36334369085814466,
+        4.093848911236342,
+        0.368079721625107,
+        0.9350954970147384
+      ],
+      "score_seconds": 0.4,
+      "n_valid_scores": 5202
+    },
+    "combined": {
+      "per_crisis": {
+        "2008_gfc": {
+          "cohens_d": 0.36334369085814444,
+          "ci_lo": 0.022967548121555496,
+          "ci_hi": 1.0114412154329973,
+          "crisis_n": 146,
+          "normal_n": 41,
+          "crisis_mean": 1.2317029836831266,
+          "normal_mean": 1.4884318893893005
+        },
+        "2020_covid": {
+          "cohens_d": 4.0938489112363525,
+          "ci_lo": 3.296871041108315,
+          "ci_hi": 5.874251559221523,
+          "crisis_n": 50,
+          "normal_n": 39,
+          "crisis_mean": 1.437066517573153,
+          "normal_mean": -1.112427114909887
+        },
+        "2022_rates": {
+          "cohens_d": 0.36807972162510594,
+          "ci_lo": 0.018413148066498655,
+          "ci_hi": 0.9763734138960757,
+          "crisis_n": 209,
+          "normal_n": 42,
+          "crisis_mean": 0.5345450765098534,
+          "normal_mean": 0.17148160539562007
+        },
+        "2023_svb": {
+          "cohens_d": 0.935095497014741,
+          "ci_lo": 0.23882577610096095,
+          "ci_hi": 1.9243706625732089,
+          "crisis_n": 42,
+          "normal_n": 39,
+          "crisis_mean": 0.24175540902499745,
+          "normal_mean": -0.5182016869120689
+        }
+      },
+      "median_d": 0.6515876093199235,
+      "d_values": [
+        0.36334369085814444,
+        4.0938489112363525,
+        0.36807972162510594,
+        0.935095497014741
+      ],
+      "score_seconds": 0.4,
+      "n_valid_scores": 5202
+    }
+  },
+  "best_mode_results": {
+    "mode": "combined",
+    "per_crisis": {
+      "2008_gfc": {
+        "cohens_d": 0.36334369085814444,
+        "ci_lo": 0.022967548121555496,
+        "ci_hi": 1.0114412154329973,
+        "crisis_n": 146,
+        "normal_n": 41,
+        "crisis_mean": 1.2317029836831266,
+        "normal_mean": 1.4884318893893005
+      },
+      "2020_covid": {
+        "cohens_d": 4.0938489112363525,
+        "ci_lo": 3.296871041108315,
+        "ci_hi": 5.874251559221523,
+        "crisis_n": 50,
+        "normal_n": 39,
+        "crisis_mean": 1.437066517573153,
+        "normal_mean": -1.112427114909887
+      },
+      "2022_rates": {
+        "cohens_d": 0.36807972162510594,
+        "ci_lo": 0.018413148066498655,
+        "ci_hi": 0.9763734138960757,
+        "crisis_n": 209,
+        "normal_n": 42,
+        "crisis_mean": 0.5345450765098534,
+        "normal_mean": 0.17148160539562007
+      },
+      "2023_svb": {
+        "cohens_d": 0.935095497014741,
+        "ci_lo": 0.23882577610096095,
+        "ci_hi": 1.9243706625732089,
+        "crisis_n": 42,
+        "normal_n": 39,
+        "crisis_mean": 0.24175540902499745,
+        "normal_mean": -0.5182016869120689
+      }
+    },
+    "median_d": 0.6515876093199235,
+    "max_d": 4.0938489112363525,
+    "d_values": [
+      0.36334369085814444,
+      4.0938489112363525,
+      0.36807972162510594,
+      0.935095497014741
+    ]
+  },
+  "summary": {
+    "cohens_d_per_crisis": {
+      "2008_gfc": 0.36334369085814444,
+      "2020_covid": 4.0938489112363525,
+      "2022_rates": 0.36807972162510594,
+      "2023_svb": 0.935095497014741
+    },
+    "median_d": 0.6515876093199235,
+    "passes_threshold": true,
+    "implementation_issues": []
+  },
+  "timing": {
+    "total_seconds": 1.4
+  }
+}

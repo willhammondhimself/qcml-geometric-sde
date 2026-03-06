@@ -1,0 +1,30 @@
+id: "0010"
+round: 10
+timestamp: "2026-03-06T17:45:00"
+question: "Does the Wasserstein distance between consecutive quantum states work better than fidelity?"
+theme: "novel_observables"
+status: "keep"
+hypothesis:
+  statement: "Trace distance (quantum W1) emphasizes near-orthogonal transitions more than fidelity."
+  mechanism: "T = sqrt(1-F) is a monotone transform of fidelity but may interact differently with z-scoring."
+  prior_plausibility: "medium"
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: "Strong. Median d=0.791. COVID d=2.878 (exceptional), Rate Hikes d=0.910, GFC d=0.671, SVB d=0.522. Eigenvalue Wasserstein is dead (pure states always have spectrum {1,0,0,0})."
+    evidence: "Three modes tested: trace(0.791), bures(0.787), eigenvalue(0.000)"
+    confidence: 0.85
+test_results:
+  crises_tested: ["2008_gfc", "2020_covid", "2022_rates", "2023_svb"]
+  cohens_d_per_crisis: {2008_gfc: 0.671, 2020_covid: 2.878, 2022_rates: 0.910, 2023_svb: 0.522}
+  median_d: 0.791
+  passes_threshold: true
+verdict:
+  keep: true
+  reason: "Strong signal (d=0.791). Functionally equivalent to fidelity (monotone transform) but the nonlinear rescaling interacts well with z-scoring. Worth full validation. Note: trace and Bures distances are near-identical for pure states."
+  strength: "high"
+  follow_up_questions: ["Is this orthogonal to MultiLagFidelity?", "Does mixed-state extension add value?"]
+artifacts:
+  code_dir: "research/ideation/wasserstein/"
+  key_files: ["detector.py", "smoke_test.py", "smoke_results.json"]

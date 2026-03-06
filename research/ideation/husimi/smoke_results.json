@@ -1,0 +1,87 @@
+{
+  "detector": "Husimi Q-function",
+  "config": {
+    "hilbert_dim": 4,
+    "n_pca_components": 8,
+    "operator_method": "random",
+    "normalization": "soft",
+    "rolling_window": 20,
+    "min_expanding": 60,
+    "seed": 42,
+    "n_probes": 512,
+    "signal": "wehrl"
+  },
+  "data": {
+    "symbols": [
+      "SPY",
+      "DIA"
+    ],
+    "start_date": "2005-01-01",
+    "end_date": "2025-12-31",
+    "feature_shape": [
+      5262,
+      13
+    ],
+    "n_valid_scores": 5202
+  },
+  "cohens_d_per_crisis": {
+    "2008_gfc": 0.23055888446816478,
+    "2020_covid": 1.785737946784738,
+    "2022_rates": 0.7545315226125717,
+    "2023_svb": 0.32753285158591716
+  },
+  "per_crisis": {
+    "2008_gfc": {
+      "cohens_d": 0.23055888446816478,
+      "ci_lo": 0.012940327033804017,
+      "ci_hi": 0.7883549537555729,
+      "crisis_n": 146,
+      "normal_n": 41,
+      "crisis_mean": -0.5794975766708836,
+      "normal_mean": -0.8375528751208616
+    },
+    "2020_covid": {
+      "cohens_d": 1.785737946784738,
+      "ci_lo": 1.2165006755451,
+      "ci_hi": 2.872292228202652,
+      "crisis_n": 50,
+      "normal_n": 39,
+      "crisis_mean": -1.1578137247059919,
+      "normal_mean": 0.15521979693910376
+    },
+    "2022_rates": {
+      "cohens_d": 0.7545315226125717,
+      "ci_lo": 0.13717373295346372,
+      "ci_hi": 1.4056490769482803,
+      "crisis_n": 209,
+      "normal_n": 42,
+      "crisis_mean": 0.7698147175557193,
+      "normal_mean": 1.277960755235085
+    },
+    "2023_svb": {
+      "cohens_d": 0.32753285158591716,
+      "ci_lo": 0.015200509514022664,
+      "ci_hi": 1.329157024801639,
+      "crisis_n": 42,
+      "normal_n": 39,
+      "crisis_mean": 0.9368617448651777,
+      "normal_mean": 1.1462880894801715
+    }
+  },
+  "summary": {
+    "median_d": 0.5410321870992445,
+    "max_d": 1.785737946784738,
+    "passes_threshold": true,
+    "d_values": [
+      0.23055888446816478,
+      1.785737946784738,
+      0.7545315226125717,
+      0.32753285158591716
+    ]
+  },
+  "implementation_issues": [],
+  "timing": {
+    "total_seconds": 0.5,
+    "score_computation_seconds": 0.3
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "knight": 2,
+  "role": "empirical_test",
+  "detector": "FullManifoldChernDetector",
+  "config": {
+    "symbols": [
+      "SPY",
+      "DIA"
+    ],
+    "start_date": "2005-01-01",
+    "end_date": "2025-01-01",
+    "n_bootstrap": 1000,
+    "hilbert_dim": 4,
+    "n_pca_components": 6,
+    "operator_method": "random",
+    "epsilon": 0.0001,
+    "n_planes": 15
+  },
+  "cohens_d_per_crisis": {
+    "2008_gfc": 0.1015,
+    "2020_covid": 0.3038,
+    "2022_rates": 0.4307,
+    "2023_svb": 0.1286
+  },
+  "median_d": 0.2162,
+  "passes_threshold": true,
+  "implementation_issues": []
+}

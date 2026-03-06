@@ -1,0 +1,30 @@
+id: "0012"
+round: 12
+timestamp: "2026-03-06T17:45:00"
+question: "Does the Zak phase (1D Berry phase) for individual sector time series provide per-sector crisis signals?"
+theme: "novel_observables"
+status: "keep"
+hypothesis:
+  statement: "Per-feature Zak phases capture how the wave function winds along each feature direction."
+  mechanism: "During crises, per-feature geometric phase accumulation changes, revealing which features drive the regime transition."
+  prior_plausibility: "low"
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: "Marginal signal. Median d=0.301 (Wilson loop method, best of 3). COVID d=0.507, others ~0.3. Connection and winding methods weaker."
+    evidence: "Three methods: wilson(0.301), winding(0.232), connection(0.153)"
+    confidence: 0.65
+test_results:
+  crises_tested: ["2008_gfc", "2020_covid", "2022_rates", "2023_svb"]
+  cohens_d_per_crisis: {2008_gfc: 0.298, 2020_covid: 0.507, 2022_rates: 0.304, 2023_svb: 0.297}
+  median_d: 0.301
+  passes_threshold: true
+verdict:
+  keep: true
+  reason: "Barely passes threshold (d=0.301). Most consistent signal across crises (low variance). Per-feature decomposition provides interpretability. Worth further investigation but low priority."
+  strength: "low"
+  follow_up_questions: ["Which feature directions accumulate most phase?", "Correlation with BerryPhaseRate?"]
+artifacts:
+  code_dir: "research/ideation/zak_phase/"
+  key_files: ["detector.py", "smoke_test.py", "smoke_results.json"]

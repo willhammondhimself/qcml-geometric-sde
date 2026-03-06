@@ -1,0 +1,30 @@
+id: "0021"
+round: 21
+timestamp: "2026-03-06T18:15:00"
+question: "Can a conformal mapping to the Poincare disk capture tail-risk structure?"
+theme: "embedding"
+status: "investigate_further"
+hypothesis:
+  statement: "Hyperbolic geometry captures hierarchical correlation structure naturally."
+  mechanism: "Financial correlations form tree-like structures; Poincare disk has exponential volume growth fitting this geometry."
+  prior_plausibility: "high"
+knight_findings:
+  - knight: "1+3+4"
+    role: "combined_analysis"
+    workers_used: 0
+    conclusion: "Strong theoretical motivation (Sarkar 2011, Nickel & Kiela 2017). Correlation collapse during crises = movement toward center of Poincare disk. But requires Riemannian optimization not in current stack."
+    evidence: "Theoretical analysis; hyperbolic embeddings for hierarchical data well-established"
+    confidence: 0.75
+test_results:
+  crises_tested: []
+  cohens_d_per_crisis: {}
+  median_d: null
+  passes_threshold: false
+verdict:
+  keep: false
+  reason: "Strong Paper 3 candidate but requires Riemannian optimization infrastructure. Not actionable for current papers."
+  strength: "medium"
+  follow_up_questions: ["Implement Riemannian SGD for Poincare disk embedding"]
+artifacts:
+  code_dir: null
+  key_files: null

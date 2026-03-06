@@ -1,0 +1,29 @@
+id: "0020"
+round: 20
+timestamp: "2026-03-06T18:15:00"
+question: "Does embedding individual stocks as qubits in a multi-qubit register outperform single density matrix?"
+theme: "embedding"
+status: "reject"
+hypothesis:
+  statement: "Per-stock qubits create natural tensor product structure with inter-stock entanglement."
+  mechanism: "stock_i → qubit_i, combined state captures cross-stock quantum correlations."
+  prior_plausibility: "low"
+knight_findings:
+  - knight: "1+3+4"
+    role: "combined_analysis"
+    workers_used: 0
+    conclusion: "Tensor product of single-qubit states is SEPARABLE by construction (zero entanglement). For cross-stock entanglement, need joint Hamiltonian on 2^n dim — exponentially intractable. Current architecture already captures cross-asset info via joint PCA + operators."
+    evidence: "Mathematical argument; |psi_1> x |psi_2> has zero Schmidt rank beyond 1"
+    confidence: 0.95
+test_results:
+  crises_tested: []
+  cohens_d_per_crisis: {}
+  median_d: null
+  passes_threshold: false
+verdict:
+  keep: false
+  reason: "Fundamentally flawed — separable states cannot capture inter-asset correlations. Increasing hilbert_dim in the existing single-register architecture is strictly superior."
+  strength: "low"
+artifacts:
+  code_dir: null
+  key_files: null

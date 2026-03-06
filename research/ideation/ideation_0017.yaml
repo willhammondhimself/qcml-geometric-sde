@@ -1,0 +1,30 @@
+id: "0017"
+round: 17
+timestamp: "2026-03-06T18:15:00"
+question: "Can we learn the optimal embedding via a neural network that maps returns to density matrices?"
+theme: "embedding"
+status: "investigate_further"
+hypothesis:
+  statement: "A learned embedding could optimize for crisis discrimination rather than using random operators."
+  mechanism: "Neural network maps features to density matrices via supervised or contrastive objective."
+  prior_plausibility: "high"
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: "Gibbs state rho(x) = exp(sum x_k sigma_k)/Z achieves d=0.367 with ZERO learnable parameters. Current embedding is 74.3% linear (fidelity 0.902). A shallow learned model could improve."
+    evidence: "Parametric Gibbs state on 4 crises, linear analysis of current embedding"
+    confidence: 0.70
+test_results:
+  crises_tested: ["2008_gfc", "2020_covid", "2022_rates", "2023_svb"]
+  cohens_d_per_crisis: {2008_gfc: 0.336, 2020_covid: 1.240, 2022_rates: 0.397, 2023_svb: 0.293}
+  median_d: 0.367
+  passes_threshold: true
+verdict:
+  keep: false
+  reason: "Strong future work candidate (Paper 2/3) but converts framework from unsupervised to supervised. Gibbs state result (d=0.367) is a promising proof of concept."
+  strength: "medium"
+  follow_up_questions: ["Supervised geometric embedding via Gibbs states as Paper 3 topic?"]
+artifacts:
+  code_dir: "research/ideation/learned_embedding/"
+  key_files: ["analysis.py", "smoke_results.json"]

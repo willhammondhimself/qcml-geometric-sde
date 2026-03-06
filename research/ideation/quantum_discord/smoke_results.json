@@ -1,0 +1,81 @@
+{
+  "detector": "Quantum Discord",
+  "question": "Q14",
+  "note": "For pure 2-qubit states, discord D(A|B) = S(A) exactly (mathematical identity). Results should closely match entanglement entropy (Q4).",
+  "config": {
+    "hilbert_dim": 4,
+    "dim_A": 2,
+    "dim_B": 2,
+    "operator_method": "random",
+    "normalization": "soft",
+    "rolling_window": 20,
+    "min_expanding": 60,
+    "score_field": "discord",
+    "n_bootstrap": 1000
+  },
+  "data": {
+    "symbols": [
+      "SPY",
+      "DIA"
+    ],
+    "start_date": "2005-01-01",
+    "end_date": "2025-12-31",
+    "feature_shape": [
+      5262,
+      13
+    ],
+    "n_valid_scores": 5202
+  },
+  "cohens_d_per_crisis": {
+    "2008_gfc": 0.549994491388161,
+    "2020_covid": 1.4773228794650388,
+    "2022_rates": 0.621196502168576,
+    "2023_svb": 0.5660729828742872
+  },
+  "per_crisis_detail": {
+    "2008_gfc": {
+      "cohens_d": 0.549994491388161,
+      "ci_lo": 0.02932338605798721,
+      "ci_hi": 1.3491180045986908,
+      "crisis_n": 146,
+      "normal_n": 41,
+      "crisis_mean": 0.7001247659192519,
+      "normal_mean": 1.2194416436797582
+    },
+    "2020_covid": {
+      "cohens_d": 1.4773228794650388,
+      "ci_lo": 0.9727834504719446,
+      "ci_hi": 2.2487724962842797,
+      "crisis_n": 50,
+      "normal_n": 39,
+      "crisis_mean": 0.22566292030502552,
+      "normal_mean": -1.056672564992243
+    },
+    "2022_rates": {
+      "cohens_d": 0.621196502168576,
+      "ci_lo": 0.08357220865755394,
+      "ci_hi": 1.3575701775717082,
+      "crisis_n": 209,
+      "normal_n": 42,
+      "crisis_mean": 0.5973652235212316,
+      "normal_mean": -0.1468362978298824
+    },
+    "2023_svb": {
+      "cohens_d": 0.5660729828742872,
+      "ci_lo": 0.03827232262370677,
+      "ci_hi": 1.5144899510075087,
+      "crisis_n": 42,
+      "normal_n": 39,
+      "crisis_mean": 0.552181834005497,
+      "normal_mean": -0.03383349790706711
+    }
+  },
+  "median_d": 0.5936347425214317,
+  "max_d": 1.4773228794650388,
+  "passes_threshold": true,
+  "timing": {
+    "total_seconds": 0.9,
+    "fit_seconds": 0.0,
+    "score_seconds": 0.5
+  }
+}

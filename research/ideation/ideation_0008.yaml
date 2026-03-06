@@ -1,0 +1,49 @@
+id: "0008"
+round: 8
+timestamp: "2026-03-06T17:00:00"
+question: "Does the Husimi Q-function (phase space representation) reveal structure invisible to density matrix approaches?"
+theme: "novel_observables"
+status: "keep"
+
+hypothesis:
+  statement: "Wehrl entropy of the Husimi Q-function measures phase-space delocalization, capturing structure invisible to energy-basis observables."
+  mechanism: "During crises, the quantum state either concentrates (panic mode) or spreads in phase space, producing measurable Wehrl entropy changes."
+  prior_plausibility: "medium"
+
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: "Good results. Median d=0.541. COVID d=1.786 (strong). Rate Hikes d=0.755 (good). SVB d=0.328 (passes). GFC d=0.231 (weaker). Direction INVERTS for crises: state becomes MORE localized during stress."
+    evidence: "512 random probe vectors in C^4, Wehrl entropy, expanding z-score"
+    confidence: 0.78
+  - knight: "1+3+4"
+    role: "combined_analysis"
+    workers_used: 0
+    conclusion: "Low-medium theory due to SU(4) coherent state implementation barrier. Random probe vectors are an approximation, not canonical. Medium predicted |rho|~0.5-0.7 with EffectiveStateDimension. Moderate added value — new phase-space channel."
+    evidence: "Perelomov 1972 SU(N) coherent states require CP^3 parameterization"
+    confidence: 0.70
+
+test_results:
+  crises_tested: ["2008_gfc", "2020_covid", "2022_rates", "2023_svb"]
+  cohens_d_per_crisis:
+    2008_gfc: 0.231
+    2020_covid: 1.786
+    2022_rates: 0.755
+    2023_svb: 0.328
+  median_d: 0.541
+  max_d: 1.786
+  passes_threshold: true
+
+verdict:
+  keep: true
+  reason: "Good signal (median d=0.541) with genuinely new phase-space information channel. The signal inversion (crises concentrate rather than spread state) is itself an interesting finding. Worth full validation and orthogonality check with EffectiveStateDimension."
+  strength: "medium"
+  follow_up_questions:
+    - "Why does the state concentrate during crises? (dimensionality collapse?)"
+    - "Does IPR outperform Wehrl entropy?"
+    - "Proper SU(4) coherent states vs random probes?"
+
+artifacts:
+  code_dir: "research/ideation/husimi/"
+  key_files: ["detector.py", "smoke_test.py", "smoke_results.json"]

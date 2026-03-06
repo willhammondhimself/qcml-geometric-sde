@@ -1,0 +1,86 @@
+{
+  "knight": 2,
+  "role": "empirical_test",
+  "detector": "Entanglement Entropy",
+  "config": {
+    "hilbert_dim": 4,
+    "dim_A": 2,
+    "dim_B": 2,
+    "n_pca_components": 8,
+    "operator_method": "random",
+    "normalization": "soft",
+    "rolling_window": 20,
+    "min_expanding": 60,
+    "n_bootstrap": 1000
+  },
+  "data": {
+    "symbols_used": [
+      "XLK",
+      "XLF",
+      "XLE",
+      "XLV"
+    ],
+    "data_source": "sector_etfs",
+    "n_sectors": 4,
+    "start_date": "2005-01-01",
+    "end_date": "2025-12-31",
+    "feature_shape": [
+      5262,
+      23
+    ],
+    "n_valid_scores": 5202
+  },
+  "cohens_d_per_crisis": {
+    "2008_gfc": 0.8993700538105462,
+    "2020_covid": 0.5033287073082959,
+    "2022_rates": 0.8892443784464109,
+    "2023_svb": 0.3136919561764926
+  },
+  "per_crisis_detail": {
+    "2008_gfc": {
+      "cohens_d": 0.8993700538105462,
+      "ci_lo": 0.4270440126610704,
+      "ci_hi": 1.5403943161325526,
+      "crisis_n": 146,
+      "normal_n": 41,
+      "crisis_mean": -0.2819733396153163,
+      "normal_mean": 0.39917366477041166
+    },
+    "2020_covid": {
+      "cohens_d": 0.5033287073082959,
+      "ci_lo": 0.03365708414551011,
+      "ci_hi": 1.5387664475193223,
+      "crisis_n": 50,
+      "normal_n": 39,
+      "crisis_mean": 1.4439551423893695,
+      "normal_mean": 0.8361029257629803
+    },
+    "2022_rates": {
+      "cohens_d": 0.8892443784464109,
+      "ci_lo": 0.3435972800497727,
+      "ci_hi": 1.5289767390054414,
+      "crisis_n": 209,
+      "normal_n": 42,
+      "crisis_mean": -0.49394818720235073,
+      "normal_mean": 0.4777130366428968
+    },
+    "2023_svb": {
+      "cohens_d": 0.3136919561764926,
+      "ci_lo": 0.01700961609081316,
+      "ci_hi": 1.3934273590864983,
+      "crisis_n": 42,
+      "normal_n": 39,
+      "crisis_mean": 0.6643441025030757,
+      "normal_mean": 0.4051517490842988
+    }
+  },
+  "median_d": 0.6962865428773535,
+  "max_d": 0.8993700538105462,
+  "passes_threshold": true,
+  "implementation_issues": [],
+  "timing": {
+    "total_seconds": 1.4,
+    "fit_seconds": 0.0,
+    "score_computation_seconds": 0.3
+  }
+}

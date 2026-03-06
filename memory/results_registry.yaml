@@ -1,0 +1,145 @@
+# Results Registry: maps every claimed number in the paper to source data.
+#
+# Each claim has:
+#   name:         Human-readable description of the claim
+#   section:      Paper section where this number appears
+#   paper_value:  The value as written in the paper
+#   source_json:  Path to source JSON (relative to repo root)
+#   json_path:    Dot-notation path to the value in the JSON
+#
+# Canonical runs:
+#   Main comparison: 2026-03-03, 36 methods x 17 crises
+#   Fusion full:     2026-03-04, 22 methods x 15 crises (15 individuals + 7 fusion)
+#   Fusion holdout:  2026-03-04, 22 methods x 4 crises
+#
+# Run: python scripts/verify_paper_numbers.py
+#
+# Tolerance for numeric comparisons (default 0.02 for Cohen's d values).
+tolerance: 0.02
+
+claims:
+  # --- Table 4: Main comparison (median d, 36 methods x 17 crises) ---
+  - name: "Reduced Purity median d"
+    section: "Abstract / Table 4 / Sec 5.1"
+    paper_value: 0.83
+    source_json: "experiments/outputs/regime_detection/causal_comparison_20260303_231013.json"
+    json_path: "summary.median_d.Reduced Purity"
+
+  - name: "Hamilton MS median d"
+    section: "Abstract / Table 4 / Sec 5.1"
+    paper_value: 0.71
+    source_json: "experiments/outputs/regime_detection/causal_comparison_20260303_231013.json"
+    json_path: "summary.median_d.Hamilton MS"
+
+  - name: "CUSUM median d"
+    section: "Abstract / Table 4 / Sec 5.1"
+    paper_value: 0.63
+    source_json: "experiments/outputs/regime_detection/causal_comparison_20260303_231013.json"
+    json_path: "summary.median_d.CUSUM"
+
+  - name: "Berry Phase Rate median d"
+    section: "Abstract / Table 4 / Sec 5.1"
+    paper_value: 0.61
+    source_json: "experiments/outputs/regime_detection/causal_comparison_20260303_231013.json"
+    json_path: "summary.median_d.Berry Phase Rate"
+
+  - name: "Random Forest median d"
+    section: "Sec 5.1"
+    paper_value: 0.38
+    source_json: "experiments/outputs/regime_detection/causal_comparison_20260303_231013.json"
+    json_path: "summary.median_d.Random Forest"
+
+  - name: "GARCH(1,1) median d"
+    section: "Sec 5.1"
+    paper_value: 0.27
+    source_json: "experiments/outputs/regime_detection/causal_comparison_20260303_231013.json"
+    json_path: "summary.median_d.GARCH(1,1)"
+
+  # --- Friedman test (main comparison) ---
+  - name: "Friedman chi-squared (main)"
+    section: "Abstract / Table 4 / Sec 6"
+    paper_value: 250.6
+    source_json: "experiments/outputs/regime_detection/causal_comparison_20260303_231013.json"
+    json_path: "summary.friedman_chi_sq"
+
+  # --- Fusion: full (15 crises, fusion_results_20260304_101523.json) ---
+  - name: "Spectral Entropy mean d (fusion)"
+    section: "Sec 5.8 / Table fusion"
+    paper_value: 0.830
+    source_json: "experiments/outputs/fusion/fusion_results_20260304_101523.json"
+    json_path: "aggregate[0].mean_d"
+
+  - name: "Dimensionality Collapse mean d (fusion)"
+    section: "Sec 5.8 / Table fusion"
+    paper_value: 0.792
+    source_json: "experiments/outputs/fusion/fusion_results_20260304_101523.json"
+    json_path: "aggregate[1].mean_d"
+
+  - name: "Regime-Adaptive mean d (fusion)"
+    section: "Sec 5.8 / Sec 6 / Sec 7"
+    paper_value: 0.774
+    source_json: "experiments/outputs/fusion/fusion_results_20260304_101523.json"
+    json_path: "aggregate[2].mean_d"
+
+  - name: "Fusion Friedman chi-sq"
+    section: "Sec 5.8 / Table fusion caption"
+    paper_value: 7.96
+    source_json: "experiments/outputs/fusion/fusion_results_20260304_101523.json"
+    json_path: "friedman.chi_sq"
+
+  - name: "Fusion Friedman p"
+    section: "Sec 5.8"
+    paper_value: 0.54
+    source_json: "experiments/outputs/fusion/fusion_results_20260304_101523.json"
+    json_path: "friedman.p_value"
+
+  - name: "Best SPRT d"
+    section: "Sec 5.8 / Sec 6 Limitations"
+    paper_value: 0.512
+    source_json: "experiments/outputs/fusion/fusion_results_20260304_101523.json"
+    json_path: "aggregate[14].mean_d"
+    note: "SPRT (decay=0.99)"
+
+  # --- Fusion holdout (4 crises, fusion_results_20260304_101842.json) ---
+  - name: "Regime-Adaptive holdout mean d"
+    section: "Sec 5.8 / Sec 6 / Sec 7"
+    paper_value: 0.783
+    source_json: "experiments/outputs/fusion/fusion_results_20260304_101842.json"
+    json_path: "aggregate[0].mean_d"
+
+  - name: "Reduced Purity holdout d (fusion)"
+    section: "Sec 5.8 / Sec 6"
+    paper_value: 0.263
+    source_json: "experiments/outputs/fusion/fusion_results_20260304_101842.json"
+    json_path: "aggregate[19].mean_d"
+
+  - name: "Spectral Entropy holdout d (fusion)"
+    section: "Sec 5.8"
+    paper_value: 0.494
+    source_json: "experiments/outputs/fusion/fusion_results_20260304_101842.json"
+    json_path: "aggregate[14].mean_d"
+
+  - name: "Hierarchical Rank holdout d"
+    section: "Sec 5.8"
+    paper_value: 0.743
+    source_json: "experiments/outputs/fusion/fusion_results_20260304_101842.json"
+    json_path: "aggregate[1].mean_d"
+
+  - name: "Flat Rank holdout d"
+    section: "Sec 5.8"
+    paper_value: 0.683
+    source_json: "experiments/outputs/fusion/fusion_results_20260304_101842.json"
+    json_path: "aggregate[4].mean_d"
+
+  # --- Per-crisis d-values (main comparison, spot checks) ---
+  - name: "Berry Phase Rate d on 2008 GFC"
+    section: "Table 5 / Results prose"
+    paper_value: 0.54
+    source_json: "experiments/outputs/regime_detection/causal_comparison_20260303_231013.json"
+    json_path: "results.Berry Phase Rate.2008_gfc.d"
+
+  - name: "QFI Determinant d on 2008 GFC"
+    section: "Table 5 / Results prose"
+    paper_value: 2.06
+    source_json: "experiments/outputs/regime_detection/causal_comparison_20260303_231013.json"
+    json_path: "results.QFI Determinant.2008_gfc.d"

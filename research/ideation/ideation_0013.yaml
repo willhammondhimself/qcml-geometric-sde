@@ -1,0 +1,30 @@
+id: "0013"
+round: 13
+timestamp: "2026-03-06T17:45:00"
+question: "Can the modular Hamiltonian of the reduced density matrix reveal hidden sector structure?"
+theme: "novel_observables"
+status: "keep"
+hypothesis:
+  statement: "Modular Hamiltonian K = -log(rho_A) captures the full entanglement spectrum, not just its entropy."
+  mechanism: "Tr(K^2) measures the spread of the entanglement spectrum — flatter during crises."
+  prior_plausibility: "medium"
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: "Good results. Median d=0.651. COVID d=1.271, GFC d=0.542, Rates d=0.644, SVB d=0.658. Informative beyond entropy — captures entanglement spectrum spread."
+    evidence: "Score = Tr(K^2) where K = -log(rho_A)"
+    confidence: 0.80
+test_results:
+  crises_tested: ["2008_gfc", "2020_covid", "2022_rates", "2023_svb"]
+  cohens_d_per_crisis: {2008_gfc: 0.542, 2020_covid: 1.271, 2022_rates: 0.644, 2023_svb: 0.658}
+  median_d: 0.651
+  passes_threshold: true
+verdict:
+  keep: true
+  reason: "Good signal (d=0.651). Captures entanglement spectrum spread rather than just entropy. Likely correlated with ReducedPurity (both use rho_A eigenvalues) but the log transform may provide orthogonal information."
+  strength: "medium"
+  follow_up_questions: ["Correlation with ReducedPurity?", "Does K reveal sector-specific crisis drivers?"]
+artifacts:
+  code_dir: "research/ideation/modular_hamiltonian/"
+  key_files: ["detector.py", "smoke_test.py", "smoke_results.json"]

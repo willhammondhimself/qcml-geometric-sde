@@ -1,0 +1,33 @@
+{
+  "detector": "PersistentHomologyDetector",
+  "tda_method": "Vietoris-Rips via ripser",
+  "config": {
+    "symbols": [
+      "SPY",
+      "DIA",
+      "QQQ",
+      "IWM",
+      "TLT",
+      "GLD",
+      "XLF",
+      "XLK"
+    ],
+    "start_date": "2005-01-01",
+    "end_date": "2025-01-01",
+    "n_bootstrap": 1000,
+    "rolling_window": 60,
+    "min_expanding": 120,
+    "maxdim": 1,
+    "score_mode": "h0_total",
+    "smooth_window": 10
+  },
+  "cohens_d_per_crisis": {
+    "2008_gfc": 0.8124,
+    "2020_covid": 1.2152,
+    "2022_rates": 0.0234,
+    "2023_svb": 0.4989
+  },
+  "median_d": 0.6557,
+  "passes_threshold": true,
+  "implementation_issues": []
+}

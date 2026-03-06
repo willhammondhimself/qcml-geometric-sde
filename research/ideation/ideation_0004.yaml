@@ -1,0 +1,50 @@
+id: "0004"
+round: 4
+timestamp: "2026-03-06T16:15:00"
+question: "Does entanglement entropy of subsector partitions (tech vs. financials) predict contagion?"
+theme: "novel_observables"
+status: "investigate_further"
+
+hypothesis:
+  statement: "Von Neumann entropy S = -Tr(rho_A log rho_A) of subsector partitions increases during contagion as cross-sector correlations amplify."
+  mechanism: "When crises spread across sectors, the quantum state becomes more entangled, increasing the entropy of the reduced density matrix for any subsector partition."
+  prior_plausibility: "high"
+
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: "Good empirical results with sector ETFs (XLK, XLF, XLE, XLV). Median d=0.696. GFC d=0.899, Rate Hikes d=0.889 (strong for sustained multi-sector crises). COVID d=0.503, SVB d=0.314 (weaker for rapid/localized events). Used operator_method='random' to avoid Kramers degeneracy."
+    evidence: "Smoke test with 23-feature matrix from 4 sector ETFs, 1.4s runtime"
+    confidence: 0.80
+
+  - knight: "1+3+4"
+    role: "combined_analysis"
+    workers_used: 0
+    conclusion: "Moderate theory but CRITICAL redundancy concern: for dim=4 (2×2 partition), entropy is a monotone bijection of purity — S = h(P) where h is binary entropy. ReducedPurityDetector (d=0.834, #1 overall) captures the SAME information. Predicted |rho|=0.92 with ReducedPurity. The signal works but adds nothing new."
+    evidence: "For 2-qubit pure states, only 1 Schmidt coefficient matters. S and Tr(rho_A^2) are informationally equivalent."
+    confidence: 0.88
+
+test_results:
+  crises_tested: ["2008_gfc", "2020_covid", "2022_rates", "2023_svb"]
+  cohens_d_per_crisis:
+    2008_gfc: 0.899
+    2020_covid: 0.503
+    2022_rates: 0.889
+    2023_svb: 0.314
+  median_d: 0.696
+  max_d: 0.899
+  passes_threshold: true
+
+verdict:
+  keep: false
+  reason: "Good signal (median d=0.696) but near-certainly redundant with ReducedPurityDetector (predicted |rho|=0.92). For dim-4, entropy and purity are informationally equivalent. Would need higher hilbert_dim (>=8) with 3+ subsectors to add independent information. Worth investigating as a REDESIGNED detector at higher dimensions."
+  strength: "medium"
+  follow_up_questions:
+    - "Does hilbert_dim=8 (3-qubit) break the entropy-purity equivalence?"
+    - "Can conditional mutual information capture directional contagion (who infects whom)?"
+    - "Does time-lagged entanglement entropy reveal contagion propagation dynamics?"
+
+artifacts:
+  code_dir: "research/ideation/entanglement_entropy/"
+  key_files: ["detector.py", "smoke_test.py", "smoke_results.json"]

@@ -1,0 +1,64 @@
+{
+  "question": "Q12",
+  "question_text": "Does the Zak phase (1D Berry phase) for individual sector time series provide per-sector crisis signals?",
+  "role": "empirical_test",
+  "detector": "ZakPhaseDetector",
+  "best_method": "wilson",
+  "config": {
+    "symbols": [
+      "SPY",
+      "DIA"
+    ],
+    "start_date": "2005-01-01",
+    "end_date": "2025-01-01",
+    "n_bootstrap": 1000,
+    "hilbert_dim": 4,
+    "n_pca_components": 6,
+    "operator_method": "random",
+    "rolling_window": 20,
+    "min_expanding": 60,
+    "normalization": "sphere",
+    "epsilon": 0.0001
+  },
+  "cohens_d_per_crisis": {
+    "2008_gfc": 0.2977,
+    "2020_covid": 0.5074,
+    "2022_rates": 0.3036,
+    "2023_svb": 0.2972
+  },
+  "median_d": 0.3006,
+  "passes_threshold": true,
+  "all_methods": {
+    "connection": {
+      "cohens_d_per_crisis": {
+        "2008_gfc": 0.1956,
+        "2020_covid": 0.11,
+        "2022_rates": 0.0595,
+        "2023_svb": 0.7385
+      },
+      "median_d": 0.1528,
+      "passes_threshold": false
+    },
+    "winding": {
+      "cohens_d_per_crisis": {
+        "2008_gfc": 0.2723,
+        "2020_covid": 0.2732,
+        "2022_rates": 0.1235,
+        "2023_svb": 0.1926
+      },
+      "median_d": 0.2324,
+      "passes_threshold": true
+    },
+    "wilson": {
+      "cohens_d_per_crisis": {
+        "2008_gfc": 0.2977,
+        "2020_covid": 0.5074,
+        "2022_rates": 0.3036,
+        "2023_svb": 0.2972
+      },
+      "median_d": 0.3006,
+      "passes_threshold": true
+    }
+  },
+  "implementation_issues": []
+}

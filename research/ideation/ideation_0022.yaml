@@ -1,0 +1,29 @@
+id: "0022"
+round: 22
+timestamp: "2026-03-06T18:15:00"
+question: "Does multi-scale embedding capture both fast and slow dynamics?"
+theme: "embedding"
+status: "reject"
+hypothesis:
+  statement: "Combining windows [10,30,60,120] captures both fast and slow regime transitions."
+  mechanism: "Short windows detect sharp crises, long windows detect slow burns."
+  prior_plausibility: "medium"
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: "Multi-scale fusion DEGRADES performance by -0.82 mean d vs best single window. Short-window signals already dominate for sharp crises; mixing in long-window averages dilutes signal."
+    evidence: "SpectralEntropy at 4 scales; RMS/mean/rank fusion all underperform best single window"
+    confidence: 0.85
+test_results:
+  crises_tested: ["2008_gfc", "2020_covid", "2011_euro", "2018_volmageddon"]
+  cohens_d_per_crisis: {2008_gfc: 0.998, 2020_covid: 0.397, 2011_euro: 0.085, 2018_volmageddon: 0.359}
+  median_d: 0.398
+  passes_threshold: true
+verdict:
+  keep: false
+  reason: "Fusion degrades performance. HPO over single window is strictly better. Existing MultiScaleBerryDetector's mean aggregation is suboptimal."
+  strength: "low"
+artifacts:
+  code_dir: null
+  key_files: null

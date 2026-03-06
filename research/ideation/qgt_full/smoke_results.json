@@ -1,0 +1,242 @@
+{
+  "detector": "QGT Full (Off-Diagonal Coupling)",
+  "config": {
+    "hilbert_dim": 4,
+    "n_pca_components": 8,
+    "operator_method": "random",
+    "normalization": "soft",
+    "adaptive_epsilon": true,
+    "rolling_window": 20,
+    "min_expanding": 60,
+    "n_bootstrap": 1000
+  },
+  "data": {
+    "symbols": [
+      "SPY",
+      "DIA"
+    ],
+    "start_date": "2005-01-01",
+    "end_date": "2025-12-31",
+    "feature_shape": [
+      5262,
+      13
+    ],
+    "n_valid_scores": 5202
+  },
+  "primary_signal": "off_diagonal_coupling",
+  "per_crisis": {
+    "2008_gfc": {
+      "cohens_d": 0.053186706392707866,
+      "ci_lo": 0.011681905773917346,
+      "ci_hi": 0.807424345706231,
+      "crisis_n": 146,
+      "normal_n": 41,
+      "crisis_mean": 2.3920973058917245,
+      "normal_mean": 2.488397413624017
+    },
+    "2020_covid": {
+      "cohens_d": 2.6109021915465855,
+      "ci_lo": 1.8350704563657172,
+      "ci_hi": 4.482596178694245,
+      "crisis_n": 50,
+      "normal_n": 39,
+      "crisis_mean": 1.9938425182828297,
+      "normal_mean": -0.3997820395830695
+    },
+    "2022_rates": {
+      "cohens_d": 0.3446288778369387,
+      "ci_lo": 0.028536546057293374,
+      "ci_hi": 1.0743325473335947,
+      "crisis_n": 209,
+      "normal_n": 42,
+      "crisis_mean": -0.1996827853423671,
+      "normal_mean": 0.006470309972321379
+    },
+    "2023_svb": {
+      "cohens_d": 0.11216628758088314,
+      "ci_lo": 0.011090434015796518,
+      "ci_hi": 0.9602700191131828,
+      "crisis_n": 42,
+      "normal_n": 39,
+      "crisis_mean": -0.38669104477534205,
+      "normal_mean": -0.3424469449868164
+    }
+  },
+  "all_observables": {
+    "off_diagonal_coupling": {
+      "2008_gfc": {
+        "cohens_d": 0.053186706392707866,
+        "ci_lo": 0.011681905773917346,
+        "ci_hi": 0.807424345706231,
+        "crisis_n": 146,
+        "normal_n": 41,
+        "crisis_mean": 2.3920973058917245,
+        "normal_mean": 2.488397413624017
+      },
+      "2020_covid": {
+        "cohens_d": 2.6109021915465855,
+        "ci_lo": 1.8350704563657172,
+        "ci_hi": 4.482596178694245,
+        "crisis_n": 50,
+        "normal_n": 39,
+        "crisis_mean": 1.9938425182828297,
+        "normal_mean": -0.3997820395830695
+      },
+      "2022_rates": {
+        "cohens_d": 0.3446288778369387,
+        "ci_lo": 0.028536546057293374,
+        "ci_hi": 1.0743325473335947,
+        "crisis_n": 209,
+        "normal_n": 42,
+        "crisis_mean": -0.1996827853423671,
+        "normal_mean": 0.006470309972321379
+      },
+      "2023_svb": {
+        "cohens_d": 0.11216628758088314,
+        "ci_lo": 0.011090434015796518,
+        "ci_hi": 0.9602700191131828,
+        "crisis_n": 42,
+        "normal_n": 39,
+        "crisis_mean": -0.38669104477534205,
+        "normal_mean": -0.3424469449868164
+      }
+    },
+    "frobenius_norm_sq": {
+      "2008_gfc": {
+        "cohens_d": 0.002407350309954248,
+        "ci_lo": 0.012595900242270208,
+        "ci_hi": 0.7791388387759316,
+        "crisis_n": 146,
+        "normal_n": 41,
+        "crisis_mean": 2.420110163728791,
+        "normal_mean": 2.424401454047833
+      },
+      "2020_covid": {
+        "cohens_d": 2.5732696101991035,
+        "ci_lo": 1.8209086536288204,
+        "ci_hi": 4.411328443607329,
+        "crisis_n": 50,
+        "normal_n": 39,
+        "crisis_mean": 1.966837018116825,
+        "normal_mean": -0.42716471949894225
+      },
+      "2022_rates": {
+        "cohens_d": 0.14999374102715374,
+        "ci_lo": 0.011230154060118685,
+        "ci_hi": 0.8575865351386941,
+        "crisis_n": 209,
+        "normal_n": 42,
+        "crisis_mean": -0.12645480785650468,
+        "normal_mean": -0.03778740518378427
+      },
+      "2023_svb": {
+        "cohens_d": 0.16291960485588705,
+        "ci_lo": 0.013673942985961167,
+        "ci_hi": 1.0095736670822901,
+        "crisis_n": 42,
+        "normal_n": 39,
+        "crisis_mean": -0.3590074274373796,
+        "normal_mean": -0.29736728391706413
+      }
+    },
+    "det_magnitude": {
+      "2008_gfc": {
+        "cohens_d": 0.0,
+        "ci_lo": 0.0,
+        "ci_hi": 0.0,
+        "crisis_n": 146,
+        "normal_n": 41,
+        "crisis_mean": 0.0,
+        "normal_mean": 0.0
+      },
+      "2020_covid": {
+        "cohens_d": 0.0,
+        "ci_lo": 0.0,
+        "ci_hi": 0.0,
+        "crisis_n": 50,
+        "normal_n": 39,
+        "crisis_mean": 0.0,
+        "normal_mean": 0.0
+      },
+      "2022_rates": {
+        "cohens_d": 0.0,
+        "ci_lo": 0.0,
+        "ci_hi": 0.0,
+        "crisis_n": 209,
+        "normal_n": 42,
+        "crisis_mean": 0.0,
+        "normal_mean": 0.0
+      },
+      "2023_svb": {
+        "cohens_d": 0.0,
+        "ci_lo": 0.0,
+        "ci_hi": 0.0,
+        "crisis_n": 42,
+        "normal_n": 39,
+        "crisis_mean": 0.0,
+        "normal_mean": 0.0
+      }
+    },
+    "max_singular_value_sq": {
+      "2008_gfc": {
+        "cohens_d": 0.0003661442238942008,
+        "ci_lo": 0.011525013022019115,
+        "ci_hi": 0.7763788547436464,
+        "crisis_n": 146,
+        "normal_n": 41,
+        "crisis_mean": 2.422423123524811,
+        "normal_mean": 2.4217707623741584
+      },
+      "2020_covid": {
+        "cohens_d": 2.573042558847917,
+        "ci_lo": 1.8210576572808643,
+        "ci_hi": 4.4099239171968385,
+        "crisis_n": 50,
+        "normal_n": 39,
+        "crisis_mean": 1.9675643012530641,
+        "normal_mean": -0.42941307789886335
+      },
+      "2022_rates": {
+        "cohens_d": 0.14365250210732652,
+        "ci_lo": 0.010895370533257577,
+        "ci_hi": 0.8510500078783919,
+        "crisis_n": 209,
+        "normal_n": 42,
+        "crisis_mean": -0.12169150350938263,
+        "normal_mean": -0.036872358148078356
+      },
+      "2023_svb": {
+        "cohens_d": 0.16320959083122671,
+        "ci_lo": 0.013656098624179849,
+        "ci_hi": 1.0104815611096751,
+        "crisis_n": 42,
+        "normal_n": 39,
+        "crisis_mean": -0.3558185928624235,
+        "normal_mean": -0.29416603290341076
+      }
+    }
+  },
+  "summary": {
+    "cohens_d_per_crisis": {
+      "2008_gfc": 0.053186706392707866,
+      "2020_covid": 2.6109021915465855,
+      "2022_rates": 0.3446288778369387,
+      "2023_svb": 0.11216628758088314
+    },
+    "median_d": 0.22839758270891092,
+    "max_d": 2.6109021915465855,
+    "passes_threshold": false,
+    "observable_medians": {
+      "off_diagonal_coupling": 0.22839758270891092,
+      "frobenius_norm_sq": 0.15645667294152038,
+      "det_magnitude": 0.0,
+      "max_singular_value_sq": 0.15343104646927663
+    },
+    "best_observable": "off_diagonal_coupling"
+  },
+  "timing": {
+    "total_seconds": 4.1,
+    "primary_scores_seconds": 2.9,
+    "all_observables_seconds": 0.9
+  }
+}

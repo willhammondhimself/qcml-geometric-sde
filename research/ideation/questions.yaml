@@ -1,0 +1,641 @@
+# Research Ideation — 100-Question Queue
+# Generated: 2026-03-06
+# Project: QCML Geometric SDE
+
+config:
+  output_dir: "research/ideation"
+  num_knights: 6
+  test_bar: "smoke"
+  smoke_crises: ["2008_gfc", "2020_covid", "2022_rates", "2023_svb"]
+  keep_threshold: 0.3
+
+questions:
+  # =========================================================================
+  # Theme 1: Novel Observables (Q1-Q15)
+  # =========================================================================
+  - id: "0001"
+    theme: "novel_observables"
+    type: "novel_observable"
+    question: "Can the Loschmidt echo (fidelity decay under Hamiltonian perturbation) detect regime transitions?"
+    status: "pending"
+
+  - id: "0002"
+    theme: "novel_observables"
+    type: "novel_observable"
+    question: "Does the out-of-time-order correlator (OTOC) detect financial 'scrambling' before crises?"
+    status: "pending"
+
+  - id: "0003"
+    theme: "novel_observables"
+    type: "novel_observable"
+    question: "Can we compute a meaningful Chern number from the full market manifold (not just 2D slices)?"
+    status: "pending"
+
+  - id: "0004"
+    theme: "novel_observables"
+    type: "novel_observable"
+    question: "Does entanglement entropy of subsector partitions (tech vs. financials) predict contagion?"
+    status: "pending"
+
+  - id: "0005"
+    theme: "novel_observables"
+    type: "novel_observable"
+    question: "Can the quantum geometric tensor's off-diagonal elements (beyond just Berry curvature or QFI separately) add signal?"
+    status: "pending"
+
+  - id: "0006"
+    theme: "novel_observables"
+    type: "novel_observable"
+    question: "Does the Kibble-Zurek mechanism predict regime transition dynamics from approach speed to critical point?"
+    status: "pending"
+
+  - id: "0007"
+    theme: "novel_observables"
+    type: "novel_observable"
+    question: "Can we define a meaningful partition function / free energy for the market quantum state to detect phase transitions?"
+    status: "pending"
+
+  - id: "0008"
+    theme: "novel_observables"
+    type: "novel_observable"
+    question: "Does the Husimi Q-function (phase space representation) reveal structure invisible to density matrix approaches?"
+    status: "pending"
+
+  - id: "0009"
+    theme: "novel_observables"
+    type: "novel_observable"
+    question: "Can persistent homology (TDA) on the correlation network outperform our geometric observables?"
+    status: "pending"
+
+  - id: "0010"
+    theme: "novel_observables"
+    type: "novel_observable"
+    question: "Does the Wasserstein distance between consecutive quantum states work better than fidelity?"
+    status: "pending"
+
+  - id: "0011"
+    theme: "novel_observables"
+    type: "novel_observable"
+    question: "Can the Thouless energy (level spacing / bandwidth ratio) detect localization transitions in market correlations?"
+    status: "pending"
+
+  - id: "0012"
+    theme: "novel_observables"
+    type: "novel_observable"
+    question: "Does the Zak phase (1D Berry phase) for individual sector time series provide per-sector crisis signals?"
+    status: "pending"
+
+  - id: "0013"
+    theme: "novel_observables"
+    type: "novel_observable"
+    question: "Can the modular Hamiltonian of the reduced density matrix reveal hidden sector structure?"
+    status: "pending"
+
+  - id: "0014"
+    theme: "novel_observables"
+    type: "novel_observable"
+    question: "Does quantum discord (beyond entanglement) capture classical correlations that entanglement misses?"
+    status: "pending"
+
+  - id: "0015"
+    theme: "novel_observables"
+    type: "novel_observable"
+    question: "Can a Floquet analysis of periodically-driven market dynamics reveal resonance-induced instabilities?"
+    status: "pending"
+
+  # =========================================================================
+  # Theme 2: Embedding Architecture (Q16-Q25)
+  # =========================================================================
+  - id: "0016"
+    theme: "embedding"
+    type: "embedding_change"
+    question: "Does a higher-dimensional Hilbert space (qutrit d=3, ququart d=4) improve detection by avoiding Kramers degeneracy?"
+    status: "pending"
+
+  - id: "0017"
+    theme: "embedding"
+    type: "embedding_change"
+    question: "Can we learn the optimal embedding via a neural network that maps returns to density matrices?"
+    status: "pending"
+
+  - id: "0018"
+    theme: "embedding"
+    type: "embedding_change"
+    question: "Does time-delay embedding (Takens' theorem) before quantum embedding improve dynamical fidelity?"
+    status: "pending"
+
+  - id: "0019"
+    theme: "embedding"
+    type: "embedding_change"
+    question: "Can we use random features (Random Kitchen Sinks) instead of exact kernel for faster embedding?"
+    status: "pending"
+
+  - id: "0020"
+    theme: "embedding"
+    type: "embedding_change"
+    question: "Does embedding individual stocks as qubits in a multi-qubit register outperform single density matrix?"
+    status: "pending"
+
+  - id: "0021"
+    theme: "embedding"
+    type: "embedding_change"
+    question: "Can a conformal mapping to the Poincare disk (hyperbolic geometry) capture tail-risk structure?"
+    status: "pending"
+
+  - id: "0022"
+    theme: "embedding"
+    type: "embedding_change"
+    question: "Does multi-scale embedding (different window sizes simultaneously) capture both fast and slow dynamics?"
+    status: "pending"
+
+  - id: "0023"
+    theme: "embedding"
+    type: "embedding_change"
+    question: "Can we use a gauge-equivariant neural network for the embedding to enforce physical symmetries?"
+    status: "pending"
+
+  - id: "0024"
+    theme: "embedding"
+    type: "embedding_change"
+    question: "Does the choice of normalization (sphere/soft/clip) interact with observable quality in a systematic way?"
+    status: "pending"
+
+  - id: "0025"
+    theme: "embedding"
+    type: "embedding_change"
+    question: "Can kernel alignment (Cristianini et al.) optimize the kernel function for crisis detection specifically?"
+    status: "pending"
+
+  # =========================================================================
+  # Theme 3: Dead Signal Resurrection (Q26-Q35)
+  # =========================================================================
+  - id: "0026"
+    theme: "dead_signals"
+    type: "dead_signal_fix"
+    question: "Can QGT Phase Rigidity (d=0.013) be fixed by switching from pca_inspired to random operators?"
+    status: "pending"
+
+  - id: "0027"
+    theme: "dead_signals"
+    type: "dead_signal_fix"
+    question: "Does Berry Velocity Coupling (d=0.012) improve with different lag structures or window sizes?"
+    status: "pending"
+
+  - id: "0028"
+    theme: "dead_signals"
+    type: "dead_signal_fix"
+    question: "Can Curvature Rate (d=0.013) be rescued by computing Ricci flow instead of raw rate?"
+    status: "pending"
+
+  - id: "0029"
+    theme: "dead_signals"
+    type: "dead_signal_fix"
+    question: "Does Geometric Consensus (d=0.075) improve with weighted voting instead of uniform?"
+    status: "pending"
+
+  - id: "0030"
+    theme: "dead_signals"
+    type: "dead_signal_fix"
+    question: "Can Geometric Ensemble (d=0.013) be fixed by ensembling only the top-performing observables?"
+    status: "pending"
+
+  - id: "0031"
+    theme: "dead_signals"
+    type: "dead_signal_fix"
+    question: "Does BOCPD (d=0.057) improve with informative priors based on market regime knowledge?"
+    status: "pending"
+
+  - id: "0032"
+    theme: "dead_signals"
+    type: "dead_signal_fix"
+    question: "Can Transfer Entropy (d=0.285) improve with different embedding dimensions or conditioning?"
+    status: "pending"
+
+  - id: "0033"
+    theme: "dead_signals"
+    type: "dead_signal_fix"
+    question: "Does LSTM Autoencoder (d=0.278) improve with attention mechanisms or transformer architecture?"
+    status: "pending"
+
+  - id: "0034"
+    theme: "dead_signals"
+    type: "dead_signal_fix"
+    question: "Can Kernel PCA (d=0.035) improve with a crisis-adapted kernel instead of generic RBF?"
+    status: "pending"
+
+  - id: "0035"
+    theme: "dead_signals"
+    type: "dead_signal_fix"
+    question: "Does Spectral Flow improve with a different gap threshold or flow direction metric?"
+    status: "pending"
+
+  # =========================================================================
+  # Theme 4: Fusion & Combination (Q36-Q45)
+  # =========================================================================
+  - id: "0036"
+    theme: "fusion"
+    type: "fusion_method"
+    question: "Can attention mechanisms learn which observables matter for which market regimes?"
+    status: "pending"
+
+  - id: "0037"
+    theme: "fusion"
+    type: "fusion_method"
+    question: "Does a simple majority vote (count of observables above threshold) outperform learned fusion?"
+    status: "pending"
+
+  - id: "0038"
+    theme: "fusion"
+    type: "fusion_method"
+    question: "Can copulas model the joint distribution of observable signals for better combination?"
+    status: "pending"
+
+  - id: "0039"
+    theme: "fusion"
+    type: "fusion_method"
+    question: "Does online learning (exponential weights / multiplicative updates) adapt fusion weights in real-time?"
+    status: "pending"
+
+  - id: "0040"
+    theme: "fusion"
+    type: "fusion_method"
+    question: "Can Bayesian model averaging with observables as different 'models' improve robustness?"
+    status: "pending"
+
+  - id: "0041"
+    theme: "fusion"
+    type: "fusion_method"
+    question: "Does stacking (observable outputs as features for gradient boosting) work without overfitting?"
+    status: "pending"
+
+  - id: "0042"
+    theme: "fusion"
+    type: "fusion_method"
+    question: "Can we build a switching model that selects the single best observable per regime?"
+    status: "pending"
+
+  - id: "0043"
+    theme: "fusion"
+    type: "fusion_method"
+    question: "Does rank aggregation (Borda count, Kemeny) outperform arithmetic mean fusion?"
+    status: "pending"
+
+  - id: "0044"
+    theme: "fusion"
+    type: "fusion_method"
+    question: "Can information-theoretic fusion (maximum entropy combination) improve on heuristic weighting?"
+    status: "pending"
+
+  - id: "0045"
+    theme: "fusion"
+    type: "fusion_method"
+    question: "Does hierarchical clustering of observables before fusion reduce redundancy and improve d?"
+    status: "pending"
+
+  # =========================================================================
+  # Theme 5: Statistical & Evaluation (Q46-Q55)
+  # =========================================================================
+  - id: "0046"
+    theme: "statistical"
+    type: "statistical_eval"
+    question: "Is detection delay (time from crisis onset to signal) a better primary metric than Cohen's d?"
+    status: "pending"
+
+  - id: "0047"
+    theme: "statistical"
+    type: "statistical_eval"
+    question: "Can conformal prediction give distribution-free confidence intervals for our detectors?"
+    status: "pending"
+
+  - id: "0048"
+    theme: "statistical"
+    type: "statistical_eval"
+    question: "Does survival analysis (time-to-event) framing improve our understanding of lead time?"
+    status: "pending"
+
+  - id: "0049"
+    theme: "statistical"
+    type: "statistical_eval"
+    question: "Can we test for Granger causality from our observables to realized volatility / drawdowns?"
+    status: "pending"
+
+  - id: "0050"
+    theme: "statistical"
+    type: "statistical_eval"
+    question: "Does a continuous crisis intensity measure (instead of binary labels) change our rankings?"
+    status: "pending"
+
+  - id: "0051"
+    theme: "statistical"
+    type: "statistical_eval"
+    question: "Can leave-one-crisis-out cross-validation replace our holdout design?"
+    status: "pending"
+
+  - id: "0052"
+    theme: "statistical"
+    type: "statistical_eval"
+    question: "Does the rolling window size for z-score normalization systematically affect which observables win?"
+    status: "pending"
+
+  - id: "0053"
+    theme: "statistical"
+    type: "statistical_eval"
+    question: "Can we define a utility-based metric (e.g., Sharpe improvement from trading on signals) as evaluation?"
+    status: "pending"
+
+  - id: "0054"
+    theme: "statistical"
+    type: "statistical_eval"
+    question: "Does nested cross-validation (inner for HPO, outer for evaluation) change our conclusions?"
+    status: "pending"
+
+  - id: "0055"
+    theme: "statistical"
+    type: "statistical_eval"
+    question: "Can calibration curves (predicted probability vs. actual crisis frequency) reveal which observables are best-calibrated?"
+    status: "pending"
+
+  # =========================================================================
+  # Theme 6: Cross-Asset & Data Expansion (Q56-Q65)
+  # =========================================================================
+  - id: "0056"
+    theme: "cross_asset"
+    type: "cross_asset"
+    question: "Do our observables work on bond markets (TLT, IEF) for rate regime detection?"
+    status: "pending"
+
+  - id: "0057"
+    theme: "cross_asset"
+    type: "cross_asset"
+    question: "Can we detect crypto regime changes (BTC, ETH) where regimes shift faster?"
+    status: "pending"
+
+  - id: "0058"
+    theme: "cross_asset"
+    type: "cross_asset"
+    question: "Do our observables work on commodity markets (GLD, USO, DBA)?"
+    status: "pending"
+
+  - id: "0059"
+    theme: "cross_asset"
+    type: "cross_asset"
+    question: "Does adding sector ETFs (XLF, XLK, XLE) as inputs improve detection via richer geometry?"
+    status: "pending"
+
+  - id: "0060"
+    theme: "cross_asset"
+    type: "cross_asset"
+    question: "Can we detect regimes in FX markets (DXY, EUR/USD, JPY/USD)?"
+    status: "pending"
+
+  - id: "0061"
+    theme: "cross_asset"
+    type: "cross_asset"
+    question: "Does intraday data (hourly, 5-min) reveal regime transitions invisible at daily frequency?"
+    status: "pending"
+
+  - id: "0062"
+    theme: "cross_asset"
+    type: "cross_asset"
+    question: "Can we apply our framework to volatility surfaces (VIX term structure) for richer embedding?"
+    status: "pending"
+
+  - id: "0063"
+    theme: "cross_asset"
+    type: "cross_asset"
+    question: "Does multi-market embedding (SPY + TLT + GLD jointly) outperform single-market?"
+    status: "pending"
+
+  - id: "0064"
+    theme: "cross_asset"
+    type: "cross_asset"
+    question: "Can we detect regional contagion (EEM, FXI, EWJ) propagation using our geometric measures?"
+    status: "pending"
+
+  - id: "0065"
+    theme: "cross_asset"
+    type: "cross_asset"
+    question: "Does the advance-decline ratio or market breadth improve when embedded in our framework?"
+    status: "pending"
+
+  # =========================================================================
+  # Theme 7: Theoretical Foundations (Q66-Q75)
+  # =========================================================================
+  - id: "0066"
+    theme: "theoretical"
+    type: "theoretical"
+    question: "Is there a rigorous mathematical reason why Berry phase should detect financial crises?"
+    status: "pending"
+
+  - id: "0067"
+    theme: "theoretical"
+    type: "theoretical"
+    question: "Does the adiabatic theorem actually apply, or are we always non-adiabatic (SpeedLimitRatio >> 1)?"
+    status: "pending"
+
+  - id: "0068"
+    theme: "theoretical"
+    type: "theoretical"
+    question: "Can we prove that the quantum geometric tensor is a sufficient statistic for regime detection?"
+    status: "pending"
+
+  - id: "0069"
+    theme: "theoretical"
+    type: "theoretical"
+    question: "Does the gauge freedom in our embedding affect computed observables? Are they gauge-invariant?"
+    status: "pending"
+
+  - id: "0070"
+    theme: "theoretical"
+    type: "theoretical"
+    question: "Is there a no-go theorem limiting how well any geometric observable can detect regimes?"
+    status: "pending"
+
+  - id: "0071"
+    theme: "theoretical"
+    type: "theoretical"
+    question: "Can we derive a detection delay bound from the quantum speed limit?"
+    status: "pending"
+
+  - id: "0072"
+    theme: "theoretical"
+    type: "theoretical"
+    question: "Does the holonomy group of our connection have financial interpretation?"
+    status: "pending"
+
+  - id: "0073"
+    theme: "theoretical"
+    type: "theoretical"
+    question: "Is there a genuine phase transition in the geometric observables at crisis onset?"
+    status: "pending"
+
+  - id: "0074"
+    theme: "theoretical"
+    type: "theoretical"
+    question: "Does the fluctuation-dissipation theorem apply to our observables (response = fluctuation)?"
+    status: "pending"
+
+  - id: "0075"
+    theme: "theoretical"
+    type: "theoretical"
+    question: "Can we prove convergence of our estimators as the data window grows?"
+    status: "pending"
+
+  # =========================================================================
+  # Theme 8: Practical Applications (Q76-Q85)
+  # =========================================================================
+  - id: "0076"
+    theme: "practical"
+    type: "practical_applied"
+    question: "Can our best observables improve a simple long/short strategy's Sharpe ratio?"
+    status: "pending"
+
+  - id: "0077"
+    theme: "practical"
+    type: "practical_applied"
+    question: "Does Berry Phase Rate's 90-day lead time hold in truly out-of-sample walk-forward?"
+    status: "pending"
+
+  - id: "0078"
+    theme: "practical"
+    type: "practical_applied"
+    question: "Can we build a real-time dashboard that updates observables daily with acceptable latency?"
+    status: "pending"
+
+  - id: "0079"
+    theme: "practical"
+    type: "practical_applied"
+    question: "Can we reduce computational cost (embedding dimension, window size) and keep d > 0.5?"
+    status: "pending"
+
+  - id: "0080"
+    theme: "practical"
+    type: "practical_applied"
+    question: "Does the approach work for portfolio construction (risk parity with regime overlay)?"
+    status: "pending"
+
+  - id: "0081"
+    theme: "practical"
+    type: "practical_applied"
+    question: "Can our observables improve option pricing (volatility surface modeling)?"
+    status: "pending"
+
+  - id: "0082"
+    theme: "practical"
+    type: "practical_applied"
+    question: "Does regime detection via our observables improve drawdown protection vs. simple vol targeting?"
+    status: "pending"
+
+  - id: "0083"
+    theme: "practical"
+    type: "practical_applied"
+    question: "Can we build a geometric fear index that's more informative than VIX?"
+    status: "pending"
+
+  - id: "0084"
+    theme: "practical"
+    type: "practical_applied"
+    question: "Does our approach help with tail risk hedging (timing of protective puts)?"
+    status: "pending"
+
+  - id: "0085"
+    theme: "practical"
+    type: "practical_applied"
+    question: "Can we monetize the lead time advantage with a concrete trading strategy?"
+    status: "pending"
+
+  # =========================================================================
+  # Theme 9: Competitive Landscape (Q86-Q95)
+  # =========================================================================
+  - id: "0086"
+    theme: "competitive"
+    type: "competitive"
+    question: "How do our observables compare to transformer-based regime detectors?"
+    status: "pending"
+
+  - id: "0087"
+    theme: "competitive"
+    type: "competitive"
+    question: "Does adding our observables as features to gradient boosting (XGBoost/LightGBM) beat using them alone?"
+    status: "pending"
+
+  - id: "0088"
+    theme: "competitive"
+    type: "competitive"
+    question: "How do we compare to network-based systemic risk measures (CoVaR, MES, SRISK)?"
+    status: "pending"
+
+  - id: "0089"
+    theme: "competitive"
+    type: "competitive"
+    question: "Does our approach add value over the Hurst exponent / multifractal approaches?"
+    status: "pending"
+
+  - id: "0090"
+    theme: "competitive"
+    type: "competitive"
+    question: "How do we compare to the absorption ratio (Kritzman et al. 2011)?"
+    status: "pending"
+
+  - id: "0091"
+    theme: "competitive"
+    type: "competitive"
+    question: "Can topological data analysis (persistent homology on correlation networks) match our approach?"
+    status: "pending"
+
+  - id: "0092"
+    theme: "competitive"
+    type: "competitive"
+    question: "How do we compare to the turbulence index (Chow et al. 1999)?"
+    status: "pending"
+
+  - id: "0093"
+    theme: "competitive"
+    type: "competitive"
+    question: "Does our approach beat simple VIX + term structure combination?"
+    status: "pending"
+
+  - id: "0094"
+    theme: "competitive"
+    type: "competitive"
+    question: "How do we compare to variational autoencoders for regime detection?"
+    status: "pending"
+
+  - id: "0095"
+    theme: "competitive"
+    type: "competitive"
+    question: "Can Gaussian process regime detection (GP-based changepoint) compete?"
+    status: "pending"
+
+  # =========================================================================
+  # Theme 10: Wild Cards (Q96-Q100)
+  # =========================================================================
+  - id: "0096"
+    theme: "wild_cards"
+    type: "wild_card"
+    question: "Can we detect 'near-miss' crises — events that almost happened but were averted?"
+    status: "pending"
+
+  - id: "0097"
+    theme: "wild_cards"
+    type: "wild_card"
+    question: "Does the market's quantum state exhibit periodic patterns (seasonal, election cycles, FOMC)?"
+    status: "pending"
+
+  - id: "0098"
+    theme: "wild_cards"
+    type: "wild_card"
+    question: "Can we classify crisis severity (not just detect onset) using geometric observables?"
+    status: "pending"
+
+  - id: "0099"
+    theme: "wild_cards"
+    type: "wild_card"
+    question: "Can we use our observables to detect market manipulation or flash crash precursors?"
+    status: "pending"
+
+  - id: "0100"
+    theme: "wild_cards"
+    type: "wild_card"
+    question: "Is there a universal critical exponent for financial crises visible in the geometric observables?"
+    status: "pending"

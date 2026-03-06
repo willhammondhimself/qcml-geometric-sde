@@ -1,0 +1,72 @@
+{
+  "experiment": "Q18_takens_embedding_smoke_test",
+  "config": {
+    "delay_dim": 6,
+    "tau": 1,
+    "hilbert_dim": 8,
+    "n_pca_components": 6,
+    "detector": "SpectralEntropyDetector",
+    "crises": [
+      "2008_gfc",
+      "2011_euro",
+      "2020_covid",
+      "2022_rates"
+    ],
+    "n_bootstrap": 1000,
+    "period": "2005-01-01 to 2024-12-31",
+    "asset": "SPY"
+  },
+  "takens_d_per_crisis": {
+    "2008_gfc": 0.05986787184283983,
+    "2011_euro": 0.2095542176661322,
+    "2020_covid": 0.0876402020528485,
+    "2022_rates": 0.34314709772755514
+  },
+  "standard_d_per_crisis": {
+    "2008_gfc": 1.7139755427404952,
+    "2011_euro": 0.9204552776940408,
+    "2020_covid": 1.2699371491516416,
+    "2022_rates": 1.159824484609451
+  },
+  "takens_ci_per_crisis": {
+    "2008_gfc": {
+      "lo": 0.007367459137370979,
+      "hi": 0.45955043788770955
+    },
+    "2011_euro": {
+      "lo": 0.01117480493057148,
+      "hi": 0.8089091436617432
+    },
+    "2020_covid": {
+      "lo": 0.015742560770428023,
+      "hi": 1.0683659224056399
+    },
+    "2022_rates": {
+      "lo": 0.022246490505284176,
+      "hi": 0.7100034253624427
+    }
+  },
+  "standard_ci_per_crisis": {
+    "2008_gfc": {
+      "lo": 1.517498619316208,
+      "hi": 1.9742967759982382
+    },
+    "2011_euro": {
+      "lo": 0.5760645489750835,
+      "hi": 1.3090742939369808
+    },
+    "2020_covid": {
+      "lo": 0.7112956610310223,
+      "hi": 1.8195476437498508
+    },
+    "2022_rates": {
+      "lo": 0.8883784622300872,
+      "hi": 1.4590480612769414
+    }
+  },
+  "takens_median_d": 0.1486,
+  "standard_median_d": 1.2149,
+  "improvement": "-87.8%",
+  "passes_threshold": false,
+  "interpretation": "Takens embedding DOES NOT improve spectral entropy detection vs standard features."
+}

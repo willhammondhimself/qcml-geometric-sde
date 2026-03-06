@@ -1,0 +1,26 @@
+{
+  "detector": "KibbleZurekDetector",
+  "config": {
+    "symbols": [
+      "SPY",
+      "DIA"
+    ],
+    "start_date": "2005-01-01",
+    "end_date": "2025-01-01",
+    "n_bootstrap": 1000,
+    "hilbert_dim": 4,
+    "n_pca_components": 6,
+    "operator_method": "random",
+    "gap_lookback": 5,
+    "alpha": 1.0
+  },
+  "cohens_d_per_crisis": {
+    "2008_gfc": 0.5832,
+    "2020_covid": 0.3018,
+    "2022_rates": 0.6548,
+    "2023_svb": 0.1178
+  },
+  "median_d": 0.4425,
+  "passes_threshold": true,
+  "implementation_issues": []
+}

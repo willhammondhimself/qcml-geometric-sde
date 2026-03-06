@@ -1,0 +1,30 @@
+id: "0014"
+round: 14
+timestamp: "2026-03-06T17:45:00"
+question: "Does quantum discord (beyond entanglement) capture classical correlations that entanglement misses?"
+theme: "novel_observables"
+status: "reject"
+hypothesis:
+  statement: "Quantum discord captures correlations beyond entanglement."
+  mechanism: "Discord = mutual information - classical correlations."
+  prior_plausibility: "medium"
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: "Good d=0.594 but PROVABLY REDUNDANT. For pure 2-qubit states, discord D(A|B) = S(A) exactly (mathematical identity). This IS entanglement entropy (Q4). No new information."
+    evidence: "D = I(A:B) - J(A:B) = 2*S(A) - S(A) = S(A) for pure states"
+    confidence: 0.95
+test_results:
+  crises_tested: ["2008_gfc", "2020_covid", "2022_rates", "2023_svb"]
+  cohens_d_per_crisis: {2008_gfc: 0.550, 2020_covid: 1.477, 2022_rates: 0.621, 2023_svb: 0.566}
+  median_d: 0.594
+  passes_threshold: true
+verdict:
+  keep: false
+  reason: "MATHEMATICALLY REDUNDANT with entanglement entropy (Q4) for pure states. Discord = S(A) exactly. Would only add value for mixed state extensions (thermal states, open system dynamics), which is beyond current framework."
+  strength: "low"
+  follow_up_questions: ["Would mixed-state framework (thermal rho) make discord meaningful?"]
+artifacts:
+  code_dir: null
+  key_files: null

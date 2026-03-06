@@ -1,0 +1,49 @@
+id: "0007"
+round: 7
+timestamp: "2026-03-06T17:00:00"
+question: "Can we define a meaningful partition function / free energy for the market quantum state to detect phase transitions?"
+theme: "novel_observables"
+status: "keep"
+
+hypothesis:
+  statement: "Specific heat C = beta^2 * Var(E) of the QCML Hamiltonian peaks at phase transitions."
+  mechanism: "The Boltzmann distribution over eigenvalues fluctuates most (highest variance) when the spectrum reorganizes during regime changes."
+  prior_plausibility: "medium"
+
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: "Good results. Median d=0.537. COVID d=2.547 (exceptional). Rate Hikes d=0.654. GFC d=0.419 (medium). SVB d=0.055 (weak). Computationally cheap (0.8s). Signal is well-behaved."
+    evidence: "Smoke test with beta=1.0, SPY/DIA"
+    confidence: 0.80
+  - knight: "1+3+4"
+    role: "combined_analysis"
+    workers_used: 0
+    conclusion: "Medium theory. Math is sound but beta is arbitrary. Very high predicted |rho|>0.85 with SpectralComplexity (which IS the Gibbs entropy = canonical entropy from this partition function). Better as a paper reframing of SpectralComplexity than a new detector."
+    evidence: "C = d²(lnZ)/d(beta²); SpectralComplexity = adaptive-temperature Gibbs entropy S = lnZ + beta*<E>"
+    confidence: 0.85
+
+test_results:
+  crises_tested: ["2008_gfc", "2020_covid", "2022_rates", "2023_svb"]
+  cohens_d_per_crisis:
+    2008_gfc: 0.419
+    2020_covid: 2.547
+    2022_rates: 0.654
+    2023_svb: 0.055
+  median_d: 0.537
+  max_d: 2.547
+  passes_threshold: true
+
+verdict:
+  keep: true
+  reason: "Strong empirical signal (median d=0.537, COVID d=2.547) but likely redundant with SpectralComplexity. Worth including in full comparison to confirm. Best value as theoretical reframing: 'SpectralComplexity IS the specific heat of the effective quantum system.'"
+  strength: "medium"
+  follow_up_questions:
+    - "Confirm |rho| with SpectralComplexity"
+    - "Does beta HPO change the ranking?"
+    - "Can free energy landscape F(beta) provide phase diagram?"
+
+artifacts:
+  code_dir: "research/ideation/partition_function/"
+  key_files: ["detector.py", "smoke_test.py", "smoke_results.json"]

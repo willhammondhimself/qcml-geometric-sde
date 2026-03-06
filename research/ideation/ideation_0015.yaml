@@ -1,0 +1,30 @@
+id: "0015"
+round: 15
+timestamp: "2026-03-06T17:45:00"
+question: "Can a Floquet analysis of periodically-driven market dynamics reveal resonance-induced instabilities?"
+theme: "novel_observables"
+status: "keep"
+hypothesis:
+  statement: "Floquet operator U_F from sequential daily Hamiltonians reveals resonance-driven instabilities."
+  mechanism: "Quasi-energy gap closing in the Floquet spectrum indicates resonance between daily market dynamics."
+  prior_plausibility: "low"
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: "Moderate signal. Median d=0.431. Rate Hikes d=0.739 (strong), SVB d=0.538, COVID d=0.323, GFC d=0.284. Unique crisis profile — strong on slow crises, weak on sharp shocks (inverse of most detectors)."
+    evidence: "20-day Floquet operator, quasi-energy gap as score"
+    confidence: 0.70
+test_results:
+  crises_tested: ["2008_gfc", "2020_covid", "2022_rates", "2023_svb"]
+  cohens_d_per_crisis: {2008_gfc: 0.284, 2020_covid: 0.323, 2022_rates: 0.739, 2023_svb: 0.538}
+  median_d: 0.431
+  passes_threshold: true
+verdict:
+  keep: true
+  reason: "Passes threshold (d=0.431) with an INVERTED crisis profile — strong on slow crises (Rates d=0.739), weak on sharp shocks (GFC d=0.284). This complementarity with other detectors makes it potentially valuable for fusion despite modest median d."
+  strength: "medium"
+  follow_up_questions: ["Is the inverted profile genuinely complementary for fusion?", "Optimal window size for Floquet?"]
+artifacts:
+  code_dir: "research/ideation/floquet/"
+  key_files: ["detector.py", "smoke_test.py", "smoke_results.json"]

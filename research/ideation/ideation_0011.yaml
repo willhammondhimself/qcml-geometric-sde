@@ -1,0 +1,30 @@
+id: "0011"
+round: 11
+timestamp: "2026-03-06T17:45:00"
+question: "Can the Thouless energy (level spacing / bandwidth ratio) detect localization transitions?"
+theme: "novel_observables"
+status: "keep"
+hypothesis:
+  statement: "Level spacing ratio (LSR) detects GOE→Poisson transition in eigenvalue statistics during crises."
+  mechanism: "Crises cause spectral localization — eigenvalues cluster, changing level spacing statistics."
+  prior_plausibility: "medium"
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: "Strong via LSR mode. Median d=0.652. COVID d=4.094 (extraordinary). SVB d=0.935. BUT Thouless ratio g_T is DEAD (=1/(N-1) identically for fixed N). Only LSR carries information."
+    evidence: "g_T=constant by construction for fixed hilbert_dim; LSR scale-free and works"
+    confidence: 0.80
+test_results:
+  crises_tested: ["2008_gfc", "2020_covid", "2022_rates", "2023_svb"]
+  cohens_d_per_crisis: {2008_gfc: 0.363, 2020_covid: 4.094, 2022_rates: 0.368, 2023_svb: 0.935}
+  median_d: 0.652
+  passes_threshold: true
+verdict:
+  keep: true
+  reason: "LSR mode shows exceptional COVID signal (d=4.094). Scale-free level spacing statistics provide new spectral channel. Must verify orthogonality with SpectralGap and SpectralEntropy."
+  strength: "high"
+  follow_up_questions: ["Is LSR orthogonal to SpectralGap?", "Does higher dim improve GFC/Rates signals?"]
+artifacts:
+  code_dir: "research/ideation/thouless/"
+  key_files: ["detector.py", "smoke_test.py", "smoke_results.json"]

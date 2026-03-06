@@ -1,0 +1,79 @@
+{
+  "detector": "Floquet Analysis",
+  "question": "Q15",
+  "config": {
+    "hilbert_dim": 4,
+    "operator_method": "random",
+    "floquet_window": 20,
+    "rolling_window": 5,
+    "min_expanding": 60,
+    "score_field": "min_gap",
+    "negate_score": true,
+    "n_bootstrap": 1000
+  },
+  "data": {
+    "symbols": [
+      "SPY",
+      "DIA"
+    ],
+    "start_date": "2005-01-01",
+    "end_date": "2025-12-31",
+    "feature_shape": [
+      5262,
+      13
+    ],
+    "n_valid_scores": 5202
+  },
+  "cohens_d_per_crisis": {
+    "2008_gfc": 0.2836467375490715,
+    "2020_covid": 0.3232449616533126,
+    "2022_rates": 0.7393163482135853,
+    "2023_svb": 0.5383682915727739
+  },
+  "per_crisis_detail": {
+    "2008_gfc": {
+      "cohens_d": 0.2836467375490715,
+      "ci_lo": 0.02078931620915281,
+      "ci_hi": 1.1891359164514101,
+      "crisis_n": 146,
+      "normal_n": 41,
+      "crisis_mean": -0.14582666706765127,
+      "normal_mean": -0.43157288272285305
+    },
+    "2020_covid": {
+      "cohens_d": 0.3232449616533126,
+      "ci_lo": 0.01637676297620276,
+      "ci_hi": 1.3584842303697764,
+      "crisis_n": 50,
+      "normal_n": 39,
+      "crisis_mean": -0.23433410669303043,
+      "normal_mean": -0.5598482293462058
+    },
+    "2022_rates": {
+      "cohens_d": 0.7393163482135853,
+      "ci_lo": 0.2834820750326284,
+      "ci_hi": 1.2603941235374307,
+      "crisis_n": 209,
+      "normal_n": 42,
+      "crisis_mean": -0.05072982084037325,
+      "normal_mean": 0.6661578978668934
+    },
+    "2023_svb": {
+      "cohens_d": 0.5383682915727739,
+      "ci_lo": 0.030305007222678995,
+      "ci_hi": 1.5059318441905425,
+      "crisis_n": 42,
+      "normal_n": 39,
+      "crisis_mean": 0.531471689820704,
+      "normal_mean": 0.048662909712908334
+    }
+  },
+  "median_d": 0.43080662661304325,
+  "max_d": 0.7393163482135853,
+  "passes_threshold": true,
+  "timing": {
+    "total_seconds": 2.5,
+    "fit_seconds": 0.0,
+    "score_seconds": 2.3
+  }
+}
