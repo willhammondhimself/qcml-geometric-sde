@@ -112,8 +112,17 @@ class ExperimentRunner:
         source = data_cfg.get('source', 'yfinance')
 
         logger.info(f"Fetching data: {symbols} {start} to {end}")
-        raw = fetch_data(symbols, start, end, source=source)
+        raw = fetch_data(symbols + ['^VIX'], start, end, source=source)
         prices_df = raw['close'].unstack('symbol').dropna()
+
+        # Separate VIX from equity prices
+        if '^VIX' in prices_df.columns:
+            vix_series = prices_df['^VIX'].copy()
+            prices_df = prices_df.drop(columns=['^VIX'])
+        else:
+            logger.warning("VIX data not available; VIX-based baselines will return NaN")
+            vix_series = None
+
         X, dates = create_feature_matrix(prices_df)
 
         # Compute data hash for cache invalidation and provenance
@@ -135,12 +144,20 @@ class ExperimentRunner:
         X_enriched = BaseRegimeDetector.build_enriched_features(X, lookback=lookback)
         dates_enriched = dates[lookback - 1:]
 
+        # Align VIX to enriched dates
+        if vix_series is not None:
+            vix_aligned = vix_series.reindex(dates).values
+            vix_enriched = vix_aligned[lookback - 1:]
+        else:
+            vix_enriched = None
+
         self._data_cache = {
             'X': X,
             'dates': dates,
             'X_enriched': X_enriched,
             'dates_enriched': dates_enriched,
             'prices_df': prices_df,
+            'vix_enriched': vix_enriched,
         }
         logger.info(f"Feature matrix: {X.shape}, enriched: {X_enriched.shape}")
         return self._data_cache
@@ -254,6 +271,17 @@ class ExperimentRunner:
 
         t0 = time.time()
         det = cls(**params)
+
+        # Special handling for VIX-based detectors
+        if hasattr(det, 'set_vix'):
+            vix_enriched = data.get('vix_enriched')
+            if vix_enriched is not None:
+                det.set_vix(vix_enriched)
+            else:
+                return {'d': None, 'ci_lo': None, 'ci_hi': None,
+                        'timing_s': 0, 'skipped': True,
+                        'reason': 'VIX data not available'}
+
         det.fit(X_enriched[:fit_end_idx])
         scores = det.compute_regime_scores(X_enriched)
         timing = time.time() - t0

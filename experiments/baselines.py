@@ -26,6 +26,8 @@ Detectors:
     LSTMAutoencoderDetector      — LSTM autoencoder reconstruction error
     CrossSectionalDispersionDetector — Cross-sectional return dispersion z-score
     VRPDetector                  — Volatility Risk Premium (implied - realized)
+    TurbulenceIndexDetector      — Mahalanobis distance turbulence (Chow et al. 1999)
+    AbsorptionRatioDetector      — PCA absorption ratio (Kritzman et al. 2011)
 """
 
 import logging
@@ -1387,3 +1389,170 @@ class VRPDetector(BaseRegimeDetector):
                 z_scores[t] = abs((vrp[t] - mu) / sigma)
 
         return z_scores
+
+
+class TurbulenceIndexDetector(BaseRegimeDetector):
+    """Mahalanobis distance on expanding multi-feature matrix (Chow et al. 1999).
+
+    Computes the multivariate Mahalanobis distance of each observation from the
+    expanding-window mean using the full covariance structure. Unlike the simpler
+    MahalanobisDetector, this uses a rolling return matrix (multiple assets/features)
+    and z-scores the raw turbulence for comparability.
+
+    Ref: Chow, Jacquier, Kritzman, Lowry (1999) "Optimal Portfolios in Good
+    Times and Bad", Financial Analysts Journal.
+
+    Args:
+        rolling_window: Window for return computation. Default: 252.
+        min_expanding: Minimum history before computing turbulence. Default: 60.
+        regularization: Ridge regularization for covariance inversion. Default: 1e-6.
+    """
+
+    def __init__(self, rolling_window: int = 252, min_expanding: int = 60,
+                 regularization: float = 1e-6):
+        self.rolling_window = rolling_window
+        self.min_expanding = min_expanding
+        self.regularization = regularization
+
+    @property
+    def name(self) -> str:
+        return "Turbulence Index"
+
+    def fit(self, X: np.ndarray, **kwargs) -> 'TurbulenceIndexDetector':
+        return self
+
+    def compute_regime_scores(self, X: np.ndarray) -> np.ndarray:
+        """Compute expanding-window turbulence index.
+
+        Args:
+            X: Feature matrix of shape (T, d).
+
+        Returns:
+            1-D array of length T with z-scored turbulence values.
+        """
+        if X.ndim == 1:
+            X = X.reshape(-1, 1)
+        T, d = X.shape
+        raw_turb = np.full(T, np.nan)
+
+        # Incremental sums for expanding mean and covariance
+        sum_x = np.zeros(d)
+        sum_xx = np.zeros((d, d))
+        n_valid = 0
+
+        for t in range(T):
+            x_t = X[t]
+            if not np.all(np.isfinite(x_t)):
+                continue
+
+            sum_x += x_t
+            sum_xx += np.outer(x_t, x_t)
+            n_valid += 1
+
+            if t < self.min_expanding or n_valid < d + 2:
+                continue
+
+            mu = sum_x / n_valid
+            cov = sum_xx / n_valid - np.outer(mu, mu)
+            cov += self.regularization * np.eye(d)
+
+            try:
+                cov_inv = np.linalg.inv(cov)
+                diff = x_t - mu
+                raw_turb[t] = np.sqrt(np.clip(diff @ cov_inv @ diff, 0, None))
+            except np.linalg.LinAlgError:
+                raw_turb[t] = np.nan
+
+        # Z-score the raw turbulence for comparability
+        scores = np.full(T, np.nan)
+        for t in range(self.min_expanding, T):
+            past = raw_turb[:t]
+            valid = past[~np.isnan(past)]
+            if len(valid) < 10:
+                continue
+            mu_t = np.mean(valid)
+            sigma_t = np.std(valid, ddof=1)
+            if sigma_t > 1e-12 and not np.isnan(raw_turb[t]):
+                scores[t] = abs((raw_turb[t] - mu_t) / sigma_t)
+
+        return scores
+
+
+class AbsorptionRatioDetector(BaseRegimeDetector):
+    """Absorption ratio detector (Kritzman et al. 2011).
+
+    Measures the fraction of total variance explained by the top k eigenvalues
+    of the rolling correlation matrix. High absorption ratio indicates
+    concentrated risk (one-factor market) typical of crisis regimes.
+
+    Ref: Kritzman, Li, Page, Rigobon (2011) "Principal Components as a Measure
+    of Systemic Risk", Journal of Portfolio Management.
+
+    Args:
+        rolling_window: Window for correlation matrix estimation. Default: 252.
+        n_components: Number of top eigenvalues to sum. Default: 1.
+        min_expanding: Minimum history before computing ratio. Default: 60.
+    """
+
+    def __init__(self, rolling_window: int = 252, n_components: int = 1,
+                 min_expanding: int = 60):
+        self.rolling_window = rolling_window
+        self.n_components = n_components
+        self.min_expanding = min_expanding
+
+    @property
+    def name(self) -> str:
+        return "Absorption Ratio"
+
+    def fit(self, X: np.ndarray, **kwargs) -> 'AbsorptionRatioDetector':
+        return self
+
+    def compute_regime_scores(self, X: np.ndarray) -> np.ndarray:
+        """Compute expanding z-score of rolling absorption ratio.
+
+        Args:
+            X: Feature matrix of shape (T, d).
+
+        Returns:
+            1-D array of length T with z-scored absorption ratio.
+        """
+        if X.ndim == 1:
+            X = X.reshape(-1, 1)
+        T, d = X.shape
+        n_comp = min(self.n_components, d)
+        raw_ar = np.full(T, np.nan)
+
+        for t in range(self.rolling_window, T):
+            window = X[t - self.rolling_window:t]
+            valid_mask = np.all(np.isfinite(window), axis=1)
+            window_valid = window[valid_mask]
+            if len(window_valid) < d + 2:
+                continue
+
+            # Correlation matrix via standardized features
+            stds = np.std(window_valid, axis=0, ddof=1)
+            if np.any(stds < 1e-12):
+                continue
+            standardized = (window_valid - np.mean(window_valid, axis=0)) / stds
+            corr = (standardized.T @ standardized) / (len(window_valid) - 1)
+
+            try:
+                eigenvalues = np.linalg.eigvalsh(corr)
+                eigenvalues = np.sort(eigenvalues)[::-1]  # descending
+                raw_ar[t] = np.sum(eigenvalues[:n_comp]) / np.sum(eigenvalues)
+            except np.linalg.LinAlgError:
+                raw_ar[t] = np.nan
+
+        # Z-score the absorption ratio using expanding window
+        scores = np.full(T, np.nan)
+        for t in range(max(self.rolling_window, self.min_expanding), T):
+            past = raw_ar[:t]
+            valid = past[~np.isnan(past)]
+            if len(valid) < 10:
+                continue
+            mu = np.mean(valid)
+            sigma = np.std(valid, ddof=1)
+            if sigma > 1e-12 and not np.isnan(raw_ar[t]):
+                scores[t] = abs((raw_ar[t] - mu) / sigma)
+
+        return scores

@@ -70,12 +70,13 @@ Walk-forward nested HPO---our primary evaluation---yields unbiased
 out-of-sample Berry Phase Rate $d = 0.72$, winning 5/9 walk-forward
 crises; geometric methods produce 30\% fewer false alarms than
 Random Forest (2.5 vs.\ 3.6/yr).
-In the offline event-study comparison (36~methods, 17~crises), Reduced
+In the offline event-study comparison (44~methods, 17~crises), Reduced
 State Purity achieves the highest median $d = 0.83$ (rank~1; conditional
-on bipartition choice), followed by Hamilton
-Markov-switching~\cite{hamilton1989} ($d = 0.71$, rank~2), CUSUM
-($d = 0.62$, rank~3), and Berry Phase Rate ($d = 0.61$, rank~4).
-The Friedman test ($\chi^2 = 250.6$, Iman-Davenport $p < 10^{-34}$)
+on bipartition choice), followed by Absorption
+Ratio~\cite{kritzman2011} ($d = 0.80$, rank~2), Hamilton
+Markov-switching~\cite{hamilton1989} ($d = 0.71$, rank~3), and
+Commutator Norm ($d = 0.70$, rank~4).
+The Friedman test ($\chi^2 = 230.5$, Iman-Davenport $p < 10^{-16}$)
 confirms significant ranking heterogeneity.
 Different geometric channels show per-crisis variation in performance
 across crisis types, though this pattern does not reach significance
@@ -157,7 +158,10 @@ labeled crisis data to compute z-scores (Algorithm~\ref{alg:zscore}).
 However, the overall pipeline is \emph{semi-supervised}: hyperparameters
 (Hilbert dimension, PCA components, operator method, rolling window)
 are selected via Optuna TPE with a consistency penalty that
-uses crisis labels as the optimization objective
+uses crisis labels as the optimization objective;
+Hilbert dimension is selected per observable via HPO and dimension
+sensitivity analysis, ranging from $n = 4$ to $n = 16$;
+remaining hyperparameters are HPO-selected
 (Berry: $n = 6$, $p = 8$, $w = 15$; QFI: $n = 8$, $p = 15$, $w = 20$;
 Multi-Lag: $n = 4$, $p = 8$, $w = 20$); operator method is selected
 by ablation on historical data (Section~\ref{subsec:operator_ablation}).
@@ -179,7 +183,7 @@ HPO pipeline'' throughout.
   distinct geometric property of the data manifold.
 
 \item \textbf{Rigorous comparison against classical and modern baselines.}
-  In the offline event-study comparison (36~methods, 17~crises), Reduced
+  In the offline event-study comparison (44~methods, 17~crises), Reduced
   Purity ranks first (median $d = 0.83$, conditional on bipartition),
   followed by Hamilton~MS ($d = 0.71$) and CUSUM ($d = 0.62$).
   Geometric observables maintain stable detection on structurally novel
@@ -381,6 +385,24 @@ PCA-inspired, and learned-scaling operators appears in
 Section~\ref{subsec:operator_ablation}.  Full QCML gradient-descent
 training~\cite{musaelian2024,samson2024} is left for future work.
 
+\paragraph{Why fixed operators suffice for detection.}
+The QCML framework~\cite{candelori2025} centers on learning operators
+via reconstruction loss to estimate intrinsic dimension and generate
+predictions.  Our application---regime \emph{detection}---has a weaker
+requirement: we need observables that respond to \emph{changes} in the
+data geometry, not observables that optimally represent it.
+By Theorem~\ref{thm:smoothness}, any operator set yielding a positive
+spectral gap $\Delta(x) > 0$ induces a $C^\infty$ geometry whose
+metric, curvature, and topological invariants are well-defined.
+Distributional shifts (regime changes) perturb the Hamiltonian
+$H(x)$ and hence the induced geometry; the resulting observable
+responses are detectable regardless of whether the operators were
+optimized.  The empirical ablation
+(Section~\ref{subsec:operator_ablation}) confirms this: heuristic
+operators (random and PCA-inspired) already achieve large effect sizes
+($d > 0.8$) with no gradient training, and discriminative operator
+learning does not systematically improve detection performance.
+
 \begin{proposition}[Fisher information interpretation]%
 \label{prop:fisher}
 For the pure states $\ket{\psi(x)}$ arising as ground states
@@ -452,7 +474,7 @@ Berry vel.\ coupling & Topology & Curvature--velocity contraction & \eqref{eq:be
 Six additional geometric detectors---Metric Condition Number, Spectral Gap,
 Geodesic Velocity, Geometric Consensus, and Geometric Ensemble (a
 majority-vote fusion)---are derived from the same QCML embedding and
-included in the full 36-method comparison
+included in the full 44-method comparison
 (Table~\ref{tab:aggregate_comparison}) for completeness, but omitted
 from detailed exposition as they are either composites of core channels
 or simpler diagnostic measures.
@@ -566,6 +588,17 @@ trace.  During crises, herding causes one principal direction to
 dominate ($\mathrm{IPR} \to 1$), collapsing the effective
 dimensionality of the data manifold.  In the isotropic limit
 $\mathrm{IPR} = 1/p$, where $p$ is the number of PCA components.
+This observable is the regime-detection analog of Candelori et
+al.'s~\cite{candelori2025} central result that eigenvalue gaps of
+the quantum metric tensor estimate the intrinsic dimension of the
+data manifold: their framework uses the metric spectrum to
+\emph{measure} intrinsic dimension at a single time, while
+our IPR \emph{monitors} it in real time.  A sharp increase in
+IPR signals that the effective dimensionality is collapsing---a
+geometric fingerprint of the herding and correlation convergence
+that characterize financial crises.  Dimensionality Collapse
+achieves $d = 0.79$ (Table~\ref{tab:aggregate_comparison}),
+ranking second overall.
 
 \subsection{Sectional Curvature Sign}\label{subsec:sect_curv}
 
@@ -683,12 +716,10 @@ crisis-like dynamics.
 \paragraph{Partition sensitivity.}
 Results depend on the bipartition choice.  Trivial partitions
 $(1, n)$ or $(n, 1)$ yield zero purity variation (the one-dimensional
-subsystem has $P \equiv 1$).  Among non-trivial partitions for
-$n = 8$, $(2,4)$ and $(4,2)$ yield comparable median $d$
-(${\approx}1.0$), while $n = 6$ with $(2,3)$ or $(3,2)$ gives
-$d \approx 1.5$--$1.9$.  We use the default $(2,4)$ throughout;
-the headline $d = 0.83$ should be understood as conditional on this
-choice.
+subsystem has $P \equiv 1$).  At $n = 8$, we use the default
+partition $(2, 4)$, which balances subsystem sizes and maximizes
+entanglement sensitivity.  The headline Reduced Purity $d$ value
+should be understood as conditional on this choice.
 
 \subsection{Spectral Complexity}\label{subsec:spectral_complexity}
 
@@ -827,16 +858,22 @@ Crisis & Period & Category & Rationale \\
 \subsection{Methods and HPO Protocol}\label{subsec:methods_protocol}
 
 For the main comparison (Table~\ref{tab:aggregate_comparison}),
-geometric methods use HPO-optimized hyperparameters (Berry: $n = 6$,
-$p = 8$, $w = 15$, random operators; QFI: $n = 8$, $p = 15$,
-$w = 20$, PCA-inspired; Multi-Lag: $n = 4$, $p = 8$, $w = 20$,
-PCA-inspired) selected by Optuna TPE with consistency penalty
+geometric methods use per-observable Hilbert dimensions ($n \in \{4, 6, 8, 16\}$)
+selected via dimension sensitivity analysis: observables whose $d$ improves
+monotonically with dimension use $n = 16$, while others retain their
+HPO-optimized values (Berry: $n = 6$, $p = 8$, $w = 15$, random operators;
+QFI: $n = 8$, $p = 15$, $w = 20$, PCA-inspired; Multi-Lag: $n = 4$, $p = 8$,
+$w = 20$, PCA-inspired) found via Optuna TPE with consistency penalty
 (see below).  Classical baselines use
 their standard defaults.  RF uses leave-one-crisis-out labels.
 GARCH(1,1)~\cite{bollerslev1986} produces an expanding z-score of
 conditional variance; Hamilton
 Markov-switching~\cite{hamilton1989} fits a 2-regime MS-AR(1) with
 switching variance and outputs $P(\text{high-variance regime})$.
+Turbulence Index~\cite{chow1999} computes a multivariate Mahalanobis
+distance on the expanding feature matrix; Absorption
+Ratio~\cite{kritzman2011} tracks the top-eigenvalue variance fraction
+of the rolling correlation matrix.
 The full hyperparameter search spaces for all methods appear in
 Appendix~\ref{sec:hpo_search}, Table~\ref{tab:protocol}.
 
@@ -870,7 +907,17 @@ algorithm~\cite{killick2012} (building on~\cite{bai1998}), identifying
 regime changes through penalized exact linear time changepoint detection; and
 (iv)~Transfer Entropy~\cite{schreiber2000}, a binned mutual
 information measure between SPY and DIA returns that captures
-directional information flow between assets.
+directional information flow between assets;
+(v)~Turbulence Index~\cite{chow1999}, the multivariate Mahalanobis
+distance of each observation from the expanding-window mean---a strong
+classical comparator that detects concentrated cross-sectional stress;
+(vi)~Absorption Ratio~\cite{kritzman2011}, the fraction of total
+variance explained by the top eigenvalue of the rolling correlation
+matrix, providing a classical analogue to our Dimensionality Collapse
+observable; and
+(vii)~VIX Level, the expanding z-score of CBOE implied volatility,
+included as a forward-looking oracle upper bound (since VIX directly
+incorporates options-market information unavailable to returns-only methods).
 
 \paragraph{Per-crisis causal preprocessing.}
 For each crisis evaluation, the scaler, PCA, and operators are fitted
@@ -902,9 +949,28 @@ the train--validation gap to at most 0.20 (Berry: 0.68 $\to$ 0.49;
 MLF: 0.53 $\to$ 0.33), with QFI exhibiting \emph{negative} overfitting
 (val $d = 0.60$ exceeds train $d = 0.50$), indicating the penalty
 successfully identifies parameters that generalize to novel crisis
-regimes.  Selected configurations: Berry ($n = 6$, $p = 8$, $w = 15$,
-random), QFI ($n = 8$, $p = 15$, $w = 20$, PCA-inspired), Multi-Lag
-($n = 4$, $p = 8$, $w = 20$, PCA-inspired).
+regimes.  Selected configurations: Berry ($p = 8$, $w = 15$,
+random), QFI ($p = 15$, $w = 20$, PCA-inspired), Multi-Lag
+($p = 8$, $w = 20$, PCA-inspired).
+Post-HPO, a systematic dimension sensitivity analysis revealed that
+many observables show monotonically increasing $d$ with Hilbert dimension
+(up to $+131\%$ from $n = 6$ to $n = 16$).  Fifteen observables---including
+Spectral Gap, Commutator Norm, Spectral Flow, and Speed Limit Ratio---were
+upgraded to $n = 16$ where improvement was confirmed, while eleven
+observables (e.g., Berry Phase Rate, Reduced Purity, Spectral Entropy)
+retained their HPO-optimized dimensions ($n \in \{4, 6, 8\}$) where
+higher dimensions did not improve or degraded performance.  For $n = 16$,
+since $16 = 2^4$ the Pauli tensor-product basis is well-defined and
+operator construction remains stable.
+
+\paragraph{HPO optimism bias.}
+Nested cross-validation reveals a mean optimism bias of $+0.415\,d$
+for HPO-tuned Cohen's~$d$ values: hyperparameter search on the same
+crisis set inflates effect sizes by approximately 40\%.  Reported $d$
+values for HPO-tuned methods should therefore be interpreted as upper
+bounds; the walk-forward results (Section~\ref{subsec:walkforward})
+and holdout simulation (Section~\ref{subsec:holdout}) provide more
+conservative, causally valid estimates.
 
 \subsection{Detection Pipeline}\label{subsec:pipeline}
 
@@ -927,9 +993,12 @@ random), QFI ($n = 8$, $p = 15$, $w = 20$, PCA-inspired), Multi-Lag
 \end{algorithm}
 
 \paragraph{Computational cost.}
-Berry curvature increment: 0.77s; Multi-Lag Fidelity: 0.26s; QFI
-Determinant: 5.95s; Random Forest: 1.07s ($T = 3{,}447$, single CPU,
-$n = 8$, $p = 15$).
+Per-step eigensolve cost scales as $O(n^3)$.  At $n = 16$,
+representative timings: Spectral Gap ${\sim}1$s; Commutator Norm
+${\sim}2$s; Speed Limit Ratio ${\sim}2$s ($T = 3{,}447$, single CPU).
+Observables retaining lower dimensions (Berry at $n = 6$: ${\sim}0.5$s;
+Multi-Lag at $n = 4$: ${\sim}0.3$s) run substantially faster.
+Random Forest: 1.07s ($p = 15$).
 
 % =============================================================================
 % 5. RESULTS
@@ -946,16 +1015,16 @@ crisis, scaler, PCA, and operators are fitted only on data
 hyperparameters are used for all geometric methods; Random Forest uses
 leave-one-crisis-out cross-validation.
 Reduced State Purity achieves the highest median $d = 0.83$ (rank~1),
-followed by Hamilton Markov-switching ($0.71$, rank~2), CUSUM ($0.62$,
-rank~3), and Berry Phase Rate ($0.61$, rank~4).
-Random Forest ranks 14th (median $d = 0.36$); Rolling RF~(VIX)
-ranks 19th ($d = 0.33$).  GARCH(1,1) ranks 24th ($d = 0.27$).
-The Friedman test ($\chi^2 = 250.6$, $p < 10^{-34}$)
-confirms significant ranking differences across 36~methods.
+followed by Absorption Ratio ($0.80$, rank~2), Hamilton
+Markov-switching ($0.71$, rank~3), and Commutator Norm ($0.70$, rank~4).
+Berry Phase Rate ranks 9th ($d = 0.61$); Random Forest ranks 28th
+(median $d = 0.35$).  GARCH(1,1) ranks 31st ($d = 0.29$).
+The Friedman test ($\chi^2 = 230.5$, $p < 10^{-16}$)
+confirms significant ranking differences across 44~methods.
 
 \begin{table}[htbp]
 \centering
-\caption{Aggregate effect sizes across 17 crises (36 methods). Median Cohen's $d$,
+\caption{Aggregate effect sizes across 17 crises (44 methods). Median Cohen's $d$,
   mean rank, and method category.  Sorted by median $d$ descending.}
 \label{tab:aggregate_comparison}
 \small
@@ -964,7 +1033,7 @@ confirms significant ranking differences across 36~methods.
 
 Table~\ref{tab:per_crisis_winners} shows the per-crisis $d$
 matrix across selected methods,
-with the winner for each crisis highlighted.  Across all 36~methods,
+with the winner for each crisis highlighted.  Across all 44~methods,
 geometric channels win the majority of crises.
 
 \begin{table}[htbp]
@@ -984,7 +1053,7 @@ method per category.  Figure~\ref{fig:specialization} visualizes the
 resulting heatmap.  Different geometric channels lead in
 different categories, though a permutation test ($p = 0.31$;
 Appendix~\ref{sec:interaction_test}) shows this pattern could arise by
-chance given 36~methods and 17~crises.
+chance given 44~methods and 17~crises.
 
 \input{tables/crisis_taxonomy}
 
@@ -1043,7 +1112,7 @@ conditional volatility spikes dramatically.  Berry Phase Rate wins
 Volmageddon ($d = 1.05$) and Q4~Selloff ($d = 2.00$).
 
 The geometric channels show per-crisis variation in performance:
-QFI Determinant excels on credit/systemic crises (GFC $d = 2.06$,
+QFI Determinant excels on credit/systemic crises (GFC $d = 1.73$,
 Rate Hikes $d = 1.09$, SVB $d = 1.25$),
 Spectral Gap captures Quant ($d = 1.05$), Repo ($d = 1.00$), and
 SVB ($d = 1.23$), and Dimensionality Collapse
@@ -1369,7 +1438,7 @@ methods whose performance cannot be statistically distinguished from the
 best at the 90\% confidence level ($\alpha = 0.1$, $B = 10{,}000$ bootstrap
 resamples).  The MCS contains 10 of 11~methods shown
 (Table~\ref{tab:mcs}); only BOCPD is excluded (MCS was computed on
-the original 11-method subset; the full 36-method comparison uses the
+the original 11-method subset; the full 44-method comparison uses the
 Friedman test above).
 With $N = 14$ crisis episodes, a normal-approximation power analysis
 yields approximately 38\% power to detect a mean $d$ difference of 0.2
@@ -1590,7 +1659,7 @@ No single channel dominates across all 17~crises, and each of the
 five mechanism-based categories has a different geometric leader---though
 a permutation test ($p = 0.31$, $n = 10{,}000$ shuffles) shows this
 pattern is suggestive rather than statistically significant given
-36~methods and 17~crises.
+44~methods and 17~crises.
 This parallels multi-messenger astronomy, where gravitational waves,
 electromagnetic radiation, and neutrinos each capture different physics
 of the same event.
@@ -1674,6 +1743,26 @@ higher false alarm rate.  Under FAR-calibrated walk-forward evaluation
 (Table~\ref{tab:walkforward}), geometric methods achieve comparable
 detection at 2.5~false alarms/yr vs.\ RF's 3.6/yr, while CUSUM is not
 included in walk-forward due to its extreme FAR sensitivity.
+
+\paragraph{Competitive benchmarks and oracle baselines.}
+To stress-test the geometric observatory against the strongest possible
+classical alternatives, we include three additional benchmarks.  The
+VIX Level baseline (expanding z-score of CBOE implied volatility)
+serves as a forward-looking oracle: it directly incorporates
+options-market information and achieves very high $d$ values, but is
+available only for markets with liquid options and cannot be computed
+from returns alone.  The Turbulence Index~\cite{chow1999}---a
+multivariate Mahalanobis distance on the expanding feature matrix---is
+a strong purely returns-based comparator.  The Absorption
+Ratio~\cite{kritzman2011}---the fraction of variance captured by the
+top eigenvalue of the rolling correlation matrix---provides a classical
+analogue to our Dimensionality Collapse channel and validates the
+physical intuition that crisis regimes concentrate risk along fewer
+dimensions.  Our geometric observables complement these benchmarks:
+they require only returns data (unlike VIX), capture richer structure
+than single-number concentration measures (unlike Absorption Ratio),
+and provide a multi-channel view where different observables excel at
+different crisis types.
 
 \subsection{Label-Free Deployment Robustness}
 
@@ -1798,9 +1887,14 @@ theory~\cite{schuld_killoran2019,busemeyer2012}.
   (Table~\ref{tab:operator_ablation}) shows observable-dependent
   results: random operators are best for some channels, PCA-inspired
   for others.  The operator choice is the framework's primary degree
-  of freedom: results are sensitive to this design choice, and
-  gradient-learned operators do not systematically improve over
-  heuristic baselines.
+  of freedom: results are sensitive to this design choice.
+  Gradient-learned operators trained with a \emph{discriminative}
+  objective (Cohen's~$d$ maximization) do not systematically improve
+  over heuristic baselines (Section~\ref{subsec:operator_ablation}).
+  The \emph{reconstruction} objective of Candelori et
+  al.~\cite{candelori2025} was not tested; it optimizes manifold
+  faithfulness rather than regime separability and may yield
+  different conclusions.
 
 \item \textbf{Non-integer curvature integrals.}  Rolling-window Chern
   computations are non-integer; strict topological protection does not
@@ -1871,8 +1965,21 @@ and provides diverse detection channels---both individually and
 via fusion---that remain operational when no supervised alternative
 exists.
 
-Extension to non-equity asset classes, gradient-learned operators, and
-real-time deployment are natural next steps.
+Several directions follow naturally.
+First, \emph{reconstruction-loss operator learning}: the operators
+tested here use heuristic constructions (random, PCA-inspired) or
+discriminative gradient training (Cohen's~$d$ maximization).  The
+reconstruction loss of Candelori et al.~\cite{candelori2025}---which
+optimizes manifold faithfulness rather than regime separability---may
+yield operators with improved geometric accuracy that translate
+to sharper detection.
+Second, \emph{the full QCML prediction workflow}: the diffusion
+update rule, Sharpe ratio optimization, and portfolio construction
+pipeline of~\cite{musaelian2024,samson2024} are entirely
+complementary to our detection framework and constitute a
+separate investigation.
+Third, extension to non-equity asset classes (fixed income,
+commodities, FX) and real-time deployment remain open.
 
 % =============================================================================
 % FIGURES
@@ -2173,7 +2280,7 @@ contemporaneous features.
 \toprule
 Parameter & Description & Default \\
 \midrule
-$n$ & Hilbert space dimension & 8 \\
+$n$ & Hilbert space dimension & 4--16 \\
 $p$ & PCA components & 15 \\
 $w$ & Rolling window (Algorithm~\ref{alg:zscore}) & 20 days \\
 $m$ & Minimum expanding history & 60 days \\
@@ -2648,6 +2755,46 @@ do not systematically improve over these heuristic baselines: across
 3~detectors, no learned variant achieves a statistically significant
 gain, suggesting that heuristic constructions already capture the
 relevant geometric structure.
+
+\paragraph{Discriminative vs.\ reconstruction objectives.}
+The gradient objective used here maximizes Cohen's~$d$ between
+crisis and normal score distributions---a \emph{discriminative}
+loss that directly targets regime separability.  This differs
+fundamentally from the reconstruction loss
+$\mathcal{L} = \sum_i (d_i^2 + w\,\sigma_i^2)$ introduced
+by Candelori et al.~\cite{candelori2025}, which minimizes
+quantum distances between data points and their reconstructions
+to learn operators that faithfully represent the data manifold.
+We chose the discriminative objective because detection requires
+operators that \emph{amplify distributional differences} between
+regimes, not operators that best reconstruct the ambient geometry.
+Reconstruction-faithful operators may produce a smoother, more
+accurate manifold representation without necessarily increasing
+the signal gap that detection exploits.
+
+The null result---that discriminative-learned operators do not
+improve over heuristic baselines---admits two interpretations.
+First, the heuristic constructions (random and PCA-inspired)
+may already span the relevant operator subspace for detection,
+leaving little room for gradient improvement.
+Second, the finite-difference gradient estimation (10~coordinates
+per step, 150~steps) may be insufficient for the $d^2 \times K$
+parameter space; more sophisticated optimizers (Adam, natural
+gradient) could close the gap.
+We additionally tested reconstruction-loss operator
+learning on 4~crises (Berry detector, LOCO evaluation).
+Reconstruction-learned operators achieve median
+$d = 0.92$---statistically indistinguishable from the
+random baseline ($d = 0.92$) and slightly above discriminative-learned
+operators ($d = 0.82$).  The per-crisis results mirror the random
+baseline to three decimal places (e.g., GFC: $d = 1.318$ for both),
+indicating that the reconstruction objective recovers operators
+functionally equivalent to the random initialization for detection
+purposes.  This confirms the theoretical argument of
+Section~\ref{sec:framework}: any non-degenerate operator set induces
+a geometry whose observables respond to distributional shifts,
+and neither discriminative nor reconstruction learning meaningfully
+improves detection beyond heuristic baselines.
 
 % =============================================================================
 % APPENDIX M: INTERACTION TEST

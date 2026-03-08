@@ -1,4 +1,4 @@
-\begin{thebibliography}{52}
+\begin{thebibliography}{54}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -131,6 +131,13 @@ S.-S. Chern.
   1946.
 \newblock \doi{10.2307/1969037}.
 
+\bibitem[Chow et~al.(1999)Chow, Jacquier, Kritzman, and Lowry]{chow1999}
+G.~Chow, E.~Jacquier, M.~Kritzman, and K.~Lowry.
+\newblock Optimal portfolios in good times and bad.
+\newblock \emph{Financial Analysts Journal}, 55\penalty0 (3):\penalty0 65--73,
+  1999.
+\newblock \doi{10.2469/faj.v55.n3.2273}.
+
 \bibitem[Cramér(1946)]{cramer1946}
 H.~Cramér.
 \newblock \emph{Mathematical Methods of Statistics}.
@@ -201,6 +208,12 @@ R.~Killick, P.~Fearnhead, and I.~A. Eckley.
 \newblock \emph{Journal of the American Statistical Association}, 107\penalty0
   (500):\penalty0 1590--1598, 2012.
 \newblock \doi{10.1080/01621459.2012.737745}.
+
+\bibitem[Kritzman et~al.(2011)Kritzman, Li, Page, and Rigobon]{kritzman2011}
+M.~Kritzman, Y.~Li, S.~Page, and R.~Rigobon.
+\newblock Principal components as a measure of systemic risk.
+\newblock \emph{The Journal of Portfolio Management}, 37\penalty0 (4):\penalty0
+  112--126, 2011.
 
 \bibitem[Laloux et~al.(1999)Laloux, Cizeau, Bouchaud, and Potters]{laloux1999}
 L.~Laloux, P.~Cizeau, J.-P. Bouchaud, and M.~Potters.

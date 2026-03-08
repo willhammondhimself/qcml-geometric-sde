@@ -8,7 +8,7 @@
 #   json_path:    Dot-notation path to the value in the JSON
 #
 # Canonical runs:
-#   Main comparison: 2026-03-03, 36 methods x 17 crises
+#   Main comparison: 2026-03-07, 44 methods x 17 crises
 #   Fusion full:     2026-03-04, 22 methods x 15 crises (15 individuals + 7 fusion)
 #   Fusion holdout:  2026-03-04, 22 methods x 4 crises
 #
@@ -22,44 +22,45 @@ claims:
   - name: "Reduced Purity median d"
     section: "Abstract / Table 4 / Sec 5.1"
     paper_value: 0.83
-    source_json: "experiments/outputs/regime_detection/causal_comparison_20260303_231013.json"
+    source_json: "experiments/outputs/regime_detection/causal_comparison_20260307_171332.json"
     json_path: "summary.median_d.Reduced Purity"
 
   - name: "Hamilton MS median d"
     section: "Abstract / Table 4 / Sec 5.1"
     paper_value: 0.71
-    source_json: "experiments/outputs/regime_detection/causal_comparison_20260303_231013.json"
+    source_json: "experiments/outputs/regime_detection/causal_comparison_20260307_171332.json"
     json_path: "summary.median_d.Hamilton MS"
 
   - name: "CUSUM median d"
     section: "Abstract / Table 4 / Sec 5.1"
     paper_value: 0.63
-    source_json: "experiments/outputs/regime_detection/causal_comparison_20260303_231013.json"
+    source_json: "experiments/outputs/regime_detection/causal_comparison_20260307_171332.json"
     json_path: "summary.median_d.CUSUM"
 
   - name: "Berry Phase Rate median d"
     section: "Abstract / Table 4 / Sec 5.1"
     paper_value: 0.61
-    source_json: "experiments/outputs/regime_detection/causal_comparison_20260303_231013.json"
+    source_json: "experiments/outputs/regime_detection/causal_comparison_20260307_171332.json"
     json_path: "summary.median_d.Berry Phase Rate"
 
   - name: "Random Forest median d"
     section: "Sec 5.1"
-    paper_value: 0.38
-    source_json: "experiments/outputs/regime_detection/causal_comparison_20260303_231013.json"
+    paper_value: 0.36
+    source_json: "experiments/outputs/regime_detection/causal_comparison_20260307_171332.json"
     json_path: "summary.median_d.Random Forest"
 
   - name: "GARCH(1,1) median d"
     section: "Sec 5.1"
     paper_value: 0.27
-    source_json: "experiments/outputs/regime_detection/causal_comparison_20260303_231013.json"
+    source_json: "experiments/outputs/regime_detection/causal_comparison_20260307_171332.json"
     json_path: "summary.median_d.GARCH(1,1)"
 
   # --- Friedman test (main comparison) ---
+  # Note: tolerance=0.02 is for Cohen's d; chi-sq values need wider tolerance.
   - name: "Friedman chi-squared (main)"
     section: "Abstract / Table 4 / Sec 6"
-    paper_value: 250.6
-    source_json: "experiments/outputs/regime_detection/causal_comparison_20260303_231013.json"
+    paper_value: 230.51
+    source_json: "experiments/outputs/regime_detection/causal_comparison_20260307_171332.json"
     json_path: "summary.friedman_chi_sq"
 
   # --- Fusion: full (15 crises, fusion_results_20260304_101523.json) ---
@@ -135,11 +136,11 @@ claims:
   - name: "Berry Phase Rate d on 2008 GFC"
     section: "Table 5 / Results prose"
     paper_value: 0.54
-    source_json: "experiments/outputs/regime_detection/causal_comparison_20260303_231013.json"
+    source_json: "experiments/outputs/regime_detection/causal_comparison_20260307_171332.json"
     json_path: "results.Berry Phase Rate.2008_gfc.d"
 
   - name: "QFI Determinant d on 2008 GFC"
     section: "Table 5 / Results prose"
-    paper_value: 2.06
-    source_json: "experiments/outputs/regime_detection/causal_comparison_20260303_231013.json"
+    paper_value: 1.73
+    source_json: "experiments/outputs/regime_detection/causal_comparison_20260307_171332.json"
     json_path: "results.QFI Determinant.2008_gfc.d"

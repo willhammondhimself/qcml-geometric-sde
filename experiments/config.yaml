@@ -294,27 +294,27 @@ detectors:
     class: qcml_geometry.SpectralGapDetector
     display_name: "Spectral Gap"
     params:
-      hilbert_dim: 8
+      hilbert_dim: 16
       n_pca_components: 15
       rolling_window: 20
       operator_method: random
       seed: 42
       normalization: soft
       adaptive_epsilon: true
-    hpo_source: "normalization_ablation_20260223"
+    hpo_source: "pipeline_upgrade_v2"
 
   metric_condition:
     class: qcml_geometry.MetricConditionDetector
     display_name: "Metric Condition"
     params:
-      hilbert_dim: 8
+      hilbert_dim: 16
       n_pca_components: 15
       rolling_window: 20
       operator_method: random
       seed: 42
       normalization: soft
       adaptive_epsilon: true
-    hpo_source: "normalization_ablation_20260223"
+    hpo_source: "pipeline_upgrade_v2"
 
   geometric_ensemble:
     class: qcml_geometry.GeometricEnsembleDetector
@@ -333,79 +333,79 @@ detectors:
     class: qcml_geometry.GeodesicVelocityDetector
     display_name: "Geodesic Velocity"
     params:
-      hilbert_dim: 8
+      hilbert_dim: 16
       n_pca_components: 8
       rolling_window: 15
       operator_method: pca_inspired
       seed: 42
-      normalization: sphere
-    hpo_source: "initial_defaults"
+      normalization: soft
+    hpo_source: "pipeline_upgrade_v2"
 
   spectral_flow:
     class: qcml_geometry.SpectralFlowDetector
     display_name: "Spectral Flow"
     params:
-      hilbert_dim: 8
+      hilbert_dim: 16
       n_pca_components: 8
       rolling_window: 15
       operator_method: pca_inspired
       seed: 42
       normalization: soft
       adaptive_epsilon: true
-    hpo_source: "initial_defaults"
+    hpo_source: "pipeline_upgrade_v2"
 
   commutator_norm:
     class: qcml_geometry.CommutatorNormDetector
     display_name: "Commutator Norm"
     params:
-      hilbert_dim: 8
+      hilbert_dim: 16
       n_pca_components: 8
       rolling_window: 15
       operator_method: pca_inspired
       seed: 42
       normalization: soft
       adaptive_epsilon: true
-    hpo_source: "initial_defaults"
+    hpo_source: "pipeline_upgrade_v2"
 
   ricci_scalar:
     class: qcml_geometry.RicciScalarDetector
     display_name: "Ricci Scalar"
     params:
-      hilbert_dim: 6
+      hilbert_dim: 16
       n_pca_components: 3
       rolling_window: 20
       operator_method: pca_inspired
       seed: 42
       normalization: soft
       adaptive_epsilon: true
-    hpo_source: "initial_defaults"
+    hpo_source: "pipeline_upgrade_v2"
 
   sectional_curvature:
     class: qcml_geometry.SectionalCurvatureDetector
     display_name: "Sectional Curvature"
     params:
-      hilbert_dim: 6
+      hilbert_dim: 16
       n_pca_components: 3
       rolling_window: 20
       operator_method: pca_inspired
       seed: 42
       normalization: soft
       adaptive_epsilon: true
-    hpo_source: "initial_defaults"
+    hpo_source: "pipeline_upgrade_v2"
 
   # --- Observatory expansion detectors (Feb 2026 sprint) ---
   speed_limit_ratio:
     class: qcml_geometry.SpeedLimitRatioDetector
     display_name: "Speed Limit Ratio"
     params:
-      hilbert_dim: 8
+      hilbert_dim: 16
       n_pca_components: 8
       rolling_window: 20
       operator_method: random
       seed: 42
       normalization: soft
       adaptive_epsilon: true
-    hpo_source: "exploration_sprint_20260228"
+    hpo_source: "pipeline_upgrade_v2"
 
   dimensionality_collapse:
     class: qcml_geometry.DimensionalityCollapseDetector
@@ -425,7 +425,7 @@ detectors:
     class: qcml_geometry.SectionalCurvatureDetector
     display_name: "Sectional Curvature Sign"
     params:
-      hilbert_dim: 6
+      hilbert_dim: 16
       n_pca_components: 3
       operator_method: pca_inspired
       seed: 42
@@ -434,7 +434,7 @@ detectors:
       score_mode: neg_fraction
       neg_fraction_window: 20
       subsample: 10
-    hpo_source: "exploration_sprint_20260228"
+    hpo_source: "pipeline_upgrade_v2"
 
   # --- New observatory expansion (Mar 2026) ---
   spectral_entropy:
@@ -466,53 +466,53 @@ detectors:
     class: qcml_geometry.HamiltonianSensitivityDetector
     display_name: "Hamiltonian Sensitivity"
     params:
-      hilbert_dim: 8
+      hilbert_dim: 16
       n_pca_components: 8
       rolling_window: 20
       operator_method: random
       seed: 42
       normalization: soft
       adaptive_epsilon: true
-    hpo_source: "observatory_expansion_20260303"
+    hpo_source: "pipeline_upgrade_v2"
 
   geodesic_curvature:
     class: qcml_geometry.GeodesicCurvatureDetector
     display_name: "Geodesic Curvature"
     params:
-      hilbert_dim: 6
+      hilbert_dim: 16
       n_pca_components: 3
       operator_method: pca_inspired
       seed: 42
       normalization: soft
       adaptive_epsilon: true
       subsample: 5
-    hpo_source: "observatory_expansion_20260303"
+    hpo_source: "pipeline_upgrade_v2"
 
   effective_state_dim:
     class: qcml_geometry.EffectiveStateDimensionDetector
     display_name: "Effective State Dim"
     params:
-      hilbert_dim: 8
+      hilbert_dim: 16
       n_pca_components: 8
       rolling_window: 20
       operator_method: random
       seed: 42
       normalization: soft
       adaptive_epsilon: true
-    hpo_source: "observatory_expansion_20260303"
+    hpo_source: "pipeline_upgrade_v2"
 
   qgt_phase_rigidity:
     class: qcml_geometry.QGTPhaseRigidityDetector
     display_name: "QGT Phase Rigidity"
     params:
-      hilbert_dim: 8
+      hilbert_dim: 16
       n_pca_components: 8
       rolling_window: 20
       operator_method: random
       seed: 42
       normalization: soft
       adaptive_epsilon: true
-    hpo_source: "observatory_expansion_20260303"
+    hpo_source: "pipeline_upgrade_v2"
 
   reduced_purity:
     class: qcml_geometry.ReducedPurityDetector
@@ -532,14 +532,14 @@ detectors:
     class: qcml_geometry.SpectralComplexityDetector
     display_name: "Spectral Complexity"
     params:
-      hilbert_dim: 8
+      hilbert_dim: 16
       n_pca_components: 8
       rolling_window: 20
       operator_method: random
       seed: 42
       normalization: soft
       adaptive_epsilon: true
-    hpo_source: "observatory_expansion_20260303"
+    hpo_source: "pipeline_upgrade_v2"
 
   berry_velocity_coupling:
     class: qcml_geometry.BerryVelocityCouplingDetector
@@ -557,14 +557,14 @@ detectors:
     class: qcml_geometry.CurvatureRateDetector
     display_name: "Curvature Rate"
     params:
-      hilbert_dim: 6
+      hilbert_dim: 16
       n_pca_components: 3
       operator_method: pca_inspired
       seed: 42
       normalization: soft
       adaptive_epsilon: true
       subsample: 5
-    hpo_source: "observatory_expansion_20260303"
+    hpo_source: "pipeline_upgrade_v2"
 
 # ---------------------------------------------------------------------------
 # Information geometry detectors (Workstream B)
@@ -722,6 +722,31 @@ baselines:
       min_expanding: 60
     supervised: false
 
+  vix_level:
+    class: experiments.baselines.VIXThresholdDetector
+    display_name: "VIX Level"
+    params:
+      min_expanding: 60
+    supervised: false
+
+  turbulence_index:
+    class: experiments.baselines.TurbulenceIndexDetector
+    display_name: "Turbulence Index"
+    params:
+      rolling_window: 252
+      min_expanding: 60
+      regularization: 1.0e-6
+    supervised: false
+
+  absorption_ratio:
+    class: experiments.baselines.AbsorptionRatioDetector
+    display_name: "Absorption Ratio"
+    params:
+      rolling_window: 252
+      n_components: 1
+      min_expanding: 60
+    supervised: false
+
 # ---------------------------------------------------------------------------
 # Evaluation protocol
 # ---------------------------------------------------------------------------
@@ -781,6 +806,9 @@ method_categories:
     - mahalanobis
     - structural_break
     - transfer_entropy
+    - vix_level
+    - turbulence_index
+    - absorption_ratio
   supervised:
     - random_forest
 
@@ -843,6 +871,7 @@ experiments:
 
   paper:
     methods:
+      # Geometric (QCML) detectors
       - berry_phase_rate
       - qfi_determinant
       - multi_lag_fidelity
@@ -855,11 +884,41 @@ experiments:
       - dimensionality_collapse
       - sectional_curvature_sign
       - geodesic_velocity
+      - spectral_entropy
+      - hamiltonian_sensitivity
+      - reduced_purity
+      - effective_state_dim
+      - spectral_complexity
+      - geometric_phase_rate
+      - geodesic_curvature
+      - qgt_phase_rigidity
+      - berry_velocity_coupling
+      - curvature_rate
+      - spectral_flow
+      - commutator_norm
+      - ricci_scalar
+      - sectional_curvature
+      # Info geometry
+      - fisher_rao
+      - wasserstein
+      - kl_divergence
+      - sinkhorn
+      # Classical baselines
       - rolling_vol_z
       - cusum
       - hmm
       # - bocpd          # O(T^2), d≈0.02 — excluded
       - isolation_forest
+      - garch
+      - hamilton_ms
+      - ewma_vol
+      - mahalanobis
+      - structural_break
+      - transfer_entropy
+      - turbulence_index
+      - absorption_ratio
+      - vix_level
+      # Supervised
       - random_forest
     crisis_subset: paper
 
