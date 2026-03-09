@@ -71,6 +71,19 @@ METHOD_CATEGORIES = {
     'LSTM Autoencoder': 'Modern',
     'Cross-Sect Dispersion': 'Classical',
     'VRP': 'Classical',
+    # Benchmarks (observatory expansion)
+    'Absorption Ratio': 'Classical',
+    'Turbulence Index': 'Classical',
+    # Optimal transport
+    'Wasserstein': 'Classical',
+    'Sinkhorn': 'Classical',
+    'KL Divergence': 'Classical',
+    'Fisher-Rao': 'Classical',
+    # Spectral methods
+    'Spectral Flow': 'Geometric',
+    'Commutator Norm': 'Geometric',
+    'Ricci Scalar': 'Geometric',
+    'Sectional Curvature': 'Geometric',
 }
 
 LATEX_NAMES = {
@@ -118,6 +131,19 @@ LATEX_NAMES = {
     'LSTM Autoencoder': 'LSTM AE',
     'Cross-Sect Dispersion': r"Cross-Sect.\ Disp.",
     'VRP': 'VRP',
+    # Benchmarks
+    'Absorption Ratio': 'Absorption Ratio',
+    'Turbulence Index': 'Turbulence Index',
+    # Optimal transport
+    'Wasserstein': 'Wasserstein',
+    'Sinkhorn': 'Sinkhorn',
+    'KL Divergence': 'KL Divergence',
+    'Fisher-Rao': 'Fisher-Rao',
+    # Spectral methods
+    'Spectral Flow': 'Spectral Flow',
+    'Commutator Norm': 'Commutator Norm',
+    'Ricci Scalar': 'Ricci Scalar',
+    'Sectional Curvature': r"Sect.\ Curvature",
 }
 
 

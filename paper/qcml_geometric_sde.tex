@@ -490,23 +490,23 @@ directions $(0,1)$, computed via the plaquette (Wilson loop) method
 with step size $\epsilon = 10^{-5}$.
 
 \paragraph{Hyperparameters.}  Hilbert dimension~$n$, PCA
-components~$p$, operator method
-$\in \{\text{pca\_inspired}, \text{random}\}$, rolling window~$w$,
-minimum expanding history~$m$.
+components~$p$, operator method $\in
+\{\text{pca\_inspired},\allowbreak \text{random}\}$, rolling
+window~$w$, minimum expanding history~$m$.
 
 \paragraph{Plaquette computation.}
 The Berry curvature $F_{ab}$ is computed via the discrete plaquette
 (Wilson loop) method.  For each pair of PCA directions $(a,b)$ at
 point~$x$:
-\begin{equation}\label{eq:plaquette}
+\begin{multline}\label{eq:plaquette}
   F_{ab}(x) = -\frac{1}{\epsilon^2}\,
     \mathrm{Im}\,\log\bigl(
-    \braket{\psi(x)}{\psi(x{+}\epsilon e_a)}
-    \braket{\psi(x{+}\epsilon e_a)}{\psi(x{+}\epsilon e_a{+}\epsilon e_b)}
+    \braket{\psi(x)}{\psi(x{+}\epsilon e_a)} \\
+    \times\braket{\psi(x{+}\epsilon e_a)}{\psi(x{+}\epsilon e_a{+}\epsilon e_b)}
     \braket{\psi(x{+}\epsilon e_a{+}\epsilon e_b)}{\psi(x{+}\epsilon e_b)}
     \braket{\psi(x{+}\epsilon e_b)}{\psi(x)}
   \bigr),
-\end{equation}
+\end{multline}
 with $\epsilon = 10^{-5}$.  This gauge-invariant formula avoids
 explicit phase-fixing~\cite{berry1984,simon1983}.
 
@@ -1024,8 +1024,9 @@ confirms significant ranking differences across 44~methods.
 
 \begin{table}[htbp]
 \centering
-\caption{Aggregate effect sizes across 17 crises (44 methods). Median Cohen's $d$,
-  mean rank, and method category.  Sorted by median $d$ descending.}
+\caption{Top 10 methods by median Cohen's $d$ across 17 crises
+  (of 44 total).  Mean rank computed over all 44~methods.
+  Full results in Appendix Table~\ref{tab:comparison_full}.}
 \label{tab:aggregate_comparison}
 \small
 \input{tables/table_comparison}
@@ -1139,12 +1140,14 @@ this classification.
 \end{table}
 
 Supervised and statistical methods degrade on novel crises:
-RF's median $d$ drops from 0.45 (Conventional) to 0.34 (Novel,
-$-25\%$), and CUSUM declines from 0.76 to 0.32 ($-58\%$).
-In contrast, all three geometric observables remain stable:
-Berry $+3\%$, QFI $+21\%$, MLF $+5\%$.  The best geometric
-observable per crisis declines modestly from $d = 0.98$ to $0.83$
-($-15\%$), far less than the supervised/classical degradation.
+RF's median $d$ drops from 0.45 (Conventional) to 0.35 (Novel,
+$-22\%$), and CUSUM declines from 1.10 to 0.32 ($-71\%$).
+Individual geometric observables show mixed patterns---Reduced
+Purity and Berry both decline on novel crises ($-52\%$ and $-40\%$
+respectively), while QFI and MLF \emph{improve} ($+51\%$ and $+60\%$).
+This complementarity is the key insight: the best geometric
+observable per crisis actually \emph{increases} from $d = 1.26$ to $1.55$
+($+23\%$), because different channels specialise on different crisis types.
 
 The explanation is structural rather than statistical: geometric
 observables detect changes in manifold curvature and metric volume
@@ -1770,9 +1773,11 @@ In deployment scenarios where crisis labels are unavailable or lag by
 months---the typical operational setting---the supervised RF baseline is
 unavailable.  The stratified analysis
 (Table~\ref{tab:stratified}) quantifies this constraint: RF's median
-$d$ drops $25\%$ on novel crises, and CUSUM collapses $58\%$, while
-geometric observables maintain or improve detection ($+3\%$ to
-$+21\%$).  The relevant question is not which method has the highest
+$d$ drops $22\%$ on novel crises, and CUSUM collapses $71\%$.
+Individual geometric channels show varied patterns, but the best
+geometric channel per crisis \emph{improves} $+23\%$ on novel crises,
+because different channels specialise on different crisis types.
+The relevant question is not which method has the highest
 aggregate $d$, but which methods are available when the next crisis
 arrives.
 
@@ -2461,16 +2466,20 @@ Determinant.
 
 \section{Berry Phase Rate Hyperparameter Sensitivity}\label{sec:berry_sensitivity}
 
-To assess whether the Berry Phase Rate results depend critically on
-hyperparameter choice, we conduct a one-at-a-time (OAT) sweep over five
-parameters---Hilbert-space dimension $d_H \in \{4,6,8,10,12\}$, PCA
-components $n_{\mathrm{PCA}} \in \{4,6,8,10,15\}$, rolling window
-$w \in \{5,10,15,20,30,50\}$, normalization mode $\in \{$sphere, none,
-soft, clip$\}$, and aggregation function $\in \{$f01, frobenius,
-max$\}$---holding all other parameters at their defaults
-(Table~\ref{tab:hyperparams}).  This yields 23 configurations,
-each evaluated on the original 14-crisis subset using the causal protocol of
-Section~\ref{subsec:methods_protocol}.
+To assess whether the Berry Phase Rate results depend critically
+on hyperparameter choice, we conduct a one-at-a-time (OAT) sweep
+over five parameters: Hilbert-space dimension
+$d_H \in \{4,6,8,10,12\}$, PCA components
+$n_{\mathrm{PCA}} \in \{4,\allowbreak 6,\allowbreak 8,\allowbreak
+10,15\}$, rolling window
+$w \in \{5,\allowbreak 10,\allowbreak 15,\allowbreak 20,30,50\}$,
+normalization mode $\in \{\text{sphere},\allowbreak \text{none},
+\allowbreak \text{soft},\allowbreak \text{clip}\}$, and aggregation
+$\in \{\text{f01},\allowbreak \text{frobenius},\allowbreak
+\text{max}\}$---holding all other parameters at their defaults
+(Table~\ref{tab:hyperparams}).  This yields 23~configurations,
+each evaluated on the original 14-crisis subset using the causal
+protocol of Section~\ref{subsec:methods_protocol}.
 
 Across all 23 OAT configurations, 61\% achieve median $d > 0.5$, with
 a median-of-medians of $\widetilde{d} = 0.63$.  The configurations that
@@ -2508,11 +2517,13 @@ $(6, 15)$.  Berry Phase Rate maintains $d > 0.5$ across most settings.}
 % =============================================================================
 \section{Detection-Oriented Metrics}\label{sec:detection_metrics_appendix}
 
-While Cohen's~$d$ measures crisis-window separability (offline event study),
-practitioners need detection-relevant metrics: precision, recall, timeliness,
-and false alarm control.  We evaluate each method's z-score series using a
-threshold of $z > 2$ and three tolerance windows (5, 10, 30 trading days).
-Table~\ref{tab:detection_metrics} reports aggregates across the original 14-crisis subset.
+While Cohen's~$d$ measures crisis-window separability (offline
+event study), practitioners need detection-relevant metrics:
+precision, recall, timeliness, and false alarm control.  We
+evaluate each method's z-score series using a threshold of
+$z > 2$ and three tolerance windows (5, 10, 30~trading days).
+Table~\ref{tab:detection_metrics} reports aggregates across the
+original 14-crisis subset.
 
 \begin{table}[htbp]
 \centering
@@ -2655,7 +2666,25 @@ and CUSUM are within sampling variability.
 \end{figure}
 
 % =============================================================================
-% APPENDIX K: HPO SEARCH SPACES
+% APPENDIX K: FULL METHOD COMPARISON
+% =============================================================================
+\section{Full Method Comparison}\label{sec:full_comparison}
+
+Table~\ref{tab:comparison_full} presents the complete ranking of all
+44~methods evaluated across 17~crises.  The top~10 are shown in
+the main text (Table~\ref{tab:aggregate_comparison}).
+
+\begin{table}[htbp]
+\centering
+\caption{Full 44-method comparison across 17 crises.  Median Cohen's $d$,
+  mean Friedman rank (over all 44~methods), and category.
+  See Table~\ref{tab:aggregate_comparison} for the top~10.}
+\label{tab:comparison_full}
+\input{tables/table_comparison_full}
+\end{table}
+
+% =============================================================================
+% APPENDIX L: HPO SEARCH SPACES
 % =============================================================================
 \section{Hyperparameter Search Spaces}\label{sec:hpo_search}
 

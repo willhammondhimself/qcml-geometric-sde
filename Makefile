@@ -8,6 +8,7 @@ PYTHON ?= python
 PIP ?= pip
 PAPER_DIR = paper
 SCRIPTS_DIR = scripts
+CANONICAL_JSON ?= experiments/outputs/regime_detection/causal_comparison_20260307_171332.json
 
 help:  ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | \
@@ -63,11 +64,11 @@ experiments-full:  ## Run all experiments on all 16 crises
 
 rebuild:  ## End-to-end rebuild (only changed cells recompute)
 	$(PYTHON) experiments/runner.py
-	$(PYTHON) $(PAPER_DIR)/populate_paper.py --compile
+	$(PYTHON) $(PAPER_DIR)/populate_paper.py --json $(CANONICAL_JSON) --compile
 
 rebuild-force:  ## Full rebuild ignoring cache
 	$(PYTHON) experiments/runner.py --force
-	$(PYTHON) $(PAPER_DIR)/populate_paper.py --compile
+	$(PYTHON) $(PAPER_DIR)/populate_paper.py --json $(CANONICAL_JSON) --compile
 
 clear-cache:  ## Clear experiment cell cache
 	$(PYTHON) experiments/runner.py --clear-cache
@@ -93,8 +94,8 @@ paper:  ## Compile LaTeX paper
 	cd $(PAPER_DIR) && pdflatex -interaction=nonstopmode qcml_geometric_sde.tex
 	cd $(PAPER_DIR) && pdflatex -interaction=nonstopmode qcml_geometric_sde.tex
 
-paper-full:  ## Generate tables from latest JSON + compile paper
-	$(PYTHON) $(PAPER_DIR)/populate_paper.py --compile --copy-figures
+paper-full:  ## Generate tables from canonical JSON + compile paper
+	$(PYTHON) $(PAPER_DIR)/populate_paper.py --json $(CANONICAL_JSON) --compile --copy-figures
 
 # ── Review Pipeline ──────────────────────────────────────────────
 
