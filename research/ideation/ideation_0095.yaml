@@ -1,0 +1,29 @@
+id: "0095"
+round: 95
+timestamp: "2026-03-06T21:45:00"
+question: "Can Gaussian process regime detection (GP-based changepoint) compete?"
+theme: "competitive_landscape"
+status: "reject"
+hypothesis:
+  statement: "GP changepoint detection is principled Bayesian but computationally intractable."
+  mechanism: "Full-history GP is O(n^3); sliding window is 31x more expensive than our approach."
+  prior_plausibility: "low"
+knight_findings:
+  - knight: 3
+    role: "comparative_analysis"
+    workers_used: 0
+    conclusion: "Computationally intractable at scale. Full GP: 1.3e11 FLOPs for 20yr daily. Windowed GP: 31x our cost. BOCPD (already in paper, d=0.898) is the online equivalent. No additional comparison needed."
+    evidence: "Saatci et al. 2010. BOCPD is the practical online version of GP changepoint."
+    confidence: 0.85
+test_results:
+  crises_tested: []
+  median_d: null
+  passes_threshold: false
+verdict:
+  keep: false
+  reason: "O(n^3) intractable. BOCPD (d=0.898, already in paper) is the practical online equivalent. No additional value from full GP."
+  strength: "dead"
+  follow_up_questions: []
+artifacts:
+  code_dir: null
+  key_files: null

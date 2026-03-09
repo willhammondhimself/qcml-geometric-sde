@@ -1,0 +1,30 @@
+id: "0060"
+round: 60
+timestamp: "2026-03-06T20:15:00"
+question: "Can we detect regimes in FX markets (DXY, EUR/USD, JPY/USD)?"
+theme: "cross_asset"
+status: "keep"
+hypothesis:
+  statement: "FX regime transitions should produce geometric signatures."
+  mechanism: "Currency crises involve structural breaks in exchange rate dynamics."
+  prior_plausibility: "low"
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: "Weakest cross-asset transfer. SpectralEntropy mean d=0.354 (just above threshold). BerryPhaseRate mean d=0.281 (below threshold). FX's lower volatility (0.7x SPY) and mean-reverting dynamics limit geometric signal."
+    evidence: "EURUSD: Berry 2014crash=0.369, Berry 2022surge=0.194. SpEnt 2014crash=0.543, SpEnt 2022surge=0.166."
+    confidence: 0.65
+test_results:
+  crises_tested: ["2014_eur_crash", "2022_usd_surge"]
+  cohens_d_per_crisis: {eur_crash_berry: 0.369, eur_crash_entropy: 0.543, usd_surge_berry: 0.194, usd_surge_entropy: 0.166}
+  median_d: 0.282
+  passes_threshold: false
+verdict:
+  keep: true
+  reason: "Marginal — SpectralEntropy barely passes on EUR/USD crash (d=0.543) but fails on 2022 surge. FX may need FX-specific features (carry, real-rate differentials). Keep for documentation but low priority."
+  strength: "low"
+  follow_up_questions: ["FX-specific feature engineering?", "Does multi-currency embedding help?"]
+artifacts:
+  code_dir: "research/ideation/cross_asset/"
+  key_files: ["test_q56_q60.py"]

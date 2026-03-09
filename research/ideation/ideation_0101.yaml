@@ -1,0 +1,85 @@
+id: "0101"
+round: 101
+timestamp: "2026-03-08T08:00:00"
+question: "Does the QCML-estimated intrinsic dimension of daily equity returns change detectably before/during crises?"
+theme: "intrinsic_dimension"
+status: "keep"
+
+hypothesis:
+  statement: "Intrinsic dimension from quantum metric spectral gap decreases during crises as correlation convergence collapses the data manifold"
+  mechanism: "Herding -> correlation convergence -> fewer independent return drivers -> eigenvalue concentration -> lower intrinsic dimension"
+  prior_plausibility: "high"
+
+knight_findings:
+  - knight: 1
+    role: "theoretical_validity"
+    workers_used: 0
+    conclusion: >
+      Strong theoretical backing. The quantum metric eigenvalue spectrum should split
+      into tangent (large) and normal (small) groups. During crises, d_crisis < d_normal
+      as factors merge. The spectral gap from Candelori et al. is noise-robust. For a
+      10-asset universe, expect d_normal ~ 3-5, d_crisis ~ 1-2. The discrete nature of
+      dimension is both a strength (robust) and weakness (limited resolution).
+    evidence: "Candelori et al. (2025), Laloux et al. (1999) RMT eigenvalue concentration"
+    confidence: 0.82
+    key_insight: "Intrinsic dimension is a topological invariant that undergoes discrete phase transition during crises — better as a regime classifier than continuous severity index"
+
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 1
+    conclusion: >
+      Implemented IntrinsicDimensionDetector using spectral entropy of normalized metric
+      eigenvalues: d_eff = exp(H) where H = -sum(p_k log p_k). Hard gap approach produced
+      constant d(t)=1 (all zeros). Soft approach works. Median d = 0.633 across 4 smoke
+      crises. Strong on GFC (0.862) and SVB (1.139), weak on COVID (0.280).
+    evidence: "smoke_results_q0101_q0104.json: {2008_gfc: 0.862, 2020_covid: 0.280, 2022_rates: 0.404, 2023_svb: 1.139}"
+    confidence: 0.75
+    key_insight: "Hard spectral gap fails at hilbert_dim=4 (constant gap location). Soft dimension via spectral entropy works but does not beat IPR baseline."
+
+  - knight: 3
+    role: "comparative_analysis"
+    workers_used: 0
+    conclusion: >
+      Low novelty. Three existing detectors already cover this: DimensionalityCollapse
+      (IPR, d=0.428), EffectiveStateDimension (state overlap PR, d=0.358), SpectralGap
+      (d=0.653). Classical Absorption Ratio (d=0.797) decisively beats all QCML dimension
+      estimators. The QCML embedding appears to DEGRADE dimension signals vs linear methods.
+    evidence: "Canonical results: AR=0.797 vs QCML-IPR=0.428 (gap of 0.369)"
+    confidence: 0.90
+    key_insight: "QCML dimension estimation systematically underperforms classical Absorption Ratio — the quantum metric embedding adds noise without capturing additional structure"
+
+  - knight: 4
+    role: "failure_mode_analysis"
+    workers_used: 0
+    conclusion: >
+      HIGH RISK. Primary threats: (1) operator dependence — dimension estimate changes with
+      random seed, (2) 8x8 metric too small for clean spectral gaps, (3) PCA eigenvalue scaling
+      creates artificial spectral structure, (4) signal may be volatility in disguise (r>0.9
+      with absorption ratio), (5) ground state sign ambiguity corrupts finite-difference metric.
+    evidence: "Kill condition: run with 10 random seeds — if std > 30% of mean, reject"
+    confidence: 0.85
+    key_insight: "The 'dimension' measured is a property of the random operators, not the data. Different seeds give different dimensions."
+
+test_results:
+  crises_tested: ["2008_gfc", "2020_covid", "2022_rates", "2023_svb"]
+  cohens_d_per_crisis:
+    2008_gfc: 0.862
+    2020_covid: 0.280
+    2022_rates: 0.404
+    2023_svb: 1.139
+  median_d: 0.633
+  max_d: 1.139
+  passes_threshold: true
+
+verdict:
+  keep: true
+  reason: "Passes d>0.3 threshold (median 0.633) but does not beat IPR benchmark (0.793). Provides complementary continuous dimension estimate. Main value is in fusion, not standalone."
+  strength: "medium"
+  follow_up_questions:
+    - "Does seed stability test (10 seeds) show consistent dimension estimates?"
+    - "What is correlation with Absorption Ratio (redundancy check)?"
+    - "Does d_eff improve when using learned operators instead of random?"
+
+artifacts:
+  code_dir: "research/ideation/intrinsic_dimension/"
+  key_files: ["detectors.py", "smoke_test_q0101_q0104.py", "smoke_results_q0101_q0104.json"]

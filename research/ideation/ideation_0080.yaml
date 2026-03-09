@@ -1,0 +1,29 @@
+id: "0080"
+round: 80
+timestamp: "2026-03-06T21:00:00"
+question: "Does the approach work for portfolio construction (risk parity with regime overlay)?"
+theme: "practical_applications"
+status: "reject"
+hypothesis:
+  statement: "Risk parity weights adjusted by regime score should reduce drawdowns."
+  mechanism: "Reduce risk budget in crisis regime based on Berry z-score."
+  prior_plausibility: "medium"
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: "No improvement. Regime-adjusted risk parity has identical Sharpe (0.805) and MaxDD (0.225) to standard risk parity. Weight renormalization neutralizes the signal."
+    evidence: "Standard RP: Sharpe=0.805, MaxDD=0.225. Regime RP: identical."
+    confidence: 0.80
+test_results:
+  crises_tested: ["2008_gfc", "2020_covid", "2022_rates", "2015_china"]
+  median_d: null
+  passes_threshold: false
+verdict:
+  keep: false
+  reason: "Weight renormalization neutralizes the overlay. Would need hard weight caps or binary switches, not proportional adjustment. Implementation flaw, not fundamental."
+  strength: "dead"
+  follow_up_questions: ["Binary switch (risk-on/risk-off) instead of proportional?"]
+artifacts:
+  code_dir: "research/ideation/practical_apps/"
+  key_files: ["test_q76_q85.py"]

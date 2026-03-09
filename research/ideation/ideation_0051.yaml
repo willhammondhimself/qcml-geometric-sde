@@ -1,0 +1,30 @@
+id: "0051"
+round: 51
+timestamp: "2026-03-06T19:45:00"
+question: "Can leave-one-crisis-out cross-validation replace our holdout design?"
+theme: "statistical_evaluation"
+status: "reject"
+hypothesis:
+  statement: "LOCO-CV may be more robust than single holdout split."
+  mechanism: "Train z-scores on all-but-one crisis, evaluate on held-out crisis."
+  prior_plausibility: "medium"
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: "LOCO-CV is fully redundant — rankings identical to full-dataset (Spearman rho=1.000). Expanding window z-scores use so much non-crisis data that recalibrating against training crises barely shifts scores."
+    evidence: "Spearman rho=1.000, p=0.000. LOCO d values match full-dataset to 3 decimal places."
+    confidence: 0.95
+test_results:
+  crises_tested: ["2008_gfc", "2020_covid", "2022_rates", "2023_svb"]
+  cohens_d_per_crisis: {}
+  median_d: null
+  passes_threshold: false
+verdict:
+  keep: false
+  reason: "Fully redundant with current expanding-window design. Current holdout (post-2020) is methodologically stronger because it tests temporal generalization, not just calibration robustness."
+  strength: "dead"
+  follow_up_questions: []
+artifacts:
+  code_dir: "research/ideation/statistical_eval/"
+  key_files: ["test_q51_q55.py"]

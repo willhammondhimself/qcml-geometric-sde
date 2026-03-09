@@ -1,0 +1,30 @@
+id: "0052"
+round: 52
+timestamp: "2026-03-06T19:45:00"
+question: "Does the rolling window size for z-score normalization systematically affect which observables win?"
+theme: "statistical_evaluation"
+status: "keep"
+hypothesis:
+  statement: "Short rolling windows may systematically bias rankings."
+  mechanism: "Different observables have different temporal persistence — short windows may help/hurt specific ones."
+  prior_plausibility: "medium"
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: "Rankings moderately robust (mean Spearman rho=0.725). 60-day window disrupts rankings: ReducedPurity jumps #4→#1, SpectralEntropy drops #1→#2. 504-day identical to expanding (rho=1.0). Rankings stabilize at ~2 years."
+    evidence: "60d: rho=0.300 (not sig). 120d: rho=0.900 (sig). 252d: rho=0.700. 504d: rho=1.000."
+    confidence: 0.80
+test_results:
+  crises_tested: ["2008_gfc", "2020_covid", "2022_rates", "2023_svb"]
+  cohens_d_per_crisis: {}
+  median_d: null
+  passes_threshold: true
+verdict:
+  keep: true
+  reason: "Expanding window is the correct choice — avoids strong bias from short windows. Rankings stabilize at 504d. Short windows (60d) introduce systematic bias favoring ReducedPurity."
+  strength: "medium"
+  follow_up_questions: ["Should we report sensitivity analysis in the paper?"]
+artifacts:
+  code_dir: "research/ideation/statistical_eval/"
+  key_files: ["test_q51_q55.py"]

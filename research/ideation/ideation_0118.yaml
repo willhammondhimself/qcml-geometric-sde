@@ -1,0 +1,64 @@
+id: "0118"
+round: 118
+timestamp: "2026-03-08T08:00:00"
+question: "Can we build a dimension dashboard that monitors d(t) across asset classes in real-time?"
+theme: "intrinsic_dimension"
+status: "reject"
+
+hypothesis:
+  statement: "A real-time dashboard displaying d(t) across equity, bond, commodity, crypto provides monitoring value"
+  mechanism: "Computationally feasible (~5-8s per update); web framework + scheduled data pulls"
+  prior_plausibility: "high"
+
+knight_findings:
+  - knight: 1
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: >
+      Technically feasible. Computation: ~1-2s per asset class (fetch + PCA + QCML +
+      spectral entropy). Updating every 5 minutes or EOD is realistic. But this is
+      ENGINEERING, not RESEARCH. No journal publishes dashboard descriptions.
+    evidence: "1-2s per asset class computation — fast enough for near-real-time"
+    confidence: 0.88
+    key_insight: "Feasible but irrelevant for academic publication"
+
+  - knight: 2
+    role: "practical_value"
+    workers_used: 0
+    conclusion: >
+      For publication: a static multi-panel figure of historical d(t) with crisis
+      shading would be the correct output — and that is a sub-task of Q0117, not an
+      independent question. The "real-time" aspect adds practitioner value but zero
+      academic value. Dashboard engineering requires 2-3 weeks for Streamlit/Dash
+      implementation.
+    evidence: "Static figure = sub-task of Q0117; dashboard = 2-3 weeks engineering"
+    confidence: 0.85
+    key_insight: "The academically relevant output is a figure in Q0117, not a standalone dashboard"
+
+  - knight: 3
+    role: "failure_mode_analysis"
+    workers_used: 0
+    conclusion: >
+      LOW RISK technically (well-understood engineering) but LOW VALUE academically.
+      The key question is NOT "can we build it" but "does cross-asset dimension reveal
+      anything that per-asset analysis misses" (e.g., synchronized dimension collapse
+      during systemic crises).
+    evidence: "The research question is in Q0117; Q0118 is the engineering wrapper"
+    confidence: 0.88
+    key_insight: "Q0118 is the engineering wrapper around Q0117's research question"
+
+test_results:
+  crises_tested: []
+  cohens_d_per_crisis: {}
+  median_d: null
+  passes_threshold: false
+
+verdict:
+  keep: false
+  reason: "Engineering work, not research. The figure is a sub-task of Q0117. No journal publishes dashboard descriptions. The real-time aspect adds practitioner value but zero academic value."
+  strength: "low"
+  follow_up_questions: []
+
+artifacts:
+  code_dir: "research/ideation/intrinsic_dimension/"
+  key_files: []

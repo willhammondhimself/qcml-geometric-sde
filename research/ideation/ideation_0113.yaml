@@ -1,0 +1,66 @@
+id: "0113"
+round: 113
+timestamp: "2026-03-08T08:00:00"
+question: "Does Marchenko-Pastur thresholding on the quantum metric improve dimension estimation vs. raw IPR?"
+theme: "intrinsic_dimension"
+status: "reject"
+
+hypothesis:
+  statement: "Apply MP null model to separate signal from noise eigenvalues in the quantum metric"
+  mechanism: "Eigenvalues above lambda_+ are signal; below are noise; cleaner dimension estimate than raw IPR"
+  prior_plausibility: "low"
+
+knight_findings:
+  - knight: 1
+    role: "theoretical_validity"
+    workers_used: 0
+    conclusion: >
+      CATEGORY ERROR. The quantum metric g_ab is NOT a sample covariance matrix. MP
+      theory requires: (1) sample size T (g is a point estimate, not a sample average),
+      (2) i.i.d. entries (g entries are correlated through the ground state),
+      (3) ratio N/T to define MP edges (no sample size exists), (4) rank bounded by
+      min(N,T) (g rank bounded by hilbert_dim - 1). The paper already correctly
+      distinguishes the Hamiltonian spectral gap from the MP noise edge.
+    evidence: "g_ab = Re<d_a psi|d_b psi> - <d_a psi|psi><psi|d_b psi> — deterministic, not sample-based"
+    confidence: 0.85
+    key_insight: "MP theory is inapplicable because g is not a sample covariance matrix"
+
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: >
+      Even if one applies MP to a rolling-window average of metrics (C_g = mean(g(x_t))),
+      the result has correlated entries (autocorrelation in x_t) that violate the i.i.d.
+      row assumption. The useful signal-vs-noise separation is already achieved by the
+      natural spectral gap of g without importing a mismatched null model.
+    evidence: "SpectralGapRatio d=1.175 outperforms IPR d=0.428 without any MP thresholding"
+    confidence: 0.80
+    key_insight: "The natural spectral gap is a better separator than the MP edge"
+
+  - knight: 3
+    role: "comparative_analysis"
+    workers_used: 0
+    conclusion: >
+      Applying MP to the PCA correlation matrix (before QCML embedding) is valid and
+      well-studied (Laloux et al. 1999, Plerou et al. 2002). But this is classical
+      RMT, not a QCML contribution. The QCML-specific question (MP on g) is a
+      category error.
+    evidence: "MP on correlation matrix = Laloux (1999) — well-trodden, not novel"
+    confidence: 0.85
+    key_insight: "MP on correlation matrix is valid but classical; MP on quantum metric is a category error"
+
+test_results:
+  crises_tested: []
+  cohens_d_per_crisis: {}
+  median_d: null
+  passes_threshold: false
+
+verdict:
+  keep: false
+  reason: "Marchenko-Pastur theory is inapplicable to the quantum metric (which is not a sample covariance matrix). No sample size, no i.i.d. structure, wrong rank bound. The useful dimension-estimation improvements use the natural spectral structure of g, not an imported null model."
+  strength: "low"
+  follow_up_questions: []
+
+artifacts:
+  code_dir: "research/ideation/intrinsic_dimension/"
+  key_files: []

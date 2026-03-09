@@ -1,0 +1,30 @@
+id: "0044"
+round: 44
+timestamp: "2026-03-06T19:15:00"
+question: "Can information-theoretic fusion (maximum entropy combination) improve on heuristic weighting?"
+theme: "fusion_combination"
+status: "keep"
+hypothesis:
+  statement: "Weight observables by mutual information with realized volatility."
+  mechanism: "MI captures nonlinear dependence between each observable and the crisis proxy."
+  prior_plausibility: "medium"
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: "Good. MI-weighted fusion achieves median d=1.009, more than doubling arithmetic mean (0.452). SpectralEntropy and ReducedPurity get ~50% of weight. SVB still weak (d=0.119). Non-causal: uses full-sample MI estimation."
+    evidence: "MI weights: SpEnt=0.274, RP=0.221, DimC=0.190, Berry=0.167, SpGap=0.149. d: COVID=3.159, GFC=?, Rates=?, SVB=0.119."
+    confidence: 0.70
+test_results:
+  crises_tested: ["2008_gfc", "2020_covid", "2022_rates", "2023_svb"]
+  cohens_d_per_crisis: {2008_gfc: 0.900, 2020_covid: 3.159, 2022_rates: 1.118, 2023_svb: 0.119}
+  median_d: 1.009
+  passes_threshold: true
+verdict:
+  keep: true
+  reason: "Principled 2.2x improvement over arithmetic mean. MI correctly identifies SpectralEntropy as most informative. Caveat: non-causal MI estimation — needs walk-forward version for deployment."
+  strength: "medium"
+  follow_up_questions: ["Walk-forward MI estimator", "Does MI-weighting beat BMA?"]
+artifacts:
+  code_dir: "research/ideation/fusion_methods/"
+  key_files: ["test_q43_q45.py"]

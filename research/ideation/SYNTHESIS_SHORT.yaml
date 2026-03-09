@@ -1,0 +1,143 @@
+total_rounds: 120
+timestamp: "2026-03-08T12:00:00"
+kept: ["0001", "0002", "0004", "0006", "0007", "0008", "0009", "0010", "0011", "0012", "0013", "0015", "0016", "0017", "0024", "0025", "0028", "0029", "0030", "0031", "0032", "0033", "0034", "0035", "0036", "0037", "0038", "0039", "0040", "0042", "0043", "0044", "0045", "0046", "0047", "0048", "0049", "0050", "0052", "0053", "0054", "0055", "0056", "0057", "0058", "0059", "0060", "0063", "0064", "0065", "0066", "0067", "0068", "0069", "0070", "0071", "0072", "0073", "0075", "0076", "0077", "0078", "0079", "0081", "0082", "0083", "0085", "0086", "0087", "0088", "0089", "0090", "0091", "0092", "0093", "0096", "0097", "0098", "0099", "0101", "0102", "0104", "0107", "0114", "0115", "0116"]
+rejected: ["0003", "0005", "0014", "0018", "0019", "0020", "0022", "0023", "0026", "0027", "0041", "0051", "0061", "0062", "0074", "0080", "0084", "0094", "0095", "0100", "0103", "0105", "0106", "0108", "0109", "0112", "0113", "0118"]
+investigate_further: ["0004", "0017", "0021", "0025", "0110", "0111", "0117", "0119", "0120"]
+
+summary_stats:
+  keep: 82
+  reject: 29
+  investigate: 9
+  themes:
+    novel_observables: {keep: 11, reject: 3, investigate: 1, total: 15}
+    embedding: {keep: 2, reject: 5, investigate: 3, total: 10}
+    dead_signal_fix: {keep: 8, reject: 2, total: 10}
+    fusion_combination: {keep: 8, reject: 2, total: 10}
+    statistical_evaluation: {keep: 9, reject: 1, total: 10}
+    cross_asset: {keep: 8, reject: 2, total: 10}
+    theoretical_foundations: {keep: 9, reject: 1, total: 10}
+    practical_applications: {keep: 8, reject: 2, total: 10}
+    competitive_landscape: {keep: 8, reject: 2, total: 10}
+    wild_cards: {keep: 4, reject: 1, total: 5}
+    intrinsic_dimension: {keep: 7, reject: 8, investigate: 5, total: 20}
+
+top_discoveries:
+  - id: "0045"
+    question: "Hierarchical clustering fusion"
+    median_d: 1.775
+    verdict: "Best fusion method — within-cluster denoising + equal cross-cluster weighting"
+  - id: "0030"
+    question: "Top-3 curated ensemble"
+    median_d: 1.690
+    verdict: "Remove dead channels from ensemble → 130x improvement over naive ensemble"
+  - id: "0107"
+    question: "Ground state energy E_0(x) as regime detector"
+    median_d: 1.411
+    verdict: "Strongest single detector (+69% vs Reduced Purity). Operator-independent, simplest QCML observable. All 4 crises d>1.0. Must verify not a vol proxy."
+  - id: "0102"
+    question: "Spectral gap ratio as crisis severity measure"
+    median_d: 1.175
+    verdict: "+48% vs IPR benchmark. RMT connection. Extreme d=3.97 on 2022 rates needs verification."
+  - id: "0016"
+    question: "Higher-dimensional Hilbert space (d=16)"
+    median_d: 1.327
+    verdict: "+131% improvement over dim=4. Avoids Kramers degeneracy. Free performance win."
+  - id: "0063"
+    question: "Multi-market embedding (SPY+TLT+GLD)"
+    median_d: 1.375
+    verdict: "Joint multi-asset geometry captures cross-market correlations invisible to single-market"
+  - id: "0065"
+    question: "Market breadth in quantum framework"
+    median_d: 1.366
+    verdict: "A/D ratio as quantum observable — strong novel application"
+  - id: "0002"
+    question: "OTOC for financial scrambling"
+    median_d: 1.121
+    verdict: "Novel quantum-chaos observable transplanted to finance. High d, unique signal."
+  - id: "0024"
+    question: "Soft normalization"
+    median_d: 1.144
+    verdict: "Free win: switch sphere→soft normalization for +0.44d across all observables"
+  - id: "0039"
+    question: "Hedge/MW online learning fusion"
+    median_d: 0.842
+    verdict: "Beats Regime-Adaptive with zero training data. Best online fusion."
+  - id: "0031"
+    question: "BOCPD with short hazard prior"
+    median_d: 0.898
+    verdict: "Resurrected from d=0.057 to d=0.898 with informed prior (lambda=100)"
+  - id: "0001"
+    question: "Loschmidt echo"
+    median_d: 0.849
+    verdict: "Fidelity decay under Hamiltonian perturbation. Complementary to Berry phase."
+
+big_negatives:
+  - id: "0026"
+    question: "QGT Phase Rigidity resurrection"
+    reason: "Fundamentally broken — pca_inspired Kramers degeneracy makes phase rigidity undefined. Even random operators give d=0.028."
+  - id: "0027"
+    question: "Berry Velocity Coupling resurrection"
+    reason: "Coupling between Berry phase and velocity is algebraically zero at qubit level. Needs higher-dimensional embedding (Q16)."
+  - id: "0074"
+    question: "Fluctuation-dissipation theorem"
+    reason: "FDT requires thermal equilibrium. Financial systems are driven far from equilibrium. Fundamentally inapplicable."
+  - id: "0100"
+    question: "Universal critical exponent"
+    reason: "Crises are crossovers, not phase transitions (Q73). No universal exponent expected or found (CV=12.8)."
+  - id: "0041"
+    question: "Stacking/GBM fusion"
+    reason: "d=1.258 in-sample but catastrophic overfitting with 17 crises. Fundamentally data-starved."
+  - id: "0105"
+    question: "Reconstruction-loss-trained operators for cleaner spectral gap"
+    reason: "Optimizer failure: coordinate descent (10 random params/step) achieves loss delta < 1e-8 over 100 steps. Operators unchanged from random initialization."
+  - id: "0108"
+    question: "Dimension-weighted fusion channels"
+    reason: "Type mismatch: quantum metric eigenvectors live in R^8 (feature space), fusion channels are R^16 (channel space). Projection is undefined."
+  - id: "0113"
+    question: "Marchenko-Pastur thresholding on quantum metric"
+    reason: "g_ab is NOT a sample covariance matrix — no sample size T, no i.i.d. structure. MP distribution is inapplicable."
+
+key_corrections:
+  - claim: "Berry Phase Rate 90-day lead time"
+    correction: "Walk-forward median is 4 days (Q77). The 90-day figure was best-case single fold."
+  - claim: "HPO-optimized d-values are reliable"
+    correction: "HPO bias is +0.415d (Q54). Nested CV or holdout required for honest estimates."
+  - claim: "Reduced Purity d=0.834 is stable"
+    correction: "Drops to d=0.263 on holdout (Paper 2 fusion experiments). Highly regime-dependent."
+  - claim: "QCML dimension estimation adds value over classical methods"
+    correction: "Absorption Ratio (classical PCA) d=0.797 >> QCML-IPR d=0.428. Embedding degrades dimension signals by ~0.37 d-units. Bottleneck is the embedding, not the scoring function."
+  - claim: "Reconstruction-loss training improves operators"
+    correction: "Current coordinate-descent optimizer is non-functional (loss delta < 1e-8). Operators remain random. Gradient-based optimizer needed."
+
+cross_cutting_insights:
+  - "Embedding improvements (Q16, Q24) provide multiplicative gains across all observables"
+  - "Dead signals are often fixable with simple parameter changes, not fundamental redesigns"
+  - "Fusion methods that avoid training (Hedge/MW, HClust, rank aggregation) generalize better"
+  - "VIX outperforms where options exist; our advantage is universality across asset classes"
+  - "Adiabatic regime (r<0.1) validates geometric interpretation (Q67)"
+  - "Crises are crossovers not phase transitions — affects theoretical framing (Q73)"
+  - "Granger causality confirmed: our observables genuinely predict realized volatility (Q49)"
+  - "QCML embedding degrades dimension signals: classical AR (d=0.797) >> all QCML dimension estimators (d≤0.633)"
+  - "Ground state energy E_0(x) is operator-independent and the strongest single detector (d=1.411) — may be a vol proxy"
+  - "Renyi entropy unification: IPR=Renyi-∞, PR=Renyi-2, SpEnt=Renyi-1 of eigenvalue distribution (Q114)"
+  - "Dimension-informed fusion fails due to feature space vs channel space type mismatch (Q108-Q109)"
+  - "Herding → dimension collapse is sufficient (in limit) but not necessary (Q116)"
+
+follow_up_queue:
+  - "Full 17-crisis severity ranking (Q98)"
+  - "Hourly data for flash crash precursors (Q99)"
+  - "Multi-asset fusion: SPY+TLT+GLD joint embedding (Q63)"
+  - "Hierarchical clustering fusion in production pipeline (Q45)"
+  - "OTOC detector integration into main observatory (Q2)"
+  - "Hilbert dim=16 sweep across all observables (Q16)"
+  - "Soft normalization as default (Q24)"
+  - "Hedge/MW as default fusion method (Q39)"
+  - "TDA+QCML fusion exploration (Q91)"
+  - "Cross-asset generalization paper (Q56-Q65)"
+  - "FOMC periodicity deep-dive (Q97)"
+  - "Entanglement entropy with multi-qubit register (Q4, Q20)"
+  - "E_0(x) full 17-crisis evaluation + correlation with realized vol (Q107)"
+  - "Spectral gap ratio verification: extreme d=3.97 on 2022 rates (Q102)"
+  - "Renyi entropy order optimization for detection (Q114)"
+  - "Fix reconstruction-loss optimizer (gradient-based) and re-test Q105-Q106"
+  - "PCA-guided adaptive hilbert_dim ablation study (Q120)"

@@ -1,0 +1,30 @@
+id: "0028"
+round: 28
+timestamp: "2026-03-06T18:30:00"
+question: "Can Curvature Rate (d=0.013) be rescued by computing Ricci flow instead of raw rate?"
+theme: "dead_signal_fix"
+status: "keep"
+hypothesis:
+  statement: "Replace noisy |dR/dt| with count of Ricci scalar sign changes over a window."
+  mechanism: "Sign changes capture sustained curvature-regime instability rather than noisy instantaneous rate."
+  prior_plausibility: "medium"
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: "RESURRECTED. Sign changes in Ricci scalar (60-day window, random operators) achieves median d=0.539. Three of four crises show d > 0.5. COVID weakness (d=0.071) is genuine — sharp shock, not prolonged curvature transition."
+    evidence: "sign_changes_win60: GFC=0.507, COVID=0.071, Rates=1.126, SVB=0.571. Normal-period std~1.0 (healthy)."
+    confidence: 0.80
+test_results:
+  crises_tested: ["2008_gfc", "2020_covid", "2022_rates", "2023_svb"]
+  cohens_d_per_crisis: {2008_gfc: 0.507, 2020_covid: 0.071, 2022_rates: 1.126, 2023_svb: 0.571}
+  median_d: 0.539
+  passes_threshold: true
+verdict:
+  keep: true
+  reason: "Sign-change transformation converts O(n^2)-expensive noisy rate into robust topological count. Strong on slow-building crises (Rates d=1.126), weak on sharp shocks (COVID d=0.071). Complementary profile similar to Floquet (Q15)."
+  strength: "medium"
+  follow_up_questions: ["Optimal window size for sign changes?", "Does it add value beyond Floquet in fusion?"]
+artifacts:
+  code_dir: "research/ideation/dead_signal_fix/"
+  key_files: ["test_q26_q28.py"]

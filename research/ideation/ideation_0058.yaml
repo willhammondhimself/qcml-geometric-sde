@@ -1,0 +1,30 @@
+id: "0058"
+round: 58
+timestamp: "2026-03-06T20:15:00"
+question: "Do our observables work on commodity markets (GLD, USO, DBA)?"
+theme: "cross_asset"
+status: "keep"
+hypothesis:
+  statement: "Commodity regime shifts should produce geometric signatures similar to equities."
+  mechanism: "Gold crashes and oil shocks create structural breaks detectable by Berry curvature."
+  prior_plausibility: "medium"
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: "Strong generalization, especially SpectralEntropy. SpEnt mean d=0.905. COVID oil crash d=1.752 — largest single d in the cross-asset battery. BerryPhaseRate mean d=0.539. Gold crash Berry d=0.638."
+    evidence: "GLD Berry: GoldCrash=0.638, GLD SpEnt: GoldCrash=0.057. USO SpEnt: COVID_oil=1.752."
+    confidence: 0.80
+test_results:
+  crises_tested: ["2013_gold_crash", "2020_covid_oil"]
+  cohens_d_per_crisis: {gold_crash_berry: 0.638, gold_crash_entropy: 0.057, covid_oil_berry: 0.441, covid_oil_entropy: 1.752}
+  median_d: 0.540
+  passes_threshold: true
+verdict:
+  keep: true
+  reason: "SpectralEntropy produces the largest cross-asset d (1.752 on COVID oil crash). Strong generalization to commodities with complementary detector patterns."
+  strength: "high"
+  follow_up_questions: ["Multi-commodity embedding?", "Does it detect supply shocks?"]
+artifacts:
+  code_dir: "research/ideation/cross_asset/"
+  key_files: ["test_q56_q60.py"]

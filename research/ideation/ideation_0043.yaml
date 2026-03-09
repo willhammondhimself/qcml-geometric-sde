@@ -1,0 +1,30 @@
+id: "0043"
+round: 43
+timestamp: "2026-03-06T19:15:00"
+question: "Does rank aggregation (Borda count, Kemeny) outperform arithmetic mean fusion?"
+theme: "fusion_combination"
+status: "keep"
+hypothesis:
+  statement: "Borda count or reciprocal rank fusion may be more robust than averaging raw z-scores."
+  mechanism: "Rank-based methods are robust to outliers and scale differences."
+  prior_plausibility: "low"
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: "Mixed. Binary Borda (fraction of channels with positive z-score) achieves d=0.633 (+40% over arithmetic mean d=0.452). But classic rank-sum Borda is degenerate (constant output). RRF provides no improvement (~0.45)."
+    evidence: "Borda: GFC=1.314, COVID=0.847, Rates=0.229, SVB=0.418. ArithMean: 0.452."
+    confidence: 0.70
+test_results:
+  crises_tested: ["2008_gfc", "2020_covid", "2022_rates", "2023_svb"]
+  cohens_d_per_crisis: {2008_gfc: 1.314, 2020_covid: 0.847, 2022_rates: 0.229, 2023_svb: 0.418}
+  median_d: 0.633
+  passes_threshold: true
+verdict:
+  keep: true
+  reason: "Binary Borda modestly outperforms arithmetic mean but is dominated by other fusion methods (Hedge, HClust). Classic rank-sum is degenerate. Keep as interpretable baseline only."
+  strength: "low"
+  follow_up_questions: []
+artifacts:
+  code_dir: "research/ideation/fusion_methods/"
+  key_files: ["test_q43_q45.py"]

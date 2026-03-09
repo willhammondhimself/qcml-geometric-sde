@@ -1,0 +1,29 @@
+id: "0087"
+round: 87
+timestamp: "2026-03-06T21:45:00"
+question: "Does adding our observables as features to gradient boosting beat using them alone?"
+theme: "competitive_landscape"
+status: "keep"
+hypothesis:
+  statement: "QCML features may add marginal lift to standard vol/momentum features in supervised model."
+  mechanism: "Geometric features capture orthogonal information (|rho|=0.132 with baselines)."
+  prior_plausibility: "medium"
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: "Modest lift. Combined (QCML+standard) AUC=0.873 vs standard-only AUC=0.858 (+0.015). QCML-only AUC=0.556. Standard vol/momentum features dominate in supervised setting, but QCML adds marginal orthogonal signal."
+    evidence: "LightGBM expanding window, VIX>25 pseudo-labels. QCML lift: +0.015 AUC."
+    confidence: 0.75
+test_results:
+  crises_tested: ["2008_gfc", "2020_covid", "2022_rates", "2023_svb"]
+  median_d: null
+  passes_threshold: true
+verdict:
+  keep: true
+  reason: "QCML adds modest supervised lift (+0.015 AUC). Key differentiator remains: our approach needs zero labeled data."
+  strength: "low"
+  follow_up_questions: ["Which QCML features have highest feature importance?"]
+artifacts:
+  code_dir: "research/ideation/competitive/"
+  key_files: ["test_q86_q95.py"]

@@ -1,0 +1,296 @@
+{
+  "experiment": "Intrinsic Dimension Smoke Test (Q0101-Q0104)",
+  "data": {
+    "symbols": [
+      "SPY",
+      "DIA"
+    ],
+    "start_date": "2005-01-01",
+    "end_date": "2024-12-31",
+    "feature_shape": [
+      5012,
+      13
+    ],
+    "enriched_shape": [
+      4993,
+      52
+    ]
+  },
+  "crises_tested": [
+    "2008_gfc",
+    "2020_covid",
+    "2022_rates",
+    "2023_svb"
+  ],
+  "n_bootstrap": 1000,
+  "detectors": [
+    {
+      "detector": "Intrinsic Dimension",
+      "question": "Q0101",
+      "cohens_d_per_crisis": {
+        "2008_gfc": 0.862412896510553,
+        "2020_covid": 0.2795514093566038,
+        "2022_rates": 0.40366396274666017,
+        "2023_svb": 1.138724042014903
+      },
+      "per_crisis_detail": {
+        "2008_gfc": {
+          "cohens_d": 0.862412896510553,
+          "ci_lo": 0.30365476092551835,
+          "ci_hi": 1.4975158601074896,
+          "crisis_n": 146,
+          "normal_n": 41,
+          "crisis_mean": 0.871324457272766,
+          "normal_mean": -0.2916074505401747
+        },
+        "2020_covid": {
+          "cohens_d": 0.2795514093566038,
+          "ci_lo": 0.011352875383255093,
+          "ci_hi": 1.0100670538868373,
+          "crisis_n": 50,
+          "normal_n": 39,
+          "crisis_mean": 0.17462514382022679,
+          "normal_mean": -0.08312102530908849
+        },
+        "2022_rates": {
+          "cohens_d": 0.40366396274666017,
+          "ci_lo": 0.030409777450921546,
+          "ci_hi": 0.8794882653456256,
+          "crisis_n": 209,
+          "normal_n": 42,
+          "crisis_mean": -0.012636181492995842,
+          "normal_mean": -0.4293848151149221
+        },
+        "2023_svb": {
+          "cohens_d": 1.138724042014903,
+          "ci_lo": 0.4310101652807253,
+          "ci_hi": 2.379534228016551,
+          "crisis_n": 42,
+          "normal_n": 39,
+          "crisis_mean": -0.32344774111818725,
+          "normal_mean": 0.4570895608440354
+        }
+      },
+      "median_d": 0.6330384296286066,
+      "max_d": 1.138724042014903,
+      "passes_threshold": true,
+      "timing": {
+        "fit_seconds": 0.0,
+        "score_seconds": 2.9
+      },
+      "config": {
+        "hilbert_dim": 4,
+        "n_pca_components": 8,
+        "operator_method": "random",
+        "rolling_window": 10,
+        "min_expanding": 60,
+        "seed": 42,
+        "normalization": "soft",
+        "adaptive_epsilon": true,
+        "subsample": 1
+      }
+    },
+    {
+      "detector": "Spectral Gap Ratio",
+      "question": "Q0102",
+      "cohens_d_per_crisis": {
+        "2008_gfc": 0.17473700514240917,
+        "2020_covid": 0.7578466847620114,
+        "2022_rates": 3.9664237239522855,
+        "2023_svb": 1.5930366575580874
+      },
+      "per_crisis_detail": {
+        "2008_gfc": {
+          "cohens_d": 0.17473700514240917,
+          "ci_lo": 0.013886084761982406,
+          "ci_hi": 0.7871849007945485,
+          "crisis_n": 146,
+          "normal_n": 41,
+          "crisis_mean": -0.0064623732403420895,
+          "normal_mean": 0.2099482765653108
+        },
+        "2020_covid": {
+          "cohens_d": 0.7578466847620114,
+          "ci_lo": 0.089792464712901,
+          "ci_hi": 2.4394894266750344,
+          "crisis_n": 50,
+          "normal_n": 39,
+          "crisis_mean": 0.5029648444086366,
+          "normal_mean": 0.22414285294926536
+        },
+        "2022_rates": {
+          "cohens_d": 3.9664237239522855,
+          "ci_lo": 3.091597103893635,
+          "ci_hi": 5.684308894207283,
+          "crisis_n": 209,
+          "normal_n": 42,
+          "crisis_mean": -0.36300660839931886,
+          "normal_mean": 1.4635210924942432
+        },
+        "2023_svb": {
+          "cohens_d": 1.5930366575580874,
+          "ci_lo": 1.0657990456048314,
+          "ci_hi": 2.3257350131184036,
+          "crisis_n": 42,
+          "normal_n": 39,
+          "crisis_mean": 0.17468953451427935,
+          "normal_mean": -0.4249079643023363
+        }
+      },
+      "median_d": 1.1754416711600495,
+      "max_d": 3.9664237239522855,
+      "passes_threshold": true,
+      "timing": {
+        "fit_seconds": 0.0,
+        "score_seconds": 2.8
+      },
+      "config": {
+        "hilbert_dim": 4,
+        "n_pca_components": 8,
+        "operator_method": "random",
+        "rolling_window": 10,
+        "min_expanding": 60,
+        "seed": 42,
+        "normalization": "soft",
+        "adaptive_epsilon": true,
+        "subsample": 1
+      }
+    },
+    {
+      "detector": "Dimension Rate (dd/dt)",
+      "question": "Q0103",
+      "cohens_d_per_crisis": {
+        "2008_gfc": 0.3563940188815869,
+        "2020_covid": 0.8027970617722923,
+        "2022_rates": 0.15285114688814433,
+        "2023_svb": 0.18170436795830494
+      },
+      "per_crisis_detail": {
+        "2008_gfc": {
+          "cohens_d": 0.3563940188815869,
+          "ci_lo": 0.02218260158960346,
+          "ci_hi": 1.3329800061272565,
+          "crisis_n": 146,
+          "normal_n": 41,
+          "crisis_mean": 0.6755616484499155,
+          "normal_mean": 0.251296125088153
+        },
+        "2020_covid": {
+          "cohens_d": 0.8027970617722923,
+          "ci_lo": 0.18536164195931557,
+          "ci_hi": 1.4020478170226172,
+          "crisis_n": 50,
+          "normal_n": 39,
+          "crisis_mean": 0.28727664464947034,
+          "normal_mean": -0.5101948278107963
+        },
+        "2022_rates": {
+          "cohens_d": 0.15285114688814433,
+          "ci_lo": 0.009398788474973819,
+          "ci_hi": 0.623045112988302,
+          "crisis_n": 209,
+          "normal_n": 42,
+          "crisis_mean": 0.6666437375296405,
+          "normal_mean": 0.47581950743965046
+        },
+        "2023_svb": {
+          "cohens_d": 0.18170436795830494,
+          "ci_lo": 0.013614064393296462,
+          "ci_hi": 1.0652040299877954,
+          "crisis_n": 42,
+          "normal_n": 39,
+          "crisis_mean": 0.44478846371833697,
+          "normal_mean": 0.6125889054099244
+        }
+      },
+      "median_d": 0.26904919341994593,
+      "max_d": 0.8027970617722923,
+      "passes_threshold": false,
+      "timing": {
+        "fit_seconds": 0.0,
+        "score_seconds": 2.7
+      },
+      "config": {
+        "hilbert_dim": 4,
+        "n_pca_components": 8,
+        "operator_method": "random",
+        "rolling_window": 10,
+        "min_expanding": 60,
+        "seed": 42,
+        "normalization": "soft",
+        "adaptive_epsilon": true,
+        "subsample": 1,
+        "rate_window": 5
+      }
+    },
+    {
+      "detector": "Effective Dimension (PR)",
+      "question": "Q0104",
+      "cohens_d_per_crisis": {
+        "2008_gfc": 0.6573486336734202,
+        "2020_covid": 0.02636631962098644,
+        "2022_rates": 0.18686701774694928,
+        "2023_svb": 0.9859497854279606
+      },
+      "per_crisis_detail": {
+        "2008_gfc": {
+          "cohens_d": 0.6573486336734202,
+          "ci_lo": 0.14479397392920484,
+          "ci_hi": 1.224026428373497,
+          "crisis_n": 146,
+          "normal_n": 41,
+          "crisis_mean": 0.5620556228977074,
+          "normal_mean": -0.27094704726520435
+        },
+        "2020_covid": {
+          "cohens_d": 0.02636631962098644,
+          "ci_lo": 0.011645796527949118,
+          "ci_hi": 1.3335257615108984,
+          "crisis_n": 50,
+          "normal_n": 39,
+          "crisis_mean": -0.06287949309109826,
+          "normal_mean": -0.03959332676345554
+        },
+        "2022_rates": {
+          "cohens_d": 0.18686701774694928,
+          "ci_lo": 0.012659782865682943,
+          "ci_hi": 0.7234423595284899,
+          "crisis_n": 209,
+          "normal_n": 42,
+          "crisis_mean": -0.05796153234450217,
+          "normal_mean": -0.26081349072066234
+        },
+        "2023_svb": {
+          "cohens_d": 0.9859497854279606,
+          "ci_lo": 0.2789581942462272,
+          "ci_hi": 2.177439053216707,
+          "crisis_n": 42,
+          "normal_n": 39,
+          "crisis_mean": -0.27892952315400266,
+          "normal_mean": 0.4958689596106879
+        }
+      },
+      "median_d": 0.42210782571018474,
+      "max_d": 0.9859497854279606,
+      "passes_threshold": true,
+      "timing": {
+        "fit_seconds": 0.0,
+        "score_seconds": 2.7
+      },
+      "config": {
+        "hilbert_dim": 4,
+        "n_pca_components": 8,
+        "operator_method": "random",
+        "rolling_window": 10,
+        "min_expanding": 60,
+        "seed": 42,
+        "normalization": "soft",
+        "adaptive_epsilon": true,
+        "subsample": 1
+      }
+    }
+  ],
+  "timing": {
+    "total_seconds": 11.6
+  }
+}

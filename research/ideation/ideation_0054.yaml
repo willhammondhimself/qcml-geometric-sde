@@ -1,0 +1,30 @@
+id: "0054"
+round: 54
+timestamp: "2026-03-06T19:45:00"
+question: "Does nested cross-validation (inner for HPO, outer for evaluation) change our conclusions?"
+theme: "statistical_evaluation"
+status: "keep"
+hypothesis:
+  statement: "HPO optimism bias may inflate reported d values."
+  mechanism: "Single Optuna run selects hyperparameters that overfit to the evaluation crises."
+  prior_plausibility: "high"
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: "Material optimism bias: +0.415 d units for BerryPhaseRate window_size HPO. Nested CV d=0.262 vs default d=0.677. Inner CV selects different windows per fold (45,10,10) — optimal HP is non-stationary."
+    evidence: "Default win=20 mean d=0.677. Nested mean d=0.262. Bias=+0.415."
+    confidence: 0.80
+test_results:
+  crises_tested: ["2008_gfc", "2020_covid", "2022_rates", "2023_svb"]
+  cohens_d_per_crisis: {}
+  median_d: null
+  passes_threshold: true
+verdict:
+  keep: true
+  reason: "HPO bias is large (+0.415d). Paper should report nested CV or use strictly held-out period. Current holdout design partially addresses this but full nested CV would be more rigorous."
+  strength: "high"
+  follow_up_questions: ["Apply nested CV to all observables", "Does the post-2020 holdout already control for this?"]
+artifacts:
+  code_dir: "research/ideation/statistical_eval/"
+  key_files: ["test_q51_q55.py"]

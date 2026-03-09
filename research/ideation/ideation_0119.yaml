@@ -1,0 +1,67 @@
+id: "0119"
+round: 119
+timestamp: "2026-03-08T08:00:00"
+question: "Does estimated intrinsic dimension predict future realized volatility or drawdowns (Granger causality)?"
+theme: "intrinsic_dimension"
+status: "investigate_further"
+
+hypothesis:
+  statement: "d(t) -> vol(t+k): dimension collapse precedes volatility spikes because herding precedes price impact"
+  mechanism: "Fewer independent return drivers (low d) -> higher systematic risk -> eventual volatility spike"
+  prior_plausibility: "low"
+
+knight_findings:
+  - knight: 1
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: >
+      PRIOR EVIDENCE STRONGLY AGAINST. Phase 1 Granger causality tests on 4 QCML features
+      (including spectral gap, which shares eigenvalue information with d(t)) found ZERO
+      significant forward causation after Holm-Bonferroni (0/40 tests rejected). The
+      reverse direction (vol -> spectral_gap) IS significant — these are REACTIVE, not
+      PREDICTIVE. Since d(t) derives from the same eigenvalues, it is unlikely to behave
+      differently.
+    evidence: "vol_forecasting phase1: 0/40 QCML->vol tests significant; vol->spectral_gap IS significant"
+    confidence: 0.78
+    key_insight: "QCML features are reactive (vol -> QCML), not predictive (QCML -> vol)"
+
+  - knight: 2
+    role: "practical_value"
+    workers_used: 0
+    conclusion: >
+      Low implementation effort (0.5-1 day): compute d(t) via IntrinsicDimensionDetector,
+      compute 20-day realized vol, run grangercausalitytests at lags 1-20, apply
+      Bonferroni. The infrastructure exists. The more promising angle is DRAWDOWN
+      prediction (probit/survival model) rather than Granger causality on volatility.
+    evidence: "All infrastructure exists — straightforward 1-day experiment"
+    confidence: 0.70
+    key_insight: "Drawdown prediction is more natural than vol prediction for a dimension measure"
+
+  - knight: 3
+    role: "extensions"
+    workers_used: 0
+    conclusion: >
+      Classical AR (Kritzman et al. 2011) has been shown to predict drawdowns. But AR
+      uses the correlation matrix directly, not QCML. The QCML embedding degrades
+      dimension signals (AR d=0.797 vs QCML d=0.428). Worth a quick confirmatory test
+      but the high prior probability of failure means this should NOT be prioritized.
+    evidence: "Kritzman (2011) AR predicts drawdowns; QCML-IPR underperforms AR"
+    confidence: 0.65
+    key_insight: "If classical AR predicts drawdowns, QCML dimension may too — but degraded"
+
+test_results:
+  crises_tested: []
+  cohens_d_per_crisis: {}
+  median_d: null
+  passes_threshold: false
+
+verdict:
+  keep: false
+  reason: "Prior evidence strongly against: 0/40 QCML features Granger-cause vol after correction. Reverse causation (vol -> QCML) confirmed. Worth a 1-day confirmatory test on d(t) specifically, but not a priority."
+  strength: "low"
+  follow_up_questions:
+    - "Does d(t) predict drawdowns (probit model) even if it doesn't Granger-cause vol?"
+
+artifacts:
+  code_dir: "research/ideation/intrinsic_dimension/"
+  key_files: []

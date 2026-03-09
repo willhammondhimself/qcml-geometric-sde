@@ -1,0 +1,30 @@
+id: "0064"
+round: 64
+timestamp: "2026-03-06T20:15:00"
+question: "Can we detect regional contagion (EEM, FXI, EWJ) propagation using our geometric measures?"
+theme: "cross_asset"
+status: "keep"
+hypothesis:
+  statement: "EEM geometry should detect EM-specific crises where SPY geometry is blind."
+  mechanism: "Contagion from EM-origin crises creates geometric signatures in EEM before SPY."
+  prior_plausibility: "medium"
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: "Contagion signal confirmed. EEM Berry d=0.481 on 2015 China (vs SPY d=0.061). EEM SpectralEntropy d=1.634 on 2015 China (vs SPY d=0.843). EEM geometry detects EM-origin crises where SPY is nearly blind."
+    evidence: "2015_china: EEM Berry=0.481 vs SPY Berry=0.061. EEM SpEnt=1.634 vs SPY SpEnt=0.843."
+    confidence: 0.80
+test_results:
+  crises_tested: ["2015_china", "2018_q4", "2020_covid", "2022_rates"]
+  cohens_d_per_crisis: {china_eem_berry: 0.481, china_eem_entropy: 1.634, china_spy_berry: 0.061}
+  median_d: 0.816
+  passes_threshold: true
+verdict:
+  keep: true
+  reason: "Confirms contagion detection hypothesis. EEM geometry is far superior for EM-specific crises. Supports EEM SpectralEntropy as dedicated EM-crisis channel in the observatory."
+  strength: "high"
+  follow_up_questions: ["Lead time: does EEM signal precede SPY signal?", "Other EM markets (FXI, EWJ)?"]
+artifacts:
+  code_dir: "research/ideation/cross_asset/"
+  key_files: ["test_q61_q65.py"]

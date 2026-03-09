@@ -1,0 +1,30 @@
+id: "0090"
+round: 90
+timestamp: "2026-03-06T21:45:00"
+question: "How do we compare to the absorption ratio (Kritzman et al. 2011)?"
+theme: "competitive_landscape"
+status: "keep"
+hypothesis:
+  statement: "Absorption ratio is closely related to our DimensionalityCollapse detector."
+  mechanism: "AR = fraction of total variance explained by top PCA components."
+  prior_plausibility: "high"
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: "Strong result. AR d=0.962 — better than BerryPhaseRate (0.677) but below SpectralEntropy (1.129). Mathematically related to DimensionalityCollapse. Validates our dimensional-collapse hypothesis from a well-known reference."
+    evidence: "Rolling 60-day expanding PCA, 20% top components. AR d=0.962."
+    confidence: 0.80
+test_results:
+  crises_tested: ["2008_gfc", "2020_covid", "2022_rates", "2023_svb"]
+  cohens_d_per_crisis: {absorption_ratio: 0.962}
+  median_d: 0.962
+  passes_threshold: true
+verdict:
+  keep: true
+  reason: "Add as 'structurally related baseline' in paper. Validates DimensionalityCollapse from established reference (J Portfolio Management 2011). SpectralEntropy still outperforms due to Hilbert space vs return-space geometry."
+  strength: "high"
+  follow_up_questions: ["Exact correlation between AR and DimensionalityCollapse scores?"]
+artifacts:
+  code_dir: "research/ideation/competitive/"
+  key_files: ["test_q86_q95.py"]

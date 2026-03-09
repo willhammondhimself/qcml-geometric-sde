@@ -1,0 +1,30 @@
+id: "0050"
+round: 50
+timestamp: "2026-03-06T19:45:00"
+question: "Does a continuous crisis intensity measure (instead of binary labels) change our rankings?"
+theme: "statistical_evaluation"
+status: "keep"
+hypothesis:
+  statement: "Spearman correlation with realized vol as continuous proxy instead of binary crisis labels."
+  mechanism: "Continuous measure avoids arbitrary crisis window boundaries."
+  prior_plausibility: "medium"
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: "Rankings mostly concordant (Kendall tau=0.60). Key exception: DimensionalityCollapse has NEGATIVE Spearman rho (-0.193) despite positive d (0.353). It detects crisis windows but is HIGHER during low-vol pre-crisis buildup."
+    evidence: "RedPur rho=0.453, SpEnt rho=0.441, Berry rho=0.395, DimC rho=-0.193, HamSens rho=0.168."
+    confidence: 0.80
+test_results:
+  crises_tested: ["2008_gfc", "2020_covid", "2022_rates", "2023_svb"]
+  cohens_d_per_crisis: {}
+  median_d: null
+  passes_threshold: true
+verdict:
+  keep: true
+  reason: "Flags DimensionalityCollapse as a crisis WINDOW detector, not a vol predictor — important for interpretation. Continuous intensity is a valuable complement to binary classification."
+  strength: "medium"
+  follow_up_questions: ["What does DimCollapse actually measure if not vol?"]
+artifacts:
+  code_dir: "research/ideation/statistical_eval/"
+  key_files: ["test_q46_q50.py"]

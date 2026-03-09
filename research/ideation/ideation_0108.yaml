@@ -1,0 +1,66 @@
+id: "0108"
+round: 108
+timestamp: "2026-03-08T08:00:00"
+question: "Can intrinsic dimension estimates weight fusion channels by alignment with tangent directions?"
+theme: "intrinsic_dimension"
+status: "reject"
+
+hypothesis:
+  statement: "Upweight observables aligned with tangent directions, downweight those in noise directions"
+  mechanism: "Quantum metric eigenvectors identify signal vs noise directions; channels sensitive to signal directions should be upweighted"
+  prior_plausibility: "low"
+
+knight_findings:
+  - knight: 1
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: >
+      TYPE MISMATCH prevents implementation. Quantum metric eigenvectors live in R^8
+      (feature space), while fusion channels are 16 scalar time series (channel space).
+      No natural alignment metric exists without an expensive Jacobian computation
+      (2 * 8 * 16 = 256 extra evaluations per timestep). The practical path — adding
+      eigenvalue-derived meta-features to RegimeAdaptive — would triple meta-feature
+      dimensionality and increase overfitting risk with only 17 crises.
+    evidence: "Feature space (R^8) ≠ channel space (R^16) — projection undefined"
+    confidence: 0.80
+    key_insight: "Observable scores are scalar functionals of g_ab, not vectors in tangent space"
+
+  - knight: 2
+    role: "comparative_analysis"
+    workers_used: 0
+    conclusion: >
+      RegimeAdaptive fusion (d=0.774, holdout d=0.783) already captures relevant
+      meta-features. Spectral Entropy (d=0.830) outperforms all fusion methods as a
+      single channel. Adding dimension-based weights would need to beat this high bar
+      while adding substantial complexity and overfitting risk.
+    evidence: "RegimeAdaptive d=0.774 generalizes well; Spectral Entropy d=0.830 as single channel"
+    confidence: 0.75
+    key_insight: "Existing fusion is already strong; dimension weighting has high complexity for uncertain gain"
+
+  - knight: 3
+    role: "failure_mode_analysis"
+    workers_used: 0
+    conclusion: >
+      HIGH RISK. Overfitting with 8+ new eigenvalue parameters per regime on 11 training
+      crises. Noise amplification from using noisy dimension estimates (d=0.633 signal)
+      to weight noisy channel scores. Correlation proxy degeneracy: falls back to
+      existing DynamicSwitching approach.
+    evidence: "Reduced Purity collapsed d=0.834 → d=0.263 on holdout — overfitting is the dominant risk"
+    confidence: 0.80
+    key_insight: "Adding parameters to fusion with only 17 crises is the path to overfitting"
+
+test_results:
+  crises_tested: []
+  cohens_d_per_crisis: {}
+  median_d: null
+  passes_threshold: false
+
+verdict:
+  keep: false
+  reason: "Fundamental type mismatch: feature space eigenvectors cannot be applied to channel space scores without arbitrary bridging construction. High overfitting risk with limited crisis data."
+  strength: "low"
+  follow_up_questions: []
+
+artifacts:
+  code_dir: "research/ideation/intrinsic_dimension/"
+  key_files: []

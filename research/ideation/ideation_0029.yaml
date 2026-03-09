@@ -1,0 +1,30 @@
+id: "0029"
+round: 29
+timestamp: "2026-03-06T18:30:00"
+question: "Does Geometric Consensus (d=0.075) improve with weighted voting instead of uniform?"
+theme: "dead_signal_fix"
+status: "keep"
+hypothesis:
+  statement: "AND logic masks valid detections — switch to OR (max) logic or weighted voting."
+  mechanism: "Berry curvature and metric determinant are weakly correlated, so AND requires both to fire simultaneously, which rarely happens."
+  prior_plausibility: "medium"
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: "RESURRECTED. OR logic (max of z-scores) achieves median d=0.692. COVID d=1.017, SVB d=1.115. Weighted voting (0.392) and adaptive thresholds (0.403) also pass but OR is best."
+    evidence: "OR logic: GFC=0.117, COVID=1.017, Rates=0.367, SVB=1.115. AND was masking valid single-channel detections."
+    confidence: 0.80
+test_results:
+  crises_tested: ["2008_gfc", "2020_covid", "2022_rates", "2023_svb"]
+  cohens_d_per_crisis: {2008_gfc: 0.117, 2020_covid: 1.017, 2022_rates: 0.367, 2023_svb: 1.115}
+  median_d: 0.692
+  passes_threshold: true
+verdict:
+  keep: true
+  reason: "OR logic is the fix — the original AND gate was too conservative. Strong on COVID and SVB, weak on GFC. The lesson: don't require consensus from weakly correlated channels."
+  strength: "medium"
+  follow_up_questions: ["Is this just a proxy for the better individual channel?", "Fusion overlap with Q30?"]
+artifacts:
+  code_dir: "research/ideation/dead_signal_fix/"
+  key_files: ["test_q29_q31.py", "smoke_results.json"]

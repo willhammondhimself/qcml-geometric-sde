@@ -1,0 +1,91 @@
+id: "0107"
+round: 107
+timestamp: "2026-03-08T08:00:00"
+question: "Can we use the reconstruction error (ground state energy E_0(x)) as a regime detection signal?"
+theme: "intrinsic_dimension"
+status: "keep"
+
+hypothesis:
+  statement: "Ground state energy E_0(x) = min_psi <psi|H(x)|psi> serves as a direct anomaly score — high E_0 indicates departure from calibration regime"
+  mechanism: "H(x) = 1/2 sum_k (A_k - x_k I)^2 penalizes distance from operator spectrum; crises push features to extremes, increasing E_0"
+  prior_plausibility: "medium"
+
+knight_findings:
+  - knight: 1
+    role: "empirical_test"
+    workers_used: 1
+    conclusion: >
+      HEADLINE RESULT. GroundStateEnergyDetector (level mode) achieves median d = 1.411
+      across 4 smoke crises. ALL crises show d > 1.0 (all "large" effects). Surpasses
+      current project best (Reduced Purity d=0.835) by 69%. SVB shows d=2.269, the
+      highest single-crisis score in the project. Fast to compute (0.2s for 5000 points,
+      no numerical derivatives). Operator-independent: random ≡ reconstruction-trained.
+    evidence: "smoke_results: {2008_gfc: 1.290, 2020_covid: 1.096, 2022_rates: 1.531, 2023_svb: 2.269}"
+    confidence: 0.85
+    key_insight: "E_0(x) is the strongest single regime detection signal found in the entire project"
+
+  - knight: 2
+    role: "comparative_analysis"
+    workers_used: 0
+    conclusion: >
+      Massive improvement over all existing detectors: +69% vs Reduced Purity (0.835),
+      +77% vs Absorption Ratio (0.797), +98% vs Hamilton MS (0.713). Also outperforms
+      all Q0101-Q0104 dimension detectors: +20% vs SpectralGapRatio (1.175), +123%
+      vs IntrinsicDimension (0.633). The rate mode (|dE_0/dt|, d=0.389) is mediocre.
+      CRITICAL CAVEAT: E_0(x) may be highly correlated with realized volatility or
+      Mahalanobis distance — essentially computing ||x||^2 through a quadratic form.
+    evidence: "E_0 d=1.411 vs Reduced Purity d=0.835 vs AR d=0.797 vs SpectralGapRatio d=1.175"
+    confidence: 0.80
+    key_insight: "Needs correlation check with simple baselines (realized vol, Mahalanobis) to confirm novelty"
+
+  - knight: 3
+    role: "practical_value"
+    workers_used: 0
+    conclusion: >
+      HIGH practical value. E_0(x) is the simplest QCML observable: just compute H(x)
+      and take the smallest eigenvalue. No finite differences, no metric tensor, no
+      curvature. Computation is O(n^3) per point (single eigensolve) vs O(n^3 * p^2)
+      for metric-based observables. Interpretable as "reconstruction error" or
+      "anomaly score." Could be computed in real-time with minimal infrastructure.
+    evidence: "0.2s for 5000 points vs ~10s for metric-based observables"
+    confidence: 0.85
+    key_insight: "Simplest, fastest, strongest — a rare combination"
+
+  - knight: 4
+    role: "failure_mode_analysis"
+    workers_used: 0
+    conclusion: >
+      MEDIUM RISK. Key concerns: (1) E_0(x) may be a volatility proxy (correlation with
+      realized vol likely > 0.7), (2) HPO bias: smoke test uses fixed hyperparams, LOCO
+      may show lower d, (3) operator independence means the quantum structure is irrelevant
+      — ANY quadratic form on features would work similarly, (4) sign inconsistency:
+      some crises show positive z-scores, others negative. Must test LOCO on all 17 crises
+      and compute correlation with baselines.
+    evidence: "Kill condition: if Pearson r with realized vol > 0.9, then E_0 is redundant"
+    confidence: 0.75
+    key_insight: "The critical test is correlation with realized volatility — if r > 0.9, E_0 adds no new information"
+
+test_results:
+  crises_tested: ["2008_gfc", "2020_covid", "2022_rates", "2023_svb"]
+  cohens_d_per_crisis:
+    2008_gfc: 1.290
+    2020_covid: 1.096
+    2022_rates: 1.531
+    2023_svb: 2.269
+  median_d: 1.411
+  max_d: 2.269
+  passes_threshold: true
+
+verdict:
+  keep: true
+  reason: "Strongest single detector in the project (median d=1.411, +69% vs Reduced Purity). All 4 crises show d > 1.0. Simplest and fastest QCML observable. Operator-independent. Must validate via LOCO cross-validation on all 17 crises and check correlation with realized vol/Mahalanobis."
+  strength: "high"
+  follow_up_questions:
+    - "What is Pearson r between E_0(x) z-scores and realized volatility?"
+    - "Does E_0(x) maintain d > 1.0 across all 17 crises in LOCO?"
+    - "Is E_0(x) genuinely different from ||x||^2, or is the quantum embedding irrelevant?"
+    - "Does E_0(x) provide orthogonal information to existing top detectors?"
+
+artifacts:
+  code_dir: "research/ideation/intrinsic_dimension/"
+  key_files: ["energy_detector.py", "smoke_test_q0107.py", "smoke_results_q0107.json"]

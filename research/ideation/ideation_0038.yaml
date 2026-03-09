@@ -1,0 +1,30 @@
+id: "0038"
+round: 38
+timestamp: "2026-03-06T19:15:00"
+question: "Can copulas model the joint distribution of observable signals for better combination?"
+theme: "fusion_combination"
+status: "keep"
+hypothesis:
+  statement: "Gaussian copula Mahalanobis distance captures joint tail events."
+  mechanism: "When ALL channels fire simultaneously, Mahalanobis distance through copula correlation matrix spikes."
+  prior_plausibility: "medium"
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: "Median d=0.739. Exceptional on COVID (d=2.952) where all channels fired simultaneously. Weak on SVB (d=0.229). Works best for systemic crises with broad cross-channel activation."
+    evidence: "GFC=1.097, COVID=2.952, Rates=0.381, SVB=0.229."
+    confidence: 0.70
+test_results:
+  crises_tested: ["2008_gfc", "2020_covid", "2022_rates", "2023_svb"]
+  cohens_d_per_crisis: {2008_gfc: 1.097, 2020_covid: 2.952, 2022_rates: 0.381, 2023_svb: 0.229}
+  median_d: 0.739
+  passes_threshold: true
+verdict:
+  keep: true
+  reason: "Copula captures joint tail events that averaging misses. COVID d=2.952 is remarkable. But SVB weakness shows it fails on localized sector stress. Worth full 15-crisis evaluation."
+  strength: "medium"
+  follow_up_questions: ["Does it work across systemic vs sectoral crises?", "t-copula vs Gaussian?"]
+artifacts:
+  code_dir: "research/ideation/fusion_methods/"
+  key_files: ["test_q36_q39.py"]

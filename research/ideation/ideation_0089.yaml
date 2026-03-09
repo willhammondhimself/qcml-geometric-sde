@@ -1,0 +1,30 @@
+id: "0089"
+round: 89
+timestamp: "2026-03-06T21:45:00"
+question: "Does our approach add value over the Hurst exponent / multifractal approaches?"
+theme: "competitive_landscape"
+status: "keep"
+hypothesis:
+  statement: "Hurst exponent captures scalar long-range dependence; our observables capture multi-dimensional geometry."
+  mechanism: "Richer representation should outperform 1D fractal measure."
+  prior_plausibility: "high"
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: "Our observables outperform. SpectralEntropy d=1.129 vs Hurst d=0.637 (+0.492). BerryPhaseRate d=0.677 also edges Hurst. Hurst captures scalar dependence; we capture multi-dimensional Hilbert space geometry."
+    evidence: "Rolling 120-day R/S Hurst on SPY. SpEnt advantage: +0.492d."
+    confidence: 0.80
+test_results:
+  crises_tested: ["2008_gfc", "2020_covid", "2022_rates", "2023_svb"]
+  cohens_d_per_crisis: {hurst: 0.637, spectral_entropy: 1.129, berry: 0.677}
+  median_d: 0.637
+  passes_threshold: true
+verdict:
+  keep: true
+  reason: "Our multi-dimensional geometric approach outperforms scalar Hurst by +0.492d. Hurst is a useful baseline but captures less structure."
+  strength: "medium"
+  follow_up_questions: ["Is Hurst complementary in fusion?"]
+artifacts:
+  code_dir: "research/ideation/competitive/"
+  key_files: ["test_q86_q95.py"]

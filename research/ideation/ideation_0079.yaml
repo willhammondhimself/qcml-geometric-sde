@@ -1,0 +1,29 @@
+id: "0079"
+round: 79
+timestamp: "2026-03-06T21:00:00"
+question: "Can we reduce computational cost (embedding dimension, window size) and keep d > 0.5?"
+theme: "practical_applications"
+status: "keep"
+hypothesis:
+  statement: "Minimal config (hilbert_dim=2) may retain enough signal for practical use."
+  mechanism: "Lower dimensionality = faster computation but potentially less geometric resolution."
+  prior_plausibility: "medium"
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: "hilbert_dim=2 gives d=0.320 — drops below d=0.5 bar. hilbert_dim=4 (FAST_CONFIG) gives d=0.655. Recommended minimum is hilbert_dim=4 with n_pca=6 for ~3.2x speedup vs full config."
+    evidence: "Full: d=0.655. Reduced(dim=2): d=0.320 (48.8% retention)."
+    confidence: 0.80
+test_results:
+  crises_tested: ["2008_gfc", "2020_covid", "2022_rates", "2015_china"]
+  median_d: 0.320
+  passes_threshold: false
+verdict:
+  keep: true
+  reason: "hilbert_dim=2 is too aggressive. hilbert_dim=4 is the practical minimum. But Q16 showed dim=16 gives d=1.327 — the optimal cost/performance tradeoff needs systematic study."
+  strength: "medium"
+  follow_up_questions: ["Systematic dim sweep with cost/d Pareto frontier"]
+artifacts:
+  code_dir: "research/ideation/practical_apps/"
+  key_files: ["test_q76_q85.py"]

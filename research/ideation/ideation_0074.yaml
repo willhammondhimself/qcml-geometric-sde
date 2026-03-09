@@ -1,0 +1,29 @@
+id: "0074"
+round: 74
+timestamp: "2026-03-06T21:00:00"
+question: "Does the fluctuation-dissipation theorem apply to our observables?"
+theme: "theoretical_foundations"
+status: "reject"
+hypothesis:
+  statement: "FDT might relate observable fluctuations to crisis response."
+  mechanism: "Classical FDT: response = correlation of equilibrium fluctuations."
+  prior_plausibility: "low"
+knight_findings:
+  - knight: 1
+    role: "theoretical_validity"
+    workers_used: 0
+    conclusion: "FDT does not apply — no thermal equilibrium or dissipation mechanism in QCML. The correct analog is the quantum Cramer-Rao bound (already Proposition 1 in the paper). Hamiltonian sensitivity is better motivated by QFI than by FDT."
+    evidence: "QCML is a closed-system geometric framework — no system-bath coupling."
+    confidence: 0.90
+test_results:
+  crises_tested: []
+  median_d: null
+  passes_threshold: false
+verdict:
+  keep: false
+  reason: "FDT requires thermal equilibrium absent in QCML. The quantum Cramer-Rao bound (Proposition 1) is the correct theoretical foundation."
+  strength: "dead"
+  follow_up_questions: []
+artifacts:
+  code_dir: null
+  key_files: null

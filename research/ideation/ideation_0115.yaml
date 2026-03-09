@@ -1,0 +1,68 @@
+id: "0115"
+round: 115
+timestamp: "2026-03-08T08:00:00"
+question: "Does the rank of the quantum metric tensor have a financial interpretation as active risk factors?"
+theme: "intrinsic_dimension"
+status: "keep"
+
+hypothesis:
+  statement: "rank(g) counts the number of independent parameter directions that produce distinguishable quantum states"
+  mechanism: "rank(g) = number of linearly independent directions with nonzero state variation = effective dimensionality"
+  prior_plausibility: "medium"
+
+knight_findings:
+  - knight: 1
+    role: "theoretical_validity"
+    workers_used: 0
+    conclusion: >
+      DEFENSIBLE BUT WEAK. rank(g) <= min(p, hilbert_dim - 1). For random operators,
+      rank(g) is generically full (no rank deficiency), so the interpretation breaks
+      down. Only LEARNED operators (Candelori framework) would produce rank deficiency
+      aligned with data structure. The metric measures STATE SENSITIVITY (second-order
+      geometric property), not VARIANCE EXPLAINED (first-order statistical property).
+      These coincide only in the well-calibrated limit.
+    evidence: "rank(g) bounded by hilbert_dim - 1 = 3 for dim=4 — hard ceiling on detectable dimensions"
+    confidence: 0.55
+    key_insight: "g measures state sensitivity, not variance decomposition — related but different"
+
+  - knight: 2
+    role: "comparative_analysis"
+    workers_used: 0
+    conclusion: >
+      Classical PCA eigenvalue analysis directly measures "active risk factors" via
+      variance explained. Absorption Ratio (variance fraction of top-k eigenvalues)
+      achieves d=0.797 vs QCML-IPR d=0.428. The QCML-via-quantum-metric route to
+      risk factors adds complexity without improving the answer.
+    evidence: "AR d=0.797 (direct measure) >> QCML-IPR d=0.428 (indirect measure via g)"
+    confidence: 0.80
+    key_insight: "Classical PCA directly answers the risk factor question; QCML adds noise to the answer"
+
+  - knight: 3
+    role: "extensions"
+    workers_used: 0
+    conclusion: >
+      The interpretation becomes interesting if the QCML embedding reveals NONLINEAR
+      factor structure invisible to PCA. But current evidence (AR > IPR) suggests it
+      does not. Worth revisiting if learned operators (Candelori) produce better
+      dimension estimates than random operators.
+    evidence: "QCML could reveal nonlinear factors — but current evidence says it doesn't"
+    confidence: 0.55
+    key_insight: "Interesting only if QCML reveals nonlinear structure invisible to PCA"
+
+test_results:
+  crises_tested: []
+  cohens_d_per_crisis: {}
+  median_d: null
+  passes_threshold: false
+
+verdict:
+  keep: true
+  reason: "Defensible interpretation: rank(g) counts state-sensitive directions, which approximate risk factors for well-calibrated operators. Weak with random operators (generically full rank). Useful theoretical discussion point."
+  strength: "low"
+  follow_up_questions:
+    - "Does rank(g) with learned operators better match classical risk factor count?"
+    - "Can QCML reveal nonlinear factor structure invisible to PCA?"
+
+artifacts:
+  code_dir: "research/ideation/intrinsic_dimension/"
+  key_files: []

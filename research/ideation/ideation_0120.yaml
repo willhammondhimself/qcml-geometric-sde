@@ -1,0 +1,82 @@
+id: "0120"
+round: 120
+timestamp: "2026-03-08T08:00:00"
+question: "Can we use dimension estimation to determine the optimal Hilbert space size n adaptively?"
+theme: "intrinsic_dimension"
+status: "investigate_further"
+
+hypothesis:
+  statement: "Set hilbert_dim adaptively based on estimated intrinsic dimension d(t)"
+  mechanism: "hilbert_dim should be >= d + margin; when d is low, small dim suffices; when d is high, need larger dim"
+  prior_plausibility: "medium"
+
+knight_findings:
+  - knight: 1
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: >
+      CIRCULAR DEPENDENCY. To estimate d(t), you need the quantum metric, which requires
+      a FIXED hilbert_dim. Changing hilbert_dim based on d(t) requires recomputing d(t)
+      with the new dim. Resolution: use a CHEAP classical dimension estimator (PCA
+      explained variance ratio) to set hilbert_dim for QCML. But this raises the
+      uncomfortable question: if classical dimension estimation guides Hilbert space
+      sizing, why use QCML at all?
+    evidence: "Chicken-and-egg: need dim to estimate d, need d to set dim"
+    confidence: 0.65
+    key_insight: "The circular dependency requires a two-stage approach using classical dimension estimation first"
+
+  - knight: 2
+    role: "practical_value"
+    workers_used: 0
+    conclusion: >
+      HIGH implementation effort (5-7 days). Changing hilbert_dim means operators must be
+      re-learned (different matrix sizes), invalidating cached ground states and breaking
+      time series continuity. The pipeline is SLOWEST during crises (when hilbert_dim is
+      largest), which is the opposite of what a monitoring system wants. The existing HPO
+      (per-detector optimal hilbert_dim in config.yaml) already accounts for average
+      dimensionality.
+    evidence: "Operator refitting on hilbert_dim change creates discontinuities in regime scores"
+    confidence: 0.65
+    key_insight: "Operator refitting discontinuity corrupts the regime score time series"
+
+  - knight: 3
+    role: "failure_mode_analysis"
+    workers_used: 0
+    conclusion: >
+      The simpler approach: just test hilbert_dim in {4, 8, 16} and report sensitivity.
+      This is an ablation study, not an adaptive system. The current per-detector HPO
+      already selects optimal dim. Making it time-varying adds complexity without
+      demonstrated benefit. The deeper tension: if classical d guides QCML sizing,
+      the QCML value proposition is undermined for dimension-related observables.
+    evidence: "Current HPO: dim=4 (fidelity), dim=6 (berry), dim=8 (QFI, purity), dim=16 (gap)"
+    confidence: 0.70
+    key_insight: "The question undermines QCML's value proposition: if classical d suffices for sizing, why embed?"
+
+  - knight: 4
+    role: "extensions"
+    workers_used: 0
+    conclusion: >
+      Theoretically elegant but practically problematic. The simplest viable version:
+      use PCA explained variance ratio to set hilbert_dim at the start of each expanding
+      window refit (not per-timestep). This avoids the computational and continuity issues
+      but doesn't require Q0101's dimension detectors. Worth mentioning in a methods paper.
+    evidence: "PCA variance ratio → hilbert_dim at refit time — simplest viable version"
+    confidence: 0.60
+    key_insight: "The simplest version doesn't need QCML dimension estimation at all"
+
+test_results:
+  crises_tested: []
+  cohens_d_per_crisis: {}
+  median_d: null
+  passes_threshold: false
+
+verdict:
+  keep: false
+  reason: "Theoretically elegant but circular dependency (need dim to estimate d, need d to set dim) and operator refitting discontinuities make this impractical. The simplest version (PCA variance ratio → hilbert_dim at refit) doesn't need QCML dimension estimation."
+  strength: "low"
+  follow_up_questions:
+    - "Does PCA-guided adaptive hilbert_dim improve detection in an ablation study?"
+
+artifacts:
+  code_dir: "research/ideation/intrinsic_dimension/"
+  key_files: []

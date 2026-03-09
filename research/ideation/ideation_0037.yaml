@@ -1,0 +1,30 @@
+id: "0037"
+round: 37
+timestamp: "2026-03-06T19:15:00"
+question: "Does a simple majority vote (count of observables above threshold) outperform learned fusion?"
+theme: "fusion_combination"
+status: "keep"
+hypothesis:
+  statement: "Count of observables exceeding z-score threshold as a fusion score."
+  mechanism: "When multiple channels fire simultaneously, it indicates broader regime shift."
+  prior_plausibility: "medium"
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: "Moderate signal. Best at thr=1.5 with median d=0.525. Does NOT beat Regime-Adaptive (d=0.774). Fails on SVB (d=0.147) — short crises don't trigger simultaneous exceedance."
+    evidence: "thr=1.5: GFC=0.322, COVID=0.895, Rates=0.728, SVB=0.147."
+    confidence: 0.75
+test_results:
+  crises_tested: ["2008_gfc", "2020_covid", "2022_rates", "2023_svb"]
+  cohens_d_per_crisis: {2008_gfc: 0.322, 2020_covid: 0.895, 2022_rates: 0.728, 2023_svb: 0.147}
+  median_d: 0.525
+  passes_threshold: true
+verdict:
+  keep: true
+  reason: "Useful as interpretable diagnostic ('N of 5 channels alarming') but dominated by Regime-Adaptive. Keep as a simple baseline for fusion comparison."
+  strength: "low"
+  follow_up_questions: ["Does it improve with more base channels?"]
+artifacts:
+  code_dir: "research/ideation/fusion_methods/"
+  key_files: ["test_q36_q39.py"]

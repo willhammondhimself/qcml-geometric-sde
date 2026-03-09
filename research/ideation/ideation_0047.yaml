@@ -1,0 +1,30 @@
+id: "0047"
+round: 47
+timestamp: "2026-03-06T19:45:00"
+question: "Can conformal prediction give distribution-free confidence intervals for our detectors?"
+theme: "statistical_evaluation"
+status: "keep"
+hypothesis:
+  statement: "Conformal prediction provides valid coverage guarantees without distributional assumptions."
+  mechanism: "Split conformal on normal-period data gives calibrated nonconformity scores."
+  prior_plausibility: "medium"
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: "Valid coverage (92.3% actual vs 90% target). SpectralEntropy crisis detection power=53.6% (useful). BerryPhaseRate power=6.5% (too conservative). Method-dependent effectiveness."
+    evidence: "Calibration: 2917 normal days. SpEnt: normal_cov=0.944, crisis_power=0.536."
+    confidence: 0.80
+test_results:
+  crises_tested: ["2008_gfc", "2020_covid", "2022_rates", "2023_svb"]
+  cohens_d_per_crisis: {}
+  median_d: null
+  passes_threshold: true
+verdict:
+  keep: true
+  reason: "Produces valid distribution-free coverage. Useful as calibration diagnostic alongside d. SpectralEntropy shows best crisis detection power through conformal lens."
+  strength: "medium"
+  follow_up_questions: ["Adaptive conformal prediction with time-varying nonconformity?"]
+artifacts:
+  code_dir: "research/ideation/statistical_eval/"
+  key_files: ["test_q46_q50.py"]

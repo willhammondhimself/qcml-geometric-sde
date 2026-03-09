@@ -1,0 +1,30 @@
+id: "0057"
+round: 57
+timestamp: "2026-03-06T20:15:00"
+question: "Can we detect crypto regime changes (BTC, ETH) where regimes shift faster?"
+theme: "cross_asset"
+status: "keep"
+hypothesis:
+  statement: "Crypto's faster regime shifts may be detectable despite 3.7x higher daily volatility."
+  mechanism: "Berry curvature should capture structural breaks regardless of asset class."
+  prior_plausibility: "low"
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: "Partial generalization. BerryPhaseRate works (mean d=0.395) — detects both Crypto Winter and FTX/Luna. SpectralEntropy struggles on Crypto Winter (d=0.020) but catches FTX (d=0.458). Higher vol suppresses z-score normalization."
+    evidence: "Berry: CryptoWinter=0.316, FTX=0.474. SpEnt: CryptoWinter=0.020, FTX=0.458."
+    confidence: 0.70
+test_results:
+  crises_tested: ["2018_crypto_winter", "2022_ftx"]
+  cohens_d_per_crisis: {2018_berry: 0.316, 2018_entropy: 0.020, 2022_berry: 0.474, 2022_entropy: 0.458}
+  median_d: 0.387
+  passes_threshold: true
+verdict:
+  keep: true
+  reason: "BerryPhaseRate is more robust to high-volatility regimes. SpectralEntropy needs concentrated shocks. Partial but real generalization to crypto."
+  strength: "low"
+  follow_up_questions: ["Crypto-specific normalization?", "Does higher hilbert_dim help with crypto vol?"]
+artifacts:
+  code_dir: "research/ideation/cross_asset/"
+  key_files: ["test_q56_q60.py"]

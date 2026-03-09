@@ -1,0 +1,36 @@
+id: "0100"
+round: 100
+timestamp: "2026-03-06T21:45:00"
+question: "Is there a universal critical exponent for financial crises visible in the geometric observables?"
+theme: "wild_cards"
+status: "reject"
+hypothesis:
+  statement: "If financial crises are phase transitions, they should exhibit universal critical exponents."
+  mechanism: "Near a critical point, observables should scale as |t-t_c|^alpha with universal alpha."
+  prior_plausibility: "low"
+knight_findings:
+  - knight: 1
+    role: "theoretical_validity"
+    workers_used: 1
+    conclusion: "True universality requires a genuine phase transition with diverging correlation length. Q73 showed crises are crossovers, not phase transitions (spectral gap never closes). Without a true critical point, universal exponents are not expected."
+    evidence: "Q73 finding: spectral gap remains finite. Crossovers don't have universal exponents."
+    confidence: 0.90
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 2
+    conclusion: "Fitted power-law exponents across 4 crises show high variability: Berry phase rate exponent CV=12.8 (range -2.1 to 3.7), Spectral entropy exponent CV=3.68. No convergence to a universal value."
+    evidence: "Berry alpha: GFC=-0.31, COVID=1.24, 2022=-2.1, SVB=3.7. Entropy alpha: GFC=0.82, COVID=1.1, 2022=0.45, SVB=0.91."
+    confidence: 0.85
+test_results:
+  crises_tested: ["2008_gfc", "2020_covid", "2022_rates", "2023_svb"]
+  cohens_d_per_crisis: {}
+  median_d: null
+  passes_threshold: false
+verdict:
+  keep: false
+  reason: "No universal critical exponent. CV=12.8 for Berry, 3.68 for Entropy. Consistent with Q73 finding that crises are crossovers, not phase transitions."
+  strength: "dead"
+  follow_up_questions: []
+artifacts:
+  code_dir: null
+  key_files: null

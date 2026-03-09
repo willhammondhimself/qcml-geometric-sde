@@ -1,0 +1,29 @@
+id: "0077"
+round: 77
+timestamp: "2026-03-06T21:00:00"
+question: "Does Berry Phase Rate's 90-day lead time hold in truly out-of-sample walk-forward?"
+theme: "practical_applications"
+status: "keep"
+hypothesis:
+  statement: "90-day lead time from prior analysis may be best-case, not typical."
+  mechanism: "Walk-forward with 5-year train, 2-year test provides unbiased lead time estimate."
+  prior_plausibility: "medium"
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: "Lead time is consistently positive but median is 4 days, not 90. The 90-day figure reflects best fold (74 days). All 7 folds show positive lead time. The 90-day claim should be qualified."
+    evidence: "Fold lead times: [4,4,4,32,4,74,5]. Median: 4 days. Mean: 18.1 days."
+    confidence: 0.85
+test_results:
+  crises_tested: ["walk_forward_7_folds"]
+  median_d: null
+  passes_threshold: true
+verdict:
+  keep: true
+  reason: "Lead time is real (all positive) but 4 days typical, not 90. Must qualify the 90-day claim in the paper. 4-day lead is still valuable for daily-rebalanced strategies."
+  strength: "high"
+  follow_up_questions: ["What drives the 74-day fold? Is it crisis-type dependent?"]
+artifacts:
+  code_dir: "research/ideation/practical_apps/"
+  key_files: ["test_q76_q85.py"]

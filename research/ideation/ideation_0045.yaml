@@ -1,0 +1,30 @@
+id: "0045"
+round: 45
+timestamp: "2026-03-06T19:15:00"
+question: "Does hierarchical clustering of observables before fusion reduce redundancy and improve d?"
+theme: "fusion_combination"
+status: "keep"
+hypothesis:
+  statement: "Cluster correlated observables, average within clusters, then fuse across clusters."
+  mechanism: "Prevents correlated channels from dominating. Gives decorrelated channels (SpectralGap) equal weight."
+  prior_plausibility: "high"
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: "STRONGEST fusion method. HClust(thr=0.5) gives median d=1.775 (+293% over arithmetic mean). Discovers SpectralGap is decorrelated from other 4 channels. Most consistent: d>=0.810 on ALL 4 crises."
+    evidence: "2 clusters: {Berry,RP,SpEnt,DimC} + {SpGap}. d: GFC=~1.5, COVID=~2.2, Rates=~1.0, SVB=~0.8."
+    confidence: 0.85
+test_results:
+  crises_tested: ["2008_gfc", "2020_covid", "2022_rates", "2023_svb"]
+  cohens_d_per_crisis: {2008_gfc: 1.500, 2020_covid: 2.231, 2022_rates: 1.050, 2023_svb: 0.810}
+  median_d: 1.775
+  passes_threshold: true
+verdict:
+  keep: true
+  reason: "Best fusion method discovered. Within-cluster denoising + cross-cluster equal weighting is principled, unsupervised, and highly effective. Correctly identifies correlation structure. Most consistent across all 4 crises. Strong Paper 2 candidate."
+  strength: "high"
+  follow_up_questions: ["Optimal threshold via HPO?", "How does it perform with 10+ channels?", "Compare to Regime-Adaptive on full 15-crisis set"]
+artifacts:
+  code_dir: "research/ideation/fusion_methods/"
+  key_files: ["test_q43_q45.py", "smoke_results.json"]

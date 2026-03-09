@@ -1,0 +1,76 @@
+id: "0106"
+round: 106
+timestamp: "2026-03-08T08:00:00"
+question: "Does reconstruction-loss training with fluctuation weight w in [0.1,0.2] improve noise robustness?"
+theme: "intrinsic_dimension"
+status: "reject"
+
+hypothesis:
+  statement: "Fluctuation penalty w*mean(sigma_i^2) produces operators robust to noise by suppressing local variance in quantum distances"
+  mechanism: "Variance penalty trades bias for reduced variance, analogous to L2 regularization"
+  prior_plausibility: "low"
+
+knight_findings:
+  - knight: 1
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: >
+      MOOT — same optimizer failure as Q0105. Reconstruction-trained operators (w=0.15)
+      are identical to random operators. The fluctuation weight had zero practical effect
+      because the optimizer failed to modify operators at all. A noise-robustness test
+      would require synthetic noise injection, which was not attempted given the optimizer
+      failure.
+    evidence: "Q0107 smoke test: recon ops ≡ random ops (d < 0.001 difference)"
+    confidence: 0.75
+    key_insight: "Cannot test noise robustness of a mechanism that doesn't activate"
+
+  - knight: 2
+    role: "comparative_analysis"
+    workers_used: 0
+    conclusion: >
+      Denoising is already handled by the feature pipeline: 20-day rolling statistics
+      + PCA + expanding-window z-score. Operator-level smoothing is redundant and operates
+      at the wrong abstraction layer. The noise is in the features, not the operators.
+    evidence: "Existing pipeline: rolling stats → PCA → normalize → z-score = 4 layers of denoising"
+    confidence: 0.80
+    key_insight: "The noise enters through features, not operators — operator smoothing cannot remove it"
+
+  - knight: 3
+    role: "practical_value"
+    workers_used: 0
+    conclusion: >
+      No practical value. Ensemble averaging over multiple random operator sets would
+      provide noise robustness more simply than gradient-based operator training.
+    evidence: "Alternative: ensemble of 10 random seeds, median score — simpler and well-understood"
+    confidence: 0.70
+    key_insight: "Ensemble averaging is a simpler path to noise robustness"
+
+  - knight: 4
+    role: "failure_mode_analysis"
+    workers_used: 0
+    conclusion: >
+      Scale mismatch: with soft normalization, quantum distances between consecutive
+      points are ~0.01 radians. Fluctuation of these tiny distances is ~1e-4, and the
+      penalty w=0.15 on their variance is negligible compared to the mean distance term.
+      Market noise is non-Gaussian, non-stationary — the i.i.d. variance penalty is a
+      poor noise model.
+    evidence: "Quantum distance fluctuation ~1e-4, penalty contribution ~1.5e-5 — negligible"
+    confidence: 0.80
+    key_insight: "Fluctuation penalty at w=0.15 is negligible at the typical scale of quantum distances"
+
+test_results:
+  crises_tested: []
+  cohens_d_per_crisis: {}
+  median_d: null
+  passes_threshold: false
+
+verdict:
+  keep: false
+  reason: "Same optimizer failure as Q0105 renders the question moot. Even with a working optimizer, the fluctuation penalty operates at negligible scale (~1e-5 contribution) and the noise enters through features, not operators."
+  strength: "low"
+  follow_up_questions:
+    - "Would ensemble averaging over random operator sets provide noise robustness more simply?"
+
+artifacts:
+  code_dir: "research/ideation/intrinsic_dimension/"
+  key_files: ["energy_detector.py", "smoke_test_q0107.py", "smoke_results_q0107.json"]

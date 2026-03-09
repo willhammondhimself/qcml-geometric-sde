@@ -1,0 +1,29 @@
+id: "0082"
+round: 82
+timestamp: "2026-03-06T21:00:00"
+question: "Does regime detection via our observables improve drawdown protection vs. simple vol targeting?"
+theme: "practical_applications"
+status: "keep"
+hypothesis:
+  statement: "Combined vol targeting + regime overlay should beat either alone."
+  mechanism: "Vol targeting reacts to realized vol; Berry reacts to geometric structure before vol spikes."
+  prior_plausibility: "medium"
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: "Combined is best. MaxDD: B&H 0.552, vol-only 0.383, regime-only 0.484, COMBINED 0.352. The two signals are complementary — vol targeting reacts after, Berry reacts before."
+    evidence: "Combined Calmar=0.297 (best). Regime alone insufficient for drawdown protection."
+    confidence: 0.80
+test_results:
+  crises_tested: ["2008_gfc", "2020_covid", "2022_rates", "2015_china"]
+  median_d: null
+  passes_threshold: true
+verdict:
+  keep: true
+  reason: "Clearest economic gain: combined vol+regime reduces MaxDD from 0.383 to 0.352 vs vol-only. Regime overlay is complementary to vol targeting, not a substitute."
+  strength: "high"
+  follow_up_questions: ["Optimal combination weights?", "Transaction costs?"]
+artifacts:
+  code_dir: "research/ideation/practical_apps/"
+  key_files: ["test_q76_q85.py"]

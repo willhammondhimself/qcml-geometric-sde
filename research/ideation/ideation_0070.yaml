@@ -1,0 +1,29 @@
+id: "0070"
+round: 70
+timestamp: "2026-03-06T21:00:00"
+question: "Is there a no-go theorem limiting how well any geometric observable can detect regimes?"
+theme: "theoretical_foundations"
+status: "keep"
+hypothesis:
+  statement: "Data processing inequality is the relevant bound, not EMH."
+  mechanism: "I(regime; observable) <= I(regime; x_t). Geometric channels are efficient extractors, not information creators."
+  prior_plausibility: "medium"
+knight_findings:
+  - knight: 1
+    role: "theoretical_validity"
+    workers_used: 0
+    conclusion: "No strong no-go applies. EMH concerns expected returns, not distributional regime shifts. The DPI permits geometric channels to outperform classifiers by being more efficient extractors of regime information already present in price data."
+    evidence: "Crisis detection is distributional shift detection, not return prediction — sidesteps EMH."
+    confidence: 0.85
+test_results:
+  crises_tested: []
+  median_d: null
+  passes_threshold: true
+verdict:
+  keep: true
+  reason: "Important framing: crisis detection != return prediction. The paper should explicitly note this distinction to preempt EMH objections."
+  strength: "medium"
+  follow_up_questions: []
+artifacts:
+  code_dir: null
+  key_files: null

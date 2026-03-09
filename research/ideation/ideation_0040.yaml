@@ -1,0 +1,30 @@
+id: "0040"
+round: 40
+timestamp: "2026-03-06T19:15:00"
+question: "Can Bayesian model averaging with observables as different 'models' improve robustness?"
+theme: "fusion_combination"
+status: "keep"
+hypothesis:
+  statement: "BMA weights via inverse Brier score down-weight inconsistent observables."
+  mechanism: "Expanding-window Brier scores identify which observables are well-calibrated, then weight proportionally."
+  prior_plausibility: "medium"
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: "Modest improvement. BMA median d=0.693 vs uniform d=0.635 (+9%). Correctly down-weights SpectralGap (inconsistent). Improvement in 3/4 crises. With only 4 crises, weight estimates are noisy."
+    evidence: "BMA: GFC=0.531, COVID=1.375, Rates=0.842, SVB=0.543. Uniform: GFC=0.531, COVID=1.261, Rates=0.739, SVB=0.384."
+    confidence: 0.70
+test_results:
+  crises_tested: ["2008_gfc", "2020_covid", "2022_rates", "2023_svb"]
+  cohens_d_per_crisis: {2008_gfc: 0.531, 2020_covid: 1.375, 2022_rates: 0.842, 2023_svb: 0.543}
+  median_d: 0.693
+  passes_threshold: true
+verdict:
+  keep: true
+  reason: "Principled +9% improvement over uniform. Correctly identifies SpectralGap as inconsistent. Worth including as a principled baseline extension in the paper."
+  strength: "low"
+  follow_up_questions: ["Does BMA improve with more crisis data points?"]
+artifacts:
+  code_dir: "research/ideation/fusion_methods/"
+  key_files: ["test_q40_q42.py"]

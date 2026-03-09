@@ -1,0 +1,30 @@
+id: "0062"
+round: 62
+timestamp: "2026-03-06T20:15:00"
+question: "Can we apply our framework to volatility surfaces (VIX term structure) for richer embedding?"
+theme: "cross_asset"
+status: "reject"
+hypothesis:
+  statement: "Second-order geometry on VIX may capture volatility regime structure."
+  mechanism: "VIX is already derived — applying geometric observables to VIX = geometry of geometry."
+  prior_plausibility: "low"
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: "VIX Berry is uniformly weaker than SPY Berry (mean d 0.267 vs 0.895). VIX SpectralEntropy is competitive only on COVID (d=2.519) but overall inferior (0.997 vs 1.112). VIX is mean-reverting/bounded — reduces geometric path diversity."
+    evidence: "VIX Berry: GFC=0.383, COVID=0.212, Rates=0.139, SVB=0.333. SPY Berry all higher."
+    confidence: 0.80
+test_results:
+  crises_tested: ["2008_gfc", "2020_covid", "2022_rates", "2023_svb"]
+  cohens_d_per_crisis: {gfc_berry: 0.383, covid_berry: 0.212, rates_berry: 0.139, svb_berry: 0.333}
+  median_d: 0.267
+  passes_threshold: false
+verdict:
+  keep: false
+  reason: "VIX geometry is inferior to SPY geometry. VIX is already a derived statistic — second-order geometry adds noise, not signal. The one exception (COVID SpEnt d=2.519) doesn't justify the approach."
+  strength: "low"
+  follow_up_questions: []
+artifacts:
+  code_dir: "research/ideation/cross_asset/"
+  key_files: ["test_q61_q65.py"]

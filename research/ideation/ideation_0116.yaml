@@ -1,0 +1,71 @@
+id: "0116"
+round: 116
+timestamp: "2026-03-08T08:00:00"
+question: "Can we prove that dimension collapse is a necessary consequence of herding/correlation convergence in QCML?"
+theme: "intrinsic_dimension"
+status: "keep"
+
+hypothesis:
+  statement: "Correlation convergence C_ij -> 1 necessarily implies IPR -> 1 (dimension collapse) in QCML"
+  mechanism: "C -> 11' implies PCA eigenvalue concentration -> x(t) collapses to 1D -> g -> rank 1 -> IPR -> 1"
+  prior_plausibility: "high"
+
+knight_findings:
+  - knight: 1
+    role: "theoretical_validity"
+    workers_used: 0
+    conclusion: >
+      PROOF SKETCH SUCCEEDS IN THE LIMIT, FAILS IN FINITE CASE. For exact correlation
+      convergence (C -> 11'), PCA concentration is exact, x(t) collapses to 1D, and
+      g -> rank 1 -> IPR = 1. The proof uses smoothness of x -> |psi(x)> (guaranteed
+      by Theorem 1 when gap > 0). But correlation convergence is SUFFICIENT, not
+      NECESSARY: other mechanisms (volatility clustering, operator artifacts) can cause
+      IPR to increase without correlation convergence.
+    evidence: "Proof works: C -> 11' => PCA collapse => g rank 1 => IPR = 1"
+    confidence: 0.60
+    key_insight: "Sufficient in the limit (C -> 11'), but not necessary — other mechanisms also cause dimension collapse"
+
+  - knight: 2
+    role: "comparative_analysis"
+    workers_used: 0
+    conclusion: >
+      The proof reveals why QCML degrades the dimension signal: the nonlinear embedding
+      x -> |psi(x)> partially destroys PCA concentration. The empirical degradation
+      (AR=0.797 > QCML-IPR=0.428) quantifies this: the QCML map adds ~0.37 d-units
+      of noise to the dimension-collapse signal. A rigorous finite-correlation bound
+      would require the Lipschitz constant of the QCML map, which depends on operator
+      choice and is not available.
+    evidence: "AR=0.797 vs QCML-IPR=0.428 — embedding degrades by ~0.37 d-units"
+    confidence: 0.65
+    key_insight: "The nonlinear QCML embedding partially destroys the linear PCA concentration signal"
+
+  - knight: 3
+    role: "extensions"
+    workers_used: 0
+    conclusion: >
+      The proof sketch is a useful theoretical contribution for the paper: it connects
+      the empirical observation (IPR increases during crises) to the financial mechanism
+      (herding/correlation convergence) through the mathematical structure of QCML.
+      Even though the proof is only a limit result, it provides the theoretical
+      justification for the DimensionalityCollapseDetector.
+    evidence: "Paper Section 3.5 qualitatively states this; the proof formalizes it"
+    confidence: 0.60
+    key_insight: "Worth including as a proposition in the paper: herding => dimension collapse (in the limit)"
+
+test_results:
+  crises_tested: []
+  cohens_d_per_crisis: {}
+  median_d: null
+  passes_threshold: false
+
+verdict:
+  keep: true
+  reason: "Proof sketch works in the limit (C -> 11' implies IPR -> 1) and provides theoretical justification for DimensionalityCollapseDetector. The proof is only sufficient (not necessary) and only asymptotic (not finite-correlation). Worth formalizing as a proposition in the paper."
+  strength: "medium"
+  follow_up_questions:
+    - "Can we bound the Lipschitz constant of the QCML map to get a finite-correlation result?"
+    - "Does the proof extend to other geometric observables (Berry curvature, QFI)?"
+
+artifacts:
+  code_dir: "research/ideation/intrinsic_dimension/"
+  key_files: []

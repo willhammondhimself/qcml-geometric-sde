@@ -1,0 +1,66 @@
+id: "0110"
+round: 110
+timestamp: "2026-03-08T08:00:00"
+question: "Can a dimension-adaptive fusion strategy switch between single-channel and multi-channel based on estimated d?"
+theme: "intrinsic_dimension"
+status: "investigate_further"
+
+hypothesis:
+  statement: "Switch to best single channel when d is low (concentrated), multi-channel fusion when d is high (diffuse)"
+  mechanism: "Low d = one factor dominates → single detector suffices; high d = complex regime → fusion averages complementary signals"
+  prior_plausibility: "medium"
+
+knight_findings:
+  - knight: 1
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: >
+      Most coherent of the three fusion questions — avoids the type mismatch by using
+      dimension as a scalar gate, not a geometric operator. Spectral Entropy alone
+      (d=0.830) beats all fusion methods (max d=0.774), proving single-channel CAN
+      dominate. But the improvement ceiling is small: best single (0.830) vs best fusion
+      (0.774) = +0.056 Cohen's d, which is within bootstrap CI overlap.
+    evidence: "Spectral Entropy d=0.830 > RegimeAdaptive d=0.774 — single channel can win"
+    confidence: 0.65
+    key_insight: "The improvement ceiling is ~0.06 d — detectable but small"
+
+  - knight: 2
+    role: "comparative_analysis"
+    workers_used: 0
+    conclusion: >
+      The most practical implementation: add d_eff(t) as a 6th meta-feature to
+      RegimeAdaptive's KMeans, letting the clustering implicitly learn the switching
+      behavior. This requires ~10 lines of code and no new hyperparameters. Alternative:
+      hard switching with threshold d_thresh adds a new overfitting surface.
+    evidence: "RegimeAdaptive uses 5 meta-features + KMeans — adding d_eff as 6th is minimal"
+    confidence: 0.70
+    key_insight: "Best path: add d_eff to RegimeAdaptive meta-features (implicit switching, no new HPO)"
+
+  - knight: 3
+    role: "failure_mode_analysis"
+    workers_used: 0
+    conclusion: >
+      MEDIUM RISK. Threshold sensitivity (d_thresh tuned on 11 crises), single-channel
+      selection problem (which channel varies by crisis), dimension estimate noise
+      (Q0101 d_eff has wide CIs), transition artifacts from switching. Friedman p=0.538
+      means optimal single channel varies — need oracle knowledge to select it.
+    evidence: "Dimension estimate noise: COVID CI = [0.01, 1.01] — too noisy for reliable switching"
+    confidence: 0.70
+    key_insight: "Noisy d(t) + varying optimal channel = unreliable switching decisions"
+
+test_results:
+  crises_tested: []
+  cohens_d_per_crisis: {}
+  median_d: null
+  passes_threshold: false
+
+verdict:
+  keep: false
+  reason: "Theoretically sound (avoids type mismatch) but improvement ceiling is small (~0.06 d) and implementation risks are moderate. The pragmatic test — adding d_eff as a 6th meta-feature to RegimeAdaptive — is worth a 1-day experiment."
+  strength: "low"
+  follow_up_questions:
+    - "Does adding d_eff(t) as 6th meta-feature to RegimeAdaptive improve holdout d?"
+
+artifacts:
+  code_dir: "research/ideation/intrinsic_dimension/"
+  key_files: []

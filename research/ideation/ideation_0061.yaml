@@ -1,0 +1,30 @@
+id: "0061"
+round: 61
+timestamp: "2026-03-06T20:15:00"
+question: "Does intraday data (hourly, 5-min) reveal regime transitions invisible at daily frequency?"
+theme: "cross_asset"
+status: "reject"
+hypothesis:
+  statement: "Sub-daily resolution may capture faster regime transitions."
+  mechanism: "Intraday dynamics could reveal microstructure-level regime shifts."
+  prior_plausibility: "low"
+knight_findings:
+  - knight: 2
+    role: "analytical"
+    workers_used: 0
+    conclusion: "NEGATIVE by design. (1) 20-day rolling windows shrink to ~3 calendar days at hourly bars. (2) Berry curvature at intraday resolution captures microstructure noise, not regime transitions. (3) min_expanding=40 bars = 6 hours — cannot z-score meaningfully. (4) Feature matrix uses 20-day return statistics with no intraday analog."
+    evidence: "Analytical argument. Rolling window = 20 bars / 6.5 bars-per-day = 3.1 days."
+    confidence: 0.95
+test_results:
+  crises_tested: []
+  cohens_d_per_crisis: {}
+  median_d: null
+  passes_threshold: false
+verdict:
+  keep: false
+  reason: "Incompatible by design — our observables are built on daily-frequency rolling statistics. Intraday would require complete re-engineering, not just frequency change."
+  strength: "dead"
+  follow_up_questions: ["Pre-aggregated intraday stats (realized vol/corr) fed at daily frequency could add value"]
+artifacts:
+  code_dir: null
+  key_files: null

@@ -1,0 +1,30 @@
+id: "0048"
+round: 48
+timestamp: "2026-03-06T19:45:00"
+question: "Does survival analysis (time-to-event) framing improve our understanding of lead time?"
+theme: "statistical_evaluation"
+status: "keep"
+hypothesis:
+  statement: "Cox proportional hazards reveals which observables predict crisis timing."
+  mechanism: "Beta coefficients indicate strength and direction of crisis-prediction association."
+  prior_plausibility: "medium"
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: "3/5 observables significant. Key finding: HamiltonianSensitivity has NEGATIVE beta (-0.209, p<0.0001) — higher signal predicts crisis arriving LATER, not sooner. SpectralEntropy has strongest positive beta (+0.147)."
+    evidence: "n=1008 pre-crisis observations. HamSens: beta=-0.209. SpEnt: beta=+0.147. DimC: beta=+0.065."
+    confidence: 0.80
+test_results:
+  crises_tested: ["2008_gfc", "2020_covid", "2022_rates", "2023_svb"]
+  cohens_d_per_crisis: {}
+  median_d: null
+  passes_threshold: true
+verdict:
+  keep: true
+  reason: "Reveals counter-intuitive HamiltonianSensitivity behavior that Cohen's d alone cannot detect. Survival framing adds directional/temporal insight beyond effect size."
+  strength: "medium"
+  follow_up_questions: ["Why is HamSens negative? Is it a low-vol regime detector rather than crisis predictor?"]
+artifacts:
+  code_dir: "research/ideation/statistical_eval/"
+  key_files: ["test_q46_q50.py"]

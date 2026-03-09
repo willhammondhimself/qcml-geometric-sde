@@ -1,0 +1,30 @@
+id: "0035"
+round: 35
+timestamp: "2026-03-06T18:30:00"
+question: "Does Spectral Flow improve with a different gap threshold or flow direction metric?"
+theme: "dead_signal_fix"
+status: "keep"
+hypothesis:
+  statement: "Switch from pca_inspired to random operators and use L1 total spectral velocity."
+  mechanism: "pca_inspired operators produce Kramers-degenerate spectra (zero gap). L1 velocity captures distributed eigenvalue motion better than L2."
+  prior_plausibility: "high"
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: "RESURRECTED. L1 total velocity with random operators gives median d=0.762. All four crises show d > 0.3. Gap-only flow underperforms (0.261) — full spectral motion carries more information."
+    evidence: "L1_total: GFC=0.618, COVID=0.905, Rates=0.398, SVB=0.960. random_baseline: 0.677."
+    confidence: 0.85
+test_results:
+  crises_tested: ["2008_gfc", "2020_covid", "2022_rates", "2023_svb"]
+  cohens_d_per_crisis: {2008_gfc: 0.618, 2020_covid: 0.905, 2022_rates: 0.398, 2023_svb: 0.960}
+  median_d: 0.762
+  passes_threshold: true
+verdict:
+  keep: true
+  reason: "Known Kramers degeneracy bug. Random operators + L1 total velocity is the fix. Most consistent crisis profile in Theme 3 — all four crises above 0.3. Strong candidate for the observatory."
+  strength: "high"
+  follow_up_questions: ["Orthogonality with existing spectral observables?", "Does L1 vs L2 matter for other spectral observables?"]
+artifacts:
+  code_dir: "research/ideation/dead_signal_fix/"
+  key_files: ["test_q32_q35.py"]

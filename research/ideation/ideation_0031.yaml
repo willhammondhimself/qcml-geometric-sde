@@ -1,0 +1,30 @@
+id: "0031"
+round: 31
+timestamp: "2026-03-06T18:30:00"
+question: "Does BOCPD (d=0.057) improve with informative priors based on market regime knowledge?"
+theme: "dead_signal_fix"
+status: "keep"
+hypothesis:
+  statement: "Shorter hazard prior (weeks not years) makes BOCPD sensitive to market-scale regime shifts."
+  mechanism: "Default hazard_lambda=250 (1 year) is too slow. Try 21 (1 month) or 63 (1 quarter)."
+  prior_plausibility: "high"
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: "RESURRECTED. hazard_rate=21 achieves median d=0.898. SVB d=2.449, Rates d=1.357. GARCH pre-whitening HURTS (d=0.12) — it removes the very volatility jumps BOCPD detects."
+    evidence: "hazard=21: GFC=0.300, COVID=0.439, Rates=1.357, SVB=2.449. hazard=63 tied at 0.896."
+    confidence: 0.85
+test_results:
+  crises_tested: ["2008_gfc", "2020_covid", "2022_rates", "2023_svb"]
+  cohens_d_per_crisis: {2008_gfc: 0.300, 2020_covid: 0.439, 2022_rates: 1.357, 2023_svb: 2.449}
+  median_d: 0.898
+  passes_threshold: true
+verdict:
+  keep: true
+  reason: "Simple hazard prior fix takes BOCPD from dead (d=0.057) to strong (d=0.898). Key insight: GARCH whitening is anti-productive — it removes the signal BOCPD needs. This is now a competitive baseline."
+  strength: "high"
+  follow_up_questions: ["Optimal hazard rate via HPO?", "Does it generalize to other asset classes?"]
+artifacts:
+  code_dir: "research/ideation/dead_signal_fix/"
+  key_files: ["test_q29_q31.py", "smoke_results.json"]

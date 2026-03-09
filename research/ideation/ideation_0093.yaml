@@ -1,0 +1,30 @@
+id: "0093"
+round: 93
+timestamp: "2026-03-06T21:45:00"
+question: "Does our approach beat simple VIX + term structure combination?"
+theme: "competitive_landscape"
+status: "keep"
+hypothesis:
+  statement: "VIX is implied vol — forward-looking by construction. Hard to beat."
+  mechanism: "VIX encodes option market expectations; our observables use realized dynamics."
+  prior_plausibility: "low"
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: "VIX outperforms (d=1.631 vs SpEnt d=1.129). Not surprising — VIX contains forward-looking implied vol from options markets. Our advantage: works where options markets don't exist (crypto, EM, commodities, illiquid assets)."
+    evidence: "VIX level d=1.631. VIX+slope d=1.641. SpEnt d=1.129."
+    confidence: 0.85
+test_results:
+  crises_tested: ["2008_gfc", "2020_covid", "2022_rates", "2023_svb"]
+  cohens_d_per_crisis: {vix: 1.631, vix_combined: 1.641}
+  median_d: 1.631
+  passes_threshold: true
+verdict:
+  keep: true
+  reason: "VIX is an 'implied-vol upper bound' — outperforms but requires options market. Our approach generalizes to all asset classes. Include VIX+TermStructure as benchmark in paper."
+  strength: "high"
+  follow_up_questions: ["Cross-asset comparison where VIX unavailable"]
+artifacts:
+  code_dir: "research/ideation/competitive/"
+  key_files: ["test_q86_q95.py"]

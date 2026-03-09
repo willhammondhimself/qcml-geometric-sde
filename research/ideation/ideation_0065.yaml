@@ -1,0 +1,30 @@
+id: "0065"
+round: 65
+timestamp: "2026-03-06T20:15:00"
+question: "Does the advance-decline ratio or market breadth improve when embedded in our framework?"
+theme: "cross_asset"
+status: "keep"
+hypothesis:
+  statement: "Sector dispersion as breadth proxy should improve SpectralEntropy."
+  mechanism: "Breadth collapse (sectors moving in unison) is precisely the spectral restructuring SpectralEntropy detects."
+  prior_plausibility: "medium"
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: "Positive for SpectralEntropy (+0.254 mean d gain), negative for BerryPhaseRate (-0.634). Breadth-only SpectralEntropy (d=1.366) is competitive with SPY-only SpectralEntropy (d=1.112). GFC breadth entropy d=1.955."
+    evidence: "Breadth SpEnt: GFC=1.955, COVID=1.750. SPY SpEnt: GFC=1.300, COVID=1.131."
+    confidence: 0.75
+test_results:
+  crises_tested: ["2008_gfc", "2020_covid", "2022_rates", "2023_svb"]
+  cohens_d_per_crisis: {breadth_entropy: 1.366, spy_entropy: 1.112}
+  median_d: 1.366
+  passes_threshold: true
+verdict:
+  keep: true
+  reason: "Sector breadth dispersion is a strong SpectralEntropy input (d=1.366). Breadth collapse during crises is exactly what SpectralEntropy measures. Could be a standalone detection channel."
+  strength: "medium"
+  follow_up_questions: ["Breadth SpectralEntropy as standalone channel?", "Which sectors contribute most?"]
+artifacts:
+  code_dir: "research/ideation/cross_asset/"
+  key_files: ["test_q61_q65.py"]

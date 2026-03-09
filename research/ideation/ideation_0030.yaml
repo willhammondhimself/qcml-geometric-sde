@@ -1,0 +1,30 @@
+id: "0030"
+round: 30
+timestamp: "2026-03-06T18:30:00"
+question: "Can Geometric Ensemble (d=0.013) be fixed by ensembling only the top-performing observables?"
+theme: "dead_signal_fix"
+status: "keep"
+hypothesis:
+  statement: "Dead channels dilute ensemble signal — use only top performers."
+  mechanism: "RMS z-score of BerryPhaseRate + SpectralGap + ReducedPurity instead of all geometric features."
+  prior_plausibility: "high"
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: "STRONGLY RESURRECTED. Top-3 ensemble achieves median d=1.690. All four crises show d > 0.3, with COVID=1.798, SVB=1.864, Rates=1.582. Full ensemble confirms dead channels destroy signal (median=0.389)."
+    evidence: "Top-3 RMS: GFC=0.351, COVID=1.798, Rates=1.582, SVB=1.864. ReducedPurity solo: 1.361."
+    confidence: 0.85
+test_results:
+  crises_tested: ["2008_gfc", "2020_covid", "2022_rates", "2023_svb"]
+  cohens_d_per_crisis: {2008_gfc: 0.351, 2020_covid: 1.798, 2022_rates: 1.582, 2023_svb: 1.864}
+  median_d: 1.690
+  passes_threshold: true
+verdict:
+  keep: true
+  reason: "One of the highest median d values in the project (1.690). Dead channels actively destroy the ensemble — curated top-3 outperforms any individual. Key lesson for fusion: garbage in, garbage out."
+  strength: "high"
+  follow_up_questions: ["Is this just ReducedPurity driving the ensemble?", "Optimal number of channels to include?", "Overlap with Regime-Adaptive fusion (Paper 2)?"]
+artifacts:
+  code_dir: "research/ideation/dead_signal_fix/"
+  key_files: ["test_q29_q31.py", "smoke_results.json"]

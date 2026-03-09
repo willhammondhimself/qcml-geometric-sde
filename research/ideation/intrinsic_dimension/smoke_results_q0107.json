@@ -1,0 +1,241 @@
+{
+  "experiment": "Ground State Energy Detector Smoke Test (Q0107)",
+  "data": {
+    "symbols": [
+      "SPY",
+      "DIA"
+    ],
+    "start_date": "2005-01-01",
+    "end_date": "2024-12-31",
+    "feature_shape": [
+      5012,
+      13
+    ],
+    "enriched_shape": [
+      4993,
+      52
+    ]
+  },
+  "crises_tested": [
+    "2008_gfc",
+    "2020_covid",
+    "2022_rates",
+    "2023_svb"
+  ],
+  "n_bootstrap": 1000,
+  "detectors": [
+    {
+      "detector": "Energy Level E_0(x)",
+      "question": "Q0107-level",
+      "cohens_d_per_crisis": {
+        "2008_gfc": 1.2900498687521196,
+        "2020_covid": 1.0961732898959102,
+        "2022_rates": 1.5311153952736543,
+        "2023_svb": 2.2691252488160476
+      },
+      "per_crisis_detail": {
+        "2008_gfc": {
+          "cohens_d": 1.2900498687521196,
+          "ci_lo": 0.517670535317123,
+          "ci_hi": 2.268452785520552,
+          "crisis_n": 146,
+          "normal_n": 41,
+          "crisis_mean": 0.46081987636129756,
+          "normal_mean": -0.8117287236556705
+        },
+        "2020_covid": {
+          "cohens_d": 1.0961732898959102,
+          "ci_lo": 0.36772796479563435,
+          "ci_hi": 2.408055187935854,
+          "crisis_n": 50,
+          "normal_n": 39,
+          "crisis_mean": -0.465782886930296,
+          "normal_mean": 0.4727554349414872
+        },
+        "2022_rates": {
+          "cohens_d": 1.5311153952736543,
+          "ci_lo": 1.0496294799217034,
+          "ci_hi": 2.1946022346122978,
+          "crisis_n": 209,
+          "normal_n": 42,
+          "crisis_mean": 0.33984905884021605,
+          "normal_mean": -1.2005023420926757
+        },
+        "2023_svb": {
+          "cohens_d": 2.2691252488160476,
+          "ci_lo": 1.652476505528077,
+          "ci_hi": 3.5263426814827334,
+          "crisis_n": 42,
+          "normal_n": 39,
+          "crisis_mean": -0.4246188891106852,
+          "normal_mean": 0.711277667118739
+        }
+      },
+      "median_d": 1.410582632012887,
+      "max_d": 2.2691252488160476,
+      "passes_threshold": true,
+      "timing": {
+        "fit_seconds": 0.0,
+        "score_seconds": 0.2
+      },
+      "config": {
+        "hilbert_dim": 4,
+        "n_pca_components": 8,
+        "operator_method": "random",
+        "rolling_window": 10,
+        "min_expanding": 60,
+        "seed": 42,
+        "normalization": "soft",
+        "adaptive_epsilon": true,
+        "subsample": 1,
+        "score_mode": "level"
+      }
+    },
+    {
+      "detector": "Energy Rate |dE_0/dt|",
+      "question": "Q0107-rate",
+      "cohens_d_per_crisis": {
+        "2008_gfc": 0.1363323883866686,
+        "2020_covid": 1.0140670106144907,
+        "2022_rates": 0.4369025862947771,
+        "2023_svb": 0.34162339515563545
+      },
+      "per_crisis_detail": {
+        "2008_gfc": {
+          "cohens_d": 0.1363323883866686,
+          "ci_lo": 0.017133947351193633,
+          "ci_hi": 0.9111374277619797,
+          "crisis_n": 146,
+          "normal_n": 41,
+          "crisis_mean": 0.2791565801223105,
+          "normal_mean": 0.15909569071086738
+        },
+        "2020_covid": {
+          "cohens_d": 1.0140670106144907,
+          "ci_lo": 0.2628031458413332,
+          "ci_hi": 1.9775658067139688,
+          "crisis_n": 50,
+          "normal_n": 39,
+          "crisis_mean": 0.4158400473744844,
+          "normal_mean": -0.5190865578098406
+        },
+        "2022_rates": {
+          "cohens_d": 0.4369025862947771,
+          "ci_lo": 0.03830931786822,
+          "ci_hi": 0.9448443310424204,
+          "crisis_n": 209,
+          "normal_n": 42,
+          "crisis_mean": 0.5931413464981004,
+          "normal_mean": 0.08826145652212637
+        },
+        "2023_svb": {
+          "cohens_d": 0.34162339515563545,
+          "ci_lo": 0.013081892909636968,
+          "ci_hi": 1.1357873549377082,
+          "crisis_n": 42,
+          "normal_n": 39,
+          "crisis_mean": 0.03600659086225618,
+          "normal_mean": -0.1379949564234086
+        }
+      },
+      "median_d": 0.38926299072520626,
+      "max_d": 1.0140670106144907,
+      "passes_threshold": true,
+      "timing": {
+        "fit_seconds": 0.0,
+        "score_seconds": 0.2
+      },
+      "config": {
+        "hilbert_dim": 4,
+        "n_pca_components": 8,
+        "operator_method": "random",
+        "rolling_window": 10,
+        "min_expanding": 60,
+        "seed": 42,
+        "normalization": "soft",
+        "adaptive_epsilon": true,
+        "subsample": 1,
+        "score_mode": "rate",
+        "rate_window": 5
+      }
+    },
+    {
+      "detector": "Energy (recon ops, w=0.15)",
+      "question": "Q0107-recon",
+      "cohens_d_per_crisis": {
+        "2008_gfc": 1.2900566989347804,
+        "2020_covid": 1.0961380938131007,
+        "2022_rates": 1.5311054294886457,
+        "2023_svb": 2.269125997219584
+      },
+      "per_crisis_detail": {
+        "2008_gfc": {
+          "cohens_d": 1.2900566989347804,
+          "ci_lo": 0.5176788340812444,
+          "ci_hi": 2.2684701617796676,
+          "crisis_n": 146,
+          "normal_n": 41,
+          "crisis_mean": 0.4608380035610284,
+          "normal_mean": -0.8117192487826698
+        },
+        "2020_covid": {
+          "cohens_d": 1.0961380938131007,
+          "ci_lo": 0.3676881671469306,
+          "ci_hi": 2.4080235848056293,
+          "crisis_n": 50,
+          "normal_n": 39,
+          "crisis_mean": -0.4657680262447604,
+          "normal_mean": 0.47274179343053474
+        },
+        "2022_rates": {
+          "cohens_d": 1.5311054294886457,
+          "ci_lo": 1.0496238665596764,
+          "ci_hi": 2.19459366168702,
+          "crisis_n": 209,
+          "normal_n": 42,
+          "crisis_mean": 0.3398584635829201,
+          "normal_mean": -1.2004866610246174
+        },
+        "2023_svb": {
+          "cohens_d": 2.269125997219584,
+          "ci_lo": 1.652486463342657,
+          "ci_hi": 3.5263203302030917,
+          "crisis_n": 42,
+          "normal_n": 39,
+          "crisis_mean": -0.42461251962295093,
+          "normal_mean": 0.7112831735969944
+        }
+      },
+      "median_d": 1.410581064211713,
+      "max_d": 2.269125997219584,
+      "passes_threshold": true,
+      "timing": {
+        "fit_seconds": 0.0,
+        "score_seconds": 0.2
+      },
+      "reconstruction_loss_history": {
+        "initial": 0.00012193591697662063,
+        "final": 0.00012192411711892229,
+        "n_steps": 101
+      },
+      "config": {
+        "hilbert_dim": 4,
+        "n_pca_components": 8,
+        "operator_method": "random",
+        "rolling_window": 10,
+        "min_expanding": 60,
+        "seed": 42,
+        "normalization": "soft",
+        "adaptive_epsilon": true,
+        "subsample": 1,
+        "score_mode": "level",
+        "operator_source": "reconstruction_loss",
+        "fluctuation_weight": 0.15,
+        "training_steps": 100
+      }
+    }
+  ],
+  "timing": {
+    "total_seconds": 15.5
+  }
+}

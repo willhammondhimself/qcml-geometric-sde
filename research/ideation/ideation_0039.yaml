@@ -1,0 +1,30 @@
+id: "0039"
+round: 39
+timestamp: "2026-03-06T19:15:00"
+question: "Does online learning (exponential weights / multiplicative updates) adapt fusion weights in real-time?"
+theme: "fusion_combination"
+status: "keep"
+hypothesis:
+  statement: "Hedge/MW algorithm with hit-rate proxy adapts weights causally using realized volatility as surrogate crisis label."
+  mechanism: "Weight observables by expanding-window hit rate (fired AND vol was high-quartile), updated via softmax(eta * hit_rate)."
+  prior_plausibility: "medium"
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: "Strong. Hedge eta=0.1 achieves median d=0.842, exceeding Regime-Adaptive Paper 2 benchmark (d=0.774). Robust to eta choice (0.842 vs 0.830). O(n_methods) per step, no cluster model needed."
+    evidence: "eta=0.1: GFC=1.472, COVID=0.534, Rates=0.598, SVB=1.086. Stable across eta."
+    confidence: 0.80
+test_results:
+  crises_tested: ["2008_gfc", "2020_covid", "2022_rates", "2023_svb"]
+  cohens_d_per_crisis: {2008_gfc: 1.472, 2020_covid: 0.534, 2022_rates: 0.598, 2023_svb: 1.086}
+  median_d: 0.842
+  passes_threshold: true
+verdict:
+  keep: true
+  reason: "Best new fusion method. Beats Regime-Adaptive (d=0.842 vs 0.774) with zero training, O(n) per step, and stable across eta. Uses realized vol as unsupervised proxy label. Strong candidate for Paper 2."
+  strength: "high"
+  follow_up_questions: ["Full 15-crisis evaluation", "Does the hit-rate proxy generalize to other asset classes?"]
+artifacts:
+  code_dir: "research/ideation/fusion_methods/"
+  key_files: ["test_q36_q39.py"]

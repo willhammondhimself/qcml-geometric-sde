@@ -1,0 +1,30 @@
+id: "0053"
+round: 53
+timestamp: "2026-03-06T19:45:00"
+question: "Can we define a utility-based metric (e.g., Sharpe improvement from trading on signals) as evaluation?"
+theme: "statistical_evaluation"
+status: "keep"
+hypothesis:
+  statement: "Sharpe ratio improvement from a simple signal-based strategy as alternative metric."
+  mechanism: "Go long when z < threshold, reduce exposure when z > threshold."
+  prior_plausibility: "medium"
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: "Sharpe ranking is inconsistent with d ranking (Spearman rho=0.200). SpectralEntropy has highest d but nearly zero Sharpe improvement (-0.003) — fires during bull markets too. BerryPhaseRate gives best Sharpe improvement (+0.099) despite lower d."
+    evidence: "Berry: Sharpe=0.623(+0.099). RP: 0.603(+0.079). SpEnt: 0.521(-0.003). B&H: 0.524."
+    confidence: 0.80
+test_results:
+  crises_tested: ["2008_gfc", "2020_covid", "2022_rates", "2023_svb"]
+  cohens_d_per_crisis: {}
+  median_d: null
+  passes_threshold: true
+verdict:
+  keep: true
+  reason: "Sharpe and d measure different properties — d measures discriminative power, Sharpe measures economic value after threshold selection. BerryPhaseRate uniquely provides both. Valuable complement to d."
+  strength: "medium"
+  follow_up_questions: ["Optimal threshold for Sharpe?", "Transaction costs?"]
+artifacts:
+  code_dir: "research/ideation/statistical_eval/"
+  key_files: ["test_q51_q55.py"]

@@ -1,0 +1,30 @@
+id: "0042"
+round: 42
+timestamp: "2026-03-06T19:15:00"
+question: "Can we build a switching model that selects the single best observable per regime?"
+theme: "fusion_combination"
+status: "keep"
+hypothesis:
+  statement: "Expanding-window oracle selects the historically best observable and applies it going forward."
+  mechanism: "Past performance of observables transfers to future crises (stationarity assumption)."
+  prior_plausibility: "medium"
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: "Strong. Expanding oracle achieves median d=1.260 (+99% vs uniform d=0.635). Consistently selected SpectralEntropy after 2008_gfc. Max z-score strategy is weaker (d=0.767) due to order statistic inflation in normal periods."
+    evidence: "Oracle: GFC=1.671, COVID=1.198, Rates=1.321, SVB=0.534. Selected SpectralEntropy after first crisis."
+    confidence: 0.75
+test_results:
+  crises_tested: ["2008_gfc", "2020_covid", "2022_rates", "2023_svb"]
+  cohens_d_per_crisis: {2008_gfc: 1.671, 2020_covid: 1.198, 2022_rates: 1.321, 2023_svb: 0.534}
+  median_d: 1.260
+  passes_threshold: true
+verdict:
+  keep: true
+  reason: "Strong causal performance. Essentially converges to 'always use SpectralEntropy' — which is the best individual. Useful as an upper bound for adaptive channel selection, but not a true fusion method."
+  strength: "medium"
+  follow_up_questions: ["Does the best channel shift across longer history?", "Is this just SpectralEntropy with extra steps?"]
+artifacts:
+  code_dir: "research/ideation/fusion_methods/"
+  key_files: ["test_q40_q42.py"]

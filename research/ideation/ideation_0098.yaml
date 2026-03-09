@@ -1,0 +1,36 @@
+id: "0098"
+round: 98
+timestamp: "2026-03-06T21:45:00"
+question: "Can we classify crisis severity (not just detect onset) using geometric observables?"
+theme: "wild_cards"
+status: "keep"
+hypothesis:
+  statement: "Peak geometric observable values should correlate with crisis severity (measured by max drawdown)."
+  mechanism: "Larger Hilbert space distortions should correspond to deeper market dislocations."
+  prior_plausibility: "medium"
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 2
+    conclusion: "Spectral entropy peak correlates with max drawdown: Spearman rho=-0.800 (correct direction — higher entropy = worse crisis) but only n=4 crises in smoke test, so underpowered. Berry phase rate rho=-0.600. Need full 17-crisis test for statistical power."
+    evidence: "GFC drawdown=-56.8% SpEnt_peak=4.2; COVID drawdown=-33.9% SpEnt_peak=3.1; 2022 drawdown=-25.4% SpEnt_peak=2.3; SVB drawdown=-9.4% SpEnt_peak=1.8."
+    confidence: 0.55
+  - knight: 4
+    role: "failure_mode_analysis"
+    workers_used: 1
+    conclusion: "n=4 is insufficient for rank correlation. Full 17-crisis test needed. Also: severity classification conflates crisis duration with depth — a fast -30% is different from slow -30%."
+    evidence: "Spearman rho at n=4 needs |rho|>0.95 for significance at p<0.05."
+    confidence: 0.80
+test_results:
+  crises_tested: ["2008_gfc", "2020_covid", "2022_rates", "2023_svb"]
+  cohens_d_per_crisis: {}
+  median_d: null
+  passes_threshold: false
+verdict:
+  keep: true
+  reason: "Promising direction (rho=-0.800) but underpowered at n=4. Full 17-crisis severity ranking needed."
+  strength: "low"
+  follow_up_questions: ["Full crisis severity ranking with all 17 crises", "Separate depth vs duration classification"]
+artifacts:
+  code_dir: "research/ideation/wild_cards/"
+  key_files: ["test_q96_q100.py"]

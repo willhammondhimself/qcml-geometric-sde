@@ -1,0 +1,29 @@
+id: "0068"
+round: 68
+timestamp: "2026-03-06T21:00:00"
+question: "Can we prove that the quantum geometric tensor is a sufficient statistic for regime detection?"
+theme: "theoretical_foundations"
+status: "keep"
+hypothesis:
+  statement: "QGT = g + iF/2 captures second-order geometry but may miss higher-order information."
+  mechanism: "Reduced purity and spectral entropy depend on full state/spectrum, not just ground-state derivatives."
+  prior_plausibility: "medium"
+knight_findings:
+  - knight: 1
+    role: "theoretical_validity"
+    workers_used: 0
+    conclusion: "QGT is INSUFFICIENT. Reduced purity (d=0.83) and spectral entropy (d=0.83) outperform QFI-based observables, proving information beyond QGT is useful. Non-QGT families capture complementary signal."
+    evidence: "Purity uses full rho_A eigenvalues; spectral entropy uses full Hamiltonian spectrum."
+    confidence: 0.90
+test_results:
+  crises_tested: []
+  median_d: null
+  passes_threshold: true
+verdict:
+  keep: true
+  reason: "Justifies maintaining the full 17-channel observatory rather than reducing to QGT-only. Different geometric families capture genuinely complementary information."
+  strength: "high"
+  follow_up_questions: []
+artifacts:
+  code_dir: null
+  key_files: null

@@ -1,0 +1,30 @@
+id: "0033"
+round: 33
+timestamp: "2026-03-06T18:30:00"
+question: "Does LSTM Autoencoder (d=0.278) improve with attention mechanisms or transformer architecture?"
+theme: "dead_signal_fix"
+status: "keep"
+hypothesis:
+  statement: "LSTM autoencoder may benefit from architectural improvements."
+  mechanism: "Larger latent dim, deeper network, or next-step prediction target."
+  prior_plausibility: "medium"
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: "Already strong on smoke test crises. latent_dim=4 gives median d=2.018. GFC d=3.697, COVID d=5.349. Rates (0.338) and SVB (0.270) weaker. Original low aggregate d=0.278 was likely averaging artifact across 17+ crises."
+    evidence: "No architectural change needed. Baseline: GFC=3.697, COVID=5.349, Rates=0.338, SVB=0.270."
+    confidence: 0.70
+test_results:
+  crises_tested: ["2008_gfc", "2020_covid", "2022_rates", "2023_svb"]
+  cohens_d_per_crisis: {2008_gfc: 3.697, 2020_covid: 5.349, 2022_rates: 0.338, 2023_svb: 0.270}
+  median_d: 2.018
+  passes_threshold: true
+verdict:
+  keep: true
+  reason: "Already extremely strong on GFC and COVID. Low aggregate d=0.278 was an averaging artifact — the detector excels at large volatility crises but struggles with slow-burn regimes (Rates, SVB). No architectural fix needed; re-evaluate across full crisis set."
+  strength: "medium"
+  follow_up_questions: ["Why does it excel on GFC/COVID but fail on Rates/SVB?", "Is the training stochasticity a problem for reproducibility?"]
+artifacts:
+  code_dir: "research/ideation/dead_signal_fix/"
+  key_files: ["test_q32_q35.py"]

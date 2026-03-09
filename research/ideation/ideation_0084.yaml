@@ -1,0 +1,29 @@
+id: "0084"
+round: 84
+timestamp: "2026-03-06T21:00:00"
+question: "Does our approach help with tail risk hedging (timing of protective puts)?"
+theme: "practical_applications"
+status: "reject"
+hypothesis:
+  statement: "Berry Phase Rate's lead time could time protective put purchases."
+  mechanism: "Buy 3-month puts when Berry z > 1.5."
+  prior_plausibility: "low"
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: "Inconclusive. Proxy hedge (short position with 1% cost when z > 1.5) does not reduce MaxDD (0.561 vs 0.552 unhedged). Hedge cost offsets protection. Signal fires 11.3% of the time. 4-day median lead is too short vs 30-90 day put tenors."
+    evidence: "Unhedged MaxDD=0.552. Timed hedge MaxDD=0.561. No improvement."
+    confidence: 0.60
+test_results:
+  crises_tested: ["2008_gfc", "2020_covid", "2022_rates", "2015_china"]
+  median_d: null
+  passes_threshold: false
+verdict:
+  keep: false
+  reason: "4-day median lead time is insufficient for put-timing strategy (puts have 30-90 day tenors). Hedge cost offsets any benefit. Would need actual options data for proper test."
+  strength: "dead"
+  follow_up_questions: ["Would longer-lead-time observables (90+ days) enable put timing?"]
+artifacts:
+  code_dir: "research/ideation/practical_apps/"
+  key_files: ["test_q76_q85.py"]

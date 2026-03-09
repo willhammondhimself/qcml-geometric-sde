@@ -1,0 +1,30 @@
+id: "0091"
+round: 91
+timestamp: "2026-03-06T21:45:00"
+question: "Can topological data analysis (persistent homology on correlation networks) match our approach?"
+theme: "competitive_landscape"
+status: "keep"
+hypothesis:
+  statement: "TDA captures network topology; our observables capture Hilbert space geometry."
+  mechanism: "Different geometric spaces — likely complementary."
+  prior_plausibility: "medium"
+knight_findings:
+  - knight: 3
+    role: "comparative_analysis"
+    workers_used: 0
+    conclusion: "TDA d=0.656 (from Q9). Below SpectralEntropy (0.830) and ReducedPurity (0.834). TDA requires multi-asset data; our approach works single-asset. Different geometric spaces (simplicial complex vs fiber bundle). Good fusion candidate."
+    evidence: "Q9 persistent homology test. TDA and QCML geometrically distinct."
+    confidence: 0.80
+test_results:
+  crises_tested: ["2008_gfc", "2020_covid", "2022_rates", "2023_svb"]
+  cohens_d_per_crisis: {tda: 0.656}
+  median_d: 0.656
+  passes_threshold: true
+verdict:
+  keep: true
+  reason: "TDA is a competitive baseline (d=0.656) but below our top observables. Complementary for fusion due to different geometric approach."
+  strength: "medium"
+  follow_up_questions: ["TDA+QCML fusion?"]
+artifacts:
+  code_dir: "research/ideation/persistent_homology/"
+  key_files: ["detector.py"]

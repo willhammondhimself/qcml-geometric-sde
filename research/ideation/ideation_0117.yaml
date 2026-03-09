@@ -1,0 +1,66 @@
+id: "0117"
+round: 117
+timestamp: "2026-03-08T08:00:00"
+question: "Does intrinsic dimension differ across asset classes, and does this affect which observables work best?"
+theme: "intrinsic_dimension"
+status: "investigate_further"
+
+hypothesis:
+  statement: "Different asset classes have different intrinsic dimensionality, requiring different observables"
+  mechanism: "Equity basket has 3-5 factors, bonds 1-2, commodities 1-2, crypto 1-2"
+  prior_plausibility: "high"
+
+knight_findings:
+  - knight: 1
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: >
+      The hypothesis is almost certainly TRUE (trivially — a bond portfolio has fewer
+      independent risk factors than a diversified equity basket). But QCML dimension
+      estimation underperforms classical AR by ~0.37 d-units (Q0101-Q0104 finding).
+      Extending an underperforming method to new asset classes does not fix the
+      fundamental embedding problem. The meaningful question is: does QCML reveal
+      dimension structure that classical PCA misses? Evidence says NO.
+    evidence: "AR=0.797 vs QCML-IPR=0.428 — QCML underperforms on dimension estimation"
+    confidence: 0.72
+    key_insight: "Dimension varies by asset class (trivially true) but QCML is not the right tool to measure it"
+
+  - knight: 2
+    role: "practical_value"
+    workers_used: 0
+    conclusion: >
+      MEDIUM-HIGH implementation effort (3-4 days). Need multi-ETF baskets per asset
+      class, asset-class-specific crisis labels, and the full 44-method comparison per
+      class. Existing infrastructure (cross_asset_generalization.py) handles 3 QCML
+      detectors; scaling to the full observatory is feasible but time-consuming.
+    evidence: "cross_asset_generalization.py exists — needs extension to dimension-specific detectors"
+    confidence: 0.70
+    key_insight: "Infrastructure exists; main work is experiment orchestration"
+
+  - knight: 3
+    role: "failure_mode_analysis"
+    workers_used: 0
+    conclusion: >
+      MEDIUM RISK. Single-asset dimension estimation (e.g., BTC-USD alone) is misleading —
+      enriched features from 1 price series create artificial dimensionality. Need baskets
+      per asset class for meaningful dimension estimation. Crypto data is limited (~2014).
+    evidence: "BTC-USD: enriched features from 1 price → artificial d ≠ true market dimension"
+    confidence: 0.72
+    key_insight: "Dimension estimation requires multi-asset baskets, not single-asset enriched features"
+
+test_results:
+  crises_tested: []
+  cohens_d_per_crisis: {}
+  median_d: null
+  passes_threshold: false
+
+verdict:
+  keep: false
+  reason: "The hypothesis is trivially true (dimension varies by asset class) but QCML is the wrong tool — it underperforms classical AR by 0.37 d-units. Worth a 1-day confirmatory experiment but should not be prioritized."
+  strength: "low"
+  follow_up_questions:
+    - "Does QCML dimension reveal cross-asset structure that PCA misses?"
+
+artifacts:
+  code_dir: "research/ideation/intrinsic_dimension/"
+  key_files: []

@@ -1,0 +1,83 @@
+id: "0103"
+round: 103
+timestamp: "2026-03-08T08:00:00"
+question: "Does the rate of change of intrinsic dimension (delta_d/delta_t) provide earlier warning than the dimension level itself?"
+theme: "intrinsic_dimension"
+status: "reject"
+
+hypothesis:
+  statement: "Time derivative of dimension detects crisis onset earlier than level because rate responds to beginning of descent while level requires sufficient absolute change"
+  mechanism: "For gradual correlation convergence (accelerating collapse d(t) ~ A*(t-t_onset)^alpha), the derivative is nonzero immediately at onset while level needs finite drop"
+  prior_plausibility: "medium"
+
+knight_findings:
+  - knight: 1
+    role: "theoretical_validity"
+    workers_used: 0
+    conclusion: >
+      Theoretically sound for gradual transitions but FATALLY undermined by discreteness.
+      Candelori dimension is integer-valued — its derivative is a step function (zero
+      everywhere, ±1 at transitions). Must use continuous proxy (IPR, spectral entropy),
+      but then this becomes 'rate of IPR' which is a less novel contribution. For smooth
+      transitions, rate leads level by ~1 transition timescale. For sudden crises, no benefit.
+    evidence: "Signal detection theory: rate-of-change leads level by transition timescale"
+    confidence: 0.58
+    key_insight: "Fundamental tension: Candelori dimension is discrete, so derivative is ill-defined. Must use continuous proxy, reducing novelty."
+
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 1
+    conclusion: >
+      FAILS threshold. DimensionRateDetector (|dd_eff/dt|) achieves median d = 0.269 across
+      4 smoke crises. Strong only on COVID (0.803, sharp sudden collapse) but weak on
+      slow crises (2022 rates: 0.153, SVB: 0.182). Differentiation amplifies noise and
+      destroys the sustained-crisis signal that level detectors capture.
+    evidence: "smoke_results: {2008_gfc: 0.356, 2020_covid: 0.803, 2022_rates: 0.153, 2023_svb: 0.182}"
+    confidence: 0.80
+    key_insight: "Derivative works only for sharp crises (COVID), fails for gradual ones — exactly the opposite of the theoretical prediction"
+
+  - knight: 3
+    role: "comparative_analysis"
+    workers_used: 0
+    conclusion: >
+      Low novelty. SpectralFlowDetector (d/dt eigenvalues, d=0.627) already exists and works.
+      CurvatureRateDetector (d/dt curvature, d=0.083) shows the failure pattern. 2 out of
+      3 existing rate-of-change detectors are near-dead. Differentiation of scalar summaries
+      kills the signal. Literature on d(AR)/dt confirms: AR rates are weaker than AR levels.
+    evidence: "SpectralFlow=0.627, CurvatureRate=0.083, BerryVelocityCoupling=0.013"
+    confidence: 0.85
+    key_insight: "The pipeline's empirical pattern is clear: differentiating QCML scalar observables kills the signal (2/3 rate detectors are dead)"
+
+  - knight: 4
+    role: "failure_mode_analysis"
+    workers_used: 0
+    conclusion: >
+      HIGH RISK. Noise amplification by ~1/dt, discrete-valued dimension makes derivative
+      meaningless, smoothing destroys lead time (fundamental tradeoff), no clear null
+      distribution for z-scores of noisy derivatives, calendar effects (weekends/holidays)
+      create systematic spikes, survivorship bias in lead time evaluation.
+    evidence: "Kill condition: if false positive rate > true positive rate (precision < 0.5)"
+    confidence: 0.90
+    key_insight: "Smoothing-lead time tradeoff is fundamental and unresolvable — more smoothing = less noise = less lead time"
+
+test_results:
+  crises_tested: ["2008_gfc", "2020_covid", "2022_rates", "2023_svb"]
+  cohens_d_per_crisis:
+    2008_gfc: 0.356
+    2020_covid: 0.803
+    2022_rates: 0.153
+    2023_svb: 0.182
+  median_d: 0.269
+  max_d: 0.803
+  passes_threshold: false
+
+verdict:
+  keep: false
+  reason: "Fails d>0.3 threshold (median 0.269). Theoretical promise undermined by (1) discrete dimension's ill-defined derivative, (2) empirical failure on slow crises, (3) noise amplification, (4) existing rate detectors in pipeline mostly dead. The COVID signal (d=0.803) suggests some value for fusion with level detectors but insufficient standalone."
+  strength: "low"
+  follow_up_questions:
+    - "Could a combined level+rate fusion improve detection over level alone?"
+
+artifacts:
+  code_dir: "research/ideation/intrinsic_dimension/"
+  key_files: ["detectors.py", "smoke_test_q0101_q0104.py", "smoke_results_q0101_q0104.json"]

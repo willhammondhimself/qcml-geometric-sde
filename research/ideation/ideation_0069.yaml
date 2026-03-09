@@ -1,0 +1,29 @@
+id: "0069"
+round: 69
+timestamp: "2026-03-06T21:00:00"
+question: "Does the gauge freedom in our embedding affect computed observables? Are they gauge-invariant?"
+theme: "theoretical_foundations"
+status: "keep"
+hypothesis:
+  statement: "Berry curvature and QFI metric are gauge-invariant by construction."
+  mechanism: "Plaquette formula for F_ab and the subtraction in g_ab both eliminate U(1) phase dependence."
+  prior_plausibility: "high"
+knight_findings:
+  - knight: 1
+    role: "theoretical_validity"
+    workers_used: 0
+    conclusion: "All metric/curvature observables are gauge-invariant. Open-path phase quantities (geometric phase rate) have subtle gauge dependence but z-scoring removes phase offsets. Fidelity |<psi_t|psi_{t-1}>|^2 is manifestly gauge-invariant."
+    evidence: "Standard differential geometry — Wilson loop is gauge-invariant by construction."
+    confidence: 0.95
+test_results:
+  crises_tested: []
+  median_d: null
+  passes_threshold: true
+verdict:
+  keep: true
+  reason: "Gauge invariance is confirmed for all key observables. The plaquette formula choice is not just numerical convenience — it guarantees gauge invariance."
+  strength: "high"
+  follow_up_questions: []
+artifacts:
+  code_dir: null
+  key_files: null

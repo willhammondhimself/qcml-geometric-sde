@@ -1,0 +1,87 @@
+id: "0104"
+round: 104
+timestamp: "2026-03-08T08:00:00"
+question: "Can we build an effective dimension time series from rolling-window quantum metric eigenvalue analysis that outperforms IPR (d=0.793)?"
+theme: "intrinsic_dimension"
+status: "keep"
+
+hypothesis:
+  statement: "Participation ratio PR = (sum lambda)^2 / sum(lambda^2) uses more spectral information than IPR = lambda_max/sum(lambda) and should outperform"
+  mechanism: "PR counts effective number of contributing eigenvalues (1 to n) vs IPR which only measures top eigenvalue fraction"
+  prior_plausibility: "medium-high"
+
+knight_findings:
+  - knight: 1
+    role: "theoretical_validity"
+    workers_used: 0
+    conclusion: >
+      Strong theoretical analysis of the design space. Multiple candidates: PR (L1^2/L2^2),
+      spectral entropy (Shannon on normalized eigenvalues), Soft Candelori (sigmoid-weighted
+      gap sum), Renyi dimensions. Spectral entropy already achieves d=0.830, VALIDATING the
+      hypothesis that richer summaries outperform IPR. The Soft Candelori Dimension
+      d_soft = sum sigma(log(lambda_k/lambda_{k+1})/T) is the highest-value novel construction.
+    evidence: "SpectralEntropy d=0.830 already proves richer summaries > IPR d=0.793"
+    confidence: 0.68
+    key_insight: "Spectral entropy already validates the premise. The marginal gain from even richer measures may be small. Parameter-free PR is safest against overfitting."
+
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 1
+    conclusion: >
+      EffectiveDimensionDetector (PR) achieves median d = 0.422 across 4 smoke crises.
+      Does NOT outperform IPR benchmark (0.793). Strong on SVB (0.986) and GFC (0.657)
+      but near-zero on COVID (0.026). PR's sensitivity to all eigenvalues including noisy
+      small ones may hurt robustness compared to IPR's focus on the dominant eigenvalue.
+    evidence: "smoke_results: {2008_gfc: 0.657, 2020_covid: 0.026, 2022_rates: 0.187, 2023_svb: 0.986}"
+    confidence: 0.80
+    key_insight: "PR does NOT beat IPR empirically despite being theoretically more informative — noisy small eigenvalues corrupt the PR estimate"
+
+  - knight: 3
+    role: "comparative_analysis"
+    workers_used: 0
+    conclusion: >
+      Low novelty. PR is a one-line code change from existing DimensionalityCollapseDetector.
+      The project already has EffectiveStateDimensionDetector (PR on state overlaps, d=0.358).
+      Absorption Ratio (d=0.797) IS PR on correlation matrix — it dominates QCML variants.
+      Spectral Entropy (d=0.530) uses full distribution and outperforms. The question is
+      answered: richer summaries help, but the QCML embedding is the bottleneck, not the
+      scoring function.
+    evidence: "AR=0.797, SpEnt=0.530, QCML-IPR=0.428 — gap is in embedding, not scoring"
+    confidence: 0.90
+    key_insight: "The bottleneck is the QCML embedding pipeline, not the choice of spectral summary. Fix the embedding to improve all dimension detectors."
+
+  - knight: 4
+    role: "failure_mode_analysis"
+    workers_used: 0
+    conclusion: >
+      MEDIUM RISK. PR and IPR are nearly monotonically related for peaked spectra (which is
+      the crisis regime). With 8 eigenvalues, PR ranges from 1-8 (too coarse). Both PR and
+      IPR are Renyi entropies of the same distribution — informationally equivalent up to
+      nonlinear rescaling. Expected Pearson r > 0.85 between PR and IPR z-scores.
+    evidence: "Kill condition: if Pearson r between PR and IPR z-scores > 0.85, redundant"
+    confidence: 0.88
+    key_insight: "PR and IPR are different Renyi entropies of the same distribution — for peaked spectra with 8 eigenvalues, they are essentially equivalent"
+
+test_results:
+  crises_tested: ["2008_gfc", "2020_covid", "2022_rates", "2023_svb"]
+  cohens_d_per_crisis:
+    2008_gfc: 0.657
+    2020_covid: 0.026
+    2022_rates: 0.187
+    2023_svb: 0.986
+  median_d: 0.422
+  max_d: 0.986
+  passes_threshold: true
+
+verdict:
+  keep: true
+  reason: "Passes threshold (median 0.422) but fails to outperform IPR (0.793). Theoretically sound but empirically underwhelming. PR's sensitivity to noisy small eigenvalues hurts it vs IPR. The real insight: the QCML embedding is the bottleneck, not the scoring function."
+  strength: "low"
+  follow_up_questions:
+    - "Would the Soft Candelori Dimension outperform both PR and IPR?"
+    - "Does fixing the embedding (e.g., skip sphere normalization) improve all dimension detectors?"
+    - "What is Pearson r between PR and IPR z-scores?"
+
+artifacts:
+  code_dir: "research/ideation/intrinsic_dimension/"
+  key_files: ["detectors.py", "smoke_test_q0101_q0104.py", "smoke_results_q0101_q0104.json"]

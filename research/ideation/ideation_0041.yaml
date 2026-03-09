@@ -1,0 +1,30 @@
+id: "0041"
+round: 41
+timestamp: "2026-03-06T19:15:00"
+question: "Does stacking (observable outputs as features for gradient boosting) work without overfitting?"
+theme: "fusion_combination"
+status: "reject"
+hypothesis:
+  statement: "LightGBM stacking of observable z-scores can learn crisis patterns."
+  mechanism: "Train gradient boosting to predict binary crisis labels from observable features."
+  prior_plausibility: "low"
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: "OVERFITS SEVERELY. In-sample d=3.6-10.3 vs OOS d=1.2-3.0. Overfit ratios 0.81-0.88 in early folds. OOS d=1.261 looks good but equals uniform ensemble — stacker adds no marginal signal. With 4 crisis events, cannot distinguish stacker skill from observable skill."
+    evidence: "Fold 1: in=10.26, out=1.261. Fold 2: in=6.49, out=1.255. Fold 3: in=3.61, out=3.019."
+    confidence: 0.90
+test_results:
+  crises_tested: ["2008_gfc", "2020_covid", "2022_rates", "2023_svb"]
+  cohens_d_per_crisis: {2008_gfc: 0.531, 2020_covid: 1.261, 2022_rates: 1.255, 2023_svb: 3.019}
+  median_d: 1.258
+  passes_threshold: true
+verdict:
+  keep: false
+  reason: "Confirmed: stacking does not work reliably with 4 crisis events. Severe overfitting (ratios 0.81-0.88). OOS d matches uniform ensemble exactly — no marginal value. Would need 15+ crisis training points."
+  strength: "dead"
+  follow_up_questions: []
+artifacts:
+  code_dir: "research/ideation/fusion_methods/"
+  key_files: ["test_q40_q42.py"]

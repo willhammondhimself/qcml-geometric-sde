@@ -1,0 +1,30 @@
+id: "0036"
+round: 36
+timestamp: "2026-03-06T19:15:00"
+question: "Can attention mechanisms learn which observables matter for which market regimes?"
+theme: "fusion_combination"
+status: "reject"
+hypothesis:
+  statement: "Self-attention (softmax over |z_i|) can dynamically weight observables."
+  mechanism: "Attention concentrates weight on whichever observable is loudest at each timestep."
+  prior_plausibility: "medium"
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: "Attention fusion (d=0.762) UNDERPERFORMS uniform averaging (d=0.844). Softmax over |z| is distorted by SpectralGap's persistent positive bias, which attracts attention during non-crisis periods."
+    evidence: "Attention: GFC=1.076, COVID=0.562, Rates=0.321, SVB=0.962. Uniform: GFC=1.470, COVID=0.535, Rates=0.601, SVB=1.088."
+    confidence: 0.80
+test_results:
+  crises_tested: ["2008_gfc", "2020_covid", "2022_rates", "2023_svb"]
+  cohens_d_per_crisis: {2008_gfc: 1.076, 2020_covid: 0.562, 2022_rates: 0.321, 2023_svb: 0.962}
+  median_d: 0.762
+  passes_threshold: true
+verdict:
+  keep: false
+  reason: "Passes threshold but is dominated by uniform averaging. Self-attention without regime conditioning is counterproductive. Regime-Adaptive (Paper 2) already does this more principally."
+  strength: "low"
+  follow_up_questions: []
+artifacts:
+  code_dir: "research/ideation/fusion_methods/"
+  key_files: ["test_q36_q39.py"]

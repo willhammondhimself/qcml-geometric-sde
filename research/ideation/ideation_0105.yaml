@@ -1,0 +1,81 @@
+id: "0105"
+round: 105
+timestamp: "2026-03-08T08:00:00"
+question: "Do reconstruction-loss-trained operators produce a cleaner spectral gap than random/PCA operators?"
+theme: "intrinsic_dimension"
+status: "reject"
+
+hypothesis:
+  statement: "Reconstruction-loss operators (Candelori et al. loss) produce larger and more stable spectral gaps than random operators"
+  mechanism: "Reconstruction loss encourages smooth ground state manifold, which should produce well-conditioned H(x) with clean gap"
+  prior_plausibility: "low"
+
+knight_findings:
+  - knight: 1
+    role: "empirical_test"
+    workers_used: 1
+    conclusion: >
+      OPTIMIZER FAILURE. Reconstruction-trained operators (100 steps, w=0.15) produce
+      IDENTICAL detection results to random operators (d differences < 0.001 across all
+      4 crises). Reconstruction loss barely moved: 1.219e-4 -> 1.219e-4. The coordinate-
+      descent optimizer (10 random params/step) is too weak for the 64+ dimensional
+      parameter space. The question is moot without a functional optimizer.
+    evidence: "Q0107 smoke test: random d=1.290 vs recon d=1.290 on GFC (identical to 3 decimal places)"
+    confidence: 0.80
+    key_insight: "The reconstruction-loss optimizer is effectively a no-op — it fails to modify operators from random initialization"
+
+  - knight: 2
+    role: "comparative_analysis"
+    workers_used: 0
+    conclusion: >
+      Low novelty. Random operators already perform well (Reduced Purity d=0.835). The
+      reconstruction loss does not target spectral gap structure directly. Even if operators
+      were modified, the gap is a derived property that may not improve. PCA-inspired
+      operators cause Kramers degeneracy (zero gap) on qubit systems, so random is the
+      safe default.
+    evidence: "Random operators: Reduced Purity d=0.835, E_0(x) d=1.411 — no need for better operators"
+    confidence: 0.85
+    key_insight: "The reconstruction loss rewards small inter-point distances, not large spectral gaps — wrong objective"
+
+  - knight: 3
+    role: "practical_value"
+    workers_used: 0
+    conclusion: >
+      No practical value until the optimizer is fixed. The current implementation
+      (learn_operators_reconstruction with coordinate descent) needs replacement with
+      Adam or L-BFGS to produce meaningful operator modifications. Even then, the
+      theoretical connection between reconstruction quality and spectral gap is weak.
+    evidence: "Loss delta < 1e-8 over 100 steps — optimizer is non-functional"
+    confidence: 0.75
+    key_insight: "Fix the optimizer before revisiting this question"
+
+  - knight: 4
+    role: "failure_mode_analysis"
+    workers_used: 0
+    conclusion: >
+      HIGH RISK. The optimizer uses 10 random coordinate perturbations per step over a
+      64-dimensional space (8x8 Hermitian matrices). This is far too few for effective
+      optimization. The loss landscape may be nearly flat in the gap direction. Even with
+      a working optimizer, the spectral gap depends on the operator-data interaction,
+      not the loss function.
+    evidence: "10 random coordinates / 64 dimensions = 15% coverage per step"
+    confidence: 0.80
+    key_insight: "Coordinate descent with 10 random parameters is insufficient for 64-dimensional optimization"
+
+test_results:
+  crises_tested: []
+  cohens_d_per_crisis: {}
+  median_d: null
+  passes_threshold: false
+
+verdict:
+  keep: false
+  reason: "Optimizer failure renders the question unanswerable. Reconstruction-trained operators are indistinguishable from random operators (loss delta < 1e-8 over 100 steps). Even with a working optimizer, the reconstruction loss does not target spectral gap structure."
+  strength: "low"
+  follow_up_questions:
+    - "Would Adam/L-BFGS optimizer produce meaningfully different operators?"
+    - "Does directly maximizing spectral gap (rather than reconstruction loss) improve detection?"
+
+artifacts:
+  code_dir: "research/ideation/intrinsic_dimension/"
+  key_files: ["energy_detector.py", "smoke_test_q0107.py", "smoke_results_q0107.json"]

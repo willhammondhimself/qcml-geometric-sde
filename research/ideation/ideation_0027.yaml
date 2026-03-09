@@ -1,0 +1,30 @@
+id: "0027"
+round: 27
+timestamp: "2026-03-06T18:30:00"
+question: "Does Berry Velocity Coupling (d=0.012) improve with different lag structures or window sizes?"
+theme: "dead_signal_fix"
+status: "reject"
+hypothesis:
+  statement: "Berry velocity coupling ||iota_v F||_g may need longer timescales to see signal."
+  mechanism: "Try different velocity_lag (1,5,10,20) and window sizes (30,60,120)."
+  prior_plausibility: "low"
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: "REJECT. No lag structure or window size produces median d > 0.3. All variants remain at d~0.012-0.013. The coupling magnitude does not differ between crisis and normal regimes at any timescale."
+    evidence: "Tested 12 combinations of lag={1,5,10,20} x window={30,60,120}. Best: d=0.013."
+    confidence: 0.95
+test_results:
+  crises_tested: ["2008_gfc", "2020_covid", "2022_rates", "2023_svb"]
+  cohens_d_per_crisis: {2008_gfc: 0.013, 2020_covid: 0.012, 2022_rates: 0.013, 2023_svb: 0.013}
+  median_d: 0.013
+  passes_threshold: false
+verdict:
+  keep: false
+  reason: "Fundamentally dead signal. The interior product iota_v F carries no consistent crisis information regardless of velocity lag or rolling window. The observable is mathematically well-defined but empirically uninformative."
+  strength: "dead"
+  follow_up_questions: []
+artifacts:
+  code_dir: null
+  key_files: null

@@ -1,0 +1,71 @@
+id: "0114"
+round: 114
+timestamp: "2026-03-08T08:00:00"
+question: "Is there a rigorous connection between IPR collapse and the Candelori spectral gap?"
+theme: "intrinsic_dimension"
+status: "keep"
+
+hypothesis:
+  statement: "IPR and Candelori's spectral gap dimension measure the same underlying phenomenon through different mathematical lenses"
+  mechanism: "Both respond to eigenvalue concentration; IPR via L_infinity/L_1 ratio, Candelori via argmax of consecutive ratios"
+  prior_plausibility: "high"
+
+knight_findings:
+  - knight: 1
+    role: "theoretical_validity"
+    workers_used: 0
+    conclusion: >
+      RIGOROUS RESULT. For idealized two-group spectra (d equal large eigenvalues,
+      p-d equal small eigenvalues), d_gap = 1/IPR exactly. Both PR = (sum lambda)^2 /
+      sum(lambda^2) and IPR = lambda_max / sum(lambda) give equivalent dimension
+      estimates in this clean limit. IPR is a Renyi-infinity entropy, PR is Renyi-2,
+      spectral entropy d_eff is Shannon/Renyi-1 — all are different projections of
+      the same eigenvalue distribution.
+    evidence: "For sharp spectra: d_gap = PR = 1/IPR (exact equivalence)"
+    confidence: 0.80
+    key_insight: "Same phenomenon, different Renyi orders: IPR (infinity), PR (2), spectral entropy (1)"
+
+  - knight: 2
+    role: "comparative_analysis"
+    workers_used: 0
+    conclusion: >
+      In practice they DIVERGE because: (1) IPR is continuous, d_gap is discrete;
+      (2) IPR depends on full spectrum, d_gap depends on consecutive ratios;
+      (3) hard d_gap gave constant 1 while IPR varied (Q0101 empirical finding);
+      (4) PR (d=0.422) vs IPR (d=0.428) are similar but NOT identical.
+      The practical implication: IPR is better for continuous monitoring, d_gap for
+      classification.
+    evidence: "Hard d_gap = constant 1, IPR varies continuously — operationally different"
+    confidence: 0.75
+    key_insight: "Equivalent in clean limit, divergent in practice — IPR better for monitoring, d_gap for classification"
+
+  - knight: 3
+    role: "extensions"
+    workers_used: 0
+    conclusion: >
+      The paper already makes this connection correctly (Section 3.5): "IPR is the
+      regime-detection analog of Candelori et al.'s central result." The theoretical
+      equivalence in the clean limit is a useful clarification for the paper's discussion
+      section. The Renyi entropy unification (IPR = Renyi-inf, PR = Renyi-2,
+      SpectralEntropy = Renyi-1) could be a nice theoretical note.
+    evidence: "Paper Section 3.5 already states the connection qualitatively"
+    confidence: 0.80
+    key_insight: "The Renyi entropy unification is a clean theoretical contribution for the paper"
+
+test_results:
+  crises_tested: []
+  cohens_d_per_crisis: {}
+  median_d: null
+  passes_threshold: false
+
+verdict:
+  keep: true
+  reason: "Rigorous mathematical connection established: IPR = Renyi-inf entropy, PR = Renyi-2, SpectralEntropy = Renyi-1 of the same eigenvalue distribution. Equivalent for sharp spectra (d_gap = 1/IPR), divergent for noisy spectra. Useful theoretical note for the paper."
+  strength: "medium"
+  follow_up_questions:
+    - "Does the Renyi order affect detection performance monotonically?"
+    - "Is there an optimal Renyi order for regime detection?"
+
+artifacts:
+  code_dir: "research/ideation/intrinsic_dimension/"
+  key_files: []

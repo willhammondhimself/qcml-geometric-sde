@@ -1,0 +1,29 @@
+id: "0073"
+round: 73
+timestamp: "2026-03-06T21:00:00"
+question: "Is there a genuine phase transition in the geometric observables at crisis onset?"
+theme: "theoretical_foundations"
+status: "keep"
+hypothesis:
+  statement: "Crisis is a crossover, not a true phase transition."
+  mechanism: "Spectral gap Delta never closes (r < 0.1), so no non-analyticity. But near-critical behavior produces elevated geometric scores."
+  prior_plausibility: "medium"
+knight_findings:
+  - knight: 1
+    role: "theoretical_validity"
+    workers_used: 0
+    conclusion: "NOT a phase transition — the gap never closes. Correctly characterized as a crossover: a region of parameter space with smaller Delta and larger curvature. This is honest framing that avoids overclaiming universality."
+    evidence: "r < 0.1 implies Delta stays nonzero. No order parameter discontinuity observed."
+    confidence: 0.85
+test_results:
+  crises_tested: []
+  median_d: null
+  passes_threshold: true
+verdict:
+  keep: true
+  reason: "Important distinction: crossover, not phase transition. Prevents overclaiming while still providing rigorous characterization of near-degenerate spectral behavior."
+  strength: "medium"
+  follow_up_questions: ["Can we define a pseudo-critical exponent from the Delta-d relationship?"]
+artifacts:
+  code_dir: null
+  key_files: null

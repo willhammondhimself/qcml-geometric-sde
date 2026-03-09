@@ -1,0 +1,87 @@
+id: "0102"
+round: 102
+timestamp: "2026-03-08T08:00:00"
+question: "Can the spectral gap ratio (largest normal-direction eigenvalue / smallest tangent-direction eigenvalue) serve as a continuous crisis severity measure?"
+theme: "intrinsic_dimension"
+status: "keep"
+
+hypothesis:
+  statement: "The spectral gap ratio at fixed reference dimension d_normal provides continuous interpolation between dimension states, measuring progressive factor collapse"
+  mechanism: "Gap closure at fixed d reflects weakest surviving risk factor being absorbed into noise — higher ratio = more factor consolidation = more severe crisis"
+  prior_plausibility: "medium-high"
+
+knight_findings:
+  - knight: 1
+    role: "theoretical_validity"
+    workers_used: 0
+    conclusion: >
+      Sound mathematical framework. SGR at fixed d_normal provides continuous interpolation
+      between discrete dimension states. Measures 'how much factor structure has collapsed.'
+      Critical design: use FIXED d (from normal training) not adaptive d. Log-ratio
+      log(lambda_d/lambda_{d+1}) is more numerically stable. Connects to Candelori et al.
+      dimension estimation repurposed as continuous observable.
+    evidence: "Candelori spectral gap theory, RMT Marchenko-Pastur edge as natural scale"
+    confidence: 0.71
+    key_insight: "Use log-ratio at fixed reference dimension for numerical stability and monotonic severity mapping"
+
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 1
+    conclusion: >
+      STANDOUT RESULT. SpectralGapRatioDetector achieves median d = 1.175 across 4 smoke
+      crises, far exceeding IPR benchmark (0.793). Exceptional on 2022 rates (d=3.97) and
+      SVB (d=1.59). Even the weakest crisis (GFC, d=0.175) passes threshold. The gap
+      sharpness is highly sensitive to sustained slow-burn crises.
+    evidence: "smoke_results: {2008_gfc: 0.175, 2020_covid: 0.758, 2022_rates: 3.966, 2023_svb: 1.593}"
+    confidence: 0.85
+    key_insight: "Gap ratio is exceptionally sensitive to 2022 rates crisis — the slow, sustained regime shift creates maximum gap disruption"
+
+  - knight: 3
+    role: "comparative_analysis"
+    workers_used: 0
+    conclusion: >
+      Medium novelty. SpectralGap detector (inverse gap, d=0.653) and MetricCondition
+      (lambda_max/lambda_min, d=0.468) exist. Gap RATIO is genuinely different — captures
+      spectral reorganization vs. just proximity to degeneracy. RMT level spacing statistics
+      (Poisson vs GOE) connection is novel and publishable if confirmed empirically.
+    evidence: "SpectralGap=0.653, MetricCondition=0.468 — gap ratio outperforms both"
+    confidence: 0.65
+    key_insight: "RMT level spacing angle is genuinely novel in QCML context. Test Poisson-to-GOE transition during crises."
+
+  - knight: 4
+    role: "failure_mode_analysis"
+    workers_used: 0
+    conclusion: >
+      HIGH RISK in theory but empirical results are strong. Key concerns: (1) gap location
+      instability (which pair has largest ratio changes day-to-day), (2) ratio blows up
+      near zero eigenvalues, (3) anisotropy ≠ severity (isotropic crash gives LOW ratio
+      but HIGH severity). The 3.97 d-value on 2022 rates is suspiciously large — may
+      indicate overfitting or a numerical artifact.
+    evidence: "d=3.97 on single crisis is 5x the typical effect size — warrants investigation"
+    confidence: 0.80
+    key_insight: "The extreme d=3.97 on 2022 rates needs verification — could be a genuine signal of sustained gap disruption OR a numerical artifact from near-zero denominator"
+
+test_results:
+  crises_tested: ["2008_gfc", "2020_covid", "2022_rates", "2023_svb"]
+  cohens_d_per_crisis:
+    2008_gfc: 0.175
+    2020_covid: 0.758
+    2022_rates: 3.966
+    2023_svb: 1.593
+  median_d: 1.175
+  max_d: 3.966
+  passes_threshold: true
+
+verdict:
+  keep: true
+  reason: "Strong empirical signal (median d=1.175, #1 in this batch). Substantially beats IPR benchmark. Novel RMT connection. BUT: extreme d=3.97 on rates needs verification, and GFC signal is weak (d=0.175). Promote for full 17-crisis evaluation."
+  strength: "high"
+  follow_up_questions:
+    - "Is d=3.97 on 2022 rates genuine or a numerical artifact?"
+    - "Does level spacing ratio <r> show Poisson-to-GOE transition during crises?"
+    - "How does gap ratio perform on the 4 holdout crises?"
+    - "Correlation with existing SpectralGap detector?"
+
+artifacts:
+  code_dir: "research/ideation/intrinsic_dimension/"
+  key_files: ["detectors.py", "smoke_test_q0101_q0104.py", "smoke_results_q0101_q0104.json"]

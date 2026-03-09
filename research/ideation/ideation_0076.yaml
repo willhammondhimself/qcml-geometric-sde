@@ -1,0 +1,29 @@
+id: "0076"
+round: 76
+timestamp: "2026-03-06T21:00:00"
+question: "Can our best observables improve a simple long/short strategy's Sharpe ratio?"
+theme: "practical_applications"
+status: "keep"
+hypothesis:
+  statement: "Berry Phase Rate z-score overlay can improve risk-adjusted returns."
+  mechanism: "Reduce exposure when z > 1.5, increasing Sharpe by avoiding drawdowns."
+  prior_plausibility: "medium"
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: "BerryPhaseRate gives +0.071 Sharpe improvement (0.595 vs 0.524 B&H). SpectralEntropy and ReducedPurity provide near-zero improvement. Rank fusion slightly negative."
+    evidence: "Berry: 0.595. SpEnt: 0.531. RP: 0.525. B&H: 0.524."
+    confidence: 0.75
+test_results:
+  crises_tested: ["2008_gfc", "2020_covid", "2022_rates", "2015_china"]
+  median_d: null
+  passes_threshold: true
+verdict:
+  keep: true
+  reason: "BerryPhaseRate is the only observable providing meaningful Sharpe improvement. Others are noise around B&H. Modest but real economic value."
+  strength: "low"
+  follow_up_questions: ["Threshold optimization for Sharpe?", "Transaction cost impact?"]
+artifacts:
+  code_dir: "research/ideation/practical_apps/"
+  key_files: ["test_q76_q85.py"]

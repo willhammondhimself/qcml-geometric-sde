@@ -1,0 +1,29 @@
+id: "0086"
+round: 86
+timestamp: "2026-03-06T21:45:00"
+question: "How do our observables compare to transformer-based regime detectors?"
+theme: "competitive_landscape"
+status: "keep"
+hypothesis:
+  statement: "Transformers are SOTA for sequence modeling but face data starvation for regime detection."
+  mechanism: "Supervised fine-tuning needs 1000+ labeled examples; we have 17 crisis episodes."
+  prior_plausibility: "medium"
+knight_findings:
+  - knight: 3
+    role: "comparative_analysis"
+    workers_used: 0
+    conclusion: "Our approach is superior for current problem setting. Three structural advantages: (1) no labeled data needed, (2) overfitting confirmed in Q41 for similar architectures, (3) strictly causal by expanding-window design. Self-supervised transformers (TimesFM, Chronos) are a future competitive threat."
+    evidence: "Q41 showed LSTM overfit ratio 0.81-0.88. Same failure mode applies to transformers."
+    confidence: 0.85
+test_results:
+  crises_tested: []
+  median_d: null
+  passes_threshold: true
+verdict:
+  keep: true
+  reason: "Our unsupervised geometric approach is structurally advantaged over transformers for low-data regime detection. List self-supervised pretrained models as future work."
+  strength: "medium"
+  follow_up_questions: ["Compare against TimesFM/Chronos when available"]
+artifacts:
+  code_dir: null
+  key_files: null

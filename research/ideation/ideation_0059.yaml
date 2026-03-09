@@ -1,0 +1,30 @@
+id: "0059"
+round: 59
+timestamp: "2026-03-06T20:15:00"
+question: "Does adding sector ETFs (XLF, XLK, XLE) as inputs improve detection via richer geometry?"
+theme: "cross_asset"
+status: "keep"
+hypothesis:
+  statement: "Multi-sector input provides richer cross-sectional geometry."
+  mechanism: "Sector rotation signals in XLF/XLK/XLE capture crisis dynamics missed by SPY alone."
+  prior_plausibility: "medium"
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: "Detector-dependent. SpectralEntropy improves (+0.232 mean d) with multi-sector input. BerryPhaseRate degrades (-0.519) — multi-asset feature noise overwhelms curvature signal at current PCA dimensionality."
+    evidence: "SpEnt: multi=1.361 vs single=1.129 (+0.232). Berry: multi=0.158 vs single=0.677 (-0.519)."
+    confidence: 0.75
+test_results:
+  crises_tested: ["2008_gfc", "2020_covid", "2022_rates", "2015_china"]
+  cohens_d_per_crisis: {spectral_entropy_multi: 1.361, berry_multi: 0.158}
+  median_d: 0.760
+  passes_threshold: true
+verdict:
+  keep: true
+  reason: "SpectralEntropy benefits from richer geometry (+0.232). BerryPhaseRate needs single-asset or higher PCA dims. Suggests fusion strategy: multi-asset SpectralEntropy + single-asset BerryPhaseRate."
+  strength: "medium"
+  follow_up_questions: ["Does higher n_pca_components recover BerryPhaseRate in multi-asset?"]
+artifacts:
+  code_dir: "research/ideation/cross_asset/"
+  key_files: ["test_q56_q60.py"]

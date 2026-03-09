@@ -1,0 +1,29 @@
+id: "0094"
+round: 94
+timestamp: "2026-03-06T21:45:00"
+question: "How do we compare to variational autoencoders for regime detection?"
+theme: "competitive_landscape"
+status: "reject"
+hypothesis:
+  statement: "VAEs learn latent representations but face same overfitting as LSTM (Q41)."
+  mechanism: "Reconstruction error or KL-divergence as anomaly score."
+  prior_plausibility: "low"
+knight_findings:
+  - knight: 3
+    role: "comparative_analysis"
+    workers_used: 0
+    conclusion: "Same failure mode as Q41 LSTM autoencoder. Data starvation (17 crises), no theoretical grounding, computationally more expensive. Empirical test redundant — falls into same architecture category."
+    evidence: "Q41: LSTM overfit ratio 0.81-0.88. VAE has same capacity/training constraints."
+    confidence: 0.85
+test_results:
+  crises_tested: []
+  median_d: null
+  passes_threshold: false
+verdict:
+  keep: false
+  reason: "Same failure mode as LSTM autoencoder (Q41). Data starvation makes deep generative models unreliable for this problem size."
+  strength: "dead"
+  follow_up_questions: []
+artifacts:
+  code_dir: null
+  key_files: null

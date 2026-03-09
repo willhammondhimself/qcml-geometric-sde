@@ -1,0 +1,30 @@
+id: "0055"
+round: 55
+timestamp: "2026-03-06T19:45:00"
+question: "Can calibration curves (predicted probability vs. actual crisis frequency) reveal which observables are best-calibrated?"
+theme: "statistical_evaluation"
+status: "keep"
+hypothesis:
+  statement: "ECE reveals which observables have meaningful probability calibration vs just high d."
+  mechanism: "Bin z-scores into deciles, compare fraction of crisis days per bin to overall rate."
+  prior_plausibility: "medium"
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: "BerryPhaseRate is best calibrated (ECE=0.157, monotone). ECE ranking is NEGATIVELY correlated with d ranking (rho=-0.600). SpectralEntropy and DimensionalityCollapse are ANTI-calibrated (negative Spearman rho with crisis frequency)."
+    evidence: "Berry ECE=0.157. SpGap=0.236. RP=0.441. SpEnt=0.531. DimC=0.616."
+    confidence: 0.85
+test_results:
+  crises_tested: ["2008_gfc", "2020_covid", "2022_rates", "2023_svb"]
+  cohens_d_per_crisis: {}
+  median_d: null
+  passes_threshold: true
+verdict:
+  keep: true
+  reason: "High-d detectors may be anti-calibrated — they stay elevated during sustained regime shifts, not just acute crises. BerryPhaseRate uniquely provides good calibration + good d. Should report ECE alongside d in the paper."
+  strength: "high"
+  follow_up_questions: ["Does recalibration (Platt scaling) fix anti-calibrated detectors?"]
+artifacts:
+  code_dir: "research/ideation/statistical_eval/"
+  key_files: ["test_q51_q55.py"]

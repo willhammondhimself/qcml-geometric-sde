@@ -1,0 +1,66 @@
+id: "0111"
+round: 111
+timestamp: "2026-03-08T08:00:00"
+question: "Does QCML dimension estimation correctly identify the number of independent risk factors in equity markets?"
+theme: "intrinsic_dimension"
+status: "investigate_further"
+
+hypothesis:
+  statement: "Intrinsic dimension from quantum metric eigenvalues tracks the number of independent risk factors"
+  mechanism: "Large eigenvalues = active factor directions; small eigenvalues = noise; gap separates signal from noise"
+  prior_plausibility: "medium"
+
+knight_findings:
+  - knight: 1
+    role: "theoretical_validity"
+    workers_used: 0
+    conclusion: >
+      Candelori et al. proves the theory for LEARNED operators, but our pipeline uses
+      random/fixed operators. With random operators, rank(g) is generically full —
+      no rank deficiency, so no clean factor count. The metric eigenvalues depend on
+      operator choice, not solely on data structure. With 2 assets (SPY, DIA), the
+      raw feature space is ~4-dimensional; PCA to 8 components preserves ~99% variance
+      but the "factors" are constrained by the limited asset universe.
+    evidence: "Candelori proved for learned ops; our random ops have generically full rank"
+    confidence: 0.45
+    key_insight: "QCML dimension detects something regime-dependent but does NOT correctly identify risk factor count with random operators"
+
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: >
+      The Q0101-Q0104 results show QCML dimension estimation underperforms classical
+      Absorption Ratio by ~0.37 d-units (AR d=0.797 vs QCML-IPR d=0.428). The QCML
+      embedding DEGRADES the dimension signal. Knight 4 from Q0101 identified operator
+      dependence: different seeds produce different dimension estimates.
+    evidence: "AR=0.797 vs QCML-IPR=0.428 — embedding degrades signal by 0.37 d-units"
+    confidence: 0.75
+    key_insight: "Classical methods measure risk factors more cleanly than QCML"
+
+  - knight: 3
+    role: "practical_value"
+    workers_used: 0
+    conclusion: >
+      Only worth investigating if the operator learning problem is solved first. With
+      random operators, the answer is clear: QCML dimension estimation underperforms
+      and does not correctly count risk factors.
+    evidence: "Pre-PCA bottleneck: 2 assets × ~6 features = ~4-dimensional raw space"
+    confidence: 0.60
+    key_insight: "Solve the operator learning problem before revisiting dimension estimation"
+
+test_results:
+  crises_tested: []
+  cohens_d_per_crisis: {}
+  median_d: null
+  passes_threshold: false
+
+verdict:
+  keep: false
+  reason: "QCML dimension estimation with random operators does not correctly identify risk factor count. Classical Absorption Ratio outperforms by 0.37 d-units. The operator-dependent embedding injects non-data-driven spectral structure."
+  strength: "low"
+  follow_up_questions:
+    - "Would learned operators (Candelori's framework) close the gap with Absorption Ratio?"
+
+artifacts:
+  code_dir: "research/ideation/intrinsic_dimension/"
+  key_files: []

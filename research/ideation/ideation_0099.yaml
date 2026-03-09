@@ -1,0 +1,36 @@
+id: "0099"
+round: 99
+timestamp: "2026-03-06T21:45:00"
+question: "Can we use our observables to detect market manipulation or flash crash precursors?"
+theme: "wild_cards"
+status: "keep"
+hypothesis:
+  statement: "Flash crashes create sudden Hilbert space geometry distortions detectable as precursors."
+  mechanism: "Pre-flash crash order book fragility should manifest as rapid curvature changes."
+  prior_plausibility: "low"
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 2
+    conclusion: "2010 flash crash shows 1-week Berry phase rate precursor: z-score rises from 0.5 to 1.7 in the week before. Spectral entropy spikes 2 days before. However, daily data too coarse for intraday flash crashes — the 2010 event is unusual in having multi-day buildup."
+    evidence: "Berry phase rate z-score trajectory: T-7=0.5, T-5=0.8, T-3=1.2, T-1=1.7, T0=2.4."
+    confidence: 0.60
+  - knight: 4
+    role: "failure_mode_analysis"
+    workers_used: 1
+    conclusion: "Daily data fundamentally cannot detect intraday flash crashes (minutes-scale). The 2010 precursor is interesting but n=1. Market manipulation detection requires tick data and is a different problem domain entirely."
+    evidence: "Flash crashes typically resolve within 30 minutes. Our minimum temporal resolution is 1 day."
+    confidence: 0.85
+test_results:
+  crises_tested: ["2010_flash_crash"]
+  cohens_d_per_crisis: {}
+  median_d: null
+  passes_threshold: false
+verdict:
+  keep: true
+  reason: "2010 flash crash has 1-week Berry precursor (0.5→1.7) — interesting n=1 case study. Daily data too coarse for general flash crash detection. Manipulation detection out of scope."
+  strength: "low"
+  follow_up_questions: ["Would hourly data improve flash crash precursor detection?"]
+artifacts:
+  code_dir: "research/ideation/wild_cards/"
+  key_files: ["test_q96_q100.py"]

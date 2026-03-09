@@ -1,0 +1,65 @@
+id: "0109"
+round: 109
+timestamp: "2026-03-08T08:00:00"
+question: "Does projecting observable scores onto the tangent subspace before fusion improve robustness?"
+theme: "intrinsic_dimension"
+status: "reject"
+
+hypothesis:
+  statement: "Projecting z-scores onto top-d eigenvectors of quantum metric denoises the channel score matrix"
+  mechanism: "Tangent subspace captures signal; normal subspace captures noise; projection filters noise"
+  prior_plausibility: "low"
+
+knight_findings:
+  - knight: 1
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: >
+      CATEGORY ERROR — more severe than Q0108. Tangent subspace is R^d subset of R^8
+      (feature space). Score matrix is (T, 16) in channel space. Cannot project a
+      16-dimensional score vector onto a d-dimensional subspace of R^8. Any interpretation
+      either changes the question to trivial PCA on scores (using d from data PCA to
+      truncate channel PCA) or requires re-computing all observables on projected data
+      (doubling cost with no mathematical justification).
+    evidence: "dim(tangent subspace) ⊂ R^8, dim(score matrix) ⊂ R^16 — incompatible spaces"
+    confidence: 0.85
+    key_insight: "Projection across incompatible vector spaces is mathematically undefined"
+
+  - knight: 2
+    role: "comparative_analysis"
+    workers_used: 0
+    conclusion: >
+      Channel-PCA interpretation (retain d ~ 2-4 components of 16 channels) would
+      destroy the complementarity that justifies fusion. Friedman p=0.538 means no
+      single method dominates — all 16 channels contribute. Reducing to 3 channels
+      eliminates 80% of the fusion input.
+    evidence: "Friedman p=0.538 confirms no method dominates — all channels needed"
+    confidence: 0.80
+    key_insight: "Dimension-based channel reduction destroys the complementarity that makes fusion work"
+
+  - knight: 3
+    role: "failure_mode_analysis"
+    workers_used: 0
+    conclusion: >
+      DOUBLE DIPPING: same g_ab eigenvectors used to generate some scores AND to
+      filter them. Non-stationarity: tangent subspace rotates over time, introducing
+      artificial jumps. Information destruction: d ~ 2-4 retains only 12-25% of channels.
+    evidence: "QFI, Spectral Entropy, IPR all depend on g_ab → circular dependency with projection"
+    confidence: 0.85
+    key_insight: "Using g_ab to both generate and filter scores creates a circular dependency"
+
+test_results:
+  crises_tested: []
+  cohens_d_per_crisis: {}
+  median_d: null
+  passes_threshold: false
+
+verdict:
+  keep: false
+  reason: "Category error: tangent subspace (R^8) and channel space (R^16) are incompatible. Any workable interpretation either trivializes to PCA on scores or doubles computational cost while destroying cross-channel complementarity."
+  strength: "low"
+  follow_up_questions: []
+
+artifacts:
+  code_dir: "research/ideation/intrinsic_dimension/"
+  key_files: []

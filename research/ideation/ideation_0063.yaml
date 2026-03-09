@@ -1,0 +1,30 @@
+id: "0063"
+round: 63
+timestamp: "2026-03-06T20:15:00"
+question: "Does multi-market embedding (SPY + TLT + GLD jointly) outperform single-market?"
+theme: "cross_asset"
+status: "keep"
+hypothesis:
+  statement: "Joint SPY+TLT+GLD embedding captures cross-asset correlation dynamics."
+  mechanism: "During crises, cross-asset correlations shift — joint embedding captures this."
+  prior_plausibility: "medium"
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: "Detector-dependent. SpectralEntropy gains +0.263 mean d with multi-market embedding (1.375 vs 1.112). BerryPhaseRate loses -0.721 (0.174 vs 0.895). Eigenvalue spectrum of multi-asset Hamiltonian changes more during crises."
+    evidence: "SpEnt multi: GFC=1.653, COVID=2.262, Rates=1.042, SVB=0.542. Berry multi: all below 0.375."
+    confidence: 0.80
+test_results:
+  crises_tested: ["2008_gfc", "2020_covid", "2022_rates", "2023_svb"]
+  cohens_d_per_crisis: {gfc_entropy: 1.653, covid_entropy: 2.262, rates_entropy: 1.042, svb_entropy: 0.542}
+  median_d: 1.375
+  passes_threshold: true
+verdict:
+  keep: true
+  reason: "Multi-market SpectralEntropy (d=1.375) outperforms single-market (d=1.112). Berry curvature is harmed by multi-asset noise. Optimal strategy: multi-asset SpectralEntropy + single-asset BerryPhaseRate."
+  strength: "high"
+  follow_up_questions: ["Which asset pair contributes most to the gain?", "More than 3 assets?"]
+artifacts:
+  code_dir: "research/ideation/cross_asset/"
+  key_files: ["test_q61_q65.py"]

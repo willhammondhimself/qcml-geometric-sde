@@ -1,0 +1,30 @@
+id: "0032"
+round: 32
+timestamp: "2026-03-06T18:30:00"
+question: "Can Transfer Entropy (d=0.285) improve with different embedding dimensions or conditioning?"
+theme: "dead_signal_fix"
+status: "keep"
+hypothesis:
+  statement: "Finer binning (n_bins=8) captures more TE structure."
+  mechanism: "Default n_bins=5 underestimates mutual information. Also, original low d may have been inflated by a dimension-alignment bug in evaluation."
+  prior_plausibility: "medium"
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: "RESURRECTED. n_bins=8, window=60 gives median d=0.763. COVID d=1.185, SVB d=1.351. Original d=0.285 was partly due to a dimension-alignment bug (TE runs on raw X, not X_enriched)."
+    evidence: "n_bins=8/win=60: GFC=0.295, COVID=1.185, Rates=0.340, SVB=1.351."
+    confidence: 0.75
+test_results:
+  crises_tested: ["2008_gfc", "2020_covid", "2022_rates", "2023_svb"]
+  cohens_d_per_crisis: {2008_gfc: 0.295, 2020_covid: 1.185, 2022_rates: 0.340, 2023_svb: 1.351}
+  median_d: 0.763
+  passes_threshold: true
+verdict:
+  keep: true
+  reason: "Finer binning + dimension-alignment fix resurrects TE from near-threshold to strong. The caveat: some of the improvement may be from the bug fix, not the binning. Needs re-evaluation with corrected harness across full crisis set."
+  strength: "medium"
+  follow_up_questions: ["Re-evaluate with corrected dimension alignment across all crises", "Is n_bins=8 overfitting to these 4 crises?"]
+artifacts:
+  code_dir: "research/ideation/dead_signal_fix/"
+  key_files: ["test_q32_q35.py"]

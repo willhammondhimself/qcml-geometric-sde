@@ -1,0 +1,35 @@
+id: "0097"
+round: 97
+timestamp: "2026-03-06T21:45:00"
+question: "Does the market's quantum state exhibit periodic patterns (seasonal, election cycles, FOMC)?"
+theme: "wild_cards"
+status: "keep"
+hypothesis:
+  statement: "If geometric observables capture market microstructure, they should reflect macro periodicity."
+  mechanism: "FOMC meetings, earnings seasons, and election cycles create periodic stress patterns visible in the Hilbert space geometry."
+  prior_plausibility: "medium"
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 2
+    conclusion: "Dominant spectral entropy period ~702 days (close to 2-year election cycle). FOMC meetings suppress entropy by 0.3 std (p=0.014) — likely due to reduced uncertainty after rate decisions. January effect visible in Berry phase rate (p=0.08, marginal)."
+    evidence: "FFT of spectral entropy time series. FOMC window analysis: t-test p=0.014 for pre/post suppression."
+    confidence: 0.70
+  - knight: 3
+    role: "comparative_analysis"
+    workers_used: 1
+    conclusion: "The FOMC suppression effect (p=0.014) is novel — not previously documented for geometric observables. However, the periodicity is weak and should not be overinterpreted."
+    evidence: "No prior literature on geometric observable periodicity in financial context."
+    confidence: 0.60
+test_results:
+  crises_tested: []
+  median_d: null
+  passes_threshold: false
+verdict:
+  keep: true
+  reason: "FOMC suppresses entropy (p=0.014) — novel finding. Dominant 702-day period near election cycle. Interesting but not central to crisis detection."
+  strength: "medium"
+  follow_up_questions: ["Does FOMC effect persist in international markets?"]
+artifacts:
+  code_dir: "research/ideation/wild_cards/"
+  key_files: ["test_q96_q100.py"]

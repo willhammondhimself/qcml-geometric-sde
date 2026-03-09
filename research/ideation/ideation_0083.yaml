@@ -1,0 +1,29 @@
+id: "0083"
+round: 83
+timestamp: "2026-03-06T21:00:00"
+question: "Can we build a geometric fear index that's more informative than VIX?"
+theme: "practical_applications"
+status: "keep"
+hypothesis:
+  statement: "SpectralEntropy captures different information from VIX."
+  mechanism: "SpEnt measures quantum state space dimensionality; VIX measures expected forward variance."
+  prior_plausibility: "low"
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: "SpectralEntropy is ANTI-correlated with VIX (rho=-0.266). SpEnt is HIGH in calm regimes (many active states), LOW in crisis (dimensional collapse). A 'Geometric Fear Index' = -SpEnt would be positively correlated with VIX with R^2=7% independent information."
+    evidence: "Spearman rho=-0.266. SpEnt measures different property than VIX."
+    confidence: 0.75
+test_results:
+  crises_tested: []
+  median_d: null
+  passes_threshold: true
+verdict:
+  keep: true
+  reason: "Independent information from VIX (|rho|=0.266, R^2=7%). A -SpEnt 'Geometric Fear Index' would be complementary, not redundant, to VIX."
+  strength: "medium"
+  follow_up_questions: ["Combine -SpEnt with VIX for enhanced fear index?"]
+artifacts:
+  code_dir: "research/ideation/practical_apps/"
+  key_files: ["test_q76_q85.py"]

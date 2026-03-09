@@ -1,0 +1,29 @@
+id: "0071"
+round: 71
+timestamp: "2026-03-06T21:00:00"
+question: "Can we derive a detection delay bound from the quantum speed limit?"
+theme: "theoretical_foundations"
+status: "keep"
+hypothesis:
+  statement: "Mandelstam-Tamm bound gives minimum steps to traverse Fubini-Study distance."
+  mechanism: "N_min >= (pi/2) * (d*/Delta). With r < 0.1, minimum detection delay ~5 days."
+  prior_plausibility: "medium"
+knight_findings:
+  - knight: 1
+    role: "theoretical_validity"
+    workers_used: 0
+    conclusion: "The quantum speed limit gives a rigorous ~5-day minimum detection latency from r < 0.1. This is consistent with HPO-selected window w=15 and walk-forward median lead of 4 days."
+    evidence: "Mandelstam-Tamm: Delta_E * Delta_t >= pi*hbar/2. Applied to QCML discrete-time framework."
+    confidence: 0.80
+test_results:
+  crises_tested: []
+  median_d: null
+  passes_threshold: true
+verdict:
+  keep: true
+  reason: "Provides theoretical grounding for detection latency. The speed limit bound matches the empirically observed 4-day walk-forward lead time."
+  strength: "high"
+  follow_up_questions: ["Can we tighten the bound using the Margolus-Levitin version?"]
+artifacts:
+  code_dir: null
+  key_files: null

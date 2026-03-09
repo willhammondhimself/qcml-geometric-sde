@@ -1,0 +1,64 @@
+id: "0112"
+round: 112
+timestamp: "2026-03-08T08:00:00"
+question: "Can we use normal-direction eigenvalues to estimate and subtract noise from observable scores?"
+theme: "intrinsic_dimension"
+status: "reject"
+
+hypothesis:
+  statement: "Normal-direction eigenvalues provide a noise floor estimate for additive noise subtraction"
+  mechanism: "Tangent eigenvalues = signal; normal eigenvalues = noise; subtract noise floor from scores"
+  prior_plausibility: "low"
+
+knight_findings:
+  - knight: 1
+    role: "theoretical_validity"
+    workers_used: 0
+    conclusion: >
+      CONCEPTUAL ERROR. The normal-direction eigenvalues of g are NOT statistical noise.
+      They are deterministic quantities arising from (1) finite-difference discretization
+      artifacts (O(epsilon^2)), (2) operator algebra structure (how operators respond to
+      normal perturbations), and (3) state-dependent geometry. Unlike i.i.d. sampling
+      noise, they have no fixed distribution to subtract and vary with x(t).
+    evidence: "Normal eigenvalues are O(epsilon^2) discretization artifacts, not sampling noise"
+    confidence: 0.75
+    key_insight: "Normal eigenvalues are finite-difference artifacts, not statistical noise"
+
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: >
+      SpectralGapRatio (d=1.175) already uses normal eigenvalues correctly — as a
+      DENOMINATOR (normalization), not for additive subtraction. This is the right
+      approach: ratio-based measures are scale-invariant and naturally normalize signal
+      by noise. Additive subtraction would require knowing the functional form of
+      score = f(signal) + g(noise), which is unknown.
+    evidence: "SpectralGapRatio (denominator approach) d=1.175 >> any additive approach"
+    confidence: 0.80
+    key_insight: "The correct use of normal eigenvalues is as a denominator, not an additive correction"
+
+  - knight: 3
+    role: "practical_value"
+    workers_used: 0
+    conclusion: >
+      No practical value for additive subtraction. The SpectralGapRatio already
+      implements the valuable version of this idea. No further development needed.
+    evidence: "SpectralGapRatio already implemented and tested (d=1.175)"
+    confidence: 0.85
+    key_insight: "The answer is already implemented as SpectralGapRatio"
+
+test_results:
+  crises_tested: []
+  cohens_d_per_crisis: {}
+  median_d: null
+  passes_threshold: false
+
+verdict:
+  keep: false
+  reason: "Normal eigenvalues are deterministic finite-difference artifacts, not statistical noise. Additive noise subtraction is conceptually wrong. The correct approach (ratio/normalization) is already implemented as SpectralGapRatio (d=1.175)."
+  strength: "low"
+  follow_up_questions: []
+
+artifacts:
+  code_dir: "research/ideation/intrinsic_dimension/"
+  key_files: []

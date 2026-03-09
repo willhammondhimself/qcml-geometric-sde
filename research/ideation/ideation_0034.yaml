@@ -1,0 +1,30 @@
+id: "0034"
+round: 34
+timestamp: "2026-03-06T18:30:00"
+question: "Can Kernel PCA (d=0.035) improve with a crisis-adapted kernel instead of generic RBF?"
+theme: "dead_signal_fix"
+status: "keep"
+hypothesis:
+  statement: "Default auto-gamma (1/(n_features*var(X))) is too small for this feature space."
+  mechanism: "Tuned gamma or polynomial kernel should capture more regime structure."
+  prior_plausibility: "medium"
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: "RESURRECTED with caveat. RBF gamma=1.0 gives median d=1.224 but extreme cross-crisis variance (GFC~0). Poly degree-3 more consistent at median d=0.669 (GFC=0.258). Original d=0.035 was from auto-gamma being too small."
+    evidence: "rbf_gamma=1.0: GFC=0.003, COVID=2.597, Rates=0.231, SVB=2.217. poly_d3: GFC=0.258, COVID=0.909, Rates=0.430, SVB=0.661."
+    confidence: 0.70
+test_results:
+  crises_tested: ["2008_gfc", "2020_covid", "2022_rates", "2023_svb"]
+  cohens_d_per_crisis: {2008_gfc: 0.258, 2020_covid: 0.909, 2022_rates: 0.430, 2023_svb: 0.661}
+  median_d: 0.669
+  passes_threshold: true
+verdict:
+  keep: true
+  reason: "Gamma tuning is the key fix. Poly-d3 kernel is the recommended variant (more consistent than RBF gamma=1.0). This makes Kernel PCA a legitimate baseline again. Needs HPO over gamma to find cross-crisis sweet spot."
+  strength: "medium"
+  follow_up_questions: ["Optimal gamma via HPO?", "Does poly kernel generalize to other asset classes?"]
+artifacts:
+  code_dir: "research/ideation/dead_signal_fix/"
+  key_files: ["test_q32_q35.py"]

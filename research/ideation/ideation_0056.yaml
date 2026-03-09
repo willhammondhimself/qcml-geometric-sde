@@ -1,0 +1,30 @@
+id: "0056"
+round: 56
+timestamp: "2026-03-06T20:15:00"
+question: "Do our observables work on bond markets (TLT, IEF) for rate regime detection?"
+theme: "cross_asset"
+status: "keep"
+hypothesis:
+  statement: "Geometric observables should generalize to bond market regime transitions."
+  mechanism: "Bond market dynamics create similar geometric signatures to equities during rate regime shifts."
+  prior_plausibility: "medium"
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: "Strong generalization. BerryPhaseRate mean d=0.526, SpectralEntropy mean d=0.711. Complementary pattern preserved: Berry excels on acute shocks (Taper Tantrum d=0.792), SpectralEntropy on sustained shifts (2022 Rates d=0.823)."
+    evidence: "TLT: Berry Taper=0.792, Berry Rates=0.261. SpEnt Taper=0.598, SpEnt Rates=0.823."
+    confidence: 0.80
+test_results:
+  crises_tested: ["2013_taper", "2022_rates"]
+  cohens_d_per_crisis: {2013_taper_berry: 0.792, 2013_taper_entropy: 0.598, 2022_rates_berry: 0.261, 2022_rates_entropy: 0.823}
+  median_d: 0.619
+  passes_threshold: true
+verdict:
+  keep: true
+  reason: "Strong cross-asset generalization to bonds. Complementary detector pattern preserved. SpectralEntropy particularly effective for rate regime detection."
+  strength: "high"
+  follow_up_questions: ["TLT + IEF joint embedding?", "Does it detect yield curve inversions?"]
+artifacts:
+  code_dir: "research/ideation/cross_asset/"
+  key_files: ["test_q56_q60.py"]

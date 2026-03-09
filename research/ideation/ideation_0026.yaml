@@ -1,0 +1,30 @@
+id: "0026"
+round: 26
+timestamp: "2026-03-06T18:30:00"
+question: "Can QGT Phase Rigidity (d=0.013) be fixed by switching from pca_inspired to random operators?"
+theme: "dead_signal_fix"
+status: "reject"
+hypothesis:
+  statement: "Phase rigidity ||F||/||g|| fails due to Kramers degeneracy with pca_inspired operators."
+  mechanism: "Switch to random operators and/or higher Hilbert dim to break degeneracy."
+  prior_plausibility: "medium"
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: "REJECT. Random operators and higher dim do not fix phase rigidity. All variants d~0.013-0.028. Apparent high single-crisis d values (GFC d=1.281) are degenerate artifacts — normal-period variance explodes (std=2849) while crisis scores near-constant."
+    evidence: "Tested pca_inspired and random at dim=4,8,16. No variant produces median d > 0.3."
+    confidence: 0.90
+test_results:
+  crises_tested: ["2008_gfc", "2020_covid", "2022_rates", "2023_svb"]
+  cohens_d_per_crisis: {2008_gfc: 0.028, 2020_covid: 0.013, 2022_rates: 0.024, 2023_svb: 0.031}
+  median_d: 0.028
+  passes_threshold: false
+verdict:
+  keep: false
+  reason: "||F||/||g|| ratio is fundamentally uninformative for regime detection. Phase rigidity varies erratically, not systematically with crises. Neither operator method nor Hilbert dim rescues it."
+  strength: "dead"
+  follow_up_questions: []
+artifacts:
+  code_dir: "research/ideation/dead_signal_fix/"
+  key_files: ["test_q26_q28.py"]

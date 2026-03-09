@@ -1,0 +1,29 @@
+id: "0088"
+round: 88
+timestamp: "2026-03-06T21:45:00"
+question: "How do we compare to network-based systemic risk measures (CoVaR, MES, SRISK)?"
+theme: "competitive_landscape"
+status: "keep"
+hypothesis:
+  statement: "CoVaR/MES measure systemic contribution; we measure temporal regime transitions."
+  mechanism: "Fundamentally different problems — no direct comparison meaningful."
+  prior_plausibility: "medium"
+knight_findings:
+  - knight: 3
+    role: "comparative_analysis"
+    workers_used: 0
+    conclusion: "COMPLEMENTARY, not competitive. CoVaR needs cross-sectional bank data (quarterly), we use single-asset daily. They answer 'how much does bank X contribute to systemic loss?' We answer 'is the market transitioning?' Different audiences (central banks vs portfolio managers)."
+    evidence: "Adrian & Brunnermeier 2016, Acharya 2017. Different data, different question."
+    confidence: 0.90
+test_results:
+  crises_tested: []
+  median_d: null
+  passes_threshold: true
+verdict:
+  keep: true
+  reason: "Complementary literature — discuss in related work, not as direct competitor."
+  strength: "medium"
+  follow_up_questions: []
+artifacts:
+  code_dir: null
+  key_files: null

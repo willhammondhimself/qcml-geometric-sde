@@ -1,0 +1,30 @@
+id: "0046"
+round: 46
+timestamp: "2026-03-06T19:45:00"
+question: "Is detection delay (time from crisis onset to signal) a better primary metric than Cohen's d?"
+theme: "statistical_evaluation"
+status: "keep"
+hypothesis:
+  statement: "Lead time captures orthogonal information to Cohen's d."
+  mechanism: "Top detectors by d may miss crises entirely; lead time measures early warning capability."
+  prior_plausibility: "medium"
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: "Rankings differ (Kendall tau=0.40, not significant). DimCollapse drops from d-rank 3 to lead-time rank 5 but detects 3/4 crises. Top-d detectors only detect 1/4 crises at lookback ceiling."
+    evidence: "Lead-time ranks: SpEnt(1), RP(2), HamSens(3), Berry(4), DimC(5). d-ranks differ."
+    confidence: 0.80
+test_results:
+  crises_tested: ["2008_gfc", "2020_covid", "2022_rates", "2023_svb"]
+  cohens_d_per_crisis: {}
+  median_d: null
+  passes_threshold: true
+verdict:
+  keep: true
+  reason: "Both metrics needed together — d measures signal strength, lead time measures early warning reliability. Neither alone tells the full story."
+  strength: "medium"
+  follow_up_questions: ["Combined metric (d * coverage)?"]
+artifacts:
+  code_dir: "research/ideation/statistical_eval/"
+  key_files: ["test_q46_q50.py"]

@@ -1,0 +1,30 @@
+id: "0092"
+round: 92
+timestamp: "2026-03-06T21:45:00"
+question: "How do we compare to the turbulence index (Chow et al. 1999)?"
+theme: "competitive_landscape"
+status: "keep"
+hypothesis:
+  statement: "Turbulence index (Mahalanobis distance) is a strong classical baseline."
+  mechanism: "Expanding Mahalanobis distance on feature matrix captures multivariate anomalies."
+  prior_plausibility: "high"
+knight_findings:
+  - knight: 2
+    role: "empirical_test"
+    workers_used: 0
+    conclusion: "Turbulence d=1.329 beats SpectralEntropy (1.129) in this test. Uses full high-dimensional feature matrix. Key distinction: our Hamiltonian-spectrum approach captures geometric structure not accessible from raw covariance."
+    evidence: "Expanding Mahalanobis on full features. Turbulence d=1.329 vs SpEnt d=1.129."
+    confidence: 0.75
+test_results:
+  crises_tested: ["2008_gfc", "2020_covid", "2022_rates", "2023_svb"]
+  cohens_d_per_crisis: {turbulence: 1.329}
+  median_d: 1.329
+  passes_threshold: true
+verdict:
+  keep: true
+  reason: "Turbulence index is a strong competitor. Paper already has MahalanobisDetector. The full-feature Mahalanobis outperforms in this test but requires richer input data."
+  strength: "medium"
+  follow_up_questions: ["Does Mahalanobis generalize as well to holdout?"]
+artifacts:
+  code_dir: "research/ideation/competitive/"
+  key_files: ["test_q86_q95.py"]
