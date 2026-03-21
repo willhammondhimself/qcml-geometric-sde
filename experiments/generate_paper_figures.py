@@ -1,12 +1,15 @@
 """
-Generate all 5 missing figures for the QCML paper.
+Generate Paper 1 figures: narrative panels + summary statistics.
 
-Figures produced:
-1. narrative_2008_crisis.pdf — 8-panel crisis anatomy for 2008 GFC
-2. narrative_2020_covid.pdf  — 8-panel crisis anatomy for 2020 COVID
-3. narrative_2022_rates.pdf  — 8-panel crisis anatomy for 2022 rate hikes
-4. effect_sizes.pdf          — Violin plot of Cohen's d across 12 crises
-5. bootstrap_ranks.pdf       — Bootstrap ranking distribution (n=10,000)
+Figures produced (Paper 1 scope: 4 geometric observables):
+1. narrative_2008_gfc.pdf   — 8-panel crisis anatomy for 2008 GFC
+2. narrative_2020_covid.pdf — 8-panel crisis anatomy for 2020 COVID
+3. narrative_2022_rates.pdf — 8-panel crisis anatomy for 2022 rate hikes
+4. effect_sizes.pdf         — Violin plot of Cohen's d across 12 crises
+5. bootstrap_ranks.pdf      — Bootstrap ranking distribution (n=10,000)
+
+Panels: Price, Returns, Berry Phase Rate, Spectral Entropy,
+        Reduced Purity, Hamiltonian Sensitivity, Spectral Gap, Combined.
 
 Usage:
     python experiments/generate_paper_figures.py
@@ -39,8 +42,9 @@ load_dotenv(ROOT / '.env')
 
 from qcml_geometry import (
     BerryPhaseRateDetector,
-    QFIDeterminantDetector,
-    MultiLagFidelityDetector,
+    SpectralEntropyDetector,
+    ReducedPurityDetector,
+    HamiltonianSensitivityDetector,
     SpectralGapIndicator,
     EnergyEvolutionIndicator,
 )
@@ -102,10 +106,11 @@ apply_style()
 
 COLORS = {
     'berry': BURGUNDY,
-    'qfi': NAVY,
-    'mlf': TEAL,
-    'spectral_gap': TEAL,
-    'energy': GOLD,
+    'spectral_entropy': NAVY,
+    'reduced_purity': TEAL,
+    'hamiltonian_sensitivity': GOLD,
+    'spectral_gap': INDIGO,
+    'energy': SLATE,
     'price': NAVY,
     'returns': SLATE,
     'crisis': BURGUNDY,
@@ -157,7 +162,7 @@ def create_feature_matrix(prices_df):
 # ============================================================================
 
 def compute_all_scores(X, dates):
-    """Compute regime scores for all 3 QCML detectors + indicators.
+    """Compute regime scores for Paper 1's 4 QCML detectors + spectral gap.
 
     Returns dict of {name: (scores_array, aligned_dates)}.
     """
@@ -170,14 +175,17 @@ def compute_all_scores(X, dates):
 
     detectors = [
         ('Berry Phase Rate', BerryPhaseRateDetector(
-            hilbert_dim=8, n_pca_components=15, operator_method='random',
+            hilbert_dim=8, n_pca_components=8, operator_method='random',
             rolling_window=20, seed=42)),
-        ('QFI Determinant', QFIDeterminantDetector(
-            hilbert_dim=8, n_pca_components=15, operator_method='random',
+        ('Spectral Entropy', SpectralEntropyDetector(
+            hilbert_dim=8, n_pca_components=8, operator_method='random',
             rolling_window=20, seed=42)),
-        ('Multi-Lag Fidelity', MultiLagFidelityDetector(
-            hilbert_dim=8, n_pca_components=15, operator_method='pauli',
-            scale_exponent=0.0, rolling_window=20, seed=42)),
+        ('Reduced Purity', ReducedPurityDetector(
+            hilbert_dim=8, n_pca_components=8, operator_method='random',
+            rolling_window=20, seed=42)),
+        ('Hamiltonian Sensitivity', HamiltonianSensitivityDetector(
+            hilbert_dim=8, n_pca_components=8, operator_method='random',
+            rolling_window=20, seed=42)),
     ]
 
     for name, det in detectors:
@@ -186,8 +194,8 @@ def compute_all_scores(X, dates):
         scores = det.compute_regime_scores(X_enriched)
         results[name] = (scores, dates_enriched)
 
-    # Also compute spectral gap and energy for narrative panels
-    logger.info("  Computing spectral gap and energy...")
+    # Also compute spectral gap for narrative panels (supports Theorem 1)
+    logger.info("  Computing spectral gap...")
     n_pca = min(15, X_enriched.shape[1])
     scaler = StandardScaler().fit(X_enriched)
     pca = PCA(n_components=n_pca).fit(scaler.transform(X_enriched))
@@ -198,16 +206,12 @@ def compute_all_scores(X, dates):
     geo.fit_operators(X_pca, method='pca_inspired')
 
     spectral_gaps = np.empty(len(X_pca))
-    energies = np.empty(len(X_pca))
     for t in range(len(X_pca)):
-        psi, e0 = geo.quasi_coherent_state(X_pca[t], return_energy=True)
         H = geo.error_hamiltonian(X_pca[t])
         evals = np.linalg.eigvalsh(H)
         spectral_gaps[t] = evals[1] - evals[0]
-        energies[t] = e0
 
     results['Spectral Gap'] = (spectral_gaps, dates_enriched)
-    results['Ground State Energy'] = (energies, dates_enriched)
 
     return results
 
@@ -217,7 +221,11 @@ def compute_all_scores(X, dates):
 # ============================================================================
 
 def generate_narrative_figure(crisis_key, crisis_info, scores_dict, prices_df, output_dir):
-    """Generate an 8-panel crisis narrative figure."""
+    """Generate an 8-panel crisis narrative figure.
+
+    Panels: Price, Returns, Berry Phase Rate, Spectral Entropy,
+    Reduced Purity, Hamiltonian Sensitivity, Spectral Gap, Combined overlay.
+    """
     apply_style()
 
     fig, axes = plt.subplots(4, 2, figsize=(14, 12))
@@ -269,28 +277,38 @@ def generate_narrative_figure(crisis_key, crisis_info, scores_dict, prices_df, o
     ax.axhline(2.0, color='gray', linestyle='--', alpha=0.5, linewidth=0.8)
     add_crisis_shading(ax)
 
-    # Panel 4: QFI Determinant
+    # Panel 4: Spectral Entropy
     ax = axes[1, 1]
-    s, d = scores_dict['QFI Determinant']
+    s, d = scores_dict['Spectral Entropy']
     s_ctx, d_ctx = trim_to_context(s, d)
-    ax.plot(d_ctx, s_ctx, color=COLORS['qfi'], linewidth=1.0)
+    ax.plot(d_ctx, s_ctx, color=COLORS['spectral_entropy'], linewidth=1.0)
     ax.set_ylabel('Z-Score')
-    ax.set_title('QFI Determinant')
+    ax.set_title('Spectral Entropy')
     ax.axhline(2.0, color='gray', linestyle='--', alpha=0.5, linewidth=0.8)
     add_crisis_shading(ax)
 
-    # Panel 5: Multi-Lag Fidelity
+    # Panel 5: Reduced Purity
     ax = axes[2, 0]
-    s, d = scores_dict['Multi-Lag Fidelity']
+    s, d = scores_dict['Reduced Purity']
     s_ctx, d_ctx = trim_to_context(s, d)
-    ax.plot(d_ctx, s_ctx, color=COLORS['mlf'], linewidth=1.0)
+    ax.plot(d_ctx, s_ctx, color=COLORS['reduced_purity'], linewidth=1.0)
     ax.set_ylabel('Z-Score')
-    ax.set_title('Multi-Lag Fidelity')
+    ax.set_title('Reduced State Purity')
     ax.axhline(2.0, color='gray', linestyle='--', alpha=0.5, linewidth=0.8)
     add_crisis_shading(ax)
 
-    # Panel 6: Spectral Gap
+    # Panel 6: Hamiltonian Sensitivity
     ax = axes[2, 1]
+    s, d = scores_dict['Hamiltonian Sensitivity']
+    s_ctx, d_ctx = trim_to_context(s, d)
+    ax.plot(d_ctx, s_ctx, color=COLORS['hamiltonian_sensitivity'], linewidth=1.0)
+    ax.set_ylabel('Z-Score')
+    ax.set_title('Hamiltonian Sensitivity')
+    ax.axhline(2.0, color='gray', linestyle='--', alpha=0.5, linewidth=0.8)
+    add_crisis_shading(ax)
+
+    # Panel 7: Spectral Gap (supports Theorem 1)
+    ax = axes[3, 0]
     s, d = scores_dict['Spectral Gap']
     s_ctx, d_ctx = trim_to_context(s, d)
     ax.plot(d_ctx, s_ctx, color=COLORS['spectral_gap'], linewidth=1.0)
@@ -298,23 +316,14 @@ def generate_narrative_figure(crisis_key, crisis_info, scores_dict, prices_df, o
     ax.set_title('Spectral Gap')
     add_crisis_shading(ax)
 
-    # Panel 7: Ground State Energy
-    ax = axes[3, 0]
-    s, d = scores_dict['Ground State Energy']
-    s_ctx, d_ctx = trim_to_context(s, d)
-    ax.plot(d_ctx, s_ctx, color=COLORS['energy'], linewidth=1.0)
-    ax.set_ylabel('$E_0$')
-    ax.set_title('Ground State Energy')
-    add_crisis_shading(ax)
-
-    # Panel 8: Combined signal overlay
+    # Panel 8: Combined signal overlay (4 geometric observables)
     ax = axes[3, 1]
     for name, color_key in [('Berry Phase Rate', 'berry'),
-                             ('QFI Determinant', 'qfi'),
-                             ('Multi-Lag Fidelity', 'mlf')]:
+                             ('Spectral Entropy', 'spectral_entropy'),
+                             ('Reduced Purity', 'reduced_purity'),
+                             ('Hamiltonian Sensitivity', 'hamiltonian_sensitivity')]:
         s, d = scores_dict[name]
         s_ctx, d_ctx = trim_to_context(s, d)
-        # Normalize to [0,1] for overlay
         s_valid = s_ctx[~np.isnan(s_ctx)]
         if len(s_valid) > 0:
             s_norm = (s_ctx - np.nanmin(s_ctx)) / (np.nanmax(s_ctx) - np.nanmin(s_ctx) + 1e-12)
@@ -357,14 +366,17 @@ def compute_crisis_effect_sizes(X, dates, crisis_dict):
 
     methods = {
         'Berry Phase Rate': BerryPhaseRateDetector(
-            hilbert_dim=8, n_pca_components=15, operator_method='random',
+            hilbert_dim=8, n_pca_components=8, operator_method='random',
             rolling_window=20, seed=42),
-        'QFI Determinant': QFIDeterminantDetector(
-            hilbert_dim=8, n_pca_components=15, operator_method='random',
+        'Spectral Entropy': SpectralEntropyDetector(
+            hilbert_dim=8, n_pca_components=8, operator_method='random',
             rolling_window=20, seed=42),
-        'Multi-Lag Fidelity': MultiLagFidelityDetector(
-            hilbert_dim=8, n_pca_components=15, operator_method='pauli',
-            scale_exponent=0.0, rolling_window=20, seed=42),
+        'Reduced Purity': ReducedPurityDetector(
+            hilbert_dim=8, n_pca_components=8, operator_method='random',
+            rolling_window=20, seed=42),
+        'Hamiltonian Sensitivity': HamiltonianSensitivityDetector(
+            hilbert_dim=8, n_pca_components=8, operator_method='random',
+            rolling_window=20, seed=42),
     }
 
     # Compute scores for each method
@@ -422,7 +434,8 @@ def generate_effect_sizes_figure(d_values_df, output_dir):
     data = [d_values_df[m].dropna().values for m in methods]
     positions = range(len(methods))
 
-    colors_list = [COLORS['berry'], COLORS['qfi'], COLORS['mlf']]
+    colors_list = [COLORS['berry'], COLORS['spectral_entropy'],
+                   COLORS['reduced_purity'], COLORS['hamiltonian_sensitivity']]
 
     parts = ax.violinplot(data, positions=positions, showmeans=True,
                           showmedians=True, widths=0.7)
@@ -490,12 +503,13 @@ def generate_bootstrap_ranks_figure(d_values_df, output_dir, n_bootstrap=10000):
 
     fig, ax = plt.subplots(figsize=(10, 5))
 
-    colors_list = [COLORS['berry'], COLORS['qfi'], COLORS['mlf']]
+    colors_list = [COLORS['berry'], COLORS['spectral_entropy'],
+                   COLORS['reduced_purity'], COLORS['hamiltonian_sensitivity']]
     x = np.arange(1, n_methods + 1)
-    width = 0.25
+    width = 0.2
 
     for i, (m, c) in enumerate(zip(methods, colors_list)):
-        offset = (i - 1) * width
+        offset = (i - 1.5) * width
         ax.bar(x + offset, rank_counts[m], width=width, color=c,
                alpha=0.7, label=m, edgecolor='white', linewidth=0.5)
 
