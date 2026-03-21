@@ -15,40 +15,35 @@ Usage:
     python experiments/generate_paper_figures.py
 """
 
-import os
 import sys
 import logging
 import warnings
 from pathlib import Path
-from datetime import datetime, timedelta
 
 import numpy as np
 import pandas as pd
 import matplotlib
 matplotlib.use('Agg')
-import matplotlib.pyplot as plt
-from matplotlib.dates import DateFormatter
-from matplotlib.patches import Rectangle
-from scipy import stats
-from sklearn.preprocessing import StandardScaler
-from sklearn.decomposition import PCA
+import matplotlib.pyplot as plt  # noqa: E402
+from matplotlib.dates import DateFormatter  # noqa: E402
+from scipy import stats  # noqa: E402
+from sklearn.preprocessing import StandardScaler  # noqa: E402
+from sklearn.decomposition import PCA  # noqa: E402
 
 # Add project root to path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from dotenv import load_dotenv
+from dotenv import load_dotenv  # noqa: E402
 load_dotenv(ROOT / '.env')
 
-from qcml_geometry import (
+from qcml_geometry import (  # noqa: E402
     BerryPhaseRateDetector,
     SpectralEntropyDetector,
     ReducedPurityDetector,
     HamiltonianSensitivityDetector,
-    SpectralGapIndicator,
-    EnergyEvolutionIndicator,
 )
-from qcml_geometry.core import QCMLGeometry
+from qcml_geometry.core import QCMLGeometry  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(message)s',
                     force=True)
@@ -98,9 +93,8 @@ ALL_CRISES = {
     '2024_carry': {'start': '2024-07-15', 'end': '2024-08-31', 'label': 'Carry Unwind 2024'},
 }
 
-from experiments.plot_style import (
+from experiments.plot_style import (  # noqa: E402
     apply_style, NAVY, TEAL, BURGUNDY, GOLD, INDIGO, SLATE,
-    CMAP_SEQUENTIAL, CMAP_DIVERGING, save_figure,
 )
 apply_style()
 
@@ -121,7 +115,7 @@ COLORS = {
 # Data Fetching (via unified dispatcher)
 # ============================================================================
 
-from experiments.data_loader import fetch_data
+from experiments.data_loader import fetch_data  # noqa: E402
 
 
 def create_feature_matrix(prices_df):
