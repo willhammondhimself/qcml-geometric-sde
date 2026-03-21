@@ -1,39 +1,40 @@
-# Geometric Observables for Financial Regime Detection
+# Geometric observables for financial regime detection
 
-A spectral metric learning framework that detects financial crises using
-differential geometry — without labeled data.
+We embed prices and covariates into a projective Hilbert space, then read off geometric quantities (Berry-type rates, spectra, curvature proxies) as regime indicators. No hand-labeled crisis mask is required for scoring.
 
-## Key Results
+## Key results
 
-- **36-method comparison** across **17 historical crises** (2007–2024)
-- **Reduced Purity** (d = 0.834) ranks #1 overall, followed by Hamilton MS (d = 0.713) and CUSUM (d = 0.625)
-- Friedman chi² = 219.31, p < 0.0001 — methods are not interchangeable
-- QCML observables are **orthogonal** to classical baselines (mean |ρ| = 0.13), enabling complementary fusion
-- **Regime-Adaptive fusion** generalizes to holdout crises (d = 0.783) while top individuals collapse (Reduced Purity drops 66%)
-- Berry Phase Rate leads regime transitions by **90 days** vs. Random Forest's 6 days
+- 46 detectors compared on 17 historical crises (2000-2024).
+- Walk-forward Berry Phase Rate: Cohen's d about 0.72 under nested HPO (no lookahead in the protocol we ship).
+- Friedman test on the big panel: χ² = 233.1, p < 10⁻¹⁶ (methods are not exchangeable).
+- Geometry channels sit far from classical baselines in correlation space: mean |ρ| ≈ 0.13 vs the classical stack in the orthogonality run.
+- Regime-Adaptive fusion holds up on holdout crises (d ≈ 0.78 in the paper highlights) while single-channel stars such as Reduced Purity fall apart there (roughly 0.83 in-sample median d vs about 0.26 on the frozen holdout fusion table).
+- Lead-time example in the paper: Berry Phase Rate about 90 days ahead of the RF benchmark on the median crisis, RF about 6 days (details in the lead-time experiment output).
 
-## How It Works
+## How it works
 
-Financial time series are embedded into a projective Hilbert space via spectral
-metric learning. **17 geometric observatory channels** measure manifold
-deformation during market stress, organized by geometric family:
+Spectral metric learning builds the embedding. The **46-method** leaderboard adds classical baselines to **19** geometric detectors evaluated on the crisis panel; **17** of those geometric streams participate in fusion. Three are marked dead in code (near-zero *d* on all 17 crises) and excluded from `ACTIVE_CHANNELS` in [`qcml_geometry/fusion.py`](qcml_geometry/fusion.py): **QGT Phase Rigidity**, **Berry Velocity Coupling**, **Curvature Rate**.
+
+Fusion taxonomy (display names match `OBSERVABLE_FAMILIES`):
 
 | Family | Observables |
-|--------|------------|
-| **Metric** | Fubini-Study velocity, QFI determinant, multi-lag fidelity, geodesic curvature |
-| **Curvature** | Berry phase rate, sectional curvature, Ricci scalar rate, curvature rate |
-| **Spectral** | Spectral gap, spectral entropy, spectral complexity, effective state dimension |
-| **Topological** | Chern number, reduced state purity, QGT phase rigidity |
-| **Information** | Hamiltonian sensitivity, speed limit ratio |
+|--------|-------------|
+| Holonomy | Berry Phase Rate, Geometric Phase Rate |
+| Metric | QFI Determinant, Hamiltonian Sensitivity |
+| State Dynamics | Multi-Lag Fidelity, Reduced Purity, Quantum Relative Entropy |
+| Kinematics | Geodesic Velocity, Speed Limit Ratio |
+| Spectral | Spectral Entropy, Spectral Complexity, Effective State Dim, Level Spacing Ratio |
+| Curvature | Sectional Curvature Sign, Geodesic Curvature |
+| Topology | QCML Chern, Dimensionality Collapse |
 
-These spike during regime transitions without requiring any labeled crisis data.
+Implementations and HPO keys live in [`qcml_geometry/observables.py`](qcml_geometry/observables.py); paper tables are authoritative for headline *d* values.
 
 ## Project Structure
 
 ```
 qcml_geometry/              Core library (pure math, no I/O)
   core.py                   QCMLGeometry: metric tensor, Berry curvature, Chern numbers
-  observables.py            17 geometric regime detectors
+  observables.py            Geometric regime detectors (19 in main panel; 17 fused)
   indicators.py             Spectral gap, energy, fidelity indicators
   topology.py               Topological regime detectors
   fusion.py                 Composite signal fusion
@@ -42,7 +43,7 @@ qcml_geometry/              Core library (pure math, no I/O)
   online_detection.py       Streaming regime detection
 
 experiments/                Reproducible experiment scripts
-  regime_comparison.py      Main 36-method × 17-crisis pipeline
+  regime_comparison.py      Main 46-method x 17-crisis pipeline
   fusion_experiments.py     Multi-channel fusion experiments
   runner.py                 Incremental cell-based experiment runner
   config.yaml               Experiment configuration
@@ -51,20 +52,13 @@ experiments/                Reproducible experiment scripts
   holdout_evaluation.py     Holdout crisis evaluation
   lead_time_analysis.py     Lead time measurement
   observatory_analysis.py   Orthogonality matrix + oracle fusion
-  backtest/                 Walk-forward backtest suite (9 files)
+  backtest/                 Walk-forward backtest suite
 
 demo/                       Interactive Streamlit app
-  app.py                    Main demo (dark navy theme, Plotly charts)
-  cache_data.py             One-time data caching
-
-paper/                      LaTeX paper (~48 pages, 3 theorems, 1 proposition, 45+ refs)
-  qcml_geometric_sde.tex    Main document
-  references.bib            Bibliography
-  tables/                   Auto-generated LaTeX tables (9 files)
-
-poster/                     APS Global Physics Summit 2026 poster
-tests/                      pytest suite (14 test files)
+paper/                      LaTeX paper (~50 pages, 3 theorems, 1 proposition, ~44 refs)
+tests/                      pytest suite (10 test_*.py files)
 scripts/                    Verification utilities
+archive/                    Dead experiments, old code
 ```
 
 ## Quick Start
@@ -72,7 +66,7 @@ scripts/                    Verification utilities
 ```bash
 pip install -r requirements.txt
 
-# Run the full 36-method comparison (quick mode, ~10 min)
+# Run the full 46-method comparison (quick mode, ~10 min)
 python experiments/regime_comparison.py --causal
 
 # Run tests
@@ -82,6 +76,12 @@ pytest tests/ -x -q
 python demo/cache_data.py
 streamlit run demo/app.py
 ```
+
+## Reproducibility
+
+Paper claims tied to numbers are checked with `make verify` (see `memory/results_registry.yaml`). **Three canonical JSON runs are tracked in git** under `experiments/outputs/` (see `experiments/outputs/README.md`); everything else there is ignored. Clone → install → `make verify` should pass without rerunning the full pipeline.
+
+Video assets under `media/` are generated (e.g. `make video`); that directory is gitignored.
 
 ## Makefile Targets
 
@@ -98,7 +98,7 @@ make clean             # Remove build artifacts
 
 ## Paper
 
-~48-page paper with 3 theorems, 1 proposition, and 45+ references.
+~50 pages, 3 theorems, 1 proposition, ~44 references.
 Source: `paper/qcml_geometric_sde.tex`
 
 ### Citation
@@ -114,4 +114,4 @@ Source: `paper/qcml_geometric_sde.tex`
 
 ## Author
 
-Will Hammond — Pitzer College — whammond@pitzer.edu
+Will Hammond, Pitzer College, whammond@pitzer.edu

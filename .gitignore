@@ -21,6 +21,9 @@ build/
 **/.DS_Store
 Thumbs.db
 
+# Manim / video renders (regenerate via Makefile `video` targets)
+media/
+
 # Data caches
 demo/data/*.npz
 data/wrds_cache/
@@ -37,7 +40,11 @@ data/*.parquet
 optuna-storage.db
 
 # Experiment outputs (regenerable — keep only paper figures)
+# Canonical JSON pinned in Makefile CANONICAL_JSON + memory/results_registry.yaml (tracked)
 experiments/outputs/**/*.json
+!experiments/outputs/regime_detection/causal_comparison_20260311_010639.json
+!experiments/outputs/fusion/fusion_results_20260304_101523.json
+!experiments/outputs/fusion/fusion_results_20260304_101842.json
 experiments/outputs/**/*.log
 experiments/outputs/**/*.png
 experiments/outputs/**/*.pdf

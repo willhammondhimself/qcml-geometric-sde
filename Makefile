@@ -2,13 +2,14 @@
        experiments paper clean help pipeline-diagram \
        rebuild rebuild-force paper-full review verify verify-citations \
        pre-submit snapshot diff registry-summary validate clear-cache \
-       pipeline pipeline-quick pipeline-full canonical dashboard
+       pipeline pipeline-quick pipeline-full canonical dashboard \
+       video-preview video-hq video-combine video
 
 PYTHON ?= python
 PIP ?= pip
 PAPER_DIR = paper
 SCRIPTS_DIR = scripts
-CANONICAL_JSON ?= experiments/outputs/regime_detection/causal_comparison_20260307_171332.json
+CANONICAL_JSON ?= experiments/outputs/regime_detection/causal_comparison_20260311_010639.json
 
 help:  ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | \
@@ -48,7 +49,7 @@ format:  ## Format code with black
 
 experiments: experiments-comparison experiments-theorems  ## Run core experiments (legacy)
 
-experiments-comparison:  ## Run 17-method regime comparison (quick)
+experiments-comparison:  ## Legacy: regime_comparison.py --quick (4 crises, subset of methods)
 	$(PYTHON) experiments/regime_comparison.py --quick
 
 experiments-theorems:  ## Run theorem validation (quick)
@@ -160,3 +161,21 @@ clean:  ## Remove build artifacts
 
 clean-paper:  ## Remove LaTeX auxiliary files
 	cd $(PAPER_DIR) && rm -f *.aux *.bbl *.blg *.log *.out *.toc *.fls *.fdb_latexmk diff.tex diff.pdf
+
+# ── Video ────────────────────────────────────────────────────────
+
+video-preview:  ## Render all Manim scenes (low quality preview)
+	manim -ql --disable_caching paper/manim_qcml_explainer.py
+
+video-hq:  ## Render all Manim scenes (high quality)
+	manim -qh paper/manim_qcml_explainer.py
+
+video-combine:  ## Combine rendered scenes into single video
+	cd media/videos/manim_qcml_explainer/480p15 && \
+	printf "file '%s'\n" TitleScene.mp4 PipelineScene.mp4 HamiltonianScene.mp4 \
+		GroundStateEvolutionScene.mp4 ObservatoryScene.mp4 DeadSignalScene.mp4 \
+		> concat.txt && \
+	ffmpeg -y -f concat -safe 0 -i concat.txt -c copy ../QCMLExplainer_combined.mp4 && \
+	rm concat.txt
+
+video:  video-preview video-combine  ## Preview render + combine

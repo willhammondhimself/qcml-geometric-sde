@@ -1,371 +1,209 @@
-\begin{thebibliography}{54}
-\providecommand{\natexlab}[1]{#1}
-\providecommand{\url}[1]{\texttt{#1}}
-\expandafter\ifx\csname urlstyle\endcsname\relax
-  \providecommand{\doi}[1]{doi: #1}\else
-  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+\begin{thebibliography}{10}
+\expandafter\ifx\csname url\endcsname\relax
+  \def\url#1{\texttt{#1}}\fi
+\expandafter\ifx\csname urlprefix\endcsname\relax\def\urlprefix{URL }\fi
+\expandafter\ifx\csname href\endcsname\relax
+  \def\href#1#2{#2} \def\path#1{#1}\fi
 
-\bibitem[Abanov et~al.(2025)Abanov, Candelori, Steinacker, Wells, Busemeyer,
-  Kirakosyan, Marzari, Pinnamaneni, Villani, Xu, and Musaelian]{abanov2025}
-A.~G. Abanov, L.~Candelori, H.~C. Steinacker, M.~T. Wells, J.~R. Busemeyer,
-  V.~Kirakosyan, N.~Marzari, S.~Pinnamaneni, D.~Villani, M.~Xu, and
-  K.~Musaelian.
-\newblock Quantum geometry of data.
-\newblock arXiv preprint arXiv:2507.21135, 2025.
+\bibitem{kritzman2011}
+M.~Kritzman, Y.~Li, S.~Page, R.~Rigobon, Principal components as a measure of
+  systemic risk, The Journal of Portfolio Management 37~(4) (2011) 112--126.
 
-\bibitem[Adams and MacKay(2007)]{adams_mackay2007}
-R.~P. Adams and D.~J.~C. MacKay.
-\newblock Bayesian online changepoint detection.
-\newblock arXiv preprint arXiv:0710.3742, 2007.
+\bibitem{hamilton1989}
+J.~D. Hamilton, A new approach to the economic analysis of nonstationary time
+  series and the business cycle, Econometrica 57~(2) (1989) 357--384.
+\newblock \href {https://doi.org/10.2307/1912559} {\path{doi:10.2307/1912559}}.
 
-\bibitem[Amari and Nagaoka(2000)]{amari_nagaoka2000}
-S.~Amari and H.~Nagaoka.
-\newblock \emph{Methods of Information Geometry}.
-\newblock American Mathematical Society, 2000.
+\bibitem{ang_bekaert2002}
+A.~Ang, G.~Bekaert, International asset allocation with regime shifts, Review
+  of Financial Studies 15~(4) (2002) 1137--1187.
+\newblock \href {https://doi.org/10.1093/rfs/15.4.1137}
+  {\path{doi:10.1093/rfs/15.4.1137}}.
 
-\bibitem[Ang and Bekaert(2002)]{ang_bekaert2002}
-A.~Ang and G.~Bekaert.
-\newblock International asset allocation with regime shifts.
-\newblock \emph{Review of Financial Studies}, 15\penalty0 (4):\penalty0
-  1137--1187, 2002.
-\newblock \doi{10.1093/rfs/15.4.1137}.
+\bibitem{adams_mackay2007}
+R.~P. Adams, D.~J.~C. MacKay, Bayesian online changepoint detection, arXiv
+  preprint arXiv:0710.3742 (2007).
 
-\bibitem[Bai and Perron(1998)]{bai1998}
-J.~Bai and P.~Perron.
-\newblock Estimating and testing linear models with multiple structural
-  changes.
-\newblock \emph{Econometrica}, 66\penalty0 (1):\penalty0 47--78, 1998.
-\newblock \doi{10.2307/2998540}.
-
-\bibitem[Bates and Granger(1969)]{bates_granger1969}
-J.~M. Bates and C.~W.~J. Granger.
-\newblock The combination of forecasts.
-\newblock \emph{Journal of the Operational Research Society}, 20\penalty0
-  (4):\penalty0 451--468, 1969.
-
-\bibitem[Ben-David et~al.(2010)Ben-David, Blitzer, Crammer, Kulesza, Pereira,
-  and Vaughan]{bendavid2010}
-S.~Ben-David, J.~Blitzer, K.~Crammer, A.~Kulesza, F.~Pereira, and J.~W.
-  Vaughan.
-\newblock A theory of learning from different domains.
-\newblock \emph{Machine Learning}, 79\penalty0 (1--2):\penalty0 151--175, 2010.
-
-\bibitem[Benavoli et~al.(2017)Benavoli, Corani, Dem\v{s}ar, and
-  Zaffalon]{benavoli2017}
-A.~Benavoli, G.~Corani, J.~Dem\v{s}ar, and M.~Zaffalon.
-\newblock Time for a change: a tutorial for comparing multiple classifiers
-  through {B}ayesian analysis.
-\newblock \emph{Journal of Machine Learning Research}, 18\penalty0
-  (77):\penalty0 1--36, 2017.
-
-\bibitem[Berry(1984)]{berry1984}
-M.~V. Berry.
-\newblock Quantal phase factors accompanying adiabatic changes.
-\newblock \emph{Proceedings of the Royal Society A}, 392\penalty0
-  (1802):\penalty0 45--57, 1984.
-\newblock \doi{10.1098/rspa.1984.0023}.
-
-\bibitem[Bollerslev(1986)]{bollerslev1986}
-T.~Bollerslev.
-\newblock Generalized autoregressive conditional heteroskedasticity.
-\newblock \emph{Journal of Econometrics}, 31\penalty0 (3):\penalty0 307--327,
-  1986.
-\newblock \doi{10.1016/0304-4076(86)90063-1}.
-
-\bibitem[Born and Fock(1928)]{born_fock1928}
-M.~Born and V.~Fock.
-\newblock {Beweis des Adiabatensatzes}.
-\newblock \emph{Zeitschrift f{\"u}r Physik}, 51\penalty0 (3--4):\penalty0
-  165--180, 1928.
-\newblock \doi{10.1007/BF01343193}.
-
-\bibitem[Braunstein and Caves(1994)]{braunstein_caves1994}
-S.~L. Braunstein and C.~M. Caves.
-\newblock Statistical distance and the geometry of quantum states.
-\newblock \emph{Physical Review Letters}, 72\penalty0 (22):\penalty0
-  3439--3443, 1994.
-\newblock \doi{10.1103/PhysRevLett.72.3439}.
-
-\bibitem[Brody and Hughston(2001)]{brody_hughston2001}
-D.~C. Brody and L.~P. Hughston.
-\newblock Interest rates and information geometry.
-\newblock \emph{Proceedings of the Royal Society A}, 457\penalty0
-  (2010):\penalty0 1343--1363, 2001.
-\newblock \doi{10.1098/rspa.2000.0722}.
-
-\bibitem[Bronstein et~al.(2021)Bronstein, Bruna, Cohen, and
-  Veli{\v{c}}kovi{\'{c}}]{bronstein2021}
-M.~M. Bronstein, J.~Bruna, T.~Cohen, and P.~Veli{\v{c}}kovi{\'{c}}.
-\newblock Geometric deep learning: Grids, groups, graphs, geodesics, and
-  gauges.
-\newblock arXiv preprint arXiv:2104.13478, 2021.
-
-\bibitem[Busemeyer and Bruza(2012)]{busemeyer2012}
-J.~R. Busemeyer and P.~D. Bruza.
-\newblock \emph{Quantum Models of Cognition and Decision}.
-\newblock Cambridge University Press, 2012.
-
-\bibitem[Candelori et~al.(2025)Candelori, Abanov, Berger, Hogan, Kirakosyan,
-  Musaelian, Samson, Smith, Villani, Wells, and Xu]{candelori2025}
+\bibitem{candelori2025}
 L.~Candelori, A.~G. Abanov, J.~Berger, C.~J. Hogan, V.~Kirakosyan,
-  K.~Musaelian, R.~Samson, J.~E.~T. Smith, D.~Villani, M.~T. Wells, and M.~Xu.
-\newblock Robust estimation of the intrinsic dimension of data sets with
-  quantum cognition machine learning.
-\newblock \emph{Scientific Reports}, 15:\penalty0 6933, 2025.
-\newblock \doi{10.1038/s41598-025-91676-8}.
+  K.~Musaelian, R.~Samson, J.~E.~T. Smith, D.~Villani, M.~T. Wells, M.~Xu,
+  Robust estimation of the intrinsic dimension of data sets with quantum
+  cognition machine learning, Scientific Reports 15 (2025) 6933.
+\newblock \href {https://doi.org/10.1038/s41598-025-91676-8}
+  {\path{doi:10.1038/s41598-025-91676-8}}.
 
-\bibitem[Caro et~al.(2025)Caro, Kirakosyan, Abanov, Busemeyer, Candelori,
-  Hartmann, Lam, Musaelian, Samson, Steinacker, Villani, Wells, Wenstrup, and
-  Xu]{dicaro2025}
-G.~Di Caro, V.~Kirakosyan, A.~G. Abanov, J.~R. Busemeyer, L.~Candelori,
-  N.~Hartmann, E.~T. Lam, K.~Musaelian, R.~Samson, H.~Steinacker, D.~Villani,
-  M.~T. Wells, R.~J. Wenstrup, and M.~Xu.
-\newblock Quantum cognition machine learning for forecasting chromosomal
-  instability.
-\newblock arXiv preprint arXiv:2506.03199, 2025.
+\bibitem{abanov2025}
+A.~G. Abanov, L.~Candelori, H.~C. Steinacker, M.~T. Wells, J.~R. Busemeyer,
+  V.~Kirakosyan, N.~Marzari, S.~Pinnamaneni, D.~Villani, M.~Xu, K.~Musaelian,
+  Quantum geometry of data, arXiv preprint arXiv:2507.21135 (2025).
 
-\bibitem[Chern(1946)]{chern1946}
-S.-S. Chern.
-\newblock Characteristic classes of {H}ermitian manifolds.
-\newblock \emph{Annals of Mathematics}, 47\penalty0 (1):\penalty0 85--121,
-  1946.
-\newblock \doi{10.2307/1969037}.
-
-\bibitem[Chow et~al.(1999)Chow, Jacquier, Kritzman, and Lowry]{chow1999}
-G.~Chow, E.~Jacquier, M.~Kritzman, and K.~Lowry.
-\newblock Optimal portfolios in good times and bad.
-\newblock \emph{Financial Analysts Journal}, 55\penalty0 (3):\penalty0 65--73,
-  1999.
-\newblock \doi{10.2469/faj.v55.n3.2273}.
-
-\bibitem[Cramér(1946)]{cramer1946}
-H.~Cramér.
-\newblock \emph{Mathematical Methods of Statistics}.
-\newblock Princeton University Press, 1946.
-
-\bibitem[do~Carmo(1992)]{docarmo1992}
-M.~P. do~Carmo.
-\newblock \emph{Riemannian Geometry}.
-\newblock Birkh{\"a}user, Boston, 1992.
-\newblock ISBN 978-0-8176-3490-2.
-
-\bibitem[Gidea and Katz(2018)]{gidea_katz2018}
-M.~Gidea and Y.~A. Katz.
-\newblock Topological data analysis of financial time series: Landscapes of
-  crashes.
-\newblock \emph{Physica A}, 491:\penalty0 820--834, 2018.
-\newblock \doi{10.1016/j.physa.2017.09.028}.
-
-\bibitem[Hamilton(1989)]{hamilton1989}
-J.~D. Hamilton.
-\newblock A new approach to the economic analysis of nonstationary time series
-  and the business cycle.
-\newblock \emph{Econometrica}, 57\penalty0 (2):\penalty0 357--384, 1989.
-\newblock \doi{10.2307/1912559}.
-
-\bibitem[Hansen et~al.(2011)Hansen, Lunde, and Nason]{hansen2011}
-P.~R. Hansen, A.~Lunde, and J.~M. Nason.
-\newblock The model confidence set.
-\newblock \emph{Econometrica}, 79\penalty0 (2):\penalty0 453--497, 2011.
-\newblock \doi{10.3982/ECTA5771}.
-
-\bibitem[Helstrom(1976)]{helstrom1976}
-C.~W. Helstrom.
-\newblock \emph{Quantum Detection and Estimation Theory}.
-\newblock Academic Press, 1976.
-
-\bibitem[Hoerl and Kennard(1970)]{hoerl_kennard1970}
-A.~E. Hoerl and R.~W. Kennard.
-\newblock Ridge regression: Biased estimation for nonorthogonal problems.
-\newblock \emph{Technometrics}, 12\penalty0 (1):\penalty0 55--67, 1970.
-\newblock \doi{10.1080/00401706.1970.10488634}.
-
-\bibitem[Horvath et~al.(2024)Horvath, Issa, and Muguruza]{horvath2024}
-B.~Horvath, Z.~Issa, and A.~Muguruza.
-\newblock Clustering market regimes using the {W}asserstein distance.
-\newblock \emph{Journal of Computational Finance}, 2024.
-\newblock \doi{10.21314/jcf.2024.005}.
-
-\bibitem[Issa and Horvath(2023)]{issa_horvath2023}
-Z.~Issa and B.~Horvath.
-\newblock Non-parametric online market regime detection and regime clustering
-  for multidimensional and path-dependent data structures.
-\newblock arXiv preprint arXiv:2306.15835, 2023.
-
-\bibitem[{J.P. Morgan}(1996)]{jpmorgan1996}
-{J.P. Morgan}.
-\newblock Riskmetrics---technical document.
-\newblock Technical report, J.P. Morgan/Reuters, 1996.
-
-\bibitem[Kato(1966)]{kato1966}
-T.~Kato.
-\newblock \emph{Perturbation Theory for Linear Operators}.
-\newblock Springer-Verlag, 1966.
-
-\bibitem[Killick et~al.(2012)Killick, Fearnhead, and Eckley]{killick2012}
-R.~Killick, P.~Fearnhead, and I.~A. Eckley.
-\newblock Optimal detection of changepoints with a linear computational cost.
-\newblock \emph{Journal of the American Statistical Association}, 107\penalty0
-  (500):\penalty0 1590--1598, 2012.
-\newblock \doi{10.1080/01621459.2012.737745}.
-
-\bibitem[Kritzman et~al.(2011)Kritzman, Li, Page, and Rigobon]{kritzman2011}
-M.~Kritzman, Y.~Li, S.~Page, and R.~Rigobon.
-\newblock Principal components as a measure of systemic risk.
-\newblock \emph{The Journal of Portfolio Management}, 37\penalty0 (4):\penalty0
-  112--126, 2011.
-
-\bibitem[Laloux et~al.(1999)Laloux, Cizeau, Bouchaud, and Potters]{laloux1999}
-L.~Laloux, P.~Cizeau, J.-P. Bouchaud, and M.~Potters.
-\newblock Noise dressing of financial correlation matrices.
-\newblock \emph{Physical Review Letters}, 83\penalty0 (7):\penalty0 1467--1470,
-  1999.
-\newblock \doi{10.1103/PhysRevLett.83.1467}.
-
-\bibitem[Mahalanobis(1936)]{mahalanobis1936}
-P.~C. Mahalanobis.
-\newblock On the generalised distance in statistics.
-\newblock \emph{Proceedings of the National Institute of Sciences of India},
-  2\penalty0 (1):\penalty0 49--55, 1936.
-
-\bibitem[Margolus and Levitin(1998)]{margolus1998}
-N.~Margolus and L.~B. Levitin.
-\newblock The maximum speed of dynamical evolution.
-\newblock \emph{Physica D: Nonlinear Phenomena}, 120\penalty0 (1--2):\penalty0
-  188--195, 1998.
-\newblock \doi{10.1016/S0167-2789(98)00054-2}.
-
-\bibitem[Musaelian et~al.(2024)Musaelian, Abanov, Berger, Candelori,
-  Kirakosyan, Samson, Smith, and Villani]{musaelian2024}
+\bibitem{musaelian2024}
 K.~Musaelian, A.~Abanov, J.~Berger, L.~Candelori, V.~Kirakosyan, R.~Samson,
-  J.~Smith, and D.~Villani.
-\newblock Quantum cognition machine learning: {AI} needs quantum.
-\newblock Technical report, Qognitive, Inc., 2024.
-\newblock Technical white paper (not peer-reviewed).
+  J.~Smith, D.~Villani, Quantum cognition machine learning: {AI} needs quantum,
+  Tech. rep., Qognitive, Inc., technical white paper (not peer-reviewed)
+  (2024).
 
-\bibitem[Nakahara(2003)]{nakahara2003}
-M.~Nakahara.
-\newblock \emph{Geometry, Topology and Physics}.
-\newblock Taylor \& Francis, 2nd edition, 2003.
+\bibitem{samson2024}
+R.~Samson, J.~Berger, L.~Candelori, V.~Kirakosyan, K.~Musaelian, D.~Villani,
+  Quantum cognition machine learning: Financial forecasting, Tech. rep.,
+  Qognitive, Inc., technical white paper (not peer-reviewed) (2024).
 
-\bibitem[Page(1954)]{page1954}
-E.~S. Page.
-\newblock Continuous inspection schemes.
-\newblock \emph{Biometrika}, 41\penalty0 (1/2):\penalty0 100--115, 1954.
-\newblock \doi{10.2307/2333009}.
+\bibitem{timmermann2006}
+A.~Timmermann, Forecast combinations, in: G.~Elliott, C.~W.~J. Granger,
+  A.~Timmermann (Eds.), Handbook of Economic Forecasting, Vol.~1, Elsevier,
+  2006, Ch.~4, pp. 135--196.
 
-\bibitem[Pancharatnam(1956)]{pancharatnam1956}
-S.~Pancharatnam.
-\newblock Generalized theory of interference, and its applications.
-\newblock \emph{Proceedings of the Indian Academy of Sciences, Section A},
-  44:\penalty0 247--262, 1956.
-\newblock \doi{10.1007/BF03046050}.
+\bibitem{bates_granger1969}
+J.~M. Bates, C.~W.~J. Granger, The combination of forecasts, Journal of the
+  Operational Research Society 20~(4) (1969) 451--468.
 
-\bibitem[Pezzè et~al.(2018)Pezzè, Smerzi, Oberthaler, Schmied, and
-  Treutlein]{pezze2018}
-L.~Pezzè, A.~Smerzi, M.~K. Oberthaler, R.~Schmied, and P.~Treutlein.
-\newblock Quantum metrology with nonclassical states of atomic ensembles.
-\newblock \emph{Reviews of Modern Physics}, 90:\penalty0 035005, 2018.
-\newblock \doi{10.1103/RevModPhys.90.035005}.
+\bibitem{amari_nagaoka2000}
+S.~Amari, H.~Nagaoka, Methods of Information Geometry, American Mathematical
+  Society, 2000.
 
-\bibitem[Plerou et~al.(2002)Plerou, Gopikrishnan, Rosenow, Amaral, and
-  Stanley]{plerou2002}
-V.~Plerou, P.~Gopikrishnan, B.~Rosenow, L.~A.~N. Amaral, and H.~E. Stanley.
-\newblock A random matrix approach to cross-correlations in financial data.
-\newblock \emph{Physical Review E}, 65:\penalty0 066126, 2002.
-\newblock \doi{10.1103/PhysRevE.65.066126}.
+\bibitem{brody_hughston2001}
+D.~C. Brody, L.~P. Hughston, Interest rates and information geometry,
+  Proceedings of the Royal Society A 457~(2010) (2001) 1343--1363.
+\newblock \href {https://doi.org/10.1098/rspa.2000.0722}
+  {\path{doi:10.1098/rspa.2000.0722}}.
 
-\bibitem[Politis and White(2004)]{politis2004}
-Dimitris~N. Politis and Halbert White.
-\newblock Automatic block-length selection for the dependent bootstrap.
-\newblock \emph{Econometric Reviews}, 23\penalty0 (1):\penalty0 53--70, 2004.
-\newblock \doi{10.1081/ETC-120028836}.
+\bibitem{taylor2019}
+S.~Taylor, Clustering financial return distributions using the {F}isher
+  information metric, Entropy 21~(2) (2019) 110.
+\newblock \href {https://doi.org/10.3390/e21020110}
+  {\path{doi:10.3390/e21020110}}.
 
-\bibitem[Provost and Vallee(1980)]{provost_vallee1980}
-J.~P. Provost and G.~Vallee.
-\newblock Riemannian structure on manifolds of quantum states.
-\newblock \emph{Communications in Mathematical Physics}, 76\penalty0
-  (3):\penalty0 289--301, 1980.
-\newblock \doi{10.1007/BF02193559}.
+\bibitem{horvath2024}
+B.~Horvath, Z.~Issa, A.~Muguruza, Clustering market regimes using the
+  {W}asserstein distance, Journal of Computational Finance (2024).
+\newblock \href {https://doi.org/10.21314/jcf.2024.005}
+  {\path{doi:10.21314/jcf.2024.005}}.
 
-\bibitem[Rosaler et~al.(2025)Rosaler, Candelori, Kirakosyan, Musaelian, Samson,
-  Wells, Mehta, and Pasquali]{rosaler2025}
-J.~Rosaler, L.~Candelori, V.~Kirakosyan, K.~Musaelian, R.~Samson, M.~T. Wells,
-  D.~Mehta, and S.~Pasquali.
-\newblock Supervised similarity for high-yield corporate bonds with quantum
-  cognition machine learning.
-\newblock arXiv preprint arXiv:2502.01495, 2025.
+\bibitem{gidea_katz2018}
+M.~Gidea, Y.~A. Katz, Topological data analysis of financial time series:
+  Landscapes of crashes, Physica A 491 (2018) 820--834.
+\newblock \href {https://doi.org/10.1016/j.physa.2017.09.028}
+  {\path{doi:10.1016/j.physa.2017.09.028}}.
 
-\bibitem[Samson et~al.(2024)Samson, Berger, Candelori, Kirakosyan, Musaelian,
-  and Villani]{samson2024}
-R.~Samson, J.~Berger, L.~Candelori, V.~Kirakosyan, K.~Musaelian, and
-  D.~Villani.
-\newblock Quantum cognition machine learning: Financial forecasting.
-\newblock Technical report, Qognitive, Inc., 2024.
-\newblock Technical white paper (not peer-reviewed).
-
-\bibitem[Samson et~al.(2025)Samson, Banner, Candelori, Cottrell, Matteo,
-  Duchnowski, Kirakosyan, Marques, Musaelian, Pasquali, Stever, and
-  Villani]{samson2025}
-R.~Samson, A.~Banner, L.~Candelori, S.~Cottrell, T.~Di Matteo, P.~Duchnowski,
-  V.~Kirakosyan, J.~Marques, K.~Musaelian, S.~Pasquali, R.~Stever, and
-  D.~Villani.
-\newblock Supervised similarity for firm linkages.
-\newblock arXiv preprint arXiv:2506.19856, 2025.
-
-\bibitem[Sandhu et~al.(2016)Sandhu, Georgiou, Reznik, Zhu, Kolesov,
-  Senbabaoglu, and Tannenbaum]{sandhu2016}
+\bibitem{sandhu2016}
 R.~S. Sandhu, T.~T. Georgiou, E.~Reznik, L.~Zhu, I.~Kolesov, Y.~Senbabaoglu,
-  and A.~Tannenbaum.
-\newblock Ricci curvature: An economic indicator for market fragility and
-  systemic risk.
-\newblock \emph{Science Advances}, 2\penalty0 (6):\penalty0 e1501495, 2016.
-\newblock \doi{10.1126/sciadv.1501495}.
+  A.~Tannenbaum, Ricci curvature: An economic indicator for market fragility
+  and systemic risk, Science Advances 2~(6) (2016) e1501495.
+\newblock \href {https://doi.org/10.1126/sciadv.1501495}
+  {\path{doi:10.1126/sciadv.1501495}}.
 
-\bibitem[Schreiber(2000)]{schreiber2000}
-T.~Schreiber.
-\newblock Measuring information transfer.
-\newblock \emph{Physical Review Letters}, 85\penalty0 (2):\penalty0 461--464,
-  2000.
-\newblock \doi{10.1103/PhysRevLett.85.461}.
+\bibitem{laloux1999}
+L.~Laloux, P.~Cizeau, J.-P. Bouchaud, M.~Potters, Noise dressing of financial
+  correlation matrices, Physical Review Letters 83~(7) (1999) 1467--1470.
+\newblock \href {https://doi.org/10.1103/PhysRevLett.83.1467}
+  {\path{doi:10.1103/PhysRevLett.83.1467}}.
 
-\bibitem[Schuld and Killoran(2019)]{schuld_killoran2019}
-M.~Schuld and N.~Killoran.
-\newblock Quantum machine learning in feature {H}ilbert spaces.
-\newblock \emph{Physical Review Letters}, 122:\penalty0 040504, 2019.
-\newblock \doi{10.1103/PhysRevLett.122.040504}.
+\bibitem{issa_horvath2023}
+Z.~Issa, B.~Horvath, Non-parametric online market regime detection and regime
+  clustering for multidimensional and path-dependent data structures, arXiv
+  preprint arXiv:2306.15835 (2023).
 
-\bibitem[Simon(1983)]{simon1983}
-B.~Simon.
-\newblock Holonomy, the quantum adiabatic theorem, and {B}erry's phase.
-\newblock \emph{Physical Review Letters}, 51\penalty0 (24):\penalty0
-  2167--2170, 1983.
-\newblock \doi{10.1103/PhysRevLett.51.2167}.
+\bibitem{bronstein2021}
+M.~M. Bronstein, J.~Bruna, T.~Cohen, P.~Veli{\v{c}}kovi{\'{c}}, Geometric deep
+  learning: Grids, groups, graphs, geodesics, and gauges, arXiv preprint
+  arXiv:2104.13478 (2021).
 
-\bibitem[Taylor(2019)]{taylor2019}
-S.~Taylor.
-\newblock Clustering financial return distributions using the {F}isher
-  information metric.
-\newblock \emph{Entropy}, 21\penalty0 (2):\penalty0 110, 2019.
-\newblock \doi{10.3390/e21020110}.
+\bibitem{bollerslev1986}
+T.~Bollerslev, Generalized autoregressive conditional heteroskedasticity,
+  Journal of Econometrics 31~(3) (1986) 307--327.
+\newblock \href {https://doi.org/10.1016/0304-4076(86)90063-1}
+  {\path{doi:10.1016/0304-4076(86)90063-1}}.
 
-\bibitem[Timmermann(2006)]{timmermann2006}
-A.~Timmermann.
-\newblock Forecast combinations.
-\newblock In G.~Elliott, C.~W.~J. Granger, and A.~Timmermann, editors,
-  \emph{Handbook of Economic Forecasting}, volume~1, chapter~4, pages 135--196.
-  Elsevier, 2006.
+\bibitem{provost_vallee1980}
+J.~P. Provost, G.~Vallee, Riemannian structure on manifolds of quantum states,
+  Communications in Mathematical Physics 76~(3) (1980) 289--301.
+\newblock \href {https://doi.org/10.1007/BF02193559}
+  {\path{doi:10.1007/BF02193559}}.
 
-\bibitem[Tóth and Apellaniz(2014)]{toth2014}
-G.~Tóth and I.~Apellaniz.
-\newblock Quantum metrology from a quantum information science perspective.
-\newblock \emph{Journal of Physics A: Mathematical and Theoretical},
-  47\penalty0 (42):\penalty0 424006, 2014.
-\newblock \doi{10.1088/1751-8113/47/42/424006}.
+\bibitem{berry1984}
+M.~V. Berry, Quantal phase factors accompanying adiabatic changes, Proceedings
+  of the Royal Society A 392~(1802) (1984) 45--57.
+\newblock \href {https://doi.org/10.1098/rspa.1984.0023}
+  {\path{doi:10.1098/rspa.1984.0023}}.
 
-\bibitem[Wald(1947)]{wald1947}
-A.~Wald.
-\newblock \emph{Sequential Analysis}.
-\newblock John Wiley \& Sons, 1947.
+\bibitem{braunstein_caves1994}
+S.~L. Braunstein, C.~M. Caves, Statistical distance and the geometry of quantum
+  states, Physical Review Letters 72~(22) (1994) 3439--3443.
+\newblock \href {https://doi.org/10.1103/PhysRevLett.72.3439}
+  {\path{doi:10.1103/PhysRevLett.72.3439}}.
+
+\bibitem{pezze2018}
+L.~Pezzè, A.~Smerzi, M.~K. Oberthaler, R.~Schmied, P.~Treutlein, Quantum
+  metrology with nonclassical states of atomic ensembles, Reviews of Modern
+  Physics 90 (2018) 035005.
+\newblock \href {https://doi.org/10.1103/RevModPhys.90.035005}
+  {\path{doi:10.1103/RevModPhys.90.035005}}.
+
+\bibitem{toth2014}
+G.~Tóth, I.~Apellaniz, Quantum metrology from a quantum information science
+  perspective, Journal of Physics A: Mathematical and Theoretical 47~(42)
+  (2014) 424006.
+\newblock \href {https://doi.org/10.1088/1751-8113/47/42/424006}
+  {\path{doi:10.1088/1751-8113/47/42/424006}}.
+
+\bibitem{cramer1946}
+H.~Cramér, Mathematical Methods of Statistics, Princeton University Press,
+  1946.
+
+\bibitem{helstrom1976}
+C.~W. Helstrom, Quantum Detection and Estimation Theory, Academic Press, 1976.
+
+\bibitem{laloux2000}
+L.~Laloux, P.~Cizeau, M.~Potters, J.-P. Bouchaud, Random matrix theory and
+  financial correlations, International Journal of Theoretical and Applied
+  Finance 3~(3) (2000) 391--397.
+\newblock \href {https://doi.org/10.1142/S0219024900000255}
+  {\path{doi:10.1142/S0219024900000255}}.
+
+\bibitem{bai_ng2002}
+J.~Bai, S.~Ng, Determining the number of factors in approximate factor models,
+  Econometrica 70~(1) (2002) 191--221.
+\newblock \href {https://doi.org/10.1111/1468-0262.00273}
+  {\path{doi:10.1111/1468-0262.00273}}.
+
+\bibitem{simon1983}
+B.~Simon, Holonomy, the quantum adiabatic theorem, and {B}erry's phase,
+  Physical Review Letters 51~(24) (1983) 2167--2170.
+\newblock \href {https://doi.org/10.1103/PhysRevLett.51.2167}
+  {\path{doi:10.1103/PhysRevLett.51.2167}}.
+
+\bibitem{chow1999}
+G.~Chow, E.~Jacquier, M.~Kritzman, K.~Lowry, Optimal portfolios in good times
+  and bad, Financial Analysts Journal 55~(3) (1999) 65--73.
+\newblock \href {https://doi.org/10.2469/faj.v55.n3.2273}
+  {\path{doi:10.2469/faj.v55.n3.2273}}.
+
+\bibitem{pancharatnam1956}
+S.~Pancharatnam, Generalized theory of interference, and its applications,
+  Proceedings of the Indian Academy of Sciences, Section A 44 (1956) 247--262.
+\newblock \href {https://doi.org/10.1007/BF03046050}
+  {\path{doi:10.1007/BF03046050}}.
+
+\bibitem{chern1946}
+S.-S. Chern, Characteristic classes of {H}ermitian manifolds, Annals of
+  Mathematics 47~(1) (1946) 85--121.
+\newblock \href {https://doi.org/10.2307/1969037} {\path{doi:10.2307/1969037}}.
+
+\bibitem{nakahara2003}
+M.~Nakahara, Geometry, Topology and Physics, 2nd Edition, Taylor \& Francis,
+  2003.
+
+\bibitem{schuld_killoran2019}
+M.~Schuld, N.~Killoran, Quantum machine learning in feature {H}ilbert spaces,
+  Physical Review Letters 122 (2019) 040504.
+\newblock \href {https://doi.org/10.1103/PhysRevLett.122.040504}
+  {\path{doi:10.1103/PhysRevLett.122.040504}}.
+
+\bibitem{busemeyer2012}
+J.~R. Busemeyer, P.~D. Bruza, Quantum Models of Cognition and Decision,
+  Cambridge University Press, 2012.
+
+\bibitem{kato1966}
+T.~Kato, Perturbation Theory for Linear Operators, Springer-Verlag, 1966.
 
 \end{thebibliography}

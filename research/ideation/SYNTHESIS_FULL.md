@@ -1,14 +1,16 @@
 # Research Ideation Swarm — Full Synthesis Report
 
-**Date**: 2026-03-08
-**Rounds**: 120
+> **Not Paper 1.** This file is an internal ideation log (smoke tests, alternate protocols, exploratory *d* values). Do **not** treat swarm metrics as manuscript claims unless the same numbers appear in `paper/qcml_geometric_sde.tex` and pass `make verify` against `memory/results_registry.yaml`.
+
+**Date**: 2026-03-10 (updated from 2026-03-08)
+**Rounds**: 145
 **Protocol**: 3–4 Knights per question, smoke test on 4 crises (GFC, COVID, 2022, SVB), keep if d > 0.3
 
 ---
 
 ## Executive Summary
 
-The 120-round ideation swarm systematically explored the QCML geometric observatory framework across 11 research themes. Of 120 questions, **82 were kept** (productive directions), **29 rejected** (dead ends), and **9 flagged for further investigation**. The most impactful discoveries are embedding-level improvements that provide multiplicative gains across all observables: higher Hilbert dimension (d=16, +131%) and soft normalization (+0.44d). The strongest new fusion method is hierarchical clustering (d=1.775), and the strongest single detector overall is **ground state energy E_0(x)** (Q107, d=1.411), discovered in the intrinsic dimension round. The spectral gap ratio (Q102, d=1.175) also outperforms the existing IPR benchmark. Several important corrections emerged: Berry Phase Rate lead time is 4 days (not 90), HPO bias is +0.415d, Reduced Purity is unstable on holdout, and the QCML embedding degrades dimension signals by ~0.37 d-units vs classical PCA (Absorption Ratio).
+The 145-round ideation swarm systematically explored the QCML geometric observatory framework across 13 research themes. Of 145 questions, **92 were kept** (productive directions), **44 rejected** (dead ends), and **9 flagged for further investigation** (63% overall keep rate). The most impactful discoveries are embedding-level improvements that provide multiplicative gains across all observables: higher Hilbert dimension (d=16, +131%) and soft normalization (+0.44d). The strongest new fusion method is hierarchical clustering (d=1.775), and the strongest single detector overall is **ground state energy E_0(x)** (Q107, d=1.411), discovered in the intrinsic dimension round. Two new observables have been **promoted to the main codebase**: Level Spacing Ratio (Q123, systemic crisis specialist: GFC d=3.27, COVID d=3.44) and Quantum Relative Entropy with expanding window (Q127, median d=1.578, all crises d>0.8). Rounds 121-145 explored novel observables II (quantum coherence, Renyi entropy, circuit complexity), scalability (streaming, GPU, minimum viable observatory), and interpretability (Shapley values, counterfactuals, Bloch sphere visualization). Several important corrections emerged: Berry Phase Rate lead time is 4 days (not 90), HPO bias is +0.415d, Reduced Purity is unstable on holdout, and the QCML embedding degrades dimension signals by ~0.37 d-units vs classical PCA (Absorption Ratio).
 
 ---
 
@@ -88,6 +90,18 @@ Motivated by Candelori et al. (2025): QCML quantum metric eigenvalues reveal int
 
 **Cross-asset & practical (Q117-Q120)**: Dimension varies by asset class (Q117 investigate — trivially true, but QCML underperforms AR for measuring it). Real-time dashboard is engineering, not research (Q118 reject). Granger causality of d(t) → vol is unlikely given 0/40 prior null results (Q119 investigate). Adaptive Hilbert dim has a circular dependency: need dim to estimate d, need d to set dim (Q120 investigate — simplest version uses PCA variance ratio, which doesn't need QCML).
 
+### Theme 12: Novel Observables II (Q121–Q128) — 3 keep, 5 reject
+
+Second wave of observable proposals, targeting quantum information measures. **Quantum coherence** (Q122, d=1.03) is the standout — l1-norm of off-diagonal density matrix elements in the energy basis, with near-zero correlation (r=0.06) to existing channels. **Level spacing ratio** (Q123) is a systemic crisis specialist: bimodal performance with GFC d=3.27 and COVID d=3.44 but weak on localized crises (median d=0.50). **Quantum relative entropy** (Q127, d=1.578) with expanding reference window is exceptional — all 4 smoke crises above d=0.8. Both Q123 and Q127 have been promoted to the main observatory codebase. Rejected: Wigner function negativity (Q121, negative d — crises reduce negativity), Renyi entropy (Q124, marginal over von Neumann), channel capacity (Q125, Holevo bound intractable), circuit complexity (Q126, NP-hard), Uhlmann phase (Q128, requires mixed-state preparation).
+
+### Theme 13: Scalability (Q129–Q136) — 2 keep, 6 reject
+
+Most-rejected theme — most proposals are premature optimization. **Minimum viable observatory** (Q131, keep) is well-posed: feature selection from the existing 44x17 d-matrix to find the smallest observatory maintaining d>0.5. **Tiered alerting** (Q136, keep) is practical: fast/cheap observables (rolling vol, spectral gap) for screening, expensive ones (Berry phase, QRE) for confirmation. Rejected: streaming updates (Q129, rank-1 perturbation theory doesn't preserve spectral structure), random projections (Q130, JL preserves distances but not eigenvectors), GPU acceleration (Q132, overhead dominates for d≤16), missing data (Q133, deferred to engineering), caching (Q134, trivial speedup), Nystrom approximation (Q135, same eigenvector problem as JL).
+
+### Theme 14: Interpretability (Q137–Q145) — 5 keep, 4 reject
+
+Strong theme for Paper 2 framing. **Shapley values** (Q137, keep) for fusion decomposition is tractable (2^4=16 coalitions for top-4 channels) and directly validates specialization claims. **Counterfactual ablation** (Q142, keep) is the strongest interpretability question — leave-one-out analysis quantifies marginal value of each observable and is computable from existing data. **Decision tree surrogate** (Q143, keep) for fusion provides an interpretable approximation — high fidelity (>90%) proves the fusion reduces to simple rules, low fidelity proves the fusion captures genuinely nonlinear interactions. **Bloch sphere visualization** (Q139, keep) is mathematically clean for the (2,4) partition. **Geometric specialization theory** (Q145, keep) is the most theoretically ambitious — predicts observable gradient concentration in parameter space determines crisis-type specialization. Rejected: feature attribution (Q138, SHAP on features conflates embedding with detection), mechanism identification (Q140, requires causal model we don't have), narrative generation (Q141, LLM-based, not research), LIME (Q144, local linearity assumption fails for threshold-based detectors).
+
 ---
 
 ## Statistical Summary
@@ -105,11 +119,14 @@ Motivated by Candelori et al. (2025): QCML quantum metric eigenvalues reveal int
 | Competitive (Q86-95) | 8 | 2 | 0 | 80% |
 | Wild Cards (Q96-100) | 4 | 1 | 0 | 80% |
 | Intrinsic Dimension (Q101-120) | 7 | 8 | 5 | 35% |
-| **TOTAL** | **82** | **29** | **9** | **68%** |
+| Novel Observables II (Q121-128) | 3 | 5 | 0 | 38% |
+| Scalability (Q129-136) | 2 | 6 | 0 | 25% |
+| Interpretability (Q137-145) | 5 | 4 | 0 | 56% |
+| **TOTAL** | **92** | **44** | **9** | **63%** |
 
 ---
 
-## Top 17 Discoveries by Effect Size
+## Top 20 Discoveries by Effect Size
 
 | Rank | ID | d | Question | Verdict |
 |------|----|---|----------|---------|
@@ -117,19 +134,22 @@ Motivated by Candelori et al. (2025): QCML quantum metric eigenvalues reveal int
 | 2 | Q45 | 1.775 | HClust fusion | Keep — best fusion method |
 | 3 | Q30 | 1.690 | Top-3 curated ensemble | Keep — 130x over naive |
 | 4 | Q93 | 1.631 | VIX benchmark | Keep — upper bound where options exist |
-| 5 | **Q107** | **1.411** | **Ground state energy E_0(x)** | **Keep — strongest single detector (+69% vs Reduced Purity)** |
-| 6 | Q63 | 1.375 | Multi-market embedding | Keep — best cross-asset |
-| 7 | Q65 | 1.366 | Market breadth embedding | Keep — novel application |
-| 8 | Q92 | 1.329 | Turbulence index | Keep — strong classical competitor |
-| 9 | Q16 | 1.327 | Hilbert dim=16 | Keep — highest-impact pipeline change |
-| 10 | Q42 | 1.260 | Switching model | Keep — best per-regime selector |
-| 11 | Q41 | 1.258 | Stacking/GBM | **Reject** — catastrophic overfitting |
-| 12 | **Q102** | **1.175** | **Spectral gap ratio** | **Keep — +48% vs IPR, RMT connection** |
-| 13 | Q24 | 1.144 | Soft normalization | Keep — free win |
-| 14 | Q02 | 1.121 | OTOC detector | Keep — novel quantum chaos observable |
-| 15 | Q44 | 1.009 | MI-weighted fusion | Keep — information-theoretic |
-| 16 | Q90 | 0.962 | Absorption ratio | Keep — validates DimCollapse |
-| 17 | Q31 | 0.898 | BOCPD short hazard | Keep — resurrected from dead |
+| 5 | **Q127** | **1.578** | **QRE expanding window** | **Keep — promoted to observatory. All crises d>0.8** |
+| 6 | **Q107** | **1.411** | **Ground state energy E_0(x)** | **Keep — strongest single detector (+69% vs Reduced Purity)** |
+| 7 | Q63 | 1.375 | Multi-market embedding | Keep — best cross-asset |
+| 8 | Q65 | 1.366 | Market breadth embedding | Keep — novel application |
+| 9 | Q92 | 1.329 | Turbulence index | Keep — strong classical competitor |
+| 10 | Q16 | 1.327 | Hilbert dim=16 | Keep — highest-impact pipeline change |
+| 11 | Q42 | 1.260 | Switching model | Keep — best per-regime selector |
+| 12 | Q41 | 1.258 | Stacking/GBM | **Reject** — catastrophic overfitting |
+| 13 | **Q102** | **1.175** | **Spectral gap ratio** | **Keep — +48% vs IPR, RMT connection** |
+| 14 | Q24 | 1.144 | Soft normalization | Keep — free win |
+| 15 | Q02 | 1.121 | OTOC detector | Keep — novel quantum chaos observable |
+| 16 | **Q122** | **1.03** | **Quantum coherence (l1-norm)** | **Keep — non-redundant, RMT-grounded** |
+| 17 | Q44 | 1.009 | MI-weighted fusion | Keep — information-theoretic |
+| 18 | Q90 | 0.962 | Absorption ratio | Keep — validates DimCollapse |
+| 19 | Q31 | 0.898 | BOCPD short hazard | Keep — resurrected from dead |
+| 20 | **Q123** | **0.500** | **Level spacing ratio** | **Keep — promoted. Systemic specialist: GFC d=3.27** |
 
 ---
 
@@ -189,12 +209,21 @@ Motivated by Candelori et al. (2025): QCML quantum metric eigenvalues reveal int
 13. **Fix reconstruction-loss optimizer** — gradient-based, then re-test Q105/Q106
 14. **Add Renyi entropy discussion** (Q114) — IPR/PR/SpEnt unification for paper theory section
 
+### Near-term (Rounds 121-145 follow-ups)
+15. **Promote quantum coherence** (Q122, d=1.03) — third new observable for main codebase
+16. **Shapley value fusion decomposition** (Q137) — validates specialization claim
+17. **Counterfactual ablation study** (Q142) — quantifies marginal value per observable
+18. **Minimum viable observatory** (Q131) — feature selection for deployment
+19. **Decision tree surrogate** (Q143) — interpretable fusion approximation
+
 ### Research directions (Future papers)
-15. **Cross-asset generalization study** (Q56–Q65) — bonds, crypto, commodities
-16. **Theoretical paper**: Berry curvature divergence + adiabatic regime + crossover dynamics (Q66–Q73)
-17. **Dead signal resurrection suite** (Q28–Q35) — 8 channels resurrected
-18. **FOMC periodicity** (Q97) — novel finding worth a short note
-19. **Near-miss / severity classification** (Q96, Q98) — graded alert system
+20. **Cross-asset generalization study** (Q56–Q65) — bonds, crypto, commodities
+21. **Theoretical paper**: Berry curvature divergence + adiabatic regime + crossover dynamics (Q66–Q73)
+22. **Dead signal resurrection suite** (Q28–Q35) — 8 channels resurrected
+23. **FOMC periodicity** (Q97) — novel finding worth a short note
+24. **Near-miss / severity classification** (Q96, Q98) — graded alert system
+25. **Geometric specialization theory** (Q145) — gradient concentration in parameter space
+26. **Bloch sphere visualization** (Q139) — state-space representation for interpretability
 
 ---
 

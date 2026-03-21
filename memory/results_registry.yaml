@@ -1,5 +1,8 @@
 # Results Registry: maps every claimed number in the paper to source data.
 #
+# Authoritative for `make verify` / `scripts/verify_paper_numbers.py`.
+# The SQLite registry in `experiments/registry.py` is for experiment bookkeeping; if they disagree, update the SQLite row or this YAML — verification follows YAML.
+#
 # Each claim has:
 #   name:         Human-readable description of the claim
 #   section:      Paper section where this number appears
@@ -8,7 +11,7 @@
 #   json_path:    Dot-notation path to the value in the JSON
 #
 # Canonical runs:
-#   Main comparison: 2026-03-07, 44 methods x 17 crises
+#   Main comparison: 2026-03-11, 46 methods x 17 crises (was 44 pre-LSR/QRE)
 #   Fusion full:     2026-03-04, 22 methods x 15 crises (15 individuals + 7 fusion)
 #   Fusion holdout:  2026-03-04, 22 methods x 4 crises
 #
@@ -18,50 +21,57 @@
 tolerance: 0.02
 
 claims:
-  # --- Table 4: Main comparison (median d, 36 methods x 17 crises) ---
+  # --- Table 4: Main comparison (median d, 46 methods x 17 crises) ---
   - name: "Reduced Purity median d"
     section: "Abstract / Table 4 / Sec 5.1"
     paper_value: 0.83
-    source_json: "experiments/outputs/regime_detection/causal_comparison_20260307_171332.json"
+    source_json: "experiments/outputs/regime_detection/causal_comparison_20260311_010639.json"
     json_path: "summary.median_d.Reduced Purity"
+    verified: true
 
   - name: "Hamilton MS median d"
     section: "Abstract / Table 4 / Sec 5.1"
     paper_value: 0.71
-    source_json: "experiments/outputs/regime_detection/causal_comparison_20260307_171332.json"
+    source_json: "experiments/outputs/regime_detection/causal_comparison_20260311_010639.json"
     json_path: "summary.median_d.Hamilton MS"
+    verified: true
 
   - name: "CUSUM median d"
     section: "Abstract / Table 4 / Sec 5.1"
     paper_value: 0.63
-    source_json: "experiments/outputs/regime_detection/causal_comparison_20260307_171332.json"
+    source_json: "experiments/outputs/regime_detection/causal_comparison_20260311_010639.json"
     json_path: "summary.median_d.CUSUM"
+    verified: true
 
   - name: "Berry Phase Rate median d"
     section: "Abstract / Table 4 / Sec 5.1"
     paper_value: 0.61
-    source_json: "experiments/outputs/regime_detection/causal_comparison_20260307_171332.json"
+    source_json: "experiments/outputs/regime_detection/causal_comparison_20260311_010639.json"
     json_path: "summary.median_d.Berry Phase Rate"
+    verified: true
 
   - name: "Random Forest median d"
     section: "Sec 5.1"
     paper_value: 0.36
-    source_json: "experiments/outputs/regime_detection/causal_comparison_20260307_171332.json"
+    source_json: "experiments/outputs/regime_detection/causal_comparison_20260311_010639.json"
     json_path: "summary.median_d.Random Forest"
+    verified: true
 
   - name: "GARCH(1,1) median d"
     section: "Sec 5.1"
     paper_value: 0.27
-    source_json: "experiments/outputs/regime_detection/causal_comparison_20260307_171332.json"
+    source_json: "experiments/outputs/regime_detection/causal_comparison_20260311_010639.json"
     json_path: "summary.median_d.GARCH(1,1)"
+    verified: true
 
   # --- Friedman test (main comparison) ---
   # Note: tolerance=0.02 is for Cohen's d; chi-sq values need wider tolerance.
   - name: "Friedman chi-squared (main)"
     section: "Abstract / Table 4 / Sec 6"
-    paper_value: 230.51
-    source_json: "experiments/outputs/regime_detection/causal_comparison_20260307_171332.json"
+    paper_value: 233.13
+    source_json: "experiments/outputs/regime_detection/causal_comparison_20260311_010639.json"
     json_path: "summary.friedman_chi_sq"
+    verified: true
 
   # --- Fusion: full (15 crises, fusion_results_20260304_101523.json) ---
   - name: "Spectral Entropy mean d (fusion)"
@@ -69,30 +79,35 @@ claims:
     paper_value: 0.830
     source_json: "experiments/outputs/fusion/fusion_results_20260304_101523.json"
     json_path: "aggregate[0].mean_d"
+    verified: true
 
   - name: "Dimensionality Collapse mean d (fusion)"
     section: "Sec 5.8 / Table fusion"
     paper_value: 0.792
     source_json: "experiments/outputs/fusion/fusion_results_20260304_101523.json"
     json_path: "aggregate[1].mean_d"
+    verified: true
 
   - name: "Regime-Adaptive mean d (fusion)"
     section: "Sec 5.8 / Sec 6 / Sec 7"
     paper_value: 0.774
     source_json: "experiments/outputs/fusion/fusion_results_20260304_101523.json"
     json_path: "aggregate[2].mean_d"
+    verified: true
 
   - name: "Fusion Friedman chi-sq"
     section: "Sec 5.8 / Table fusion caption"
     paper_value: 7.96
     source_json: "experiments/outputs/fusion/fusion_results_20260304_101523.json"
     json_path: "friedman.chi_sq"
+    verified: true
 
   - name: "Fusion Friedman p"
     section: "Sec 5.8"
     paper_value: 0.54
     source_json: "experiments/outputs/fusion/fusion_results_20260304_101523.json"
     json_path: "friedman.p_value"
+    verified: true
 
   - name: "Best SPRT d"
     section: "Sec 5.8 / Sec 6 Limitations"
@@ -100,6 +115,7 @@ claims:
     source_json: "experiments/outputs/fusion/fusion_results_20260304_101523.json"
     json_path: "aggregate[14].mean_d"
     note: "SPRT (decay=0.99)"
+    verified: true
 
   # --- Fusion holdout (4 crises, fusion_results_20260304_101842.json) ---
   - name: "Regime-Adaptive holdout mean d"
@@ -107,40 +123,47 @@ claims:
     paper_value: 0.783
     source_json: "experiments/outputs/fusion/fusion_results_20260304_101842.json"
     json_path: "aggregate[0].mean_d"
+    verified: true
 
   - name: "Reduced Purity holdout d (fusion)"
     section: "Sec 5.8 / Sec 6"
     paper_value: 0.263
     source_json: "experiments/outputs/fusion/fusion_results_20260304_101842.json"
     json_path: "aggregate[19].mean_d"
+    verified: true
 
   - name: "Spectral Entropy holdout d (fusion)"
     section: "Sec 5.8"
     paper_value: 0.494
     source_json: "experiments/outputs/fusion/fusion_results_20260304_101842.json"
     json_path: "aggregate[14].mean_d"
+    verified: true
 
   - name: "Hierarchical Rank holdout d"
     section: "Sec 5.8"
     paper_value: 0.743
     source_json: "experiments/outputs/fusion/fusion_results_20260304_101842.json"
     json_path: "aggregate[1].mean_d"
+    verified: true
 
   - name: "Flat Rank holdout d"
     section: "Sec 5.8"
     paper_value: 0.683
     source_json: "experiments/outputs/fusion/fusion_results_20260304_101842.json"
     json_path: "aggregate[4].mean_d"
+    verified: true
 
   # --- Per-crisis d-values (main comparison, spot checks) ---
   - name: "Berry Phase Rate d on 2008 GFC"
     section: "Table 5 / Results prose"
     paper_value: 0.54
-    source_json: "experiments/outputs/regime_detection/causal_comparison_20260307_171332.json"
+    source_json: "experiments/outputs/regime_detection/causal_comparison_20260311_010639.json"
     json_path: "results.Berry Phase Rate.2008_gfc.d"
+    verified: true
 
   - name: "QFI Determinant d on 2008 GFC"
     section: "Table 5 / Results prose"
     paper_value: 1.73
-    source_json: "experiments/outputs/regime_detection/causal_comparison_20260307_171332.json"
+    source_json: "experiments/outputs/regime_detection/causal_comparison_20260311_010639.json"
     json_path: "results.QFI Determinant.2008_gfc.d"
+    verified: true
