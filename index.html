@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QCML — Geometric Observables for Financial Regime Detection</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,400&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --bg2: #0d1224;
+    --surface: #111830;
+    --surface2: #161f3a;
+    --surface3: #1c2748;
+    --border: rgba(200, 180, 120, 0.08);
+    --border-bright: rgba(200, 180, 120, 0.18);
+    --text: #e8e4dc;
+    --text-dim: #8a8678;
+    --text-muted: #5a5748;
+    --gold: #d4a853;
+    --gold-bright: #ecc060;
+    --gold-dim: rgba(212, 168, 83, 0.08);
+    --teal: #3ecfcf;
+    --teal-dim: rgba(62, 207, 207, 0.06);
+    --cyan: #56d4e8;
+    --blue: #5b8def;
+    --violet: #9b7bea;
+    --rose: #e8637a;
+    --green: #4fd89a;
+    --amber: #e8a84c;
+    --slate: #6b7ea0;
+    --font-display: 'Inter', -apple-system, sans-serif;
+    --font-body: 'Source Serif 4', Georgia, serif;
+    --font-mono: 'JetBrains Mono', 'SF Mono', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html {
+    font-size: 16px;
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    font-family: var(--font-body);
+    color: var(--text);
+    background: var(--bg);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* ─── LAYOUT ─── */
+  .page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 clamp(24px, 5vw, 64px);
+  }
+
+  section {
+    padding: clamp(64px, 10vh, 120px) 0;
+    position: relative;
+  }
+
+  section + section {
+    border-top: 1px solid var(--border);
+  }
+
+  /* ─── REVEAL ANIMATION ─── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: none;
+  }
+  .reveal.visible:nth-child(2) { transition-delay: 0.08s; }
+  .reveal.visible:nth-child(3) { transition-delay: 0.16s; }
+  .reveal.visible:nth-child(4) { transition-delay: 0.24s; }
+  .reveal.visible:nth-child(5) { transition-delay: 0.32s; }
+  .reveal.visible:nth-child(6) { transition-delay: 0.40s; }
+  .reveal.visible:nth-child(7) { transition-delay: 0.48s; }
+
+  /* ═══════════════════════════════════════════
+     SECTION 1: HERO
+     ═══════════════════════════════════════════ */
+  .hero {
+    padding: clamp(80px, 14vh, 160px) 0 clamp(56px, 10vh, 120px);
+    text-align: center;
+    position: relative;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: -80%;
+    background:
+      radial-gradient(ellipse 100% 80% at 50% 40%, rgba(212, 168, 83, 0.02) 0%, transparent 70%),
+      radial-gradient(ellipse 90% 100% at 70% 60%, rgba(62, 207, 207, 0.015) 0%, transparent 70%),
+      radial-gradient(ellipse 120% 60% at 50% 10%, rgba(91, 141, 239, 0.01) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero__eyebrow {
+    font-family: var(--font-mono);
+    font-size: clamp(11px, 1.4vw, 14px);
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 24px;
+    opacity: 0.85;
+  }
+
+  .hero__title {
+    font-family: var(--font-display);
+    font-size: clamp(32px, 6vw, 72px);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -1.5px;
+    color: var(--text);
+    max-width: 900px;
+    margin: 0 auto 28px;
+    text-wrap: balance;
+  }
+
+  .hero__title em {
+    font-style: normal;
+    color: var(--text);
+  }
+
+  .hero__subtitle {
+    font-family: var(--font-body);
+    font-size: clamp(16px, 2.2vw, 22px);
+    color: var(--text-dim);
+    max-width: 640px;
+    margin: 0 auto 52px;
+    font-weight: 300;
+    line-height: 1.5;
+    font-style: italic;
+  }
+
+  .hero__stats {
+    display: flex;
+    justify-content: center;
+    gap: clamp(32px, 5vw, 64px);
+    flex-wrap: wrap;
+  }
+
+  .hero__stat {
+    text-align: center;
+  }
+
+  .hero__stat-value {
+    font-family: var(--font-mono);
+    font-size: clamp(28px, 4.5vw, 48px);
+    font-weight: 700;
+    color: var(--gold-bright);
+    line-height: 1;
+    letter-spacing: -1px;
+  }
+
+  .hero__stat-label {
+    font-family: var(--font-mono);
+    font-size: clamp(9px, 1.1vw, 11px);
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-top: 10px;
+  }
+
+  .hero__divider {
+    width: 60px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin: 60px auto 0;
+    opacity: 0.5;
+  }
+
+  /* ═══════════════════════════════════════════
+     SECTION 2: PIPELINE
+     ═══════════════════════════════════════════ */
+  .pipeline-section { padding-bottom: clamp(40px, 6vh, 72px); }
+
+  .section-label {
+    font-family: var(--font-mono);
+    font-size: clamp(10px, 1.2vw, 12px);
+    font-weight: 600;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 16px;
+    opacity: 0.7;
+  }
+
+  .section-title {
+    font-family: var(--font-display);
+    font-size: clamp(22px, 3.5vw, 36px);
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin-bottom: clamp(36px, 5vh, 60px);
+    color: var(--text);
+  }
+
+  .pipeline {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: clamp(8px, 1.2vw, 16px);
+    position: relative;
+    align-items: stretch;
+  }
+
+  .pipeline__step {
+    position: relative;
+    text-align: center;
+    padding: clamp(24px, 3.5vw, 40px) clamp(12px, 1.8vw, 20px);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .pipeline__step:hover {
+    border-color: var(--border-bright);
+    box-shadow: 0 0 30px rgba(212, 168, 83, 0.04);
+  }
+
+  .pipeline__step-icon {
+    width: 44px;
+    height: 44px;
+    margin: 0 auto 18px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+  }
+
+  .pipeline__step-title {
+    font-family: var(--font-display);
+    font-size: clamp(12px, 1.5vw, 15px);
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--text);
+    letter-spacing: -0.2px;
+  }
+
+  .pipeline__step-math {
+    font-family: var(--font-mono);
+    font-size: clamp(10px, 1.1vw, 12px);
+    color: var(--teal);
+    margin-bottom: 6px;
+    line-height: 1.4;
+    opacity: 0.85;
+  }
+
+  .pipeline__step-detail {
+    font-family: var(--font-mono);
+    font-size: clamp(9px, 1vw, 11px);
+    color: var(--text-dim);
+    line-height: 1.4;
+  }
+
+  .pipeline__arrow {
+    position: absolute;
+    right: -14px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+    color: var(--gold);
+    font-size: 18px;
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  /* ═══════════════════════════════════════════
+     SECTION 3: OBSERVABLE FAMILIES
+     ═══════════════════════════════════════════ */
+  .families-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: clamp(16px, 2.5vw, 24px);
+  }
+
+  .family-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: clamp(20px, 3vw, 32px);
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s ease, transform 0.2s ease;
+  }
+
+  .family-card:hover {
+    border-color: var(--border-bright);
+    transform: translateY(-2px);
+  }
+
+  .family-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    border-radius: 12px 12px 0 0;
+  }
+
+  .family-card[data-color="gold"]::before { background: var(--gold); }
+  .family-card[data-color="teal"]::before { background: var(--teal); }
+  .family-card[data-color="blue"]::before { background: var(--blue); }
+  .family-card[data-color="violet"]::before { background: var(--violet); }
+  .family-card[data-color="cyan"]::before { background: var(--cyan); }
+  .family-card[data-color="rose"]::before { background: var(--rose); }
+  .family-card[data-color="green"]::before { background: var(--green); }
+
+  .family-card__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+
+  .family-card__name {
+    font-family: var(--font-display);
+    font-size: clamp(13px, 1.6vw, 16px);
+    font-weight: 700;
+    letter-spacing: -0.2px;
+  }
+
+  .family-card__count {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-dim);
+    background: var(--surface2);
+    padding: 2px 8px;
+    border-radius: 10px;
+  }
+
+  .family-card__channels {
+    list-style: none;
+    margin-bottom: 14px;
+  }
+
+  .family-card__channels li {
+    font-family: var(--font-mono);
+    font-size: clamp(10px, 1.1vw, 12px);
+    color: var(--text-dim);
+    padding: 5px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.02);
+  }
+
+  .family-card__channels li:last-child { border-bottom: none; }
+
+  .family-card__quantity {
+    font-size: clamp(11px, 1.2vw, 13px);
+    color: var(--text-muted);
+    font-style: italic;
+    margin-top: 8px;
+  }
+
+  /* ═══════════════════════════════════════════
+     SECTION 4: KEY RESULTS
+     ═══════════════════════════════════════════ */
+  .results-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(20px, 3.5vw, 40px);
+  }
+
+  @media (max-width: 768px) {
+    .results-grid { grid-template-columns: 1fr; }
+    .pipeline { grid-template-columns: 1fr; gap: 12px; }
+    .pipeline__arrow { display: none; }
+  }
+
+  .result-col {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: clamp(24px, 3.5vw, 40px);
+    position: relative;
+  }
+
+  .result-col__badge {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 6px;
+    display: inline-block;
+    margin-bottom: 20px;
+  }
+
+  .result-col__badge--offline {
+    background: rgba(91, 141, 239, 0.12);
+    color: var(--blue);
+  }
+
+  .result-col__badge--oos {
+    background: rgba(212, 168, 83, 0.12);
+    color: var(--gold-bright);
+  }
+
+  .result-col__badge--ortho {
+    background: rgba(62, 207, 207, 0.12);
+    color: var(--teal);
+  }
+
+  .result-col__title {
+    font-family: var(--font-display);
+    font-size: clamp(16px, 2vw, 20px);
+    font-weight: 700;
+    margin-bottom: 20px;
+    letter-spacing: -0.3px;
+  }
+
+  .result-item {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+  }
+
+  .result-item:last-child { border-bottom: none; }
+
+  .result-item__value {
+    font-family: var(--font-mono);
+    font-size: clamp(18px, 2.5vw, 26px);
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    flex-shrink: 0;
+  }
+
+  .result-item__label {
+    font-size: clamp(12px, 1.4vw, 14px);
+    color: var(--text-dim);
+    line-height: 1.3;
+  }
+
+  .result-item__rank {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-muted);
+    background: var(--surface2);
+    padding: 1px 6px;
+    border-radius: 4px;
+    margin-left: 4px;
+    white-space: nowrap;
+  }
+
+  /* Highlight the headline number */
+  .result-item--hero .result-item__value {
+    font-size: clamp(28px, 4vw, 40px);
+    color: var(--gold-bright);
+  }
+
+  /* ═══════════════════════════════════════════
+     SECTION 5: TIMELINE + COMPARISON
+     ═══════════════════════════════════════════ */
+  .bottom-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(20px, 3vw, 40px);
+    align-items: start;
+  }
+
+  @media (max-width: 900px) {
+    .bottom-grid { grid-template-columns: 1fr; }
+  }
+
+  /* Timeline */
+  .timeline {
+    position: relative;
+    padding: clamp(24px, 3.5vw, 36px);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+  }
+
+  .timeline__title {
+    font-family: var(--font-display);
+    font-size: clamp(14px, 1.8vw, 18px);
+    font-weight: 700;
+    margin-bottom: 20px;
+    letter-spacing: -0.2px;
+  }
+
+  .timeline__track {
+    position: relative;
+    height: 280px;
+    overflow: hidden;
+  }
+
+  .timeline__axis {
+    position: absolute;
+    left: 54px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(180deg, var(--gold) 0%, var(--border) 100%);
+    opacity: 0.3;
+  }
+
+  .timeline__event {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 4px 0;
+    position: relative;
+  }
+
+  .timeline__year {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-muted);
+    width: 42px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  .timeline__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .timeline__dot--conv { background: var(--blue); }
+  .timeline__dot--novel { background: var(--gold); }
+
+  .timeline__name {
+    font-family: var(--font-mono);
+    font-size: clamp(9px, 1vw, 11px);
+    color: var(--text-dim);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .timeline__legend {
+    display: flex;
+    gap: 16px;
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+  }
+
+  .timeline__legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-dim);
+  }
+
+  .timeline__legend-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+  }
+
+  /* Comparison table */
+  .comparison {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: clamp(24px, 3.5vw, 36px);
+    overflow-x: auto;
+  }
+
+  .comparison__title {
+    font-family: var(--font-display);
+    font-size: clamp(14px, 1.8vw, 18px);
+    font-weight: 700;
+    margin-bottom: 20px;
+    letter-spacing: -0.2px;
+  }
+
+  .comparison table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--font-mono);
+    font-size: clamp(10px, 1.1vw, 12px);
+  }
+
+  .comparison th {
+    text-align: left;
+    padding: 10px 10px;
+    color: var(--text-dim);
+    font-weight: 600;
+    font-size: clamp(9px, 1vw, 10px);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border-bright);
+    white-space: nowrap;
+  }
+
+  .comparison td {
+    padding: 8px 10px;
+    color: var(--text-dim);
+    border-bottom: 1px solid rgba(255,255,255,0.02);
+    white-space: nowrap;
+  }
+
+  .comparison tr:last-child td { border-bottom: none; }
+
+  .comparison tr.highlight td {
+    color: var(--gold-bright);
+    font-weight: 600;
+  }
+
+  .check { color: var(--green); }
+  .dash { color: var(--text-muted); }
+
+  /* ─── FOOTER ─── */
+  .footer {
+    padding: clamp(24px, 4vh, 48px) 0;
+    text-align: center;
+    border-top: 1px solid var(--border);
+  }
+
+  .footer__text {
+    font-family: var(--font-mono);
+    font-size: clamp(10px, 1.2vw, 12px);
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+  }
+
+  .footer__text a {
+    color: var(--gold);
+    text-decoration: none;
+    opacity: 0.7;
+  }
+
+  /* ─── PRINT ─── */
+  @media print {
+    body { background: #fff; color: #111; }
+    .reveal { opacity: 1 !important; transform: none !important; }
+    section + section { border-top-color: #ddd; }
+    .family-card, .result-col, .timeline, .comparison,
+    .pipeline__step { border-color: #ddd; background: #f8f8f8; }
+    .hero__title em { -webkit-text-fill-color: #333; }
+    .hero__stat-value { color: #111; }
+    .section-label, .hero__eyebrow { color: #666; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ════════ HERO ════════ -->
+  <section class="hero">
+    <div class="hero__eyebrow reveal">Quantum Cognitive Machine Learning</div>
+    <h1 class="hero__title reveal">
+      <em>Geometric Observables</em><br>for Financial Regime Detection
+    </h1>
+    <p class="hero__subtitle reveal">
+      Unsupervised Hilbert space geometry detects market regime shifts without crisis labels — 19 channels from a single embedding
+    </p>
+    <div class="hero__stats reveal">
+      <div class="hero__stat">
+        <div class="hero__stat-value">0.72</div>
+        <div class="hero__stat-label">OOS Cohen's d</div>
+      </div>
+      <div class="hero__stat">
+        <div class="hero__stat-value">30%</div>
+        <div class="hero__stat-label">Fewer false alarms</div>
+      </div>
+      <div class="hero__stat">
+        <div class="hero__stat-value">17</div>
+        <div class="hero__stat-label">Historical crises</div>
+      </div>
+      <div class="hero__stat">
+        <div class="hero__stat-value">46</div>
+        <div class="hero__stat-label">Methods compared</div>
+      </div>
+    </div>
+    <div class="hero__divider reveal"></div>
+  </section>
+
+  <!-- ════════ PIPELINE ════════ -->
+  <section class="pipeline-section">
+    <div class="section-label reveal">Architecture</div>
+    <h2 class="section-title reveal">From Time Series to Geometric Regime Signals</h2>
+    <div class="pipeline reveal">
+
+      <div class="pipeline__step">
+        <div class="pipeline__step-icon" style="background: rgba(91,141,239,0.12); color: var(--blue);">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>
+        </div>
+        <div class="pipeline__step-title">Financial Data</div>
+        <div class="pipeline__step-math">SPY, DIA</div>
+        <div class="pipeline__step-detail">1995 &ndash; 2024<br>enriched features</div>
+        <span class="pipeline__arrow">&rarr;</span>
+      </div>
+
+      <div class="pipeline__step">
+        <div class="pipeline__step-icon" style="background: rgba(155,123,234,0.12); color: var(--violet);">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        </div>
+        <div class="pipeline__step-title">QCML Embedding</div>
+        <div class="pipeline__step-math">H(x) = &frac12;&Sigma;(A<sub>k</sub> &minus; x<sub>k</sub>I)&sup2;</div>
+        <div class="pipeline__step-detail">|&psi;<sub>0</sub>(x)&rang; ground state<br>dim = 4 &hellip; 16</div>
+        <span class="pipeline__arrow">&rarr;</span>
+      </div>
+
+      <div class="pipeline__step">
+        <div class="pipeline__step-icon" style="background: rgba(62,207,207,0.12); color: var(--teal);">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2a10 10 0 0 1 0 20 10 10 0 0 1 0-20"/><path d="M2 12h4M18 12h4"/></svg>
+        </div>
+        <div class="pipeline__step-title">Quantum Geometry</div>
+        <div class="pipeline__step-math">g<sub>ab</sub>, F<sub>ab</sub>, Ch<sub>1</sub></div>
+        <div class="pipeline__step-detail">Fubini&ndash;Study metric<br>Berry curvature &bull; Chern</div>
+        <span class="pipeline__arrow">&rarr;</span>
+      </div>
+
+      <div class="pipeline__step">
+        <div class="pipeline__step-icon" style="background: rgba(212,168,83,0.12); color: var(--gold);">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        </div>
+        <div class="pipeline__step-title">19 Observables</div>
+        <div class="pipeline__step-math">7 families &bull; 17 active</div>
+        <div class="pipeline__step-detail">Hermitian operators<br>geometric invariants</div>
+        <span class="pipeline__arrow">&rarr;</span>
+      </div>
+
+      <div class="pipeline__step">
+        <div class="pipeline__step-icon" style="background: rgba(79,216,154,0.12); color: var(--green);">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+        </div>
+        <div class="pipeline__step-title">Regime Detection</div>
+        <div class="pipeline__step-math">&chi;&sup2; = 233.1</div>
+        <div class="pipeline__step-detail">46 methods &times; 17 crises<br>walk-forward OOS</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ════════ OBSERVABLE FAMILIES ════════ -->
+  <section>
+    <div class="section-label reveal">Observable Taxonomy</div>
+    <h2 class="section-title reveal">Seven Families of Geometric Channels</h2>
+    <div class="families-grid">
+
+      <div class="family-card reveal" data-color="gold">
+        <div class="family-card__header">
+          <span class="family-card__name">Holonomy</span>
+          <span class="family-card__count">2 ch</span>
+        </div>
+        <ul class="family-card__channels">
+          <li>Berry Phase Rate</li>
+          <li>Geometric Phase Rate</li>
+        </ul>
+        <div class="family-card__quantity">Phase along closed loops in parameter space</div>
+      </div>
+
+      <div class="family-card reveal" data-color="teal">
+        <div class="family-card__header">
+          <span class="family-card__name">Metric</span>
+          <span class="family-card__count">2 ch</span>
+        </div>
+        <ul class="family-card__channels">
+          <li>QFI Determinant</li>
+          <li>Hamiltonian Sensitivity</li>
+        </ul>
+        <div class="family-card__quantity">Quantum Fisher information &amp; manifold volume</div>
+      </div>
+
+      <div class="family-card reveal" data-color="blue">
+        <div class="family-card__header">
+          <span class="family-card__name">State Dynamics</span>
+          <span class="family-card__count">3 ch</span>
+        </div>
+        <ul class="family-card__channels">
+          <li>Multi-Lag Fidelity</li>
+          <li>Reduced Purity</li>
+          <li>Quantum Relative Entropy</li>
+        </ul>
+        <div class="family-card__quantity">State overlap, entanglement &amp; divergence</div>
+      </div>
+
+      <div class="family-card reveal" data-color="violet">
+        <div class="family-card__header">
+          <span class="family-card__name">Kinematics</span>
+          <span class="family-card__count">2 ch</span>
+        </div>
+        <ul class="family-card__channels">
+          <li>Geodesic Velocity</li>
+          <li>Speed Limit Ratio</li>
+        </ul>
+        <div class="family-card__quantity">Hamiltonian speed &amp; quantum speed limit</div>
+      </div>
+
+      <div class="family-card reveal" data-color="cyan">
+        <div class="family-card__header">
+          <span class="family-card__name">Spectral</span>
+          <span class="family-card__count">4 ch</span>
+        </div>
+        <ul class="family-card__channels">
+          <li>Spectral Entropy</li>
+          <li>Spectral Complexity</li>
+          <li>Effective State Dimension</li>
+          <li>Level Spacing Ratio</li>
+        </ul>
+        <div class="family-card__quantity">Eigenvalue distribution shape &amp; disorder</div>
+      </div>
+
+      <div class="family-card reveal" data-color="rose">
+        <div class="family-card__header">
+          <span class="family-card__name">Curvature</span>
+          <span class="family-card__count">2 ch</span>
+        </div>
+        <ul class="family-card__channels">
+          <li>Sectional Curvature Sign</li>
+          <li>Geodesic Curvature</li>
+        </ul>
+        <div class="family-card__quantity">Gaussian curvature &amp; geodesic deviation</div>
+      </div>
+
+      <div class="family-card reveal" data-color="green">
+        <div class="family-card__header">
+          <span class="family-card__name">Topology</span>
+          <span class="family-card__count">2 ch</span>
+        </div>
+        <ul class="family-card__channels">
+          <li>QCML Chern</li>
+          <li>Dimensionality Collapse</li>
+        </ul>
+        <div class="family-card__quantity">Topological winding &amp; manifold dimension</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ════════ KEY RESULTS ════════ -->
+  <section>
+    <div class="section-label reveal">Empirical Results</div>
+    <h2 class="section-title reveal">46 Methods &times; 17 Crises (2000 &ndash; 2024)</h2>
+    <div class="results-grid">
+
+      <!-- Offline -->
+      <div class="result-col reveal">
+        <span class="result-col__badge result-col__badge--offline">Offline Separability</span>
+        <div class="result-col__title">Retrospective Panel</div>
+        <div class="result-item">
+          <span class="result-item__value" style="color: var(--blue);">0.83</span>
+          <span class="result-item__label">Reduced Purity <span class="result-item__rank">#1 / 46</span></span>
+        </div>
+        <div class="result-item">
+          <span class="result-item__value" style="color: var(--slate);">0.80</span>
+          <span class="result-item__label">Absorption Ratio <span class="result-item__rank">#2 classical</span></span>
+        </div>
+        <div class="result-item">
+          <span class="result-item__value" style="color: var(--blue);">0.61</span>
+          <span class="result-item__label">Berry Phase Rate <span class="result-item__rank">#9 / 46</span></span>
+        </div>
+        <div class="result-item">
+          <span class="result-item__value" style="color: var(--text-muted); font-size: 16px;">0.36</span>
+          <span class="result-item__label" style="opacity:0.6;">Random Forest <span class="result-item__rank">#30</span></span>
+        </div>
+      </div>
+
+      <!-- Walk-Forward OOS -->
+      <div class="result-col reveal" style="border-color: rgba(212,168,83,0.2);">
+        <span class="result-col__badge result-col__badge--oos">Walk-Forward OOS</span>
+        <div class="result-col__title">Unbiased Estimate</div>
+        <div class="result-item result-item--hero">
+          <span class="result-item__value">0.72</span>
+          <span class="result-item__label">Berry Phase Rate<br><span style="font-family: var(--font-mono); font-size: 11px; color: var(--gold); opacity: 0.7;">nested HPO &bull; 5/9 windows</span></span>
+        </div>
+        <div class="result-item">
+          <span class="result-item__value" style="color: var(--green); font-size: 20px;">2.5</span>
+          <span class="result-item__label">false alarms / yr<br><span style="font-family:var(--font-mono); font-size:10px; color:var(--text-muted);">vs RF 3.6 / yr (30% fewer)</span></span>
+        </div>
+        <div class="result-item">
+          <span class="result-item__value" style="color: var(--gold); font-size: 20px;">~90d</span>
+          <span class="result-item__label">lead time vs RF<br><span style="font-family:var(--font-mono); font-size:10px; color:var(--text-muted);">retrospective methodology</span></span>
+        </div>
+      </div>
+
+      <!-- Orthogonality -->
+      <div class="result-col reveal">
+        <span class="result-col__badge result-col__badge--ortho">Orthogonality</span>
+        <div class="result-col__title">Complementary Coverage</div>
+        <div class="result-item">
+          <span class="result-item__value" style="color: var(--teal);">0.13</span>
+          <span class="result-item__label">mean |&rho;| to baselines<br><span style="font-family:var(--font-mono); font-size:10px; color:var(--text-muted);">near-zero cross-correlation</span></span>
+        </div>
+        <div class="result-item">
+          <span class="result-item__value" style="color: var(--green); font-size: 20px;">+25%</span>
+          <span class="result-item__label">geometry on novel crises<br><span style="font-family:var(--font-mono); font-size:10px; color:var(--text-muted);">vs CUSUM &minus;73%</span></span>
+        </div>
+        <div class="result-item">
+          <span class="result-item__value" style="color: var(--teal); font-size: 18px;">233.1</span>
+          <span class="result-item__label">Friedman &chi;&sup2;<br><span style="font-family:var(--font-mono); font-size:10px; color:var(--text-muted);">p &lt; 10<sup>&minus;16</sup></span></span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ════════ TIMELINE + COMPARISON ════════ -->
+  <section>
+    <div class="bottom-grid">
+
+      <!-- Crisis Timeline -->
+      <div class="timeline reveal">
+        <div class="timeline__title">17 Crisis Episodes</div>
+        <div class="timeline__track">
+          <div class="timeline__axis"></div>
+
+          <div class="timeline__event"><span class="timeline__year">2000</span><span class="timeline__dot timeline__dot--conv"></span><span class="timeline__name">Dot-Com Crash</span></div>
+          <div class="timeline__event"><span class="timeline__year">2001</span><span class="timeline__dot timeline__dot--conv"></span><span class="timeline__name">September 11</span></div>
+          <div class="timeline__event"><span class="timeline__year">2007</span><span class="timeline__dot timeline__dot--conv"></span><span class="timeline__name">Quant Crisis</span></div>
+          <div class="timeline__event"><span class="timeline__year">2008</span><span class="timeline__dot timeline__dot--conv"></span><span class="timeline__name">Global Financial Crisis</span></div>
+          <div class="timeline__event"><span class="timeline__year">2010</span><span class="timeline__dot timeline__dot--conv"></span><span class="timeline__name">Flash Crash</span></div>
+          <div class="timeline__event"><span class="timeline__year">2011</span><span class="timeline__dot timeline__dot--conv"></span><span class="timeline__name">Euro Debt Crisis</span></div>
+          <div class="timeline__event"><span class="timeline__year">2013</span><span class="timeline__dot timeline__dot--conv"></span><span class="timeline__name">Taper Tantrum</span></div>
+          <div class="timeline__event"><span class="timeline__year">2015</span><span class="timeline__dot timeline__dot--conv"></span><span class="timeline__name">China Crash</span></div>
+          <div class="timeline__event"><span class="timeline__year">2016</span><span class="timeline__dot timeline__dot--novel"></span><span class="timeline__name">Brexit Vote</span></div>
+          <div class="timeline__event"><span class="timeline__year">2018</span><span class="timeline__dot timeline__dot--novel"></span><span class="timeline__name">Volmageddon</span></div>
+          <div class="timeline__event"><span class="timeline__year">2018</span><span class="timeline__dot timeline__dot--novel"></span><span class="timeline__name">Q4 Selloff</span></div>
+          <div class="timeline__event"><span class="timeline__year">2019</span><span class="timeline__dot timeline__dot--novel"></span><span class="timeline__name">Repo Crisis</span></div>
+          <div class="timeline__event"><span class="timeline__year">2020</span><span class="timeline__dot timeline__dot--conv"></span><span class="timeline__name">COVID-19 Pandemic</span></div>
+          <div class="timeline__event"><span class="timeline__year">2021</span><span class="timeline__dot timeline__dot--novel"></span><span class="timeline__name">Meme / Archegos</span></div>
+          <div class="timeline__event"><span class="timeline__year">2022</span><span class="timeline__dot timeline__dot--novel"></span><span class="timeline__name">Rate Hike Regime</span></div>
+          <div class="timeline__event"><span class="timeline__year">2023</span><span class="timeline__dot timeline__dot--novel"></span><span class="timeline__name">SVB Contagion</span></div>
+          <div class="timeline__event"><span class="timeline__year">2024</span><span class="timeline__dot timeline__dot--novel"></span><span class="timeline__name">Carry Unwind</span></div>
+        </div>
+        <div class="timeline__legend">
+          <div class="timeline__legend-item"><span class="timeline__legend-dot" style="background:var(--blue)"></span> Conventional</div>
+          <div class="timeline__legend-item"><span class="timeline__legend-dot" style="background:var(--gold)"></span> Structurally novel</div>
+        </div>
+      </div>
+
+      <!-- Comparison Table -->
+      <div class="comparison reveal">
+        <div class="comparison__title">Framework Comparison</div>
+        <table>
+          <thead>
+            <tr>
+              <th>Framework</th>
+              <th>Metric</th>
+              <th>Curvature</th>
+              <th>Gauge</th>
+              <th>Topo. Inv.</th>
+              <th>&Delta;(x)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Info. Geometry</td>
+              <td>Fisher&ndash;Rao</td>
+              <td>Sectional</td>
+              <td>&alpha;-conn.</td>
+              <td class="dash">&mdash;</td>
+              <td class="dash">&mdash;</td>
+            </tr>
+            <tr>
+              <td>Opt. Transport</td>
+              <td>Wasserstein</td>
+              <td class="dash">&mdash;</td>
+              <td class="dash">&mdash;</td>
+              <td class="dash">&mdash;</td>
+              <td class="dash">&mdash;</td>
+            </tr>
+            <tr>
+              <td>TDA</td>
+              <td class="dash">&mdash;</td>
+              <td class="dash">&mdash;</td>
+              <td class="dash">&mdash;</td>
+              <td>Betti</td>
+              <td class="dash">&mdash;</td>
+            </tr>
+            <tr>
+              <td>Network Ricci</td>
+              <td class="dash">&mdash;</td>
+              <td>Ollivier</td>
+              <td class="dash">&mdash;</td>
+              <td class="dash">&mdash;</td>
+              <td class="dash">&mdash;</td>
+            </tr>
+            <tr>
+              <td>RMT</td>
+              <td class="dash">&mdash;</td>
+              <td class="dash">&mdash;</td>
+              <td class="dash">&mdash;</td>
+              <td class="dash">&mdash;</td>
+              <td>MP edge</td>
+            </tr>
+            <tr>
+              <td>Signatures</td>
+              <td>Sig. kernel</td>
+              <td class="dash">&mdash;</td>
+              <td class="dash">&mdash;</td>
+              <td class="dash">&mdash;</td>
+              <td class="dash">&mdash;</td>
+            </tr>
+            <tr class="highlight">
+              <td>QCML (ours)</td>
+              <td class="check">Fubini&ndash;Study</td>
+              <td class="check">Berry</td>
+              <td class="check">U(1)</td>
+              <td class="check">Chern</td>
+              <td class="check">&Delta;(x)</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div style="margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border);">
+          <div style="font-family: var(--font-display); font-size: 13px; font-weight: 600; color: var(--text-dim); margin-bottom: 8px;">Three-Paper Series</div>
+          <div style="font-family: var(--font-mono); font-size: 10px; color: var(--text-muted); line-height: 1.6;">
+            <strong style="color: var(--gold);">Paper 1</strong> &mdash; 4 core observables &bull; walk-forward validation<br>
+            <strong style="color: var(--text-dim);">Paper 2</strong> &mdash; 19-channel observatory &bull; orthogonality analysis<br>
+            <strong style="color: var(--text-dim);">Paper 3</strong> &mdash; adaptive fusion &bull; regime-conditional weighting
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ════════ FOOTER ════════ -->
+  <footer class="footer">
+    <p class="footer__text">
+      QCML Geometric SDE &mdash; 3 theorems &bull; 19 channels &bull; 17 crises &bull; walk-forward validated
+    </p>
+  </footer>
+
+</div>
+
+<script>
+  // Reveal-on-scroll via IntersectionObserver
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        obs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>
