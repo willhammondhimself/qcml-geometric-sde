@@ -57,7 +57,7 @@
 \begin{highlights}
 \item Walk-forward Berry Phase Rate achieves unbiased OOS Cohen's $d = 0.72$ with 30\% fewer false alarms than Random Forest
 \item Four geometric observables from a single QCML embedding detect regime shifts without crisis labels
-\item Offline separability on 17 crises (2000--2024): Reduced Purity $d = 0.83$, Spectral Entropy $d = 0.83$, Absorption Ratio $d = 0.80$
+\item Offline separability on 17 crises (2000--2024): Reduced Purity $d = 0.83$, Absorption Ratio $d = 0.80$ (classical benchmark), Berry Phase Rate $d = 0.61$ (rank~9 of 46)
 \item Formal framework with three theorems validated empirically on 20 years of market data
 \end{highlights}
 
@@ -75,10 +75,11 @@ without labeled data.  We test them alongside classical baselines on
 Walk-forward nested HPO, our primary evaluation, gives Berry Phase
 Rate an unbiased out-of-sample Cohen's~$d = 0.72$ (5/9 test windows)
 with 30\% fewer false alarms than Random Forest (2.5 vs.\ 3.6/yr).
-In the offline comparison, Reduced State Purity ($d = 0.83$) and
-Spectral Entropy ($d = 0.83$) rank among the strongest separators,
-while Absorption Ratio~\cite{kritzman2011} ($d = 0.80$) provides the
-classical benchmark.  Three theorems characterizing the embedding
+In the offline comparison, Reduced State Purity ($d = 0.83$) ranks
+first of 46~methods, with Absorption Ratio~\cite{kritzman2011}
+($d = 0.80$) as the classical benchmark; the remaining geometric
+channels provide mid-range separability ($d = 0.53$--$0.61$) but
+contribute orthogonal crisis coverage.  Three theorems characterizing the embedding
 geometry are validated empirically.
 
 A companion paper extends this framework to the full nineteen-channel
@@ -157,9 +158,10 @@ selected by ablation (Section~\ref{subsec:operator_ablation}).
   data manifold (curvature, entropy, sensitivity, entanglement).
 
 \item \textbf{Offline separability.}  On 17~crises (2000--2024),
-  Reduced Purity ($d = 0.83$) and Spectral Entropy ($d = 0.83$) rank
-  among the strongest separators, while Absorption Ratio ($d = 0.80$)
-  provides the classical benchmark.
+  Reduced Purity ($d = 0.83$) ranks first of 46~methods, with
+  Absorption Ratio ($d = 0.80$) as the classical benchmark; the
+  remaining geometric channels ($d = 0.53$--$0.61$) contribute
+  orthogonal crisis coverage.
 
 \item \textbf{Independent evaluation.}  The first academic evaluation
   of QCML geometry outside the framework's own
@@ -631,9 +633,15 @@ on pre-crisis data.  RF uses leave-one-crisis-out labels restricted to
 the causal window.  This eliminates lookahead in preprocessing.
 
 \paragraph{Statistical evaluation.}
-Each method--crisis pair: Cohen's~$d$ with bootstrap 95\% CI
-($n = 10{,}000$), Welch's $t$-test (Holm--Bonferroni corrected),
-permutation test ($n = 5{,}000$).  Multi-method: Friedman rank test.
+Each method--crisis pair: Cohen's~$d$ with block-bootstrap 95\% CI
+($n = 10{,}000$; block size $= \lceil n^{1/3} \rceil$ per
+Politis \& White~\cite{politis2004}).  Financial z-scores may violate
+the normality assumption underlying Cohen's~$d$; the block bootstrap
+CIs and Cliff's~$\delta$ (computed alongside $d$ as a
+distribution-free robustness check) provide nonparametric alternatives.
+Individual tests: Welch's $t$-test (Holm--Bonferroni corrected),
+permutation test ($n = 5{,}000$).  Multi-method: Friedman rank test
+with Nemenyi post-hoc pairwise comparisons at $\alpha = 0.05$.
 
 \paragraph{HPO-optimized hyperparameters.}
 The main results (Table~\ref{tab:aggregate_comparison}) use
@@ -693,16 +701,23 @@ crisis, scaler, PCA, and operators are fitted only on data
 (Section~\ref{subsec:methods_protocol}).  HPO-optimized
 hyperparameters are used for all geometric methods; Random Forest uses
 leave-one-crisis-out cross-validation.
-Among the five featured methods, Reduced State Purity achieves the
-highest median $d = 0.83$ (rank~1 of 46), followed by Absorption
-Ratio ($0.80$, rank~2), Spectral Entropy ($0.83$, rank~1 tied), and
-Hamiltonian Sensitivity ($0.53$, rank~8).
-Berry Phase Rate ranks 9th ($d = 0.61$).  Among classical baselines,
-Hamilton Markov-switching ranks 3rd ($0.71$), Random Forest 28th
-($0.35$), and GARCH(1,1) 31st ($0.29$).
+Among the four featured geometric observables, Reduced State Purity
+achieves the highest median $d = 0.83$ (rank~1 of 46), followed by
+Berry Phase Rate ($0.61$, rank~9), Hamiltonian Sensitivity ($0.60$,
+rank~10), and Spectral Entropy ($0.53$, rank~12).
+Absorption Ratio ($0.80$, rank~2) provides the classical benchmark;
+Hamilton Markov-switching ranks 3rd ($0.71$), Random Forest 30th
+($0.35$), and GARCH(1,1) 33rd ($0.29$).
 The Friedman test ($\chi^2 = 233.1$, $p < 10^{-16}$)
 confirms significant ranking differences across the full 46-method
-comparison.
+comparison.  The Nemenyi post-hoc test (critical difference
+$\mathrm{CD} = 18.2$ at $\alpha = 0.05$) identifies 105 of 1{,}035
+pairwise differences as significant; these are concentrated between
+top-performing methods and the five near-zero channels.  Among the
+competitive tier---the
+top~15 methods by median~$d$---no pairwise difference exceeds
+$\mathrm{CD}$, so individual rankings should be interpreted with
+caution.
 
 \begin{table}[htbp]
 \centering
@@ -728,9 +743,16 @@ with specialization heatmaps across all nineteen channels.
 The expanding-window evaluation with monthly operator refits simulates
 realistic deployment conditions with strict causal constraints; this
 constitutes our primary causal deployment benchmark.  The evaluation
-includes two additional geometric channels---QFI Determinant and
-Multi-Lag Fidelity (defined in the companion paper)---to provide
-broader context for Berry Phase Rate's out-of-sample performance.
+includes two additional geometric channels to provide broader context
+for Berry Phase Rate's out-of-sample performance:
+\emph{QFI Determinant}, the log-determinant of the quantum Fisher
+information matrix $\log\det\mathcal{F}$, which captures the total
+statistical distinguishability of nearby states in parameter space;
+and \emph{Multi-Lag Fidelity}, $\min_{l=1,\ldots,k}
+|\langle\psi_t|\psi_{t-l}\rangle|^2$, the minimum overlap between
+the current ground state and its lagged copies, measuring how rapidly
+the embedding state evolves.  Full derivations appear in the
+companion paper.
 
 An expanding-window fit (always starting 2005) with 1-year evaluation
 windows produces 7 crisis--window evaluation pairs across 5 years
@@ -885,6 +907,14 @@ fully causal: at each time $t$, they use only data up to $t - 1$.
 Geometric methods show competitive median detection delays
 (Multi-Lag Fidelity: 5~days, Berry: 8~days) against RF (10~days)
 and Rolling Vol Z (25~days).
+
+\paragraph{Granger causality caveat.}
+Testing Granger causality between QCML observables and market targets
+(90 tests, Bonferroni corrected), reverse causality (market~$\to$~QCML)
+is stronger than forward (17/45 vs.\ 6/45), indicating that
+observables largely \emph{react to} rather than \emph{predict} stress.
+The walk-forward $d = 0.72$ therefore reflects contemporaneous
+separability under causal constraints, not anticipatory signal.
 
 \subsection{Operator Ablation}\label{subsec:operator_ablation}
 
@@ -1064,11 +1094,9 @@ topology~\cite{schuld_killoran2019,busemeyer2012}.
 \item \textbf{Equity-only validation.}  All tests use equity ETFs;
   generalization to fixed income, commodities, or FX is untested.
 
-\item \textbf{Reverse Granger causality.}  Testing Granger causality
-  between QCML observables and market targets (90 tests, Bonferroni
-  corrected), reverse causality (market $\to$ QCML) is stronger
-  (17/45 vs.\ 6/45 forward), indicating observables largely react to
-  rather than predict stress.
+\item \textbf{Reverse Granger causality.}  As detailed in
+  Section~\ref{subsec:walkforward}, observables largely react to
+  rather than predict stress (17/45 reverse vs.\ 6/45 forward).
 \end{enumerate}
 
 % =============================================================================
@@ -1078,18 +1106,20 @@ topology~\cite{schuld_killoran2019,busemeyer2012}.
 
 We introduced a geometric approach to financial regime detection:
 embed returns into complex projective space via QCML, then extract
-five geometric observables---Berry Phase Rate, Spectral Entropy,
-Reduced State Purity, Hamiltonian Sensitivity, and Absorption
-Ratio---and test them on 17~crises spanning 2000--2024.
+four geometric observables---Berry Phase Rate, Spectral Entropy,
+Reduced State Purity, and Hamiltonian Sensitivity---alongside
+classical baselines including Absorption Ratio, and test them on
+17~crises spanning 2000--2024.
 
 The central result is out-of-sample: walk-forward nested HPO gives
 Berry Phase Rate $d = 0.72$ (5/9 test windows) with 30\% fewer false
 alarms than Random Forest (2.5 vs.\ 3.6/yr), without requiring crisis
-labels at any stage.  Offline, Reduced State Purity ($d = 0.83$) and
-Spectral Entropy ($d = 0.83$) rank among the strongest separators in
-the full comparison, while Absorption Ratio ($d = 0.80$) provides a
-classical benchmark that geometry-based channels must beat to justify
-the embedding overhead.  All formal results
+labels at any stage.  Offline, Reduced State Purity ($d = 0.83$)
+ranks first of 46~methods, while Absorption Ratio ($d = 0.80$) sets
+a classical benchmark that most geometric channels do not exceed
+individually; the remaining three channels ($d = 0.53$--$0.61$)
+contribute orthogonal crisis coverage rather than uniformly high
+separability.  All formal results
 (Theorems~\ref{thm:smoothness}--\ref{thm:chern},
 Proposition~\ref{prop:fisher}) are validated empirically on the same
 data manifold.

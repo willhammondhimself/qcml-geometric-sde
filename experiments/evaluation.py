@@ -433,6 +433,78 @@ def friedman_test(d_matrix):
     return chi_sq, f_p, mean_ranks
 
 
+def nemenyi_posthoc(d_matrix, method_names, alpha=0.05):
+    """Nemenyi post-hoc test after a significant Friedman test.
+
+    Computes the critical difference (CD) for pairwise rank comparisons
+    and identifies which method pairs differ significantly.
+
+    Args:
+        d_matrix: np.ndarray, shape (n_crises, n_methods). Cohen's d values.
+        method_names: list of str. Method names corresponding to columns.
+        alpha: float. Significance level (default 0.05).
+
+    Returns:
+        dict with keys:
+            cd: float. Critical difference at the given alpha.
+            n_crises: int. Number of crises used.
+            n_methods: int. Number of methods.
+            significant_pairs: list of (method_a, method_b, rank_diff) tuples
+                where |mean_rank_a - mean_rank_b| > CD.
+            n_significant: int. Number of significant pairs.
+            n_total_pairs: int. Total number of pairwise comparisons.
+            mean_ranks: dict mapping method name to mean rank.
+    """
+    d_matrix = np.asarray(d_matrix, dtype=float)
+    valid_rows = ~np.any(np.isnan(d_matrix), axis=1)
+    d_clean = d_matrix[valid_rows]
+
+    n = d_clean.shape[0]  # crises
+    k = d_clean.shape[1]  # methods
+
+    if n < 3 or k < 2:
+        return {
+            'cd': np.nan, 'n_crises': n, 'n_methods': k,
+            'significant_pairs': [], 'n_significant': 0,
+            'n_total_pairs': 0, 'mean_ranks': {},
+        }
+
+    # Compute ranks (rank 1 = highest d, matching friedman_test convention)
+    ranks = np.zeros_like(d_clean)
+    for i in range(n):
+        ranks[i] = stats.rankdata(-d_clean[i])
+    mean_ranks = ranks.mean(axis=0)
+
+    # Nemenyi critical difference: CD = q_alpha * sqrt(k*(k+1) / (6*n))
+    # q_alpha comes from the studentized range distribution divided by sqrt(2)
+    from scipy.stats import studentized_range
+    q_alpha = studentized_range.ppf(1 - alpha, k, np.inf) / np.sqrt(2)
+    cd = q_alpha * np.sqrt(k * (k + 1) / (6.0 * n))
+
+    # Identify significant pairs
+    significant_pairs = []
+    n_total = k * (k - 1) // 2
+    for i in range(k):
+        for j in range(i + 1, k):
+            rank_diff = abs(mean_ranks[i] - mean_ranks[j])
+            if rank_diff > cd:
+                significant_pairs.append((
+                    method_names[i], method_names[j], round(float(rank_diff), 2)
+                ))
+
+    mean_rank_dict = {method_names[i]: round(float(mean_ranks[i]), 2) for i in range(k)}
+
+    return {
+        'cd': round(float(cd), 2),
+        'n_crises': int(n),
+        'n_methods': int(k),
+        'significant_pairs': significant_pairs,
+        'n_significant': len(significant_pairs),
+        'n_total_pairs': n_total,
+        'mean_ranks': mean_rank_dict,
+    }
+
+
 def compute_detection_metrics(scores, threshold, crisis_mask, lead_time_days=None):
     """Compute detection performance metrics.
 

@@ -1,15 +1,20 @@
 # Geometric observables for financial regime detection
 
-We embed prices and covariates into a projective Hilbert space, then read off geometric quantities (Berry-type rates, spectra, curvature proxies) as regime indicators. No hand-labeled crisis mask is required for scoring.
+QCML, an unsupervised ML framework, uses Hilbert space geometry to uncover intrinsic structure in data, rather than relying on labels. It learns manifold curvature and topological invariants from Hamiltonian ground state eigenfunctions. This is a three-paper series; Paper 1 focuses on four geometric observables (Berry Phase Rate, Spectral Entropy, Reduced State Purity, Hamiltonian Sensitivity) and their walk-forward evaluation.
 
-## Key results
+## Key results (Paper 1)
 
 - 46 detectors compared on 17 historical crises (2000-2024).
-- Walk-forward Berry Phase Rate: Cohen's d about 0.72 under nested HPO (no lookahead in the protocol we ship).
+- Walk-forward Berry Phase Rate: Cohen's d ≈ 0.72 under nested HPO with 30% fewer false alarms than Random Forest (2.5 vs 3.6/yr).
+- Offline: Reduced Purity d = 0.83 (rank 1/46), Absorption Ratio d = 0.80 (classical benchmark, rank 2), Berry Phase Rate d = 0.61 (rank 9).
 - Friedman test on the big panel: χ² = 233.1, p < 10⁻¹⁶ (methods are not exchangeable).
-- Geometry channels sit far from classical baselines in correlation space: mean |ρ| ≈ 0.13 vs the classical stack in the orthogonality run.
-- Regime-Adaptive fusion holds up on holdout crises (d ≈ 0.78 in the paper highlights) while single-channel stars such as Reduced Purity fall apart there (roughly 0.83 in-sample median d vs about 0.26 on the frozen holdout fusion table).
-- Lead-time example in the paper: Berry Phase Rate about 90 days ahead of the RF benchmark on the median crisis, RF about 6 days (details in the lead-time experiment output).
+- Geometry channels sit far from classical baselines in correlation space: mean |ρ| ≈ 0.13.
+- Lead-time example: Berry Phase Rate ~90 days ahead of the RF benchmark on the median crisis (retrospective methodology; walk-forward median is 4 days).
+
+### Upcoming papers
+
+- **Paper 2**: Full 19-channel geometric observatory with orthogonality analysis and per-crisis specialization.
+- **Paper 3**: Adaptive fusion strategies (Regime-Adaptive fusion d ≈ 0.78 on holdout crises).
 
 ## How it works
 
@@ -55,7 +60,7 @@ experiments/                Reproducible experiment scripts
   backtest/                 Walk-forward backtest suite
 
 demo/                       Interactive Streamlit app
-paper/                      LaTeX paper (~50 pages, 3 theorems, 1 proposition, ~44 refs)
+paper/                      LaTeX paper (~25 pages, 3 theorems, 1 proposition, ~44 refs)
 tests/                      pytest suite (10 test_*.py files)
 scripts/                    Verification utilities
 archive/                    Dead experiments, old code
@@ -98,8 +103,9 @@ make clean             # Remove build artifacts
 
 ## Paper
 
-~50 pages, 3 theorems, 1 proposition, ~44 references.
+**Paper 1**: ~25 pages, 3 theorems, 1 proposition, ~44 references.
 Source: `paper/qcml_geometric_sde.tex`
+Full 19-channel version archived as `paper/qcml_geometric_sde_full.tex`.
 
 ### Citation
 

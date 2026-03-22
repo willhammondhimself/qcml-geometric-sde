@@ -51,6 +51,8 @@ from qcml_geometry import (
     SpectralComplexityDetector,
     BerryVelocityCouplingDetector,
     CurvatureRateDetector,
+    LevelSpacingRatioDetector,
+    QuantumRelativeEntropyDetector,
 )
 from qcml_geometry.observables import BaseRegimeDetector
 
@@ -88,6 +90,7 @@ from experiments.evaluation import (
     holm_bonferroni_correction,
     bh_fdr_correction,
     friedman_test,
+    nemenyi_posthoc,
 )
 
 logging.basicConfig(
@@ -294,6 +297,24 @@ HPO_CONFIGS = {
             operator_method='pca_inspired', seed=42,
             normalization='soft', adaptive_epsilon=True,
             subsample=5,
+        ),
+    },
+    'Level Spacing Ratio': {
+        'class': LevelSpacingRatioDetector,
+        'params': dict(
+            hilbert_dim=8, n_pca_components=8,
+            operator_method='random', seed=42,
+            normalization='soft', adaptive_epsilon=True,
+            variant='mean_ratio', poisson_threshold=0.386,
+        ),
+    },
+    'Quantum Relative Entropy': {
+        'class': QuantumRelativeEntropyDetector,
+        'params': dict(
+            hilbert_dim=8, n_pca_components=8,
+            operator_method='random', seed=42,
+            normalization='soft', adaptive_epsilon=True,
+            state_window=20,
         ),
     },
 }
@@ -785,11 +806,22 @@ def run_comparison(
         else:
             logger.info(f"  {rank:2d}. {mname:25s}  median d = N/A")
 
-    if not np.isnan(chi_sq):
+    # Nemenyi post-hoc pairwise test
+    nemenyi_result = None
+    if not np.isnan(chi_sq) and p_val < 0.05:
+        nemenyi_result = nemenyi_posthoc(d_matrix, method_names, alpha=0.05)
         logger.info(f"\n  Friedman chi-sq = {chi_sq:.2f}, p (Iman-Davenport F) = {p_val:.2e}")
-        logger.info(f"  Bootstrap method: block (Politis & White 2004)")
+        logger.info(f"  Nemenyi CD = {nemenyi_result['cd']:.2f} (alpha=0.05)")
+        logger.info(
+            f"  Significant pairs: {nemenyi_result['n_significant']}"
+            f" / {nemenyi_result['n_total_pairs']}"
+        )
+    elif not np.isnan(chi_sq):
+        logger.info(f"\n  Friedman chi-sq = {chi_sq:.2f}, p (Iman-Davenport F) = {p_val:.2e}")
+        logger.info("  Friedman not significant — Nemenyi post-hoc skipped")
     else:
         logger.info("  Friedman test: insufficient data")
+    logger.info(f"  Bootstrap method: block (Politis & White 2004)")
 
     # ---- Save ----
     output = {
@@ -818,6 +850,7 @@ def run_comparison(
                 {mname: float(mean_ranks[j]) for j, mname in enumerate(method_names)}
                 if not np.any(np.isnan(mean_ranks)) else None
             ),
+            'nemenyi': nemenyi_result,
         },
     }
 
