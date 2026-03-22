@@ -20,7 +20,6 @@ from typing import Dict, List, Optional, Tuple
 
 import numpy as np
 import pandas as pd
-from scipy.stats import rankdata
 
 from .observables import BaseRegimeDetector
 
@@ -53,6 +52,7 @@ OBSERVABLE_FAMILIES: Dict[str, List[str]] = {
     'State Dynamics': [
         'Multi-Lag Fidelity',
         'Reduced Purity',
+        'Quantum Relative Entropy',
     ],
     'Kinematics': [
         'Geodesic Velocity',
@@ -62,6 +62,7 @@ OBSERVABLE_FAMILIES: Dict[str, List[str]] = {
         'Spectral Entropy',
         'Spectral Complexity',
         'Effective State Dim',
+        'Level Spacing Ratio',
     ],
     'Curvature': [
         'Sectional Curvature Sign',

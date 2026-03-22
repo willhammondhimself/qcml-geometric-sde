@@ -13,9 +13,10 @@ Key Components:
 Reference: Qognitive papers on Quantum Metric Learning
 """
 
-import numpy as np
-from typing import Tuple, Optional, List, Union
 import warnings
+from typing import List, Optional, Tuple, Union
+
+import numpy as np
 
 
 class QCMLGeometry:
@@ -76,12 +77,12 @@ class QCMLGeometry:
         Returns:
             Hermitian matrix of shape (hilbert_dim, hilbert_dim).
         """
-        I = np.array([[1, 0], [0, 1]], dtype=np.complex128)
+        eye2 = np.array([[1, 0], [0, 1]], dtype=np.complex128)
         X = np.array([[0, 1], [1, 0]], dtype=np.complex128)
         Y = np.array([[0, -1j], [1j, 0]], dtype=np.complex128)
         Z = np.array([[1, 0], [0, -1]], dtype=np.complex128)
 
-        paulis = [I, X, Y, Z]
+        paulis = [eye2, X, Y, Z]
 
         n_qubits = int(round(np.log2(self.hilbert_dim)))
         if 2 ** n_qubits != self.hilbert_dim:
@@ -292,8 +293,9 @@ class QCMLGeometry:
 
         return H
 
-    def quasi_coherent_state(self, x: np.ndarray,
-                            return_energy: bool = False) -> Union[np.ndarray, Tuple[np.ndarray, float]]:
+    def quasi_coherent_state(
+        self, x: np.ndarray, return_energy: bool = False,
+    ) -> Union[np.ndarray, Tuple[np.ndarray, float]]:
         """
         Compute quasi-coherent state |psi(x)> = ground state of H(x).
 
@@ -431,9 +433,13 @@ class QCMLGeometry:
         a, b = indices
 
         x00 = x.copy()
-        x10 = x.copy(); x10[a] += epsilon
-        x11 = x.copy(); x11[a] += epsilon; x11[b] += epsilon
-        x01 = x.copy(); x01[b] += epsilon
+        x10 = x.copy()
+        x10[a] += epsilon
+        x11 = x.copy()
+        x11[a] += epsilon
+        x11[b] += epsilon
+        x01 = x.copy()
+        x01[b] += epsilon
 
         psi00 = self.quasi_coherent_state(x00)
         psi10 = self.quasi_coherent_state(x10)

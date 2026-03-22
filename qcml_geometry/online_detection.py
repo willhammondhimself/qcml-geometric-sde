@@ -19,10 +19,9 @@ All models inherit OnlineDetectorBase and implement:
 
 import logging
 from abc import ABC, abstractmethod
-from typing import Dict, Optional, List
+from typing import Dict
 
 import numpy as np
-import pandas as pd
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 

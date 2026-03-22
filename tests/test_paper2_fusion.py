@@ -63,7 +63,7 @@ class TestHierarchicalFusion:
         """Synthetic score matrix with known structure."""
         rng = np.random.default_rng(42)
         T = 500
-        n_ch = 15  # matches ACTIVE_CHANNELS count
+        n_ch = len(ACTIVE_CHANNELS)
         scores = rng.standard_normal((T, n_ch))
 
         # Inject crisis signal at indices 300-350

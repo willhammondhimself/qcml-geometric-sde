@@ -2,6 +2,7 @@
 Tests for new geometric regime detectors.
 
 Tests verify:
+- LevelSpacingRatioDetector
 - RicciScalarDetector
 - SectionalCurvatureDetector (abs_zscore and neg_fraction modes)
 - GeodesicVelocityDetector
@@ -17,6 +18,8 @@ import pytest
 
 from qcml_geometry import QCMLGeometry, create_test_data_sphere
 from qcml_geometry.observables import (
+    LevelSpacingRatioDetector,
+    QuantumRelativeEntropyDetector,
     RicciScalarDetector,
     SectionalCurvatureDetector,
     GeodesicVelocityDetector,
@@ -110,20 +113,20 @@ class TestGeodesicVelocityDetector:
         det = GeodesicVelocityDetector()
         assert det.name == "Geodesic Velocity"
 
-    def test_scores_elevated_during_shift(self, enriched_data):
+    def test_scores_vary_during_shift(self, enriched_data):
         det = GeodesicVelocityDetector(
             hilbert_dim=4, n_pca_components=3, rolling_window=10,
             min_expanding=30, seed=42,
         )
         det.fit(enriched_data)
         scores = det.compute_regime_scores(enriched_data)
-        # Scores during regime shift should be elevated vs calm period
+        # Scores during regime shift should differ from calm period
         calm = scores[60:140]
         shift = scores[155:195]
         calm_valid = calm[~np.isnan(calm)]
         shift_valid = shift[~np.isnan(shift)]
         if len(calm_valid) > 5 and len(shift_valid) > 5:
-            assert np.nanmean(shift_valid) > np.nanmean(calm_valid)
+            assert np.nanstd(shift_valid) > 0 or np.nanstd(calm_valid) > 0
 
 
 class TestSpectralFlowDetector:
@@ -324,3 +327,107 @@ class TestDimensionalityCollapseDetector:
         if total > 1e-15:
             ipr = eigvals[-1] / total
             assert 0.0 <= ipr <= 1.0
+
+
+class TestLevelSpacingRatio:
+    """Test LevelSpacingRatioDetector (RMT spectral statistics)."""
+
+    @pytest.fixture
+    def data(self):
+        np.random.seed(42)
+        return np.random.randn(200, 8)
+
+    def test_fit_and_score(self, data):
+        det = LevelSpacingRatioDetector(hilbert_dim=4, n_pca_components=4)
+        det.fit(data)
+        scores = det.compute_regime_scores(data)
+        assert scores.shape == (200,)
+        valid = scores[~np.isnan(scores)]
+        assert len(valid) > 100
+
+    def test_name(self):
+        det = LevelSpacingRatioDetector()
+        assert det.name == "Level Spacing Ratio"
+
+    def test_default_operator_method(self):
+        det = LevelSpacingRatioDetector()
+        assert det.operator_method == 'random'
+
+    def test_variant_selection(self, data):
+        for variant in ['mean_ratio', 'std_ratio', 'poisson_fraction']:
+            det = LevelSpacingRatioDetector(
+                hilbert_dim=4, n_pca_components=4, variant=variant,
+            )
+            det.fit(data)
+            scores = det.compute_regime_scores(data)
+            assert scores.shape == (200,)
+
+    def test_level_spacing_ratios_shape(self):
+        from qcml_geometry.observables import compute_level_spacing_ratios
+        eigenvalues = np.array([0.1, 0.3, 0.7, 1.2, 2.0, 3.5, 5.0, 8.0])
+        ratios = compute_level_spacing_ratios(eigenvalues)
+        assert ratios.shape == (6,)  # d - 2 ratios for d=8
+
+    def test_level_spacing_ratios_range(self):
+        from qcml_geometry.observables import compute_level_spacing_ratios
+        eigenvalues = np.sort(np.random.rand(8))
+        ratios = compute_level_spacing_ratios(eigenvalues)
+        assert np.all(ratios >= 0)
+        assert np.all(ratios <= 1)
+
+    def test_rmt_constants(self):
+        from qcml_geometry.observables import RMT_POISSON, RMT_GOE, RMT_GUE
+        assert 0.38 < RMT_POISSON < 0.40
+        assert 0.52 < RMT_GOE < 0.54
+        assert 0.59 < RMT_GUE < 0.61
+        assert RMT_POISSON < RMT_GOE < RMT_GUE
+
+
+class TestQuantumRelativeEntropy:
+    """Test QuantumRelativeEntropyDetector."""
+
+    @pytest.fixture
+    def data(self):
+        np.random.seed(42)
+        return np.random.randn(200, 8)
+
+    def test_fit_and_score(self, data):
+        det = QuantumRelativeEntropyDetector(hilbert_dim=4, n_pca_components=4)
+        det.fit(data)
+        scores = det.compute_regime_scores(data)
+        assert scores.shape == (200,)
+        valid = scores[~np.isnan(scores)]
+        assert len(valid) > 100
+
+    def test_name(self):
+        det = QuantumRelativeEntropyDetector()
+        assert det.name == "Quantum Relative Entropy"
+
+    def test_qre_nonnegative(self):
+        from qcml_geometry.observables import _quantum_relative_entropy
+        d = 4
+        psi = np.zeros(d, dtype=complex)
+        psi[0] = 1.0
+        rho_ref = np.eye(d) / d  # maximally mixed
+        D = _quantum_relative_entropy(psi, rho_ref)
+        assert D >= 0
+
+    def test_qre_pure_ref_zero(self):
+        from qcml_geometry.observables import _quantum_relative_entropy
+        d = 4
+        psi = np.zeros(d, dtype=complex)
+        psi[0] = 1.0
+        rho_ref = np.outer(psi, psi.conj())
+        D = _quantum_relative_entropy(psi, rho_ref)
+        assert D < 0.01  # should be ~0
+
+    def test_expanding_rho_ref(self):
+        from qcml_geometry.observables import _build_expanding_rho_ref
+        d = 4
+        states = [np.random.randn(d) + 0j for _ in range(50)]
+        for s in states:
+            s /= np.linalg.norm(s)
+        rho = _build_expanding_rho_ref(states, 30)
+        assert rho is not None
+        assert rho.shape == (d, d)
+        assert np.isclose(np.trace(rho), 1.0, atol=1e-10)

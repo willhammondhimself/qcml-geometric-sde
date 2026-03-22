@@ -1,15 +1,16 @@
-total_rounds: 120
-timestamp: "2026-03-08T12:00:00"
-kept: ["0001", "0002", "0004", "0006", "0007", "0008", "0009", "0010", "0011", "0012", "0013", "0015", "0016", "0017", "0024", "0025", "0028", "0029", "0030", "0031", "0032", "0033", "0034", "0035", "0036", "0037", "0038", "0039", "0040", "0042", "0043", "0044", "0045", "0046", "0047", "0048", "0049", "0050", "0052", "0053", "0054", "0055", "0056", "0057", "0058", "0059", "0060", "0063", "0064", "0065", "0066", "0067", "0068", "0069", "0070", "0071", "0072", "0073", "0075", "0076", "0077", "0078", "0079", "0081", "0082", "0083", "0085", "0086", "0087", "0088", "0089", "0090", "0091", "0092", "0093", "0096", "0097", "0098", "0099", "0101", "0102", "0104", "0107", "0114", "0115", "0116"]
-rejected: ["0003", "0005", "0014", "0018", "0019", "0020", "0022", "0023", "0026", "0027", "0041", "0051", "0061", "0062", "0074", "0080", "0084", "0094", "0095", "0100", "0103", "0105", "0106", "0108", "0109", "0112", "0113", "0118"]
+total_rounds: 145
+timestamp: "2026-03-10T18:00:00"
+kept: ["0001", "0002", "0004", "0006", "0007", "0008", "0009", "0010", "0011", "0012", "0013", "0015", "0016", "0017", "0024", "0025", "0028", "0029", "0030", "0031", "0032", "0033", "0034", "0035", "0036", "0037", "0038", "0039", "0040", "0042", "0043", "0044", "0045", "0046", "0047", "0048", "0049", "0050", "0052", "0053", "0054", "0055", "0056", "0057", "0058", "0059", "0060", "0063", "0064", "0065", "0066", "0067", "0068", "0069", "0070", "0071", "0072", "0073", "0075", "0076", "0077", "0078", "0079", "0081", "0082", "0083", "0085", "0086", "0087", "0088", "0089", "0090", "0091", "0092", "0093", "0096", "0097", "0098", "0099", "0101", "0102", "0104", "0107", "0114", "0115", "0116", "0122", "0123", "0127", "0131", "0136", "0137", "0139", "0142", "0143", "0145"]
+rejected: ["0003", "0005", "0014", "0018", "0019", "0020", "0022", "0023", "0026", "0027", "0041", "0051", "0061", "0062", "0074", "0080", "0084", "0094", "0095", "0100", "0103", "0105", "0106", "0108", "0109", "0112", "0113", "0118", "0121", "0124", "0125", "0126", "0128", "0129", "0130", "0132", "0133", "0134", "0135", "0138", "0140", "0141", "0144"]
 investigate_further: ["0004", "0017", "0021", "0025", "0110", "0111", "0117", "0119", "0120"]
 
 summary_stats:
-  keep: 82
-  reject: 29
+  keep: 92
+  reject: 44
   investigate: 9
   themes:
     novel_observables: {keep: 11, reject: 3, investigate: 1, total: 15}
+    novel_observables_ii: {keep: 3, reject: 5, total: 8}
     embedding: {keep: 2, reject: 5, investigate: 3, total: 10}
     dead_signal_fix: {keep: 8, reject: 2, total: 10}
     fusion_combination: {keep: 8, reject: 2, total: 10}
@@ -20,6 +21,8 @@ summary_stats:
     competitive_landscape: {keep: 8, reject: 2, total: 10}
     wild_cards: {keep: 4, reject: 1, total: 5}
     intrinsic_dimension: {keep: 7, reject: 8, investigate: 5, total: 20}
+    scalability: {keep: 2, reject: 6, total: 8}
+    interpretability: {keep: 5, reject: 4, total: 9}
 
 top_discoveries:
   - id: "0045"
@@ -70,6 +73,24 @@ top_discoveries:
     question: "Loschmidt echo"
     median_d: 0.849
     verdict: "Fidelity decay under Hamiltonian perturbation. Complementary to Berry phase."
+  - id: "0127"
+    question: "Quantum relative entropy D(rho_t || rho_ref)"
+    median_d: 1.578
+    verdict: "Expanding-window variant exceptional: all 4 smoke crises d>0.8. Promoted to main observatory."
+  - id: "0123"
+    question: "Level spacing ratio (RMT GOE/GUE/Poisson)"
+    median_d: 0.500
+    verdict: "Systemic crisis specialist: GFC d=3.27, COVID d=3.44. Promoted to main observatory."
+  - id: "0122"
+    question: "Quantum coherence (l1-norm)"
+    median_d: 1.03
+    verdict: "Strong performance, non-redundant (r=0.06 vs Dim Collapse). RMT-grounded."
+  - id: "0137"
+    question: "Shapley value decomposition of fusion scores"
+    verdict: "Tractable (2^4=16 coalitions for top-4). Validates specialization and explains why fusion works."
+  - id: "0142"
+    question: "Counterfactual leave-one-out ablation"
+    verdict: "Computable from existing data. Quantifies marginal value of each observable."
 
 big_negatives:
   - id: "0026"
@@ -96,6 +117,15 @@ big_negatives:
   - id: "0113"
     question: "Marchenko-Pastur thresholding on quantum metric"
     reason: "g_ab is NOT a sample covariance matrix — no sample size T, no i.i.d. structure. MP distribution is inapplicable."
+  - id: "0121"
+    question: "Wigner function negativity"
+    reason: "Negative d=-0.546: negativity decreases during crises (opposite to hypothesis). Qubit states have weak negativity."
+  - id: "0126"
+    question: "Quantum circuit complexity"
+    reason: "No efficient classical algorithm for computing circuit complexity from arbitrary state. NP-hard problem."
+  - id: "0130"
+    question: "JL random projections for QCML"
+    reason: "JL preserves distances but not eigenvectors/eigenvalues. Spectral observables require full eigendecomposition."
 
 key_corrections:
   - claim: "Berry Phase Rate 90-day lead time"
@@ -122,6 +152,11 @@ cross_cutting_insights:
   - "Renyi entropy unification: IPR=Renyi-∞, PR=Renyi-2, SpEnt=Renyi-1 of eigenvalue distribution (Q114)"
   - "Dimension-informed fusion fails due to feature space vs channel space type mismatch (Q108-Q109)"
   - "Herding → dimension collapse is sufficient (in limit) but not necessary (Q116)"
+  - "QRE with expanding window is the strongest new single observable (d=1.578) — promoted to main codebase (Q127)"
+  - "Level spacing ratio is a systemic crisis specialist (GFC d=3.27) — promoted to main codebase (Q123)"
+  - "Scalability: most rejected — streaming/GPU/caching proposals are premature optimization (Q129-Q135)"
+  - "Interpretability: Shapley values (Q137) and counterfactuals (Q142) are the most actionable"
+  - "Quantum coherence (Q122) is the third-best new observable (d=1.03) — strong candidate for next promotion"
 
 follow_up_queue:
   - "Full 17-crisis severity ranking (Q98)"
@@ -141,3 +176,10 @@ follow_up_queue:
   - "Renyi entropy order optimization for detection (Q114)"
   - "Fix reconstruction-loss optimizer (gradient-based) and re-test Q105-Q106"
   - "PCA-guided adaptive hilbert_dim ablation study (Q120)"
+  - "Quantum coherence (l1-norm) promotion to main observatory (Q122)"
+  - "Shapley value decomposition of fusion — interpretability paper (Q137)"
+  - "Counterfactual leave-one-out ablation study (Q142)"
+  - "Bloch sphere visualization for interpretability (Q139)"
+  - "Minimum viable observatory — feature selection from d matrix (Q131)"
+  - "Decision tree surrogate for fusion interpretability (Q143)"
+  - "Geometric specialization theory — gradient concentration (Q145)"

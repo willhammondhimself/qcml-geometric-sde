@@ -11,11 +11,12 @@ Key Innovation:
 - delta_C != 0 -> topological transition (true regime change)
 """
 
-import numpy as np
-from typing import Tuple, Optional, List, Dict
+import warnings
 from dataclasses import dataclass
 from enum import Enum
-import warnings
+from typing import Dict, List, Optional, Tuple
+
+import numpy as np
 
 from .core import QCMLGeometry
 

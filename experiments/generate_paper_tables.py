@@ -84,6 +84,9 @@ METHOD_CATEGORIES = {
     'Commutator Norm': 'Geometric',
     'Ricci Scalar': 'Geometric',
     'Sectional Curvature': 'Geometric',
+    # Level spacing / quantum entropy
+    'Level Spacing Ratio': 'Spectral',
+    'Quantum Relative Entropy': 'Geometric',
 }
 
 LATEX_NAMES = {
@@ -144,6 +147,9 @@ LATEX_NAMES = {
     'Commutator Norm': 'Commutator Norm',
     'Ricci Scalar': 'Ricci Scalar',
     'Sectional Curvature': r"Sect.\ Curvature",
+    # Level spacing / quantum entropy
+    'Level Spacing Ratio': 'Level Spacing Ratio',
+    'Quantum Relative Entropy': r"Quantum Rel.\ Entropy",
 }
 
 

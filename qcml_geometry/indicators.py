@@ -16,11 +16,12 @@ Four novel contributions for academic research on topological regime detection:
    with dynamic scale selection based on regime characteristics.
 """
 
+import logging
+from dataclasses import dataclass, field
+from typing import Dict, List, Optional, Tuple
+
 import numpy as np
 import pandas as pd
-from dataclasses import dataclass, field
-from typing import List, Optional, Dict, Tuple
-import logging
 
 from .core import QCMLGeometry
 from .topology import TopologicalRegimeDetector

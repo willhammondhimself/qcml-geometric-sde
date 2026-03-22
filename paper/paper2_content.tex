@@ -22,16 +22,19 @@ transitions cause large state velocities.
 
 \subsection{Speed Limit Ratio}\label{subsec:speed_limit}
 
-The Mandelstam--Tamm bound constrains the maximum evolution speed of a
-quantum state by the spectral gap $\Delta(t) = E_1(t) - E_0(t)$:
+The adiabatic theorem~\cite{kato1966} guarantees that a system
+remains in its ground state when driven slowly relative to the spectral
+gap.  The ratio of actual velocity to gap quantifies departure from
+adiabaticity:
 \begin{equation}\label{eq:speed_limit}
   r(t) = \frac{v(t)}{\Delta(t)}\,,
 \end{equation}
-where $v(t)$ is the FS velocity~\eqref{eq:fs_velocity}.  When
-$r \to 1$, the system evolves at its maximum possible speed---a hallmark
-of diabatic (sudden) transitions.  During financial crises, the
-embedding dynamics approach the quantum speed limit, signaling that
-the data manifold undergoes maximally rapid structural change.
+where $v(t)$ is the FS velocity~\eqref{eq:fs_velocity} and
+$\Delta(t) = E_1(t) - E_0(t)$ is the spectral gap.  In the adiabatic
+limit $r \ll 1$, the state tracks the instantaneous ground state
+smoothly~\cite{born_fock1928,kato1966}.  Large $r$ signals departure
+from adiabaticity: the data manifold deforms faster than the spectral
+gap can accommodate, producing a diabatic transition.
 
 \paragraph{Hyperparameters.}  Same as Berry.
 
@@ -39,7 +42,7 @@ the data manifold undergoes maximally rapid structural change.
 
 The inverse participation ratio (IPR) of the quantum metric eigenvalues
 measures effective dimensionality collapse:
-\begin{equation}\label{eq:ipr}
+\begin{equation}\label{eq:dim_collapse}
   \mathrm{IPR}(t) = \frac{\lambda_{\max}\bigl(g(x_t)\bigr)}
   {\mathrm{tr}\,g(x_t)}\,,
 \end{equation}
@@ -309,7 +312,7 @@ for ConstantVol) while reducing maximum drawdown from 27.0\% to 19.0\%
 % The four observatory extensions add further independent channels:
 % Fubini--Study velocity captures instantaneous state movement, the
 % speed limit ratio $v/\Delta$ detects diabatic transitions approaching
-% the Mandelstam--Tamm bound, the dimensionality collapse index
+% the adiabatic bound~\cite{kato1966,born_fock1928}, the dimensionality collapse index
 % (metric IPR) measures herding-driven eigenspectrum concentration, and
 % the sectional curvature sign fraction identifies sustained periods of
 % geodesic divergence.  An adiabatic/diabatic taxonomy emerges: crises

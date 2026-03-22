@@ -12,7 +12,7 @@ Also provides the BaseRegimeDetector ABC and ExpandingWindowMixin.
 
 import logging
 from abc import ABC, abstractmethod
-from typing import Optional, List
+from typing import List, Optional
 
 import numpy as np
 from sklearn.decomposition import PCA
@@ -2954,3 +2954,232 @@ class CurvatureRateDetector(ExpandingWindowMixin, BaseRegimeDetector):
             if not np.isnan(ricci_vals[t]) and not np.isnan(ricci_vals[t - 1]):
                 rate[t] = abs(ricci_vals[t] - ricci_vals[t - 1])
         return _expanding_zscore(rate, self.rolling_window, self.min_expanding, T, 1)
+
+
+# --- Random Matrix Theory constants ---
+RMT_POISSON = 0.3863   # 2 ln 2 - 1 (integrable / uncorrelated)
+RMT_GOE = 0.5307       # 4 - 2 sqrt(3) (Gaussian Orthogonal Ensemble)
+RMT_GUE = 0.5996       # 2 sqrt(3) / pi - 1/2 (Gaussian Unitary Ensemble)
+
+
+def compute_level_spacing_ratios(eigenvalues: np.ndarray) -> np.ndarray:
+    """Compute nearest-neighbor level spacing ratios from sorted eigenvalues.
+
+    Given sorted eigenvalues E_0 < E_1 < ... < E_{d-1}:
+        s_n = E_{n+1} - E_n        (nearest-neighbor spacings)
+        r_n = min(s_n, s_{n+1}) / max(s_n, s_{n+1})   (ratios, in [0,1])
+
+    Args:
+        eigenvalues: Sorted eigenvalues of shape (d,).
+
+    Returns:
+        ratios: Level spacing ratios of shape (d-2,).
+    """
+    spacings = np.diff(eigenvalues)
+    spacings = np.maximum(spacings, 1e-15)
+    if len(spacings) < 2:
+        return np.array([RMT_POISSON])
+    s_n = spacings[:-1]
+    s_np1 = spacings[1:]
+    return np.minimum(s_n, s_np1) / np.maximum(s_n, s_np1)
+
+
+class LevelSpacingRatioDetector(ExpandingWindowMixin, BaseRegimeDetector):
+    """Regime detection via nearest-neighbor level spacing ratios of H(x).
+
+    Measures the spectral statistics of the error Hamiltonian at each time
+    step. Three summary observables:
+
+        1. mean_ratio: <r> -- mean level spacing ratio
+        2. std_ratio: sigma_r -- standard deviation of ratios
+        3. poisson_fraction: fraction of r_n < 0.386 (Poisson threshold)
+
+    The default variant ('mean_ratio') is z-scored with an expanding window.
+
+    IMPORTANT: Must use operator_method='random'. The 'pca_inspired' method
+    produces Kramers-degenerate spectra with only 2 usable ratios at d=8.
+
+    Specialist detector: exceptional on systemic crises (GFC d=3.27, COVID
+    d=3.44) but weak on localized ones (flash crash d=0.07). The bimodal
+    response is itself scientifically interesting.
+
+    References:
+        Oganesyan & Huse (2007). Phys. Rev. B 75, 155111.
+        Atas et al. (2013). Phys. Rev. Lett. 110, 084101.
+
+    Args:
+        hilbert_dim: Hilbert space dimension (default 8 for 3-qubit).
+        n_pca_components: Number of PCA components.
+        operator_method: Must be 'random' (see above).
+        rolling_window: Rolling mean window for smoothing.
+        min_expanding: Minimum observations before z-scoring.
+        seed: Random seed.
+        normalization: Post-PCA normalization mode.
+        variant: Which observable to score ('mean_ratio', 'std_ratio',
+            'poisson_fraction'). Default 'mean_ratio'.
+        poisson_threshold: Threshold for Poisson fraction (default 0.386).
+    """
+
+    def __init__(self, hilbert_dim=8, n_pca_components=8, operator_method='random',
+                 scale_exponent=None, rolling_window=20, min_expanding=60, seed=42,
+                 causal_fit_length=None, expanding_refit_interval=None,
+                 normalization='soft', adaptive_epsilon=True, custom_operators=None,
+                 variant='mean_ratio', poisson_threshold=0.386):
+        _standard_init(self, hilbert_dim=hilbert_dim, n_pca_components=n_pca_components,
+                        operator_method=operator_method, scale_exponent=scale_exponent,
+                        rolling_window=rolling_window, min_expanding=min_expanding,
+                        seed=seed, causal_fit_length=causal_fit_length,
+                        expanding_refit_interval=expanding_refit_interval,
+                        normalization=normalization, adaptive_epsilon=adaptive_epsilon,
+                        custom_operators=custom_operators,
+                        variant=variant, poisson_threshold=poisson_threshold)
+
+    @property
+    def name(self):
+        return "Level Spacing Ratio"
+
+    def fit(self, X, **kwargs):
+        return _standard_qcml_fit(self, X)
+
+    def compute_regime_scores(self, X):
+        if self._geometry is None:
+            raise RuntimeError("Call fit() before compute_regime_scores().")
+        Xt = _transform_array(X, self._scaler, self._pca,
+                              normalization=self.normalization,
+                              train_norms=self._train_norms, train_std=self._train_std)
+        T = len(Xt)
+        mean_ratios = np.empty(T)
+        std_ratios = np.empty(T)
+        poisson_fractions = np.empty(T)
+        for t in range(T):
+            geo, xt = (self._transform_point_at(X[t], t) if self._snapshots
+                       else (self._geometry, Xt[t]))
+            eigenvalues = geo.full_spectrum(xt)
+            ratios = compute_level_spacing_ratios(eigenvalues)
+            mean_ratios[t] = np.mean(ratios)
+            std_ratios[t] = np.std(ratios, ddof=0)
+            poisson_fractions[t] = np.mean(ratios < self.poisson_threshold)
+        raw = {'mean_ratio': mean_ratios, 'std_ratio': std_ratios,
+               'poisson_fraction': poisson_fractions}[self.variant]
+        return _expanding_zscore(raw, self.rolling_window, self.min_expanding, T)
+
+
+# --- Quantum Relative Entropy helpers ---
+
+_QRE_EPSILON = 1e-10  # Floor for log(rho_ref) eigenvalues
+
+
+def _quantum_relative_entropy(psi, rho_ref, epsilon=_QRE_EPSILON):
+    """Compute D(|psi><psi| || rho_ref) = -<psi| log(rho_ref) |psi>.
+
+    Args:
+        psi: Pure state vector of shape (d,).
+        rho_ref: Reference density matrix of shape (d, d).
+        epsilon: Floor for eigenvalues to avoid log(0).
+
+    Returns:
+        D: Quantum relative entropy in nats (non-negative).
+    """
+    eigenvalues, eigenvectors = np.linalg.eigh(rho_ref)
+    eigenvalues_reg = np.maximum(eigenvalues, epsilon)
+    log_eigenvalues = np.log(eigenvalues_reg)
+    coeffs = eigenvectors.conj().T @ psi
+    probs = np.abs(coeffs) ** 2
+    D = -np.sum(log_eigenvalues * probs)
+    return float(max(D, 0.0))
+
+
+def _build_expanding_rho_ref(states, t, min_window=20):
+    """Build expanding-window average density matrix.
+
+    rho_ref = (1/t) * sum_{s=0}^{t-1} |psi_s><psi_s|
+
+    Args:
+        states: List of state vectors.
+        t: Current time index.
+        min_window: Minimum past states required.
+
+    Returns:
+        rho_ref or None if insufficient history.
+    """
+    if t < min_window:
+        return None
+    d = states[0].shape[0]
+    rho = np.zeros((d, d), dtype=complex)
+    for s in range(t):
+        psi_s = states[s]
+        rho += np.outer(psi_s, psi_s.conj())
+    rho /= t
+    return rho
+
+
+class QuantumRelativeEntropyDetector(ExpandingWindowMixin, BaseRegimeDetector):
+    """Regime detection via quantum relative entropy D(rho_t || rho_ref).
+
+    Computes D(|psi_t><psi_t| || rho_ref) where rho_ref is the expanding-
+    window average density matrix of all past ground states. D measures how
+    "surprising" the current state is relative to the long-term trajectory.
+
+    Score = expanding z-score of rolling-mean relative entropy.
+
+    Best variant is 'D_expanding' (median d=1.578 on smoke test), which uses
+    all past states for rho_ref. This is more orthogonal (rho=0.495 with MLF)
+    and more sensitive than rolling-window variants.
+
+    References:
+        Umegaki (1962). Conditional expectation in an operator algebra.
+        Vedral (2002). The role of relative entropy in quantum information theory.
+
+    Args:
+        hilbert_dim: Hilbert space dimension.
+        state_window: Rolling window for reference density matrix.
+        n_pca_components: Number of PCA components.
+        operator_method: Operator construction method ('random' recommended).
+        rolling_window: Rolling mean smoothing window.
+        min_expanding: Minimum observations before z-scoring.
+        seed: Random seed.
+        normalization: Post-PCA normalization mode.
+    """
+
+    def __init__(self, hilbert_dim=8, n_pca_components=8, operator_method='random',
+                 scale_exponent=None, rolling_window=20, min_expanding=60, seed=42,
+                 causal_fit_length=None, expanding_refit_interval=None,
+                 normalization='soft', adaptive_epsilon=True, custom_operators=None,
+                 state_window=20):
+        _standard_init(self, hilbert_dim=hilbert_dim, n_pca_components=n_pca_components,
+                        operator_method=operator_method, scale_exponent=scale_exponent,
+                        rolling_window=rolling_window, min_expanding=min_expanding,
+                        seed=seed, causal_fit_length=causal_fit_length,
+                        expanding_refit_interval=expanding_refit_interval,
+                        normalization=normalization, adaptive_epsilon=adaptive_epsilon,
+                        custom_operators=custom_operators, state_window=state_window)
+
+    @property
+    def name(self):
+        return "Quantum Relative Entropy"
+
+    def fit(self, X, **kwargs):
+        return _standard_qcml_fit(self, X)
+
+    def compute_regime_scores(self, X):
+        if self._geometry is None:
+            raise RuntimeError("Call fit() before compute_regime_scores().")
+        Xt = _transform_array(X, self._scaler, self._pca,
+                              normalization=self.normalization,
+                              train_norms=self._train_norms, train_std=self._train_std)
+        T = len(Xt)
+        # Collect all ground states
+        states = []
+        for t in range(T):
+            geo, xt = (self._transform_point_at(X[t], t) if self._snapshots
+                       else (self._geometry, Xt[t]))
+            states.append(geo.quasi_coherent_state(xt))
+        # Compute expanding-window QRE
+        vals = np.full(T, np.nan)
+        for t in range(T):
+            rho_ref = _build_expanding_rho_ref(states, t, min_window=self.state_window)
+            if rho_ref is None:
+                continue
+            vals[t] = _quantum_relative_entropy(states[t], rho_ref)
+        return _expanding_zscore(vals, self.rolling_window, self.min_expanding, T,
+                                 skip_nan_start=self.state_window)

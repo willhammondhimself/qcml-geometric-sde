@@ -566,6 +566,33 @@ detectors:
       subsample: 5
     hpo_source: "pipeline_upgrade_v2"
 
+  level_spacing_ratio:
+    class: qcml_geometry.LevelSpacingRatioDetector
+    display_name: "Level Spacing Ratio"
+    params:
+      hilbert_dim: 8
+      n_pca_components: 8
+      operator_method: random
+      seed: 42
+      normalization: soft
+      adaptive_epsilon: true
+      variant: mean_ratio
+      poisson_threshold: 0.386
+    hpo_source: "ideation_0123_full_benchmark"
+
+  quantum_relative_entropy:
+    class: qcml_geometry.QuantumRelativeEntropyDetector
+    display_name: "Quantum Relative Entropy"
+    params:
+      hilbert_dim: 8
+      n_pca_components: 8
+      operator_method: random
+      seed: 42
+      normalization: soft
+      adaptive_epsilon: true
+      state_window: 20
+    hpo_source: "ideation_0127_smoke"
+
 # ---------------------------------------------------------------------------
 # Information geometry detectors (Workstream B)
 # ---------------------------------------------------------------------------
@@ -789,6 +816,8 @@ method_categories:
     - spectral_complexity
     - berry_velocity_coupling
     - curvature_rate
+    - level_spacing_ratio
+    - quantum_relative_entropy
   info_geometry:
     - fisher_rao
     - wasserstein
@@ -898,6 +927,8 @@ experiments:
       - commutator_norm
       - ricci_scalar
       - sectional_curvature
+      - level_spacing_ratio
+      - quantum_relative_entropy
       # Info geometry
       - fisher_rao
       - wasserstein

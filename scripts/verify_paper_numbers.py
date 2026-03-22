@@ -182,18 +182,25 @@ def resolve_json_path(data: dict, path: str):
 
 
 def _split_path(path: str) -> list:
-    """Split a dot-notation path, respecting keys that contain dots
-    when they are quoted or contain spaces.
+    """Split a dot-notation path into traversal keys.
 
-    For simplicity, this splits on '.' but reassembles parts that look
-    like they belong to a single key (e.g., multi-word method names).
-    Uses a heuristic: if a part matches a known method name fragment,
-    merge with neighbors.
-
-    In practice the registry should use '/' or bracket notation for
-    ambiguous keys. This implementation uses '.' as separator.
+    Handles bracket notation for list indices:
+        "aggregate[0].mean_d"  → ["aggregate", "0", "mean_d"]
+        "summary.median_d.Berry Phase Rate" → ["summary", "median_d", "Berry Phase Rate"]
+        "results.0.score" → ["results", "0", "score"]
     """
-    return path.split(".")
+    import re
+
+    parts = []
+    for segment in path.split("."):
+        # Check for bracket notation: e.g. "aggregate[0]" → "aggregate", "0"
+        m = re.match(r'^(.+?)\[(\d+)\]$', segment)
+        if m:
+            parts.append(m.group(1))
+            parts.append(m.group(2))
+        else:
+            parts.append(segment)
+    return parts
 
 
 # ---------------------------------------------------------------------------

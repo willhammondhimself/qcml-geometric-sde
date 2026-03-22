@@ -1,10 +1,12 @@
 """
 Gradient-Descent Operator Learning for QCML Regime Detection.
 
-Trains Hermitian operators to maximize crisis/non-crisis separability
-measured by Cohen's d. Uses leave-one-crisis-out (LOCO) cross-validation
-to avoid overfitting.
+Trains Hermitian operators using two objectives:
+1. Discriminative (Cohen's d maximization): separability between crisis/normal scores.
+2. Reconstruction (Candelori et al. 2025): L = sum(d_i^2 + w*sigma_i^2),
+   minimizing quantum distance reconstruction error.
 
+Uses leave-one-crisis-out (LOCO) cross-validation to avoid overfitting.
 Evaluation uses the FULL detector pipeline (scaler → PCA → operators →
 rolling window → z-score normalization), producing effect sizes comparable
 to the main paper results (d ~ 0.8–1.2).
@@ -222,6 +224,147 @@ def _eval_full_pipeline(operators, X_enriched, dates, hilbert_dim, detector_type
     )
 
 
+def _reconstruction_loss(operators, X_pca, hilbert_dim, fluctuation_weight=1.0):
+    """Compute reconstruction loss L = sum(d_i^2 + w * sigma_i^2).
+
+    Follows Candelori et al. (2025): quantum distance squared between
+    consecutive points plus a fluctuation penalty term. The fluctuation
+    sigma_i^2 is the variance of local quantum distances within a
+    small neighborhood.
+
+    Args:
+        operators: List of Hermitian matrices.
+        X_pca: Preprocessed data (T, d).
+        hilbert_dim: Hilbert space dimension.
+        fluctuation_weight: Weight w on the fluctuation term.
+
+    Returns:
+        loss: Scalar reconstruction loss (non-negative).
+    """
+    geo = QCMLGeometry(n_features=X_pca.shape[1], hilbert_dim=hilbert_dim)
+    geo.set_operators(operators)
+
+    T = X_pca.shape[0]
+    distances = np.empty(T - 1)
+    for t in range(T - 1):
+        psi_t = geo.quasi_coherent_state(X_pca[t])
+        psi_next = geo.quasi_coherent_state(X_pca[t + 1])
+        fidelity = np.clip(np.abs(np.vdot(psi_t, psi_next)), 0.0, 1.0)
+        distances[t] = np.arccos(fidelity) ** 2
+
+    # fluctuation: local variance in a rolling window of 5
+    window = 5
+    fluct = np.zeros(max(T - 1 - window + 1, 0))
+    for i in range(len(fluct)):
+        fluct[i] = np.var(distances[i : i + window])
+
+    loss = np.mean(distances) + fluctuation_weight * np.mean(fluct) if len(fluct) > 0 else np.mean(distances)
+    return loss
+
+
+def learn_operators_reconstruction(
+    X_pca,
+    hilbert_dim=8,
+    n_operators=8,
+    n_steps=200,
+    lr=0.01,
+    seed=42,
+    init_method="random",
+    fluctuation_weight=1.0,
+):
+    """Learn Hermitian operators by minimizing reconstruction loss.
+
+    Implements the reconstruction objective from Candelori et al. (2025):
+    L = sum(d_i^2 + w * sigma_i^2), where d_i is the quantum distance
+    between consecutive data points and sigma_i^2 is a local fluctuation
+    penalty.
+
+    Args:
+        X_pca: Preprocessed feature matrix (T, n_features).
+        hilbert_dim: Hilbert space dimension.
+        n_operators: Number of operators to learn.
+        n_steps: Optimization steps.
+        lr: Learning rate.
+        seed: Random seed.
+        init_method: 'random' or 'pca_inspired'.
+        fluctuation_weight: Weight on the fluctuation term.
+
+    Returns:
+        operators: List of learned Hermitian operators.
+        history: List of loss values during optimization.
+    """
+    rng = np.random.default_rng(seed)
+    param = HermitianParameterization(hilbert_dim)
+
+    # initialize operators
+    geo_init = QCMLGeometry(n_features=n_operators, hilbert_dim=hilbert_dim)
+    geo_init.fit_operators(X_pca, method=init_method)
+    operators = [op.copy() for op in geo_init.operators[:n_operators]]
+
+    # flatten parameters
+    all_params = np.concatenate([param.hermitian_to_params(op) for op in operators])
+    params_per_op = param.n_params
+
+    # subsample for speed (200 consecutive points)
+    max_points = 200
+    if len(X_pca) > max_points:
+        start_idx = rng.integers(0, len(X_pca) - max_points)
+        X_eval = X_pca[start_idx : start_idx + max_points]
+    else:
+        X_eval = X_pca
+
+    def objective(p):
+        ops = []
+        for k in range(n_operators):
+            start = k * params_per_op
+            ops.append(param.params_to_hermitian(p[start : start + params_per_op]))
+        return _reconstruction_loss(ops, X_eval, hilbert_dim, fluctuation_weight)
+
+    history = []
+    eps_grad = 0.01
+
+    best_params = all_params.copy()
+    best_obj = objective(all_params)
+    history.append(best_obj)
+
+    logger.info(f"  Optimizing {n_operators} operators (reconstruction), "
+                f"{n_steps} steps, lr={lr}, w={fluctuation_weight}")
+
+    for step in range(n_steps):
+        n_grad_params = min(10, len(all_params))
+        grad_idx = rng.choice(len(all_params), n_grad_params, replace=False)
+
+        grad = np.zeros_like(all_params)
+        for i in grad_idx:
+            p_plus = all_params.copy()
+            p_minus = all_params.copy()
+            p_plus[i] += eps_grad
+            p_minus[i] -= eps_grad
+            grad[i] = (objective(p_plus) - objective(p_minus)) / (2 * eps_grad)
+
+        all_params -= lr * grad
+        obj = objective(all_params)
+        history.append(obj)
+
+        if obj < best_obj:
+            best_obj = obj
+            best_params = all_params.copy()
+
+        if (step + 1) % 50 == 0:
+            logger.info(f"    Step {step + 1}/{n_steps}: loss = {obj:.6f} "
+                        f"(best = {best_obj:.6f})")
+
+    # reconstruct best operators
+    learned_ops = []
+    for k in range(n_operators):
+        start = k * params_per_op
+        learned_ops.append(
+            param.params_to_hermitian(best_params[start : start + params_per_op])
+        )
+
+    return learned_ops, history
+
+
 def learn_operators_gradient(
     X_pca,
     dates,
@@ -380,6 +523,7 @@ def evaluate_operators_loco(
         "pca_inspired": {},
         "learned_from_random": {},
         "learned_from_pca": {},
+        "learned_reconstruction": {},
     }
 
     for held_out in all_crisis_keys:
@@ -418,7 +562,7 @@ def evaluate_operators_loco(
         )
         results["pca_inspired"][held_out] = d_pca
 
-        # learned 1: initialized from random
+        # learned 1: initialized from random (discriminative objective)
         ops_lr, _ = learn_operators_gradient(
             X_pca, dates, train_crises, hilbert_dim=hilbert_dim,
             detector_type=detector_type, n_steps=n_steps, lr=lr,
@@ -430,7 +574,7 @@ def evaluate_operators_loco(
         )
         results["learned_from_random"][held_out] = d_lr
 
-        # learned 2: initialized from pca_inspired
+        # learned 2: initialized from pca_inspired (discriminative objective)
         ops_lp, _ = learn_operators_gradient(
             X_pca, dates, train_crises, hilbert_dim=hilbert_dim,
             detector_type=detector_type, n_steps=n_steps, lr=lr,
@@ -442,9 +586,27 @@ def evaluate_operators_loco(
         )
         results["learned_from_pca"][held_out] = d_lp
 
+        # learned 3: reconstruction-loss objective (Candelori et al. 2025)
+        # Train on non-held-out data only
+        train_mask = np.ones(len(dates), dtype=bool)
+        train_mask[ho_mask] = False
+        X_pca_train = X_pca[train_mask]
+
+        ops_recon, _ = learn_operators_reconstruction(
+            X_pca_train, hilbert_dim=hilbert_dim,
+            n_operators=X_pca.shape[1], n_steps=n_steps, lr=lr,
+            seed=42, init_method="random",
+        )
+        d_recon = _eval_full_pipeline(
+            ops_recon, X_enriched, dates, hilbert_dim,
+            detector_type, ho_mask, normal_mask,
+        )
+        results["learned_reconstruction"][held_out] = d_recon
+
         logger.info(
             f"    {held_out}: random d={d_rand:.3f}, pca d={d_pca:.3f}, "
-            f"learned_rand d={d_lr:.3f}, learned_pca d={d_lp:.3f}"
+            f"learned_rand d={d_lr:.3f}, learned_pca d={d_lp:.3f}, "
+            f"recon d={d_recon:.3f}"
         )
 
     return results
@@ -527,15 +689,15 @@ def plot_loco_comparison(results, detector_type, out_dir):
     fig, ax = plt.subplots(figsize=(max(10, len(crises) * 1.2), 5))
 
     x = np.arange(len(crises))
-    width = 0.2
-    colors = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728"]
+    width = 0.16
+    colors = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd"]
 
     for i, method in enumerate(methods):
         vals = [results[method][c] for c in crises]
         ax.bar(x + i * width, vals, width, label=method.replace("_", " ").title(),
                color=colors[i], alpha=0.8)
 
-    ax.set_xticks(x + 1.5 * width)
+    ax.set_xticks(x + (len(methods) - 1) * width / 2)
     ax.set_xticklabels([ALL_CRISES[c]["label"] for c in crises],
                        rotation=45, ha="right", fontsize=8)
     ax.set_ylabel("Cohen's d (held-out crisis)")
@@ -584,8 +746,8 @@ def plot_summary_table(all_detector_results, out_dir):
 
     fig, ax = plt.subplots(figsize=(8, 5))
     x = np.arange(len(detectors))
-    width = 0.18
-    colors = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728"]
+    width = 0.15
+    colors = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd"]
 
     for i, method in enumerate(methods):
         medians = []
@@ -596,7 +758,7 @@ def plot_summary_table(all_detector_results, out_dir):
                label=method.replace("_", " ").title(),
                color=colors[i], alpha=0.8)
 
-    ax.set_xticks(x + 1.5 * width)
+    ax.set_xticks(x + (len(methods) - 1) * width / 2)
     ax.set_xticklabels([d.title() for d in detectors])
     ax.set_ylabel("Median Cohen's d")
     ax.set_title("Learned Operators: Median Effect Size by Detector")
@@ -782,7 +944,8 @@ def main():
         for det in detector_types:
             header += f" {det:>10}"
         logger.info(header)
-        for method in ["random", "pca_inspired", "learned_from_random", "learned_from_pca"]:
+        for method in ["random", "pca_inspired", "learned_from_random", "learned_from_pca",
+                       "learned_reconstruction"]:
             row = f"  {method:<23}"
             for det in detector_types:
                 vals = list(all_detector_results[det][method].values())

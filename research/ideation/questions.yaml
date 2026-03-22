@@ -850,3 +850,181 @@ questions:
   status: pending
   completed: true
   result_status: investigate_further
+# --- Novel Observables II (Q0121-Q0128) ---
+- id: '0121'
+  theme: novel_observables_ii
+  type: novel_observable
+  question: Does Wigner function negativity (non-classicality measure) spike before crises, indicating the market enters a 'non-classical' regime?
+  status: pending
+  completed: true
+  result_status: reject
+- id: '0122'
+  theme: novel_observables_ii
+  type: novel_observable
+  question: Can quantum coherence (l1-norm or relative entropy of coherence in the energy basis) detect regime shifts differently from purity?
+  status: pending
+  completed: true
+  result_status: keep
+- id: '0123'
+  theme: novel_observables_ii
+  type: novel_observable
+  question: Does the nearest-neighbor level spacing ratio (random matrix theory GOE/GUE/Poisson classification) change at crisis onset?
+  status: pending
+  completed: true
+  result_status: keep
+- id: '0124'
+  theme: novel_observables_ii
+  type: novel_observable
+  question: Can Renyi entropy (alpha=2, alpha=0.5) outperform von Neumann entropy for regime detection due to different tail sensitivity?
+  status: pending
+  completed: true
+  result_status: reject
+- id: '0125'
+  theme: novel_observables_ii
+  type: novel_observable
+  question: Does the quantum channel capacity between consecutive market states (Holevo bound) detect information bottlenecks at crisis onset?
+  status: pending
+  completed: true
+  result_status: reject
+- id: '0126'
+  theme: novel_observables_ii
+  type: novel_observable
+  question: Can quantum circuit complexity (minimum gates to prepare state from reference) serve as a crisis proximity measure?
+  status: pending
+  completed: true
+  result_status: reject
+- id: '0127'
+  theme: novel_observables_ii
+  type: novel_observable
+  question: Does the quantum relative entropy D(rho_t || rho_ref) between current and long-term average state outperform fidelity-based measures?
+  status: pending
+  completed: true
+  result_status: keep
+- id: '0128'
+  theme: novel_observables_ii
+  type: novel_observable
+  question: Can the Uhlmann phase (mixed-state generalization of Berry phase) improve detection for noisy/mixed market states?
+  status: pending
+  completed: true
+  result_status: reject
+# --- Scalability & Production (Q0129-Q0136) ---
+- id: '0129'
+  theme: scalability
+  type: practical_applied
+  question: Can we compute incremental/streaming updates to quantum observables (rank-1 updates to density matrices) instead of full recomputation each window?
+  status: pending
+  completed: true
+  result_status: reject
+- id: '0130'
+  theme: scalability
+  type: practical_applied
+  question: Do random projection approximations (Johnson-Lindenstrauss) preserve detection quality while reducing embedding dimension from d=8 to d=4?
+  status: pending
+  completed: true
+  result_status: reject
+- id: '0131'
+  theme: scalability
+  type: practical_applied
+  question: What is the minimum viable observatory — fewest observables that maintain aggregate d > 0.5 across all crisis types?
+  status: pending
+  completed: true
+  result_status: keep
+- id: '0132'
+  theme: scalability
+  type: practical_applied
+  question: Can we GPU-accelerate the quantum state embedding and eigendecomposition to achieve sub-second latency for 500+ assets?
+  status: pending
+  completed: true
+  result_status: reject
+- id: '0133'
+  theme: scalability
+  type: practical_applied
+  question: How do our observables degrade under missing data, delayed feeds, and market holidays — what is the production failure mode?
+  status: pending
+  completed: true
+  result_status: reject
+- id: '0134'
+  theme: scalability
+  type: practical_applied
+  question: Can we pre-compute and cache quantum states to make observable computation O(d^2) instead of O(Td^2) per update?
+  status: pending
+  completed: true
+  result_status: reject
+- id: '0135'
+  theme: scalability
+  type: practical_applied
+  question: Does Nystrom approximation for kernel matrices maintain detection quality while scaling to >1000 assets?
+  status: pending
+  completed: true
+  result_status: reject
+- id: '0136'
+  theme: scalability
+  type: practical_applied
+  question: Can we build a tiered alerting system — fast/cheap observables for screening, expensive ones for confirmation — without losing lead time?
+  status: pending
+  completed: true
+  result_status: keep
+# --- Interpretability & Explainability (Q0137-Q0145) ---
+- id: '0137'
+  theme: interpretability
+  type: theoretical
+  question: Can Shapley values decompose fusion scores into per-observable contributions, and do the attributions align with crisis type?
+  status: pending
+  completed: true
+  result_status: keep
+- id: '0138'
+  theme: interpretability
+  type: theoretical
+  question: Which input features (returns, volume, bid-ask spread, sector correlations) drive each observable's crisis signal — can we compute feature attribution?
+  status: pending
+  completed: true
+  result_status: reject
+- id: '0139'
+  theme: interpretability
+  type: practical_applied
+  question: Can we visualize quantum state evolution on a Bloch sphere (or generalized state space) to make regime transitions visually intuitive?
+  status: pending
+  completed: true
+  result_status: keep
+- id: '0140'
+  theme: interpretability
+  type: theoretical
+  question: Can we identify the specific market mechanism each top observable detects (herding, liquidity withdrawal, leverage unwind, contagion)?
+  status: pending
+  completed: true
+  result_status: reject
+- id: '0141'
+  theme: interpretability
+  type: practical_applied
+  question: Can we generate automated human-readable crisis narratives from observable signature patterns (e.g., 'Berry phase spike + purity drop = correlation-driven sell-off')?
+  status: pending
+  completed: true
+  result_status: reject
+- id: '0142'
+  theme: interpretability
+  type: statistical_eval
+  question: Do counterfactual analyses ('what if we ignored this signal?') validate that our observables provide genuinely actionable information?
+  status: pending
+  completed: true
+  result_status: keep
+- id: '0143'
+  theme: interpretability
+  type: practical_applied
+  question: Can we build an interpretable decision tree over observable thresholds that approximates fusion performance with full transparency?
+  status: pending
+  completed: true
+  result_status: keep
+- id: '0144'
+  theme: interpretability
+  type: statistical_eval
+  question: Does LIME (Local Interpretable Model-agnostic Explanations) applied to our fusion model reveal stable or unstable feature importance across crises?
+  status: pending
+  completed: true
+  result_status: reject
+- id: '0145'
+  theme: interpretability
+  type: theoretical
+  question: Is there a geometric interpretation of why certain observables specialize on certain crisis types — does the curvature of the observable manifold explain specialization?
+  status: pending
+  completed: true
+  result_status: keep
