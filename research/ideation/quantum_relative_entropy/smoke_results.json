@@ -1,0 +1,267 @@
+{
+  "detector": "Quantum Relative Entropy",
+  "question": "Q0127: Does D(rho_t || rho_ref) outperform fidelity-based measures?",
+  "config": {
+    "hilbert_dim": 8,
+    "n_pca_components": 8,
+    "operator_method": "random",
+    "normalization": "soft",
+    "n_bootstrap": 2000
+  },
+  "data": {
+    "symbols": [
+      "SPY",
+      "DIA"
+    ],
+    "start_date": "2005-01-01",
+    "end_date": "2025-12-31",
+    "feature_shape": [
+      5262,
+      13
+    ]
+  },
+  "variants": {
+    "D_W20": {
+      "per_crisis": {
+        "2008_gfc": {
+          "cohens_d": 0.465391527972063,
+          "ci_lo": 0.02582582980070415,
+          "ci_hi": 1.347524265315944,
+          "crisis_n": 146,
+          "normal_n": 41,
+          "crisis_mean": 0.11499530097678065,
+          "normal_mean": -0.200568705246259
+        },
+        "2020_covid": {
+          "cohens_d": 2.1366236727508334,
+          "ci_lo": 1.5601594325656913,
+          "ci_hi": 3.1446635412242654,
+          "crisis_n": 50,
+          "normal_n": 39,
+          "crisis_mean": 0.4632893072060804,
+          "normal_mean": -0.9070229534242656
+        },
+        "2022_rates": {
+          "cohens_d": 0.06426812161247444,
+          "ci_lo": 0.007648931187194845,
+          "ci_hi": 0.5066928818052922,
+          "crisis_n": 209,
+          "normal_n": 42,
+          "crisis_mean": 0.2402449620838436,
+          "normal_mean": 0.28430729621678313
+        },
+        "2023_svb": {
+          "cohens_d": 0.16604351362982858,
+          "ci_lo": 0.012596907034491319,
+          "ci_hi": 0.9642817751808396,
+          "crisis_n": 42,
+          "normal_n": 39,
+          "crisis_mean": 0.1380836440920763,
+          "normal_mean": 0.008792730803188582
+        }
+      },
+      "summary": {
+        "median_d": 0.3157175208009458,
+        "max_d": 2.1366236727508334,
+        "d_values": [
+          0.465391527972063,
+          2.1366236727508334,
+          0.06426812161247444,
+          0.16604351362982858
+        ],
+        "passes_threshold_0.3": true
+      },
+      "timing": {
+        "score_computation_seconds": 0.6
+      },
+      "n_valid_scores": 5202
+    },
+    "D_W60": {
+      "per_crisis": {
+        "2008_gfc": {
+          "cohens_d": 0.8766660203768858,
+          "ci_lo": 0.2725101654875474,
+          "ci_hi": 1.682894665629301,
+          "crisis_n": 146,
+          "normal_n": 41,
+          "crisis_mean": 0.04300644321323031,
+          "normal_mean": 0.40202729663164455
+        },
+        "2020_covid": {
+          "cohens_d": 3.4213180023428897,
+          "ci_lo": 2.545653715346744,
+          "ci_hi": 5.278789127388295,
+          "crisis_n": 50,
+          "normal_n": 39,
+          "crisis_mean": 1.9559151341219336,
+          "normal_mean": -0.8813018011783933
+        },
+        "2022_rates": {
+          "cohens_d": 0.6728190571835482,
+          "ci_lo": 0.3328719563563408,
+          "ci_hi": 1.0357396134442025,
+          "crisis_n": 209,
+          "normal_n": 42,
+          "crisis_mean": 0.24590529102457157,
+          "normal_mean": -0.18858794612659205
+        },
+        "2023_svb": {
+          "cohens_d": 0.11996392648808717,
+          "ci_lo": 0.013298274327452517,
+          "ci_hi": 1.2173740861918125,
+          "crisis_n": 42,
+          "normal_n": 39,
+          "crisis_mean": -0.13173052501403648,
+          "normal_mean": -0.035620656493825745
+        }
+      },
+      "summary": {
+        "median_d": 0.7747425387802169,
+        "max_d": 3.4213180023428897,
+        "d_values": [
+          0.8766660203768858,
+          3.4213180023428897,
+          0.6728190571835482,
+          0.11996392648808717
+        ],
+        "passes_threshold_0.3": true
+      },
+      "timing": {
+        "score_computation_seconds": 0.8
+      },
+      "n_valid_scores": 5192
+    },
+    "infidelity_W20": {
+      "per_crisis": {
+        "2008_gfc": {
+          "cohens_d": 0.9200828663117242,
+          "ci_lo": 0.158813363199658,
+          "ci_hi": 1.895406474587264,
+          "crisis_n": 146,
+          "normal_n": 41,
+          "crisis_mean": 0.17312320064188086,
+          "normal_mean": -0.3625307630817259
+        },
+        "2020_covid": {
+          "cohens_d": 2.7169606879025774,
+          "ci_lo": 2.0811222059412318,
+          "ci_hi": 4.001268153761918,
+          "crisis_n": 50,
+          "normal_n": 39,
+          "crisis_mean": 0.3787124481489423,
+          "normal_mean": -0.9609531187773462
+        },
+        "2022_rates": {
+          "cohens_d": 0.07637030779894524,
+          "ci_lo": 0.008056725569856467,
+          "ci_hi": 0.5063695226919102,
+          "crisis_n": 209,
+          "normal_n": 42,
+          "crisis_mean": 0.2551480482991592,
+          "normal_mean": 0.20342289074354789
+        },
+        "2023_svb": {
+          "cohens_d": 0.1898130567679788,
+          "ci_lo": 0.014062239385991056,
+          "ci_hi": 0.9583252768007987,
+          "crisis_n": 42,
+          "normal_n": 39,
+          "crisis_mean": 0.06649120739325357,
+          "normal_mean": -0.07084194890860146
+        }
+      },
+      "summary": {
+        "median_d": 0.5549479615398515,
+        "max_d": 2.7169606879025774,
+        "d_values": [
+          0.9200828663117242,
+          2.7169606879025774,
+          0.07637030779894524,
+          0.1898130567679788
+        ],
+        "passes_threshold_0.3": true
+      },
+      "timing": {
+        "score_computation_seconds": 0.5
+      },
+      "n_valid_scores": 5202
+    },
+    "D_expanding": {
+      "per_crisis": {
+        "2008_gfc": {
+          "cohens_d": 1.1895363745587817,
+          "ci_lo": 0.774185896630096,
+          "ci_hi": 1.6929951009231514,
+          "crisis_n": 146,
+          "normal_n": 41,
+          "crisis_mean": 1.809038683947273,
+          "normal_mean": 1.0829738959056994
+        },
+        "2020_covid": {
+          "cohens_d": 2.2362822654863135,
+          "ci_lo": 1.36334269486111,
+          "ci_hi": 4.652650384495344,
+          "crisis_n": 50,
+          "normal_n": 39,
+          "crisis_mean": 2.0436533567197848,
+          "normal_mean": -0.722389419502064
+        },
+        "2022_rates": {
+          "cohens_d": 1.9672661533937559,
+          "ci_lo": 1.538490436153887,
+          "ci_hi": 2.649075102190886,
+          "crisis_n": 209,
+          "normal_n": 42,
+          "crisis_mean": 1.025010155131781,
+          "normal_mean": -0.379922225631005
+        },
+        "2023_svb": {
+          "cohens_d": 0.8870797466314941,
+          "ci_lo": 0.20564376695187936,
+          "ci_hi": 1.7567178412535684,
+          "crisis_n": 42,
+          "normal_n": 39,
+          "crisis_mean": 0.253943412468353,
+          "normal_mean": -0.06705208741944237
+        }
+      },
+      "summary": {
+        "median_d": 1.5784012639762688,
+        "max_d": 2.2362822654863135,
+        "d_values": [
+          1.1895363745587817,
+          2.2362822654863135,
+          1.9672661533937559,
+          0.8870797466314941
+        ],
+        "passes_threshold_0.3": true
+      },
+      "timing": {
+        "score_computation_seconds": 18.9
+      },
+      "n_valid_scores": 5202
+    }
+  },
+  "correlations_with_fidelity": {
+    "D_W20": 0.7750099782651445,
+    "D_W60": 0.6566540749502598,
+    "infidelity_W20": 0.8034065370800363,
+    "D_expanding": 0.4947984426009381
+  },
+  "cross_variant_correlations": {
+    "D_W20_vs_D_W60": 0.7408905213764184,
+    "D_W20_vs_infidelity_W20": 0.973322530515763,
+    "D_W20_vs_D_expanding": 0.5448666293412555,
+    "D_W60_vs_infidelity_W20": 0.7511026739207415,
+    "D_W60_vs_D_expanding": 0.6763333950743307,
+    "infidelity_W20_vs_D_expanding": 0.5613175216243848
+  },
+  "overall_summary": {
+    "best_variant": "D_expanding",
+    "best_median_d": 1.5784012639762688,
+    "infidelity_vs_D_comparison": "Infidelity matches or outperforms D: infidelity median_d=0.555 vs D_W20 median_d=0.316"
+  },
+  "timing": {
+    "total_seconds": 22.7
+  }
+}

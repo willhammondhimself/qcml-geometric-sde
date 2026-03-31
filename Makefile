@@ -3,7 +3,8 @@
        rebuild rebuild-force paper-full review verify verify-citations \
        pre-submit snapshot diff registry-summary validate clear-cache \
        pipeline pipeline-quick pipeline-full canonical dashboard \
-       video-preview video-hq video-combine video
+       video-preview video-hq video-combine video \
+       review-status review-extract review-verify review-loop
 
 PYTHON ?= python
 PIP ?= pip
@@ -102,6 +103,20 @@ paper-full:  ## Generate tables from canonical JSON + compile paper
 
 review:  ## Deploy multi-agent paper review (ARGS=--quick for 2 reviewers)
 	bash $(PAPER_DIR)/review/run_review.sh $(ARGS)
+
+review-status:  ## Show review issue tracking status
+	$(PYTHON) $(SCRIPTS_DIR)/review_fix_loop.py status
+
+review-extract:  ## Extract issues from latest synthesis into registry
+	$(PYTHON) $(SCRIPTS_DIR)/extract_review_issues.py
+
+review-verify:  ## Verify fixes and promote issue status
+	$(PYTHON) $(SCRIPTS_DIR)/review_fix_loop.py verify
+
+review-loop:  ## Full review cycle: review → extract → status
+	bash $(PAPER_DIR)/review/run_review.sh $(ARGS)
+	$(PYTHON) $(SCRIPTS_DIR)/extract_review_issues.py
+	$(PYTHON) $(SCRIPTS_DIR)/review_fix_loop.py status
 
 # ── Verification ─────────────────────────────────────────────────
 

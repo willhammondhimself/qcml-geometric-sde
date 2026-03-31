@@ -1,0 +1,65 @@
+id: "0138"
+round: 138
+timestamp: "2026-03-09T20:00:00"
+question: "Which input features (returns, volume, bid-ask spread, sector correlations) drive each observable's crisis signal — can we compute feature attribution?"
+theme: "interpretability"
+status: "reject"
+
+hypothesis:
+  statement: "Feature attribution through the QCML pipeline can identify which raw market features drive each observable"
+  mechanism: "Gradient-based or Shapley-based attribution through PCA → normalization → eigensolve chain"
+  prior_plausibility: "low"
+
+knight_findings:
+  - knight: 1
+    role: "theoretical_validity"
+    workers_used: 3
+    conclusion: >
+      REJECT. The PCA bottleneck makes raw feature attribution mathematically
+      ill-conditioned. Data flow: raw features (13 columns) → StandardScaler →
+      PCA (n_components=3-15) → normalization (sphere/soft/clip) → H(x_pca) →
+      eigensolve → observable. Three fatal problems: (a) Correlated inputs
+      (SPY_vol5 and DIA_vol5 rho > 0.9) make per-feature attributions unstable.
+      (b) Sphere normalization discards magnitude, creating many-to-one mapping.
+      (c) Eigensolve is not differentiable at level crossings — exactly where
+      attribution is most needed during crisis transitions.
+    evidence: "13 raw features; PCA rotation ambiguity; sphere normalization non-invertible; level crossing singularity"
+    confidence: 0.92
+    key_insight: "PCA deliberately mixes features. Attributing back reverses that mixing in an ill-conditioned way."
+
+  - knight: 2
+    role: "failure_mode_analysis"
+    workers_used: 2
+    conclusion: >
+      REJECT. Computational cost is prohibitive: 13 finite-difference
+      perturbations per timestep × ~7500 trading days × 26 observables = ~2.5M
+      eigensolves. Results would be dominated by PCA rotation ambiguity.
+      Perturbation-based Shapley on raw features (2^13 = 8192 coalitions) is
+      even worse. Attribution to PCA COMPONENTS (not raw features) is well-defined
+      but is a different, narrower question.
+    evidence: "~2.5M eigensolves for gradient attribution; 2^13=8192 for Shapley; PCA component attribution is feasible"
+    confidence: 0.90
+    key_insight: "Attribution to PCA components is feasible and informative; to raw features is ill-conditioned."
+
+test_results:
+  crises_tested: []
+  passes_threshold: false
+
+verdict:
+  keep: false
+  reason: >
+    The PCA → normalization → eigensolve chain makes raw feature attribution
+    mathematically ill-conditioned. Correlated inputs, sphere normalization
+    (many-to-one), and eigensolve non-differentiability at level crossings all
+    compound to make backpropagated attributions unreliable. Computational cost
+    (~2.5M eigensolves) is prohibitive. Attribution to PCA components (not raw
+    features) would be feasible but is a narrower question. This is a known
+    problem in the interpretable ML literature (SHAP through PCA is unreliable).
+  strength: "high"
+  follow_up_questions:
+    - "Attribution to PCA components (not raw features) is well-defined — pursue this narrower question?"
+    - "Would skipping PCA and using raw features directly as Hamiltonian parameters change detection quality?"
+
+artifacts:
+  code_dir: null
+  key_files: []

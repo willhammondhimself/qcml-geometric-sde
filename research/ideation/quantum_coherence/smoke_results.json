@@ -1,0 +1,155 @@
+{
+  "detector": "QuantumCoherenceDetector",
+  "hilbert_dim": 8,
+  "n_pca_components": 8,
+  "operator_method": "random",
+  "normalization": "soft",
+  "reference_window": 252,
+  "best_variant": "reference",
+  "passes_threshold": true,
+  "threshold": 0.3,
+  "computational_ipr_raw_correlation": -0.2937,
+  "computational_ipr_zscore_correlation": 0.4086,
+  "per_variant": {
+    "computational": {
+      "per_crisis": {
+        "2008_gfc": {
+          "d": 1.1924,
+          "p": 0.0,
+          "n_crisis": 146,
+          "label": "GFC 2008"
+        },
+        "2020_covid": {
+          "d": 0.8751,
+          "p": 1.2e-05,
+          "n_crisis": 50,
+          "label": "COVID 2020"
+        },
+        "2022_rates": {
+          "d": 2.1484,
+          "p": 0.0,
+          "n_crisis": 209,
+          "label": "Rate Hikes 2022"
+        },
+        "2023_svb": {
+          "d": 0.5238,
+          "p": 1.2e-05,
+          "n_crisis": 42,
+          "label": "SVB 2023"
+        }
+      },
+      "median_d": 1.0338,
+      "max_d": 2.1484
+    },
+    "reference": {
+      "per_crisis": {
+        "2008_gfc": {
+          "d": 2.9529,
+          "p": 0.0,
+          "n_crisis": 146,
+          "label": "GFC 2008"
+        },
+        "2020_covid": {
+          "d": 2.3782,
+          "p": 0.0,
+          "n_crisis": 50,
+          "label": "COVID 2020"
+        },
+        "2022_rates": {
+          "d": 1.2053,
+          "p": 0.0,
+          "n_crisis": 209,
+          "label": "Rate Hikes 2022"
+        },
+        "2023_svb": {
+          "d": -0.9694,
+          "p": 0.0,
+          "n_crisis": 42,
+          "label": "SVB 2023"
+        }
+      },
+      "median_d": 1.7918,
+      "max_d": 2.9529
+    },
+    "temporal": {
+      "per_crisis": {
+        "2008_gfc": {
+          "d": 0.9077,
+          "p": 0.0,
+          "n_crisis": 146,
+          "label": "GFC 2008"
+        },
+        "2020_covid": {
+          "d": 1.3202,
+          "p": 1e-06,
+          "n_crisis": 50,
+          "label": "COVID 2020"
+        },
+        "2022_rates": {
+          "d": -0.5619,
+          "p": 0.0,
+          "n_crisis": 209,
+          "label": "Rate Hikes 2022"
+        },
+        "2023_svb": {
+          "d": -0.4276,
+          "p": 0.0,
+          "n_crisis": 42,
+          "label": "SVB 2023"
+        }
+      },
+      "median_d": 0.24,
+      "max_d": 1.3202
+    },
+    "ipr": {
+      "per_crisis": {
+        "2008_gfc": {
+          "d": 1.3818,
+          "p": 0.0,
+          "n_crisis": 146,
+          "label": "GFC 2008"
+        },
+        "2020_covid": {
+          "d": 1.3154,
+          "p": 0.0,
+          "n_crisis": 50,
+          "label": "COVID 2020"
+        },
+        "2022_rates": {
+          "d": 0.8922,
+          "p": 0.0,
+          "n_crisis": 209,
+          "label": "Rate Hikes 2022"
+        },
+        "2023_svb": {
+          "d": 0.2731,
+          "p": 0.06418,
+          "n_crisis": 42,
+          "label": "SVB 2023"
+        }
+      },
+      "median_d": 1.1038,
+      "max_d": 1.3818
+    }
+  },
+  "raw_stats": {
+    "computational": {
+      "mean": 5.222564,
+      "std": 0.06852,
+      "min": 4.820189,
+      "max": 5.391064
+    },
+    "reference": {
+      "mean": 0.4048,
+      "std": 0.159901,
+      "min": 0.064977,
+      "max": 0.993155
+    },
+    "temporal": {
+      "mean": 0.258323,
+      "std": 0.146576,
+      "min": 0.012869,
+      "max": 0.921605
+    }
+  }
+}

@@ -1,0 +1,109 @@
+id: "0128"
+round: 128
+timestamp: "2026-03-09T17:00:00"
+question: "Can the Uhlmann phase (mixed-state generalization of Berry phase) improve detection for noisy/mixed market states?"
+theme: "novel_observables_ii"
+status: "reject"
+
+hypothesis:
+  statement: "The Uhlmann phase captures mixed-state geometric structure that Berry phase misses, improving detection for noisy states"
+  mechanism: "Reduced density matrices (via partial trace) are genuinely mixed; Uhlmann phase interpolates between Berry phase (pure) and zero (maximally mixed)"
+  prior_plausibility: "low"
+
+knight_findings:
+  - knight: 1
+    role: "theoretical_validity"
+    workers_used: 0
+    conclusion: >
+      REJECT. For pure states, Uhlmann phase = Berry phase (by definition). For
+      reduced density matrices of d=8 with (2,4) partition, rho_A is 2x2 with
+      rank <= 2. The Uhlmann holonomy for 2-level systems follows the Sjoqvist
+      formula: gamma_U = arctan(sqrt(2*Purity-1) * tan(Omega/2)), which is a
+      DETERMINISTIC function of Reduced Purity + Berry phase. No new information
+      survives. Fourth observable killed by the Schmidt rank-2 bottleneck.
+    evidence: "gamma_U = arctan(r * tan(Omega/2)) where r = sqrt(2*Purity-1); deterministic function of existing observables"
+    confidence: 0.95
+    key_insight: "Fourth observable killed by the d=8 rank-2 bottleneck (after discord, Renyi, now Uhlmann)."
+
+  - knight: 2
+    role: "empirical_implementation"
+    workers_used: 1
+    conclusion: >
+      REJECT. Single-step Uhlmann PHASE is identically zero for all pairs (arg of
+      a real positive number). Requires cyclic holonomy, not pairwise comparison.
+      Uhlmann FIDELITY shows strong signal: Bures (2,4) median d=1.800, but
+      90-99.5% redundant with pure-state fidelity. The (4,2) partition produces
+      infidelity that is rho=0.995 correlated with pure-state infidelity.
+    evidence: "Phase d=0.0 all crises; Bures_24 d=1.800; rho(infid_24, pure)=0.901; rho(infid_42, pure)=0.995"
+    confidence: 0.93
+    key_insight: "Uhlmann phase requires closed-loop holonomy. Mixed-state fidelity at purity ~0.72 is dominated by pure-state overlap."
+
+  - knight: 3
+    role: "comparative_analysis"
+    workers_used: 5
+    conclusion: >
+      PARTIALLY_REDUNDANT. Eigenvector rotation of rho_A carries 99.2% unique
+      variance (genuinely novel), but the bipartition is physically arbitrary.
+      Existing ReducedPurity + BerryPhaseRate already achieve near-perfect
+      complementarity (cross-crisis rho=-0.007), covering 15/17 crises at d>0.4.
+      Bures distance bundles ~23% purity + ~48% eigvec rotation + ~29% noise.
+      Expected standalone d~0.4-0.6. Low priority.
+    evidence: "R^2(eigvec_rotation ~ Berry+Purity)=0.008; rho(RP, BPR)=-0.007; eigvec rotation 48% of Bures variance"
+    confidence: 0.82
+    key_insight: "Existing ReducedPurity + BerryPhaseRate already maximally complementary (rho=-0.007). Marginal gain small."
+
+  - knight: 4
+    role: "failure_mode_analysis"
+    workers_used: 0
+    conclusion: >
+      REJECT. Six failure modes: (1) Rank-2 collapse — same as Q0124, expected
+      |rho|>0.99 with ReducedPurity. (2) Pure-state premise mismatch — QCML
+      doesn't produce mixed states. (3) Berry connection equivalence. (4)
+      Numerical instabilities (nested sqrtm). (5) Bipartition as researcher DoF.
+      (6) Complete coverage by Berry Phase Rate + Reduced Purity + Coherence.
+    evidence: "rank(rho_A)<=2 for (2,4); purity~0.72; Spearman vs ReducedPurity expected >0.99"
+    confidence: 0.95
+    key_insight: "Category error: Uhlmann addresses quantum decoherence, but QCML states are pure by construction."
+
+test_results:
+  crises_tested: [2008_gfc, 2020_covid, 2022_rates, 2023_svb]
+  cohens_d_per_crisis:
+    uhlmann_phase_24:
+      2008_gfc: 0.000
+      2020_covid: 0.000
+      2022_rates: 0.000
+      2023_svb: 0.000
+    bures_distance_24:
+      2008_gfc: 1.107
+      2020_covid: 2.492
+      2022_rates: 0.397
+      2023_svb: 2.748
+    uhlmann_infidelity_24:
+      2008_gfc: 0.888
+      2020_covid: 2.542
+      2022_rates: 0.274
+      2023_svb: 2.684
+  median_d_phase: 0.000
+  median_d_bures_24: 1.800
+  median_d_infidelity_24: 1.715
+  correlation_infidelity24_vs_pure: 0.901
+  correlation_infidelity42_vs_pure: 0.995
+  passes_threshold: false
+
+verdict:
+  keep: false
+  reason: >
+    Triple rejection: (1) Uhlmann PHASE is identically zero for pairwise comparison
+    (requires cyclic holonomy). (2) Uhlmann FIDELITY/Bures variants are 90-99.5%
+    redundant with pure-state fidelity. (3) For (2,4) partition, Sjoqvist formula
+    proves gamma_U = f(Purity, Berry_phase) — no new information. The question's
+    premise (noisy/mixed states) is inapplicable to the QCML pure-state pipeline.
+    Fourth observable killed by the d=8 Schmidt rank-2 bottleneck.
+  strength: "high"
+  follow_up_questions:
+    - "Would hilbert_dim=16 with (4,4) partition make Uhlmann phase genuinely non-degenerate?"
+    - "Is there a mixed-state extension of QCML that would unlock Uhlmann phase?"
+
+artifacts:
+  code_dir: "research/ideation/uhlmann_phase/"
+  key_files: ["detector.py", "smoke_test.py", "smoke_results.json"]

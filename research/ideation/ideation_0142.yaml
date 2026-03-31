@@ -1,0 +1,83 @@
+id: "0142"
+round: 142
+timestamp: "2026-03-09T20:00:00"
+question: "Do counterfactual analyses ('what if we ignored this signal?') validate that our observables provide genuinely actionable information?"
+theme: "interpretability"
+status: "keep"
+
+hypothesis:
+  statement: "Leave-one-out ablation + economic value simulation validates detection utility and addresses the detection-to-action gap"
+  mechanism: "Remove channels from fusion → measure d-value drop; simulate risk-reduction strategy → measure avoided drawdown"
+  prior_plausibility: "high"
+
+knight_findings:
+  - knight: 1
+    role: "empirical_implementation"
+    workers_used: 3
+    conclusion: >
+      KEEP. Two complementary analyses: (1) Leave-one-out ablation on fusion
+      score matrix — computable from existing data in under an hour. (2) Economic
+      value simulation: when alarm triggers, reduce equity exposure by X%;
+      measure avoided drawdown vs buy-and-hold during 17 crisis windows. All
+      infrastructure exists: RegimeAdaptiveFusionDetector produces per-timestep
+      alarms, lead_time_analysis.py computes first-alarm dates, yfinance provides
+      daily returns. Standard methodology per Lopez de Prado Ch. 15.
+    evidence: "Ablation from existing data; risk-reduction simulation uses existing alarms + yfinance returns"
+    confidence: 0.88
+    key_insight: "Directly addresses the detection-to-action gap — the most common reviewer objection."
+
+  - knight: 2
+    role: "comparative_analysis"
+    workers_used: 3
+    conclusion: >
+      KEEP. The Reduced Purity holdout collapse (d=0.263 vs train d=0.835)
+      provides a powerful case study: counterfactual shows the economic cost
+      of relying on an unstable detector. The Regime-Adaptive's perfect
+      holdout generalization (d=0.783 vs train d=0.772) makes the comparison
+      compelling. Frame as 'detection utility analysis' not 'trading backtest'
+      to maintain academic framing.
+    evidence: "RP holdout collapse: 0.835→0.263; RA holdout stable: 0.772→0.783; detection utility framing"
+    confidence: 0.85
+    key_insight: "RP collapse as case study of economic cost of detector instability."
+
+  - knight: 3
+    role: "failure_mode_analysis"
+    workers_used: 2
+    conclusion: >
+      CONDITIONAL KEEP. The paper explicitly says 'NOT a trading system' —
+      measuring avoided drawdown could blur this boundary. Mitigate by framing
+      as 'detection utility' (how much drawdown information does the signal
+      contain?) rather than 'trading profit'. Also: the risk-reduction rule
+      (reduce exposure on alarm) introduces researcher degrees of freedom
+      (threshold, reduction percentage, delay). Use a simple, pre-specified
+      rule (50% reduction, 1-day delay) and report sensitivity.
+    evidence: "'NOT a trading system' paper framing; simple pre-specified rule mitigates researcher DoF"
+    confidence: 0.82
+    key_insight: "Frame as detection utility, not trading. Pre-specify the risk-reduction rule."
+
+test_results:
+  crises_tested: []
+  passes_threshold: true
+  notes: "No smoke test — analysis over existing fusion and return data"
+
+verdict:
+  keep: true
+  reason: >
+    Strongest interpretability question. Leave-one-out ablation is computable
+    from existing data (< 1 day). Economic value simulation (avoided drawdown
+    via simple risk-reduction rule) directly addresses the detection-to-action
+    gap — the most common reviewer objection for regime detection papers. All
+    infrastructure exists (fusion alarms, lead time analysis, yfinance returns).
+    The RP holdout collapse (d=0.835→0.263) vs RA stability (d=0.772→0.783)
+    provides a compelling case study. Frame as 'detection utility analysis'
+    not 'trading backtest'.
+  strength: "high"
+  follow_up_questions:
+    - "Implement leave-one-out ablation on fusion score matrix (< 1 day)"
+    - "Simple risk-reduction simulation: 100% → 50% equity when fusion alarm > threshold"
+    - "Measure: max drawdown reduction, % crisis days protected, Sharpe ratio delta"
+    - "Case study: economic cost of Reduced Purity instability vs Regime-Adaptive stability"
+
+artifacts:
+  code_dir: null
+  key_files: []

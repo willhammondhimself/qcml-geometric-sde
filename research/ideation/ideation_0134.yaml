@@ -1,0 +1,58 @@
+id: "0134"
+round: 134
+timestamp: "2026-03-09T19:00:00"
+question: "Can we pre-compute and cache quantum states to make observable computation O(d^2) instead of O(Td^2) per update?"
+theme: "scalability"
+status: "reject"
+
+hypothesis:
+  statement: "State caching can reduce per-update cost from O(Td^2) to O(d^2)"
+  mechanism: "Cache quantum states computed from previous windows, only recompute the new state"
+  prior_plausibility: "low"
+
+knight_findings:
+  - knight: 1
+    role: "empirical_implementation"
+    workers_used: 2
+    conclusion: >
+      REJECT. Already implemented at three levels: (1) _ground_state_cache in
+      core.py (line 53) caches quasi-coherent states keyed by data point tuple.
+      (2) runner.py cell-level caching (SHA256 keyed by method_params +
+      crisis_def + library_hash) achieves 195/195 cache hits in incremental
+      mode. (3) DVC data caching handles cross-session persistence. The
+      question's premise — reducing O(Td^2) to O(d^2) per update — is already
+      addressed at multiple layers.
+    evidence: "_ground_state_cache in core.py:53; 195/195 cell cache hits; DVC data caching"
+    confidence: 0.95
+    key_insight: "Already implemented. No new research or implementation work needed."
+
+  - knight: 2
+    role: "practical_value"
+    workers_used: 2
+    conclusion: >
+      REJECT. OnlineGeometricFeatureComputer in online_detection.py caps history
+      at max_history=500 to prevent O(T^2) scaling. The caching architecture
+      already achieves the goal. Documenting the existing multi-level caching
+      in a technical appendix would be sufficient.
+    evidence: "OnlineGFC max_history=500; cell-level SHA256 caching; DVC persistence"
+    confidence: 0.93
+    key_insight: "Question asks for what already exists. Document existing caching architecture instead."
+
+test_results:
+  crises_tested: []
+  passes_threshold: false
+
+verdict:
+  keep: false
+  reason: >
+    Already implemented at three levels: ground-state LRU cache (core.py:53),
+    cell-level SHA256 caching in runner.py (195/195 cache hits), and DVC
+    cross-session persistence. OnlineGeometricFeatureComputer caps history at
+    500 to prevent quadratic scaling. The question's premise is already solved.
+  strength: "high"
+  follow_up_questions:
+    - "Document the caching architecture in a technical appendix for reproducibility"
+
+artifacts:
+  code_dir: null
+  key_files: []

@@ -1,0 +1,86 @@
+id: "0139"
+round: 139
+timestamp: "2026-03-09T20:00:00"
+question: "Can we visualize quantum state evolution on a Bloch sphere (or generalized state space) to make regime transitions visually intuitive?"
+theme: "interpretability"
+status: "keep"
+
+hypothesis:
+  statement: "The (2,4) reduced density matrix maps onto a Bloch sphere, providing intuitive visualization of regime transitions"
+  mechanism: "rho_A = (I + r.sigma)/2 where |r| = sqrt(2*Purity-1); crises drive trajectories toward sphere center (higher entanglement)"
+  prior_plausibility: "high"
+
+knight_findings:
+  - knight: 1
+    role: "theoretical_validity"
+    workers_used: 3
+    conclusion: >
+      KEEP. For d=8 with (2,4) partition, rho_A is 2x2. Bloch decomposition:
+      rho_A = (I + r.sigma)/2, with |r| = sqrt(2*purity - 1). Bloch vector
+      components: r_x = 2*Re(rho_A[0,1]), r_y = 2*Im(rho_A[0,1]),
+      r_z = rho_A[0,0] - rho_A[1,1]. This adds TWO angular degrees of freedom
+      beyond ReducedPurity (which only captures |r|). Pure product states map
+      to sphere surface (|r|=1), maximally entangled to center (|r|=0). Crisis
+      trajectories should move inward (lower purity = more entanglement).
+    evidence: "|r| = sqrt(2*purity-1); two angular DoF beyond purity; clean mathematical construction"
+    confidence: 0.90
+    key_insight: "Bloch vector direction encodes WHICH correlations dominate, not just their overall strength."
+
+  - knight: 2
+    role: "practical_value"
+    workers_used: 3
+    conclusion: >
+      KEEP. Implementation is ~15 lines in core.py (extend reduced_state_purity
+      to return full Bloch vector). A 3D figure showing state trajectories
+      spiraling inward during crises would be visually striking and communicate
+      the quantum framing to physicists. For quant finance audiences, it provides
+      intuitive geometry of 'entanglement-based regime detection'. Since
+      ReducedPurity is the #1 detector (d=0.835), visualizing its associated
+      subsystem is maximally informative.
+    evidence: "~15 lines implementation; ReducedPurity=#1 detector; visually compelling figure"
+    confidence: 0.85
+    key_insight: "Publication-ready figure showing crisis trajectories on the Bloch sphere."
+
+  - knight: 3
+    role: "failure_mode_analysis"
+    workers_used: 2
+    conclusion: >
+      CONDITIONAL KEEP. The angular trajectory may or may not show crisis-type
+      dependence — this is an empirical question. If all crises produce similar
+      inward trajectories (same direction), the visualization is illustrative but
+      adds no quantitative finding beyond purity. If different crises traverse
+      different angular paths, the Bloch vector direction becomes a new observable.
+      Risk: the Bloch sphere only visualizes the 2x2 reduced state, not the full
+      d=8 state. But since ReducedPurity IS the #1 detector, this is the most
+      important subsystem.
+    evidence: "Angular trajectory may or may not differentiate crises; only visualizes 2x2 subsystem"
+    confidence: 0.78
+    key_insight: "Value depends on whether angular trajectory shows crisis-type dependence (empirical question)."
+
+test_results:
+  crises_tested: []
+  passes_threshold: true
+  notes: "No smoke test — visualization task"
+
+verdict:
+  keep: true
+  reason: >
+    Mathematically clean construction: the (2,4) partition's 2x2 rho_A maps
+    exactly onto the Bloch sphere, adding two angular degrees of freedom beyond
+    ReducedPurity. Implementation is ~15 lines. The figure would be
+    publication-worthy and intuitively communicate the quantum framing. The
+    Bloch vector direction encodes which subsystem correlations dominate —
+    potentially a new observable (angular velocity of Bloch vector). Marked
+    medium rather than high because the visualization is illustrative; its
+    quantitative value depends on whether angular trajectories differ by
+    crisis type (empirical question).
+  strength: "medium"
+  follow_up_questions:
+    - "Add QCMLGeometry.reduced_state_bloch_vector(x, partition) to core.py"
+    - "Test whether angular trajectory differs between crisis types"
+    - "Create 3D animated visualization with crisis periods highlighted"
+    - "Compute angular velocity of Bloch vector as potential new observable"
+
+artifacts:
+  code_dir: null
+  key_files: []

@@ -1,0 +1,43 @@
+\documentclass[11pt]{letter}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+
+\signature{Will Hammond\\Pitzer College\\whammond@pitzer.edu}
+\address{Will Hammond\\Pitzer College\\1050 N Mills Ave\\Claremont, CA 91711}
+
+\begin{document}
+\begin{letter}{Editorial Office\\Physica A: Statistical Mechanics and its Applications}
+
+\opening{Dear Editor,}
+
+I am submitting the manuscript ``A Geometric Observatory for Financial
+Regime Detection'' for consideration in Physica A.
+
+The paper applies differential geometry---Fubini--Study metrics, Berry
+curvature, Chern numbers, spectral gaps---to financial time series by
+embedding market data into a projective Hilbert space via spectral metric
+learning (QCML).  We extract nineteen geometric detection channels and
+test them on 17 historical crises spanning 2000--2024, comparing against
+46 methods including Random Forest, GARCH, Hamilton Markov-switching,
+and Absorption Ratio.
+
+The central result: walk-forward nested HPO gives Berry Phase Rate an
+unbiased out-of-sample Cohen's $d = 0.72$ with 30\% fewer false alarms
+than Random Forest (2.5 vs.\ 3.6 per year), without requiring crisis
+labels.  Regime-Adaptive fusion generalizes on holdout crises
+($d = 0.78$) while top individual methods collapse.
+
+I believe this manuscript is a good fit for Physica A because it brings
+geometric and spectral methods from mathematical physics to an
+econophysics application, with rigorous statistical evaluation.  The
+work includes formal theorems validated on market data, a 46-method
+comparison with proper multiple-testing corrections, and walk-forward
+validation with nested hyperparameter optimization.
+
+All code and data are freely available for reproducibility at
+\url{https://github.com/willhammondhimself/qcml-geometric-sde}.
+
+\closing{Sincerely,}
+
+\end{letter}
+\end{document}

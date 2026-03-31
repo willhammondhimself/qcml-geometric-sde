@@ -1,0 +1,113 @@
+{
+  "knight": "Knight 2 (Empirical Implementation)",
+  "research_question": "Q0126",
+  "question": "Can circuit complexity proxy serve as crisis proximity measure?",
+  "method": "Nielsen complexity proxy: ||log(U)||_F on SU(d)",
+  "config": {
+    "hilbert_dim": 8,
+    "n_pca": 3,
+    "symbols": [
+      "SPY",
+      "DIA"
+    ],
+    "date_range": "2006-01-01 to 2024-12-31",
+    "smoke_crises": [
+      "2008_gfc",
+      "2020_covid",
+      "2022_rates",
+      "2023_svb"
+    ],
+    "rolling_window": 20,
+    "n_bootstrap": 2000,
+    "operator_method": "random",
+    "reference_strategies": [
+      "|0...0>",
+      "calm-period average"
+    ]
+  },
+  "results": {
+    "complexity_zero": {
+      "aggregate_d": 0.423,
+      "aggregate_ci": [
+        0.148,
+        0.721
+      ],
+      "p_value": 4.4171469467898126e-13,
+      "per_crisis": {
+        "2008_gfc": 1.023,
+        "2020_covid": 0.663,
+        "2022_rates": 0.396,
+        "2023_svb": 0.106
+      }
+    },
+    "complexity_calm": {
+      "aggregate_d": 0.028,
+      "aggregate_ci": [
+        0.004,
+        0.271
+      ],
+      "p_value": 0.5538348758156144,
+      "per_crisis": {
+        "2008_gfc": 0.356,
+        "2020_covid": 0.58,
+        "2022_rates": 0.08,
+        "2023_svb": 0.298
+      }
+    },
+    "complexity_rate": {
+      "aggregate_d": 0.32,
+      "aggregate_ci": [
+        0.123,
+        0.52
+      ],
+      "p_value": 1.3696532585794995e-13,
+      "per_crisis": {
+        "2008_gfc": 0.572,
+        "2020_covid": 0.051,
+        "2022_rates": 0.397,
+        "2023_svb": 0.281
+      }
+    },
+    "infidelity": {
+      "aggregate_d": 0.649,
+      "aggregate_ci": [
+        0.424,
+        0.87
+      ],
+      "p_value": 5.057406121284957e-56,
+      "per_crisis": {
+        "2008_gfc": 0.757,
+        "2020_covid": 0.369,
+        "2022_rates": 0.834,
+        "2023_svb": 0.132
+      }
+    },
+    "fidelity_multilag": {
+      "aggregate_d": 0.485,
+      "aggregate_ci": [
+        0.22,
+        0.763
+      ],
+      "p_value": 3.9982249367449636e-21,
+      "per_crisis": {
+        "2008_gfc": 0.723,
+        "2020_covid": 1.014,
+        "2022_rates": 0.455,
+        "2023_svb": 0.642
+      }
+    }
+  },
+  "correlation_analysis": {
+    "complexity_vs_multilag_fidelity": {
+      "pearson_r_raw": -0.0074,
+      "spearman_rho": -0.0126,
+      "spearman_p": 0.3867988017411198,
+      "pearson_r_zscore": 0.0191
+    }
+  },
+  "analytical_verification": {
+    "nielsen_equals_sqrt2_fs_distance": "False",
+    "max_discrepancy": 3.146171743512276
+  },
+  "runtime_seconds": 8.6
+}

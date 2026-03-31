@@ -1,0 +1,63 @@
+id: "0133"
+round: 133
+timestamp: "2026-03-09T19:00:00"
+question: "How do our observables degrade under missing data, delayed feeds, and market holidays — what is the production failure mode?"
+theme: "scalability"
+status: "reject"
+
+hypothesis:
+  statement: "Production data irregularities significantly degrade detection quality"
+  mechanism: "Missing data creates gaps in rolling windows, distorting geometric features"
+  prior_plausibility: "low"
+
+knight_findings:
+  - knight: 1
+    role: "empirical_implementation"
+    workers_used: 2
+    conclusion: >
+      REJECT. Pure engineering/production-readiness question with no research
+      insight. The pipeline uses daily data from yfinance, which inherently
+      handles market holidays (no trading = no data point). Missing data
+      robustness is a standard engineering concern. The QCML observables operate
+      on rolling windows of enriched features — a few missing points simply
+      shorten the effective window, degrading gracefully.
+    evidence: "yfinance produces no rows on holidays; ExpandingWindowMixin guards via min_expanding"
+    confidence: 0.90
+    key_insight: "Pipeline is structurally resilient to data gaps. This is deployment engineering, not research."
+
+  - knight: 2
+    role: "failure_mode_analysis"
+    workers_used: 2
+    conclusion: >
+      REJECT. ExpandingWindowMixin in observables.py guards against insufficient
+      history via min_expanding parameters (60-126 days). Rolling windows (15-20
+      days) naturally tolerate sporadic gaps. OnlineGeometricFeatureComputer
+      returns None when insufficient history is available, with NaN propagation
+      handled downstream. Testing "drop 5-10% of observations" would confirm
+      what is structurally obvious: rolling-window detectors degrade linearly
+      with data loss.
+    evidence: "min_expanding=60-126; rolling_window=15-20; NaN propagation in OnlineGFC"
+    confidence: 0.88
+    key_insight: "Existing graceful degradation is adequate. Degradation curve is predictable and uninteresting."
+
+test_results:
+  crises_tested: []
+  passes_threshold: false
+
+verdict:
+  keep: false
+  reason: >
+    Deployment engineering question, not research. The pipeline is structurally
+    resilient: yfinance handles holidays (no data = no row), ExpandingWindowMixin
+    guards against insufficient history (min_expanding=60-126 days), and
+    OnlineGeometricFeatureComputer returns None on insufficient data. A
+    degradation curve (detection quality vs % dropout) would confirm what is
+    already architecturally obvious. Belongs in a production deployment
+    appendix of a future paper, not in the current research agenda.
+  strength: "high"
+  follow_up_questions:
+    - "If Paper 3 targets practitioner deployment, add a data-robustness appendix with dropout experiments"
+
+artifacts:
+  code_dir: null
+  key_files: []

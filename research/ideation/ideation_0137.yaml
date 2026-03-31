@@ -1,0 +1,83 @@
+id: "0137"
+round: 137
+timestamp: "2026-03-09T20:00:00"
+question: "Can Shapley values decompose fusion scores into per-observable contributions, and do the attributions align with crisis type?"
+theme: "interpretability"
+status: "keep"
+
+hypothesis:
+  statement: "Shapley values reveal which observables contribute most to fusion detection, with contributions varying by crisis type"
+  mechanism: "Coalition-based evaluation of channel subsets captures interaction effects missed by leave-one-out ablation"
+  prior_plausibility: "high"
+
+knight_findings:
+  - knight: 1
+    role: "theoretical_validity"
+    workers_used: 3
+    conclusion: >
+      KEEP. Two tractable approaches: (1) Family-level Shapley (7 families,
+      2^7 = 128 evaluations) tests whether family structure matters for fusion.
+      (2) Channel-level Shapley on top-4 channels (2^4 = 16 evaluations per
+      crisis, 240 total across 15 crises). The regime-adaptive detector stores
+      weight_history (T x n_channels) providing regime-specific weights — the
+      infrastructure partially exists. Shapley adds interaction effects that
+      leave-one-out misses (e.g., super-additive channel pairs).
+    evidence: "2^4=16 evaluations per crisis; weight_history exists in fusion.py; Friedman p=0.538 (no single method dominates)"
+    confidence: 0.88
+    key_insight: "Directly tests the paper's central complementarity narrative with proper interaction accounting."
+
+  - knight: 2
+    role: "comparative_analysis"
+    workers_used: 3
+    conclusion: >
+      KEEP. The Paper 2 Friedman test (p=0.538) showed no method dominates,
+      and Regime-Adaptive achieved best mean rank (4.53) with lowest CV (0.53).
+      Shapley attribution per crisis type would reveal whether the fusion's
+      strength comes from different channels activating per crisis
+      (complementarity) vs. all channels contributing equally (redundancy).
+      Cluster Shapley vectors across crises to see if crisis types emerge
+      naturally without labeled categories.
+    evidence: "Regime-Adaptive CV=0.53; Friedman p=0.538; natural crisis type clustering via Shapley vectors"
+    confidence: 0.85
+    key_insight: "Unsupervised clustering of Shapley vectors could discover crisis typology without label leakage."
+
+  - knight: 3
+    role: "failure_mode_analysis"
+    workers_used: 2
+    conclusion: >
+      CONDITIONAL KEEP. Main risk: with only 15 crises (3-5 per category),
+      per-crisis-type sample sizes limit statistical power for the
+      'attributions align with crisis type' hypothesis. Mitigate by using
+      permutation tests rather than parametric tests on Shapley vectors.
+      Also: replacing excluded channels with mean z-score (coalition evaluation)
+      may not perfectly simulate absence — an alternative is to retrain the
+      fusion without those channels.
+    evidence: "n=3-5 per crisis category; permutation test needed; coalition evaluation vs retraining tradeoff"
+    confidence: 0.80
+    key_insight: "Small sample sizes per crisis type require non-parametric testing of attribution patterns."
+
+test_results:
+  crises_tested: []
+  passes_threshold: true
+  notes: "No smoke test — analysis over existing fusion results"
+
+verdict:
+  keep: true
+  reason: >
+    Computationally tractable (2^4 = 16 coalitions for top-4 channels, 2^7 = 128
+    for 7 families) and directly validates the paper's complementarity narrative.
+    The fusion model's weight_history infrastructure already exists. Shapley
+    captures interaction effects missed by leave-one-out. Clustering Shapley
+    vectors across crises could discover crisis typology without label leakage.
+    Risk: small per-category sample sizes (3-5 crises) limit statistical power —
+    mitigated by permutation tests.
+  strength: "high"
+  follow_up_questions:
+    - "Implement coalition evaluator using set_precomputed_scores with masked columns"
+    - "Cluster Shapley vectors across crises — do crisis types emerge naturally?"
+    - "Compare Shapley attribution to Ridge regression weights in weight_history"
+    - "Test for super-additive channel pairs (interaction effects)"
+
+artifacts:
+  code_dir: null
+  key_files: []

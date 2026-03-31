@@ -1,0 +1,91 @@
+id: "0121"
+round: 121
+timestamp: "2026-03-09T11:30:00"
+question: "Does Wigner function negativity (non-classicality measure) spike before crises, indicating the market enters a 'non-classical' regime?"
+theme: "novel_observables_ii"
+status: "reject"
+
+hypothesis:
+  statement: "Wigner function negativity spikes before/during crises as the market state becomes 'non-classical'"
+  mechanism: "Crisis-era belief incompatibility and correlation breakdown produces states far from the stabilizer polytope, increasing Wigner negativity"
+  prior_plausibility: "medium"
+
+knight_findings:
+  - knight: 1
+    role: "theoretical_validity"
+    workers_used: 0
+    conclusion: >
+      Theoretically valid for d=8 via Kocia-Love qubit construction, but non-unique
+      (unlike odd-prime dimensions). Computationally cheap (64 phase-point evaluations).
+      Measures distance from stabilizer polytope — genuinely distinct from spectral/bipartite
+      observables. However, non-uniqueness of qubit Wigner construction is a methodological
+      weakness. Financial mechanism (non-classical crisis states) is plausible via quantum
+      cognition but speculative.
+    evidence: "Discrete Wigner well-defined for d=8=2^3 via Kocia-Love 2017; Hudson theorem analog holds"
+    confidence: 0.72
+    key_insight: "Measures genuinely different property (distance from classicality) but non-unique construction for qubits"
+
+  - knight: 2
+    role: "empirical_implementation"
+    workers_used: 1
+    conclusion: >
+      HYPOTHESIS FALSIFIED. Wigner negativity DECREASES during crises (2022 rates d=-1.47,
+      2023 SVB d=-0.86), meaning QCML states become MORE classical during stress. Only COVID
+      shows weak positive effect (d=+0.18). Median |d|=0.194, below 0.3 threshold. Raw
+      negativity has very narrow variation (CV=2.4%), limiting dynamic range.
+    evidence: "2008 GFC d=-0.23, COVID d=+0.18, 2022 rates d=-1.47, 2023 SVB d=-0.86"
+    confidence: 0.85
+    key_insight: "Crises drive states toward MORE classical configurations (correlation convergence concentrates ground state)"
+
+  - knight: 3
+    role: "comparative_analysis"
+    workers_used: 6
+    conclusion: >
+      LOW added value. Wigner W is the un-smoothed version of Husimi Q (already kept,
+      d=0.541). Expected correlation rho~0.4-0.6 with Husimi, rho~0.5 with Reduced Purity.
+      Implementation 3-5x more complex for even dimensions. The unique information (negative
+      phase-space regions) does not translate to better crisis detection.
+    evidence: "Husimi Q already occupies phase-space niche; cross-signal analysis shows moderate redundancy"
+    confidence: 0.75
+    key_insight: "Wigner and Husimi are Fourier-related; the extra information in negativity is marginal"
+
+  - knight: 4
+    role: "failure_mode_analysis"
+    workers_used: 6
+    conclusion: >
+      HIGH-severity math construction problem: d=8 not prime, naive tensor product gives
+      GHZ stabilizer state nonzero negativity (should be zero). Multiple valid constructions
+      exist with no canonical choice. Low dynamic range (CV=10.8% for random pure states).
+      Moderate correlation with reduced purity (|rho|=0.55). Data leakage risk is low.
+    evidence: "GHZ stabilizer test yields negativity=1.5 instead of 0; random states CV=0.108"
+    confidence: 0.92
+    key_insight: "Non-prime d=8 breaks standard construction; getting it right is a research problem, not a coding task"
+
+test_results:
+  crises_tested: [2008_gfc, 2020_covid, 2022_rates, 2023_svb]
+  cohens_d_per_crisis:
+    2008_gfc: -0.228
+    2020_covid: 0.179
+    2022_rates: -1.466
+    2023_svb: -0.864
+  median_d: -0.546
+  median_d_abs: 0.194
+  passes_threshold: false
+
+verdict:
+  keep: false
+  reason: >
+    Triple rejection: (1) Empirical hypothesis falsified — negativity DECREASES during crises,
+    opposite of prediction. (2) Below threshold — median |d|=0.194 < 0.3. (3) Mathematical
+    construction issues — d=8 not prime, no canonical Wigner function, naive implementation
+    gives wrong results for stabilizer states. The reversed signal (states become MORE
+    classical during crises) is interesting but redundant with existing dimensionality
+    collapse and reduced purity channels.
+  strength: "high"
+  follow_up_questions:
+    - "Does 'Wigner classicality' (inverted negativity) correlate with Reduced Purity above |rho|=0.7, confirming redundancy?"
+    - "Would odd-prime Hilbert dimension (d=7) fix the construction and change the result?"
+
+artifacts:
+  code_dir: "research/ideation/wigner_negativity/"
+  key_files: ["detector.py", "smoke_test.py", "smoke_results.json"]

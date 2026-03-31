@@ -1,0 +1,65 @@
+id: "0130"
+round: 130
+timestamp: "2026-03-09T19:00:00"
+question: "Do random projection approximations (Johnson-Lindenstrauss) preserve detection quality while reducing embedding dimension from d=8 to d=4?"
+theme: "scalability"
+status: "reject"
+
+hypothesis:
+  statement: "JL random projections can halve the Hilbert dimension while preserving detection quality"
+  mechanism: "JL lemma guarantees distance preservation for random projections to sufficiently high target dimension"
+  prior_plausibility: "low"
+
+knight_findings:
+  - knight: 1
+    role: "empirical_implementation"
+    workers_used: 2
+    conclusion: >
+      REJECT. Three fatal problems: (1) JL lemma requires target dimension
+      k >= O(log(n)/eps^2); for n=5000 points and eps=0.1, k >= ~800. Projecting
+      to d=4 is 200x below the theoretical bound — JL provides zero guarantees.
+      (2) d=8 is already tiny; 8x8 eigensolves via np.linalg.eigh take ~8.5us.
+      Reducing to 4x4 saves ~1us per eigensolve — negligible vs the O(n^3)
+      curvature bottleneck. (3) HPO already searches hilbert_dim in [3,12] per
+      detector, and config.yaml shows the results: different detectors optimized
+      to different dims (Multi-Lag Fidelity=4, Berry Phase Rate=6, Spectral
+      Entropy=8, Ricci Scalar=16).
+    evidence: "JL bound requires k>=800 for n=5000; eigh(8x8)=8.5us; HPO already tunes hilbert_dim per detector"
+    confidence: 0.95
+    key_insight: "hilbert_dim is already an HPO hyperparameter. Wrapping this in JL adds theory that doesn't apply at d=8."
+
+  - knight: 2
+    role: "failure_mode_analysis"
+    workers_used: 2
+    conclusion: >
+      REJECT. The question misidentifies the bottleneck. The nested
+      finite-difference structure in ricci_scalar calls _christoffel_symbols
+      (2n+1) times, each calling quantum_metric n times. For n_pca=3, that is
+      7 * 3 * 7 = 147 eigensolves per point. The scaling is in the number of
+      eigensolves, not their individual cost. Halving d from 8 to 4 saves ~50%
+      on each eigensolve but cannot reduce the count.
+    evidence: "Ricci: 147 eigensolves/point at n_pca=3; bottleneck is count not cost"
+    confidence: 0.93
+    key_insight: "Computational bottleneck is eigensolve COUNT from nested finite differences, not individual eigensolve SIZE."
+
+test_results:
+  crises_tested: []
+  passes_threshold: false
+
+verdict:
+  keep: false
+  reason: >
+    JL lemma is inapplicable at d=8 (requires k>=800 for n=5000, vs proposed
+    k=4). The question is already answered by the HPO system, which tunes
+    hilbert_dim in [3,12] per detector. Different detectors optimize to
+    different dims (MLF=4, BPR=6, SE=8, Ricci=16). The computational bottleneck
+    is the nested finite-difference eigensolve count, not individual eigensolve
+    size. Framing this as JL adds theoretical machinery that does not apply.
+  strength: "high"
+  follow_up_questions:
+    - "Why do some observables prefer d=4 and others d=16 — what spectral/geometric properties require higher Hilbert space dimension?"
+    - "How does detection quality degrade per-observable as hilbert_dim decreases from HPO-optimal?"
+
+artifacts:
+  code_dir: null
+  key_files: []

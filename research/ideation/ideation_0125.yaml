@@ -1,0 +1,103 @@
+id: "0125"
+round: 125
+timestamp: "2026-03-09T14:00:00"
+question: "Does the quantum channel capacity between consecutive market states (Holevo bound) detect information bottlenecks at crisis onset?"
+theme: "novel_observables_ii"
+status: "reject"
+
+hypothesis:
+  statement: "The Holevo bound chi for the evolution channel detects information bottlenecks during crises"
+  mechanism: "During crises, state diversity drops (information bottleneck), reducing the channel's classical capacity"
+  prior_plausibility: "low"
+
+knight_findings:
+  - knight: 1
+    role: "theoretical_validity"
+    workers_used: 0
+    conclusion: >
+      The QCML time evolution |psi(t)> → |psi(t+1)> is NOT a quantum channel (CPTP map).
+      States are independently computed from market data via eigendecomposition — the output
+      has no dynamical dependence on the input. The Holevo bound for pure-state ensembles
+      trivially collapses to chi = S(rho_avg) since S(|psi><psi|) = 0. This is just the
+      von Neumann entropy of the time-averaged density matrix — the Renyi-1 counterpart
+      of the existing Effective State Dimension (which computes exp(Renyi-2) of the same
+      matrix). No channel-theoretic content survives.
+    evidence: "chi = S(rho_avg) - avg S(rho_i) = S(rho_avg) - 0 = S(rho_avg) for pure states"
+    confidence: 0.92
+    key_insight: "The 'channel' is not a channel — calling it one would invite reviewer criticism for misusing quantum information terminology"
+
+  - knight: 2
+    role: "empirical_implementation"
+    workers_used: 1
+    conclusion: >
+      At matched window W=20, channel capacity (S(rho_avg)) correlates r=0.997 with ESD —
+      completely redundant. However, at W=60 the correlation drops to r=0.634 and median
+      d rises to 1.27 (vs ESD's 0.83 at W=20), with all 4 crises above d=0.7. BUT: this
+      non-redundancy comes from the WINDOW SIZE (60 vs 20), not from the Renyi order
+      difference (H_1 vs H_2). Running D_eff at W=60 would likely produce the same improvement.
+    evidence: "W=20: r=0.997 vs ESD, d=0.87; W=60: r=0.634 vs ESD, d=1.27 (GFC 1.00, COVID 1.54, Rates 0.75, SVB 2.70)"
+    confidence: 0.75
+    key_insight: "The W=60 finding is interesting but is a window-size effect, not a channel capacity effect"
+
+  - knight: 3
+    role: "comparative_analysis"
+    workers_used: 6
+    conclusion: >
+      Proved D_eff = exp(Renyi-2 of rho_avg) via the identity:
+      sum_{s,s'} |<psi_s|psi_s'>|^2 = W^2 * Tr(rho_avg^2). Therefore D_eff and S(rho_avg)
+      are Renyi-2 and Renyi-1 of the SAME matrix. Spearman rank correlation: 0.992 across
+      random spectra in d=8. D_eff already ranks 23.6/44 (mediocre). Adding a near-duplicate
+      adds no detection power and wastes a fusion degree of freedom.
+    evidence: "D_eff = 1/Tr(rho_avg^2) = exp(H_2); S(rho_avg) = H_1; Spearman = 0.992"
+    confidence: 0.95
+    key_insight: "Both are generalized diversity measures of the same ensemble — Renyi-1 vs Renyi-2 of identical spectrum"
+
+  - knight: 4
+    role: "failure_mode_analysis"
+    workers_used: 0
+    conclusion: >
+      FATAL redundancy (Spearman 0.992) confirmed against canonical benchmark. ESD already
+      mediocre (median d=0.358, rank 23.6/44). Would fail |rho| < 0.7 orthogonality gate.
+      Additional failure modes: temporal blindness (loses order within window), window size
+      as researcher DoF, limited dynamic range (0 to log(8)=2.08 nats). The "Holevo bound"
+      framing is a misnomer — chi = S(rho_avg) when states are pure, with no channel content.
+    evidence: "Spearman=0.992 vs D_eff; ESD rank=23.6/44 in canonical benchmark; chi=S(rho_avg) for pure states"
+    confidence: 0.92
+    key_insight: "Would fail orthogonality gate AND duplicate an already mediocre detector — double disqualification"
+
+test_results:
+  crises_tested: [2008_gfc, 2020_covid, 2022_rates, 2023_svb]
+  cohens_d_per_crisis:
+    W_20:
+      2008_gfc: 0.679
+      2020_covid: 3.988
+      2022_rates: 0.346
+      2023_svb: 1.066
+    W_60:
+      2008_gfc: 0.997
+      2020_covid: 1.538
+      2022_rates: 0.749
+      2023_svb: 2.703
+  median_d_W20: 0.873
+  median_d_W60: 1.267
+  correlation_W20_vs_ESD: 0.997
+  correlation_W60_vs_ESD: 0.634
+  passes_threshold: false
+
+verdict:
+  keep: false
+  reason: >
+    Triple rejection: (1) Theoretical — QCML evolution is not a quantum channel; the Holevo
+    bound trivially collapses to S(rho_avg) for pure states. (2) Mathematical — S(rho_avg)
+    and D_eff are Renyi-1 and Renyi-2 of the SAME matrix (Spearman 0.992). (3) Practical —
+    ESD already ranks 23.6/44; a near-duplicate is useless. The W=60 finding (d=1.27) is
+    attributable to window size, not Renyi order — should be tested as "D_eff with W=60"
+    instead.
+  strength: "high"
+  follow_up_questions:
+    - "Does running Effective State Dimension with W=60 (instead of W=20) improve its performance from d=0.358?"
+    - "Can we systematically HPO window sizes across all observables to find optimal timescales?"
+
+artifacts:
+  code_dir: "research/ideation/channel_capacity/"
+  key_files: ["detector.py", "smoke_test.py", "smoke_results.json"]

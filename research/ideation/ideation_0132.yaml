@@ -1,0 +1,65 @@
+id: "0132"
+round: 132
+timestamp: "2026-03-09T19:00:00"
+question: "Can we GPU-accelerate the quantum state embedding and eigendecomposition to achieve sub-second latency for 500+ assets?"
+theme: "scalability"
+status: "reject"
+
+hypothesis:
+  statement: "GPU-batched eigensolves provide meaningful speedup for the QCML pipeline"
+  mechanism: "Batching many small eigensolves on GPU amortizes kernel launch overhead"
+  prior_plausibility: "low"
+
+knight_findings:
+  - knight: 1
+    role: "empirical_implementation"
+    workers_used: 2
+    conclusion: >
+      REJECT. At d <= 16, individual eigensolves cost microseconds on CPU.
+      GPU kernel launch overhead alone is 10-50us, making GPU SLOWER for
+      individual calls. Batching 500 assets' eigensolves together could
+      amortize launch overhead, but the real bottleneck is the nested
+      finite-difference structure: ricci_scalar calls _christoffel_symbols
+      (2n+1) times, each calling quantum_metric n times, each calling
+      quasi_coherent_state (2n+1) times. For n_pca=3, that is 7 * 3 * 7 = 147
+      eigensolves per point — the scaling is in the COUNT of eigensolves, not
+      their individual cost.
+    evidence: "eigh(8x8)=8.5us; GPU launch overhead=10-50us; 147 eigensolves/point for Ricci"
+    confidence: 0.92
+    key_insight: "GPU slower than CPU for individual d<=16 eigensolves. Bottleneck is nested FD structure."
+
+  - knight: 2
+    role: "practical_value"
+    workers_used: 2
+    conclusion: >
+      REJECT. Sub-second latency for 500+ assets is a production/trading
+      concern, while the paper focuses on statistical rigor and reproducibility.
+      This is engineering work that does not produce a publishable result. GPU
+      would help at d >= 32 where matrix ops dominate, but the paper uses
+      d <= 16.
+    evidence: "Production concern, not research contribution; GPU wins only at d>=32"
+    confidence: 0.90
+    key_insight: "Engineering optimization, not research. The publishable alternative is analytical Christoffel symbols."
+
+test_results:
+  crises_tested: []
+  passes_threshold: false
+
+verdict:
+  keep: false
+  reason: >
+    GPU acceleration is counterproductive at d <= 16 (kernel launch overhead
+    exceeds computation). The real bottleneck is the O(n^3) nested
+    finite-difference structure in Christoffel/Ricci computation, not
+    individual eigensolve cost. This is engineering work with no publishable
+    result. The research-grade alternative: analytical perturbation-theory
+    expressions for state derivatives, eliminating finite differences entirely
+    (10-100x speedup with a theoretical contribution).
+  strength: "high"
+  follow_up_questions:
+    - "Can analytical dH/dx eliminate finite-difference eigensolves for quantum_metric?"
+    - "Profile the actual bottleneck: is it the nested FD structure or the eigensolve count?"
+
+artifacts:
+  code_dir: null
+  key_files: []

@@ -1,0 +1,561 @@
+{
+  "detector": "LevelSpacingRatioDetector",
+  "config": {
+    "hilbert_dim": 8,
+    "n_pca_components": 8,
+    "operator_method": "random",
+    "normalization": "soft",
+    "rolling_window": 20,
+    "min_expanding": 60,
+    "seed": 42,
+    "n_bootstrap": 10000
+  },
+  "data": {
+    "n_observations": 6864,
+    "n_features": 13,
+    "date_range": "1998-02-18 to 2025-05-30"
+  },
+  "timing": {
+    "fit_seconds": 0.0,
+    "compute_seconds": 0.33
+  },
+  "crises_evaluated": [
+    "1998_ltcm",
+    "2000_dotcom",
+    "2001_911",
+    "2007_quant",
+    "2008_gfc",
+    "2010_flash",
+    "2011_euro",
+    "2013_taper",
+    "2015_china",
+    "2016_brexit",
+    "2018_volmageddon",
+    "2018_q4",
+    "2019_repo",
+    "2020_covid",
+    "2021_meme",
+    "2022_rates",
+    "2023_svb",
+    "2024_carry"
+  ],
+  "crises_skipped": [
+    "1997_asia"
+  ],
+  "best_variant": "mean_ratio",
+  "best_median_d": 0.4997,
+  "per_variant_summary": {
+    "mean_ratio": {
+      "median_d": 0.4997,
+      "mean_d": 0.9052,
+      "max_d": 3.4359,
+      "min_d": 0.07,
+      "n_above_0.5": 9,
+      "n_above_0.8": 6,
+      "n_negative": 0,
+      "per_crisis": {
+        "1998_ltcm": {
+          "d": 2.2482,
+          "ci_lo": 1.5919,
+          "ci_hi": 3.0723,
+          "p": 0.0,
+          "n_crisis": 53,
+          "label": "LTCM/Russia 1998"
+        },
+        "2000_dotcom": {
+          "d": 0.6561,
+          "ci_lo": 0.2974,
+          "ci_hi": 1.1123,
+          "p": 0.0,
+          "n_crisis": 148,
+          "label": "Dot-Com Crash 2000"
+        },
+        "2001_911": {
+          "d": 1.1773,
+          "ci_lo": 0.1175,
+          "ci_hi": 2.5167,
+          "p": 0.008425,
+          "n_crisis": 22,
+          "label": "September 11 2001"
+        },
+        "2007_quant": {
+          "d": 0.5252,
+          "ci_lo": 0.1372,
+          "ci_hi": 0.9682,
+          "p": 3.2e-05,
+          "n_crisis": 42,
+          "label": "Quant Crisis 2007"
+        },
+        "2008_gfc": {
+          "d": 3.2682,
+          "ci_lo": 2.3038,
+          "ci_hi": 4.4203,
+          "p": 0.0,
+          "n_crisis": 146,
+          "label": "GFC 2008"
+        },
+        "2010_flash": {
+          "d": 0.07,
+          "ci_lo": 0.0061,
+          "ci_hi": 0.3561,
+          "p": 0.432733,
+          "n_crisis": 42,
+          "label": "Flash Crash 2010"
+        },
+        "2011_euro": {
+          "d": 1.3277,
+          "ci_lo": 0.6276,
+          "ci_hi": 2.1529,
+          "p": 0.0,
+          "n_crisis": 85,
+          "label": "Euro Crisis 2011"
+        },
+        "2013_taper": {
+          "d": 0.2752,
+          "ci_lo": 0.1574,
+          "ci_hi": 0.3946,
+          "p": 0.0,
+          "n_crisis": 39,
+          "label": "Taper Tantrum 2013"
+        },
+        "2015_china": {
+          "d": 0.3191,
+          "ci_lo": 0.0632,
+          "ci_hi": 0.5597,
+          "p": 7e-06,
+          "n_crisis": 64,
+          "label": "China Crash 2015"
+        },
+        "2016_brexit": {
+          "d": 0.4741,
+          "ci_lo": 0.2717,
+          "ci_hi": 0.6509,
+          "p": 0.0,
+          "n_crisis": 29,
+          "label": "Brexit 2016"
+        },
+        "2018_volmageddon": {
+          "d": 0.1225,
+          "ci_lo": 0.007,
+          "ci_hi": 0.3108,
+          "p": 0.025967,
+          "n_crisis": 65,
+          "label": "Volmageddon 2018"
+        },
+        "2018_q4": {
+          "d": 0.3594,
+          "ci_lo": 0.1568,
+          "ci_hi": 0.54,
+          "p": 0.0,
+          "n_crisis": 63,
+          "label": "Q4 Selloff 2018"
+        },
+        "2019_repo": {
+          "d": 0.0792,
+          "ci_lo": 0.0055,
+          "ci_hi": 0.3592,
+          "p": 0.310904,
+          "n_crisis": 43,
+          "label": "Repo Crisis 2019"
+        },
+        "2020_covid": {
+          "d": 3.4359,
+          "ci_lo": 1.4151,
+          "ci_hi": 5.8506,
+          "p": 0.0,
+          "n_crisis": 50,
+          "label": "COVID 2020"
+        },
+        "2021_meme": {
+          "d": 0.3529,
+          "ci_lo": 0.1142,
+          "ci_hi": 0.5757,
+          "p": 0.0,
+          "n_crisis": 57,
+          "label": "Meme/Archegos 2021"
+        },
+        "2022_rates": {
+          "d": 0.8825,
+          "ci_lo": 0.4811,
+          "ci_hi": 1.3707,
+          "p": 0.0,
+          "n_crisis": 209,
+          "label": "Rate Hikes 2022"
+        },
+        "2023_svb": {
+          "d": 0.5549,
+          "ci_lo": 0.3162,
+          "ci_hi": 0.767,
+          "p": 0.0,
+          "n_crisis": 42,
+          "label": "SVB 2023"
+        },
+        "2024_carry": {
+          "d": 0.1655,
+          "ci_lo": 0.0103,
+          "ci_hi": 0.5356,
+          "p": 0.16169,
+          "n_crisis": 35,
+          "label": "Carry Unwind 2024"
+        }
+      }
+    },
+    "std_ratio": {
+      "median_d": 0.2326,
+      "mean_d": 0.3556,
+      "max_d": 1.4902,
+      "min_d": 0.0306,
+      "n_above_0.5": 4,
+      "n_above_0.8": 1,
+      "n_negative": 0,
+      "per_crisis": {
+        "1998_ltcm": {
+          "d": 0.6142,
+          "ci_lo": 0.0485,
+          "ci_hi": 1.3072,
+          "p": 0.001465,
+          "n_crisis": 53,
+          "label": "LTCM/Russia 1998"
+        },
+        "2000_dotcom": {
+          "d": 0.0413,
+          "ci_lo": 0.0046,
+          "ci_hi": 0.3405,
+          "p": 0.533634,
+          "n_crisis": 148,
+          "label": "Dot-Com Crash 2000"
+        },
+        "2001_911": {
+          "d": 0.4415,
+          "ci_lo": 0.0287,
+          "ci_hi": 1.0405,
+          "p": 0.037397,
+          "n_crisis": 22,
+          "label": "September 11 2001"
+        },
+        "2007_quant": {
+          "d": 0.134,
+          "ci_lo": 0.0074,
+          "ci_hi": 0.4754,
+          "p": 0.218382,
+          "n_crisis": 42,
+          "label": "Quant Crisis 2007"
+        },
+        "2008_gfc": {
+          "d": 1.4902,
+          "ci_lo": 0.9647,
+          "ci_hi": 2.0586,
+          "p": 0.0,
+          "n_crisis": 146,
+          "label": "GFC 2008"
+        },
+        "2010_flash": {
+          "d": 0.4788,
+          "ci_lo": 0.0388,
+          "ci_hi": 0.9835,
+          "p": 0.003253,
+          "n_crisis": 42,
+          "label": "Flash Crash 2010"
+        },
+        "2011_euro": {
+          "d": 0.1427,
+          "ci_lo": 0.0084,
+          "ci_hi": 0.4842,
+          "p": 0.119224,
+          "n_crisis": 85,
+          "label": "Euro Crisis 2011"
+        },
+        "2013_taper": {
+          "d": 0.2384,
+          "ci_lo": 0.0139,
+          "ci_hi": 1.0721,
+          "p": 0.334276,
+          "n_crisis": 39,
+          "label": "Taper Tantrum 2013"
+        },
+        "2015_china": {
+          "d": 0.4679,
+          "ci_lo": 0.1653,
+          "ci_hi": 0.796,
+          "p": 0.0,
+          "n_crisis": 64,
+          "label": "China Crash 2015"
+        },
+        "2016_brexit": {
+          "d": 0.7116,
+          "ci_lo": 0.3199,
+          "ci_hi": 1.0641,
+          "p": 1e-06,
+          "n_crisis": 29,
+          "label": "Brexit 2016"
+        },
+        "2018_volmageddon": {
+          "d": 0.0934,
+          "ci_lo": 0.0051,
+          "ci_hi": 0.3314,
+          "p": 0.157852,
+          "n_crisis": 65,
+          "label": "Volmageddon 2018"
+        },
+        "2018_q4": {
+          "d": 0.2267,
+          "ci_lo": 0.0121,
+          "ci_hi": 0.6714,
+          "p": 0.069011,
+          "n_crisis": 63,
+          "label": "Q4 Selloff 2018"
+        },
+        "2019_repo": {
+          "d": 0.0306,
+          "ci_lo": 0.0099,
+          "ci_hi": 0.6874,
+          "p": 0.847091,
+          "n_crisis": 43,
+          "label": "Repo Crisis 2019"
+        },
+        "2020_covid": {
+          "d": 0.4242,
+          "ci_lo": 0.0204,
+          "ci_hi": 1.2061,
+          "p": 0.038077,
+          "n_crisis": 50,
+          "label": "COVID 2020"
+        },
+        "2021_meme": {
+          "d": 0.0326,
+          "ci_lo": 0.0076,
+          "ci_hi": 0.5161,
+          "p": 0.782444,
+          "n_crisis": 57,
+          "label": "Meme/Archegos 2021"
+        },
+        "2022_rates": {
+          "d": 0.6604,
+          "ci_lo": 0.34,
+          "ci_hi": 0.9976,
+          "p": 0.0,
+          "n_crisis": 209,
+          "label": "Rate Hikes 2022"
+        },
+        "2023_svb": {
+          "d": 0.1264,
+          "ci_lo": 0.0092,
+          "ci_hi": 0.6221,
+          "p": 0.40213,
+          "n_crisis": 42,
+          "label": "SVB 2023"
+        },
+        "2024_carry": {
+          "d": 0.0468,
+          "ci_lo": 0.0086,
+          "ci_hi": 0.5929,
+          "p": 0.765611,
+          "n_crisis": 35,
+          "label": "Carry Unwind 2024"
+        }
+      }
+    },
+    "poisson_fraction": {
+      "median_d": 0.3726,
+      "mean_d": 1.3307,
+      "max_d": 6.2735,
+      "min_d": 0.0964,
+      "n_above_0.5": 5,
+      "n_above_0.8": 5,
+      "n_negative": 0,
+      "per_crisis": {
+        "1998_ltcm": {
+          "d": 3.5224,
+          "ci_lo": 1.0433,
+          "ci_hi": 6.4232,
+          "p": 5.5e-05,
+          "n_crisis": 53,
+          "label": "LTCM/Russia 1998"
+        },
+        "2000_dotcom": {
+          "d": 1.3019,
+          "ci_lo": 0.5653,
+          "ci_hi": 2.2969,
+          "p": 0.0,
+          "n_crisis": 148,
+          "label": "Dot-Com Crash 2000"
+        },
+        "2001_911": {
+          "d": 2.8593,
+          "ci_lo": 1.4978,
+          "ci_hi": 4.8737,
+          "p": 5e-06,
+          "n_crisis": 22,
+          "label": "September 11 2001"
+        },
+        "2007_quant": {
+          "d": 0.1983,
+          "ci_lo": 0.1458,
+          "ci_hi": 0.25,
+          "p": 0.0,
+          "n_crisis": 42,
+          "label": "Quant Crisis 2007"
+        },
+        "2008_gfc": {
+          "d": 5.9108,
+          "ci_lo": 4.3134,
+          "ci_hi": 8.0221,
+          "p": 0.0,
+          "n_crisis": 146,
+          "label": "GFC 2008"
+        },
+        "2010_flash": {
+          "d": 0.4242,
+          "ci_lo": 0.2927,
+          "ci_hi": 0.6156,
+          "p": 0.0,
+          "n_crisis": 42,
+          "label": "Flash Crash 2010"
+        },
+        "2011_euro": {
+          "d": 0.267,
+          "ci_lo": 0.0165,
+          "ci_hi": 0.7001,
+          "p": 0.004437,
+          "n_crisis": 85,
+          "label": "Euro Crisis 2011"
+        },
+        "2013_taper": {
+          "d": 0.2462,
+          "ci_lo": 0.2022,
+          "ci_hi": 0.2954,
+          "p": 0.0,
+          "n_crisis": 39,
+          "label": "Taper Tantrum 2013"
+        },
+        "2015_china": {
+          "d": 0.3015,
+          "ci_lo": 0.2608,
+          "ci_hi": 0.3542,
+          "p": 0.0,
+          "n_crisis": 64,
+          "label": "China Crash 2015"
+        },
+        "2016_brexit": {
+          "d": 0.3199,
+          "ci_lo": 0.2781,
+          "ci_hi": 0.3758,
+          "p": 0.0,
+          "n_crisis": 29,
+          "label": "Brexit 2016"
+        },
+        "2018_volmageddon": {
+          "d": 0.3533,
+          "ci_lo": 0.3084,
+          "ci_hi": 0.4156,
+          "p": 0.0,
+          "n_crisis": 65,
+          "label": "Volmageddon 2018"
+        },
+        "2018_q4": {
+          "d": 0.365,
+          "ci_lo": 0.3203,
+          "ci_hi": 0.4298,
+          "p": 0.0,
+          "n_crisis": 63,
+          "label": "Q4 Selloff 2018"
+        },
+        "2019_repo": {
+          "d": 0.3787,
+          "ci_lo": 0.3329,
+          "ci_hi": 0.4466,
+          "p": 0.0,
+          "n_crisis": 43,
+          "label": "Repo Crisis 2019"
+        },
+        "2020_covid": {
+          "d": 6.2735,
+          "ci_lo": 3.2847,
+          "ci_hi": 10.4279,
+          "p": 0.0,
+          "n_crisis": 50,
+          "label": "COVID 2020"
+        },
+        "2021_meme": {
+          "d": 0.384,
+          "ci_lo": 0.3372,
+          "ci_hi": 0.4535,
+          "p": 0.0,
+          "n_crisis": 57,
+          "label": "Meme/Archegos 2021"
+        },
+        "2022_rates": {
+          "d": 0.0964,
+          "ci_lo": 0.0063,
+          "ci_hi": 0.321,
+          "p": 0.100985,
+          "n_crisis": 209,
+          "label": "Rate Hikes 2022"
+        },
+        "2023_svb": {
+          "d": 0.3665,
+          "ci_lo": 0.3215,
+          "ci_hi": 0.4315,
+          "p": 0.0,
+          "n_crisis": 42,
+          "label": "SVB 2023"
+        },
+        "2024_carry": {
+          "d": 0.3843,
+          "ci_lo": 0.3381,
+          "ci_hi": 0.4545,
+          "p": 0.0,
+          "n_crisis": 35,
+          "label": "Carry Unwind 2024"
+        }
+      }
+    }
+  },
+  "variant_correlations": {
+    "mean_ratio_vs_std_ratio": {
+      "pearson": -0.3727,
+      "spearman": -0.3285
+    },
+    "mean_ratio_vs_poisson_fraction": {
+      "pearson": -0.7485,
+      "spearman": -0.4981
+    },
+    "std_ratio_vs_poisson_fraction": {
+      "pearson": 0.4097,
+      "spearman": 0.4247
+    }
+  },
+  "rmt_comparison": {
+    "overall_mean_ratio": 0.6851,
+    "distance_to_Poisson": 0.2988,
+    "distance_to_GOE": 0.1544,
+    "distance_to_GUE": 0.0855,
+    "closest_ensemble": "above GUE (super-repulsive)"
+  },
+  "raw_stats": {
+    "mean_ratio": {
+      "mean": 0.685052,
+      "std": 0.035824,
+      "min": 0.469097,
+      "max": 0.778295,
+      "q25": 0.676182,
+      "q75": 0.704758
+    },
+    "std_ratio": {
+      "mean": 0.132919,
+      "std": 0.029786,
+      "min": 0.032442,
+      "max": 0.237336,
+      "q25": 0.113892,
+      "q75": 0.153972
+    },
+    "poisson_fraction": {
+      "mean": 0.006143,
+      "std": 0.033158,
+      "min": 0.0,
+      "max": 0.333333,
+      "q25": 0.0,
+      "q75": 0.0
+    }
+  }
+}

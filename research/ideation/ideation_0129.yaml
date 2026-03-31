@@ -1,0 +1,79 @@
+id: "0129"
+round: 129
+timestamp: "2026-03-09T18:00:00"
+question: "Can we compute incremental/streaming updates to quantum observables (rank-1 updates to density matrices) instead of full recomputation each window?"
+theme: "scalability"
+status: "reject"
+
+hypothesis:
+  statement: "Rank-1 updates to density matrices can replace full window recomputation, providing significant speedup"
+  mechanism: "When sliding a window by 1 step, rho_avg changes by a rank-1 addition and rank-1 subtraction"
+  prior_plausibility: "medium"
+
+knight_findings:
+  - knight: 1
+    role: "empirical_implementation"
+    workers_used: 4
+    conclusion: >
+      The bottleneck is NOT window-aggregate density matrices — it's the eigensolve
+      chain for finite-difference geometric quantities. quantum_metric needs 17
+      eigensolves per step; Christoffel needs 289; Ricci needs 4,913. Each is for
+      a DIFFERENT Hamiltonian H(x+eps*e_a) — no rank-1 relationship exists. Category
+      D (curvature) detectors consume 97.9% of total pipeline runtime. The ONE
+      detector where streaming helps is EffectiveStateDimension (14.5x on Gram
+      matrix), saving ~0.5s out of 942s total — a 0.05% improvement.
+    evidence: "Ricci: 4913 eigensolves/point; Category D=97.9% of runtime; ESD Gram update 14.5x but 0.05% of total"
+    confidence: 0.95
+    key_insight: "Question inverts the bottleneck. Better paths: analytical gradients, GPU batching, cross-detector state caching."
+
+  - knight: 2
+    role: "practical_value"
+    workers_used: 4
+    conclusion: >
+      LOW VALUE. Pipeline already has cell-level SHA256 caching (195/195 cache hits
+      on most recent run). Full canonical run: 9.6h but only runs once per parameter
+      change. Per-observation latency: <100ms even for costliest method. Daily
+      production with 2-50 assets needs no streaming. Break-even for streaming:
+      hilbert_dim >= 64 + sub-second frequency + >30 features — orders of magnitude
+      beyond current scope.
+    evidence: "Full run 9.6h (cached reruns <1s); per-observation <100ms; break-even at dim>=64"
+    confidence: 0.92
+    key_insight: "Better optimizations: parallelize methods (26x), analytic Christoffels (10-100x), GPU eigensolves (10-100x)"
+
+  - knight: 3
+    role: "failure_mode_analysis"
+    workers_used: 5
+    conclusion: >
+      REJECT. Category error: the QCML pipeline does NOT maintain running density
+      matrices. It computes per-point eigensolves of 4-16 dim Hermitian matrices
+      (microseconds). The bottleneck is 10K-bootstrap evaluation (hours), not
+      geometric computation (seconds). The existing OnlineGeometricFeatureComputer
+      already implements correct streaming without rank-1 updates. Engineering
+      effort should target scientifically impactful work.
+    evidence: "eigh(8x8)=8.5us; bootstrap 10K dominates 2.5h runtime; OnlineGeometricFeatureComputer exists"
+    confidence: 0.95
+    key_insight: "Existing streaming infrastructure (online_detection.py) already solves this correctly without rank-1 updates."
+
+test_results:
+  crises_tested: []
+  passes_threshold: false
+
+verdict:
+  keep: false
+  reason: >
+    The question contains a fundamental category error — it proposes optimizing
+    window-aggregate density matrix operations, but the pipeline's bottleneck is
+    eigensolve chains for finite-difference geometric quantities (97.9% of compute).
+    Rank-1 updates help only EffectiveStateDimension (0.05% of total runtime).
+    The existing OnlineGeometricFeatureComputer already implements correct streaming.
+    Better optimization paths: (1) analytical Hamiltonian gradients to eliminate
+    finite differences (10-100x), (2) GPU-batched eigensolves (10-100x), (3)
+    cross-detector state caching (2x), (4) parallelizing across methods (26x).
+  strength: "high"
+  follow_up_questions:
+    - "Can analytical dH/dx eliminate finite-difference eigensolves for quantum_metric?"
+    - "Does GPU-batched eigensolve (cupy/torch) provide meaningful speedup at d=8-16?"
+
+artifacts:
+  code_dir: null
+  key_files: []

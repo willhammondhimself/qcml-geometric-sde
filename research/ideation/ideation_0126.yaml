@@ -1,0 +1,116 @@
+id: "0126"
+round: 126
+timestamp: "2026-03-09T15:00:00"
+question: "Can quantum circuit complexity (minimum gates to prepare state from reference) serve as a crisis proximity measure?"
+theme: "novel_observables_ii"
+status: "reject"
+
+hypothesis:
+  statement: "Circuit complexity measures the minimum unitary rotation to prepare a state from a reference, capturing crisis-driven state evolution"
+  mechanism: "During crises, ground states evolve rapidly, increasing the circuit complexity (distance from reference state in SU(d))"
+  prior_plausibility: "low"
+
+knight_findings:
+  - knight: 1
+    role: "theoretical_validity"
+    workers_used: 0
+    conclusion: >
+      CONDITIONAL_ACCEPT with low confidence. For d=8 (3 qubits), dynamic range is
+      severely limited: gate count has ~5 distinguishable CNOT levels (max 14 CNOTs
+      via Shende-Markov-Bullock bound). The continuous Nielsen geodesic version
+      ||log(U)||_F correlates heavily with existing Fubini-Study distance (estimated
+      rho > 0.85). Financial interpretation is ambiguous (crisis direction unclear).
+      Probability of useful novelty estimated at 25%.
+    evidence: "Max 14 CNOTs for SU(8); Nielsen geodesic ≈ d_FS for small rotations; high expected correlation with Geodesic Velocity"
+    confidence: 0.55
+    key_insight: "Limited dynamic range and high expected correlation with existing FS distance observables"
+
+  - knight: 2
+    role: "empirical_implementation"
+    workers_used: 1
+    conclusion: >
+      WEAK POSITIVE. Nielsen proxy (|0> reference): aggregate d=0.423 (GFC 1.023,
+      COVID 0.663, Rates 0.396, SVB 0.106). Calm-period reference KILLS signal
+      (d=0.028, p=0.55). Trivial infidelity proxy 1-|<ref|psi>|^2 DOMINATES at
+      d=0.649 — the expensive matrix logarithm adds no detection power. Near-zero
+      correlation with Multi-Lag Fidelity (rho=-0.013) despite conceptual similarity,
+      because complexity measures absolute distance from fixed reference while fidelity
+      measures local state change.
+    evidence: "Nielsen |0> ref: d=0.423; infidelity: d=0.649; calm ref: d=0.028; rho(complexity, MLF)=-0.013"
+    confidence: 0.75
+    key_insight: "Infidelity dominates Nielsen complexity; reference state choice is a severe researcher degree of freedom"
+
+  - knight: 3
+    role: "comparative_analysis"
+    workers_used: 6
+    conclusion: >
+      ~70% REDUNDANT with existing observables. Decomposition into 6 components shows
+      5 are already captured: (1) endpoint distance → Geodesic Velocity, (2) phase
+      accumulation → Berry Phase Rate, (3) multi-scale fidelity → MLF, (4) Hamiltonian
+      response → Hamiltonian Sensitivity, (5) speed bound saturation → Speed Limit Ratio.
+      ONE novel component: path-integrated non-commutative accumulation (deviation from
+      sum of FS distances when consecutive rotations don't commute). But correction is
+      O(d_FS^2) — practically small for typical per-step distances of 0.01-0.1 rad.
+    evidence: "Expected |rho| > 0.85 with Geodesic Velocity; 5/6 components redundant; novel component O(d_FS^2)"
+    confidence: 0.82
+    key_insight: "Only the non-commutative accumulation is genuinely novel, but the correction is too small for financial data"
+
+  - knight: 4
+    role: "failure_mode_analysis"
+    workers_used: 0
+    conclusion: >
+      FATAL REDUNDANCY PROVED. For pure states, the gauge-fixed minimal-norm unitary
+      satisfies ||log(U_min)||_F = sqrt(2) * d_FS(psi, ref) EXACTLY. This is a
+      mathematical identity, not an approximation: U_min rotates by theta=d_FS in
+      span{|ref>, |psi_perp>} and acts as identity on the complement. Verified
+      numerically to 6 decimal places. Additional failures: saturation near pi/2 for
+      d=8 (dynamic range [0, 0.31] in simulation), reference state leakage (choosing
+      'normal' reference requires regime labels), gate count O(1) variation between
+      nearby states.
+    evidence: "||log(U_min)||_F = sqrt(2)*arccos(|<ref|psi>|) = sqrt(2)*d_FS exactly; verified to 6 dp"
+    confidence: 0.95
+    key_insight: "Mathematical identity kills the proposal — circuit complexity IS Fubini-Study distance (times sqrt(2)) for pure states"
+
+test_results:
+  crises_tested: [2008_gfc, 2020_covid, 2022_rates, 2023_svb]
+  cohens_d_per_crisis:
+    nielsen_zero_ref:
+      2008_gfc: 1.023
+      2020_covid: 0.663
+      2022_rates: 0.396
+      2023_svb: 0.106
+    nielsen_calm_ref:
+      2008_gfc: -0.506
+      2020_covid: 0.580
+      2022_rates: 0.080
+      2023_svb: 0.097
+    infidelity_proxy:
+      2008_gfc: 0.757
+      2020_covid: 0.369
+      2022_rates: 0.834
+      2023_svb: 0.132
+  aggregate_d_nielsen_zero: 0.423
+  aggregate_d_infidelity: 0.649
+  aggregate_d_calm_ref: 0.028
+  correlation_with_mlf: -0.013
+  passes_threshold: false
+
+verdict:
+  keep: false
+  reason: >
+    Mathematical death sentence: ||log(U_min)||_F = sqrt(2) * d_FS for pure states
+    (proved analytically, verified numerically). Circuit complexity is literally a
+    constant multiple of Fubini-Study distance, already captured by GeodesicVelocity,
+    MultiLagFidelity, and SpeedLimitRatio. Empirically weak (d=0.423), dominated by
+    trivial infidelity proxy (d=0.649 ≈ Multi-Lag Fidelity). Reference state choice
+    is a severe researcher DoF: fixed references saturate, adaptive references leak
+    labels. The one genuinely novel component (non-commutative path accumulation)
+    has corrections of O(d_FS^2) — too small for financial data.
+  strength: "high"
+  follow_up_questions:
+    - "For mixed states (density matrices), does circuit complexity become genuinely distinct from d_FS?"
+    - "Can the non-commutative path accumulation be isolated and tested directly as a standalone observable?"
+
+artifacts:
+  code_dir: "research/ideation/circuit_complexity/"
+  key_files: ["detector.py", "outputs/smoke_test_results.json"]

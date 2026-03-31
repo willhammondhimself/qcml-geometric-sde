@@ -1,0 +1,172 @@
+id: "0123"
+round: 123
+timestamp: "2026-03-09T12:30:00"
+question: "Does the nearest-neighbor level spacing ratio (random matrix theory GOE/GUE/Poisson classification) change at crisis onset?"
+theme: "novel_observables_ii"
+status: "keep"
+
+hypothesis:
+  statement: "Level spacing ratio <r> classifies spectral statistics (GOE/GUE/Poisson), and crisis-era Hamiltonians shift toward Poisson-like (integrable) spectra"
+  mechanism: "During crises, correlation convergence reduces effective degrees of freedom, making the Hamiltonian more integrable and level repulsion weaker"
+  prior_plausibility: "medium"
+
+knight_findings:
+  - knight: 1
+    role: "theoretical_validity"
+    workers_used: 0
+    conclusion: >
+      Captures second-order spectral correlations beyond first-order observables
+      (spectral gap, spectral entropy). Well-motivated: crisis → fewer effective
+      DoF → more integrable spectrum → <r> drops toward Poisson (0.386). For
+      d=8, there are 6 consecutive ratios per time step — marginal but viable
+      with rolling-window averaging. GUE class expected for 'random' operators
+      (complex Hermitian). Parameter-free once basis is fixed.
+    evidence: "RMT reference values: Poisson 0.386, GOE 0.531, GUE 0.600; d=8 gives 6 ratios"
+    confidence: 0.72
+    key_insight: "Second-order spectral statistic distinct from first-order (gap, entropy) — captures level repulsion, not just level distribution"
+
+  - knight: 2
+    role: "empirical_implementation"
+    workers_used: 1
+    conclusion: >
+      EXCEPTIONALLY STRONG SIGNAL. Mean ratio variant: median d=2.00 across
+      4 smoke crises (GFC 2.88, COVID 3.00, Rates 1.11, SVB -0.57). Poisson
+      fraction even stronger for systemic crises (GFC 3.51, COVID 3.69) but
+      weaker for rates (0.27). Std ratio moderate (median d=0.74). Overall
+      mean <r>=0.684 exceeds GUE (0.600) — expected for random Hermitian
+      operators in finite dimension. SVB shows NEGATIVE d across all variants,
+      indicating level repulsion INCREASED — qualitatively different from
+      systemic crises. Computation: ~0.2s for 5013 time steps.
+    evidence: "mean_ratio: d=2.88/3.00/1.11/-0.57 median=2.00; poisson_fraction: d=3.51/3.69/0.27/-0.13 median=1.89"
+    confidence: 0.88
+    key_insight: "Strongest signal seen in ideation so far (d=2.00). SVB negative-d distinguishes localized vs systemic crises."
+
+  - knight: 3
+    role: "comparative_analysis"
+    workers_used: 6
+    conclusion: >
+      Expected redundancy with existing spectral cluster (Spectral Entropy,
+      Spectral Gap, Spectral Complexity). Averaging over all eigenvalue gaps
+      dilutes the ground-state gap signal that SpectralGapDetector already
+      captures. At d=8, only 6 ratios per time step — small-N statistics.
+      However, the MAGNITUDE of the signal (d=2.00) far exceeds any existing
+      spectral observable (Spectral Entropy d=0.530, Spectral Gap d≈0.3).
+      The redundancy concern is real but secondary given the effect size.
+    evidence: "Expected r~0.7-0.8 with Spectral Entropy; but d=2.00 vs d=0.530 — 4x larger effect"
+    confidence: 0.70
+    key_insight: "Redundancy concern valid but dwarfed by effect size — 4x larger than best existing spectral observable"
+
+  - knight: 4
+    role: "failure_mode_analysis"
+    workers_used: 0
+    conclusion: >
+      Must use operator_method='random' — pca_inspired is fatal (Kramers
+      degeneracy produces only 2 usable ratios from d=8). Medium severity
+      concern: 6 ratios per time step is marginal for RMT classification,
+      but rolling-window averaging (60-day default) mitigates this. Low
+      overfitting risk (parameter-free statistic). Low data leakage risk
+      (uses only past data in expanding window). The negative-d for SVB
+      should not be treated as a failure — it reveals different crisis types.
+    evidence: "pca_inspired: only 2 usable ratios (fatal); random: 6 ratios per step; rolling window mitigates small-N"
+    confidence: 0.85
+    key_insight: "pca_inspired is fatal for this observable. random operators with rolling window averaging is the correct approach."
+
+test_results:
+  # --- Smoke test (4 crises, 2005-2025 data) ---
+  smoke_crises_tested: [2008_gfc, 2020_covid, 2022_rates, 2023_svb]
+  smoke_cohens_d:
+    mean_ratio:
+      2008_gfc: 2.880
+      2020_covid: 3.000
+      2022_rates: 1.110
+      2023_svb: -0.570
+    poisson_fraction:
+      2008_gfc: 3.510
+      2020_covid: 3.690
+      2022_rates: 0.270
+      2023_svb: -0.130
+  smoke_median_d_mean_ratio: 2.000
+  smoke_median_d_poisson_fraction: 1.890
+
+  # --- Full benchmark (18 crises, 1998-2025 data, 10K bootstrap) ---
+  full_crises_tested: [1998_ltcm, 2000_dotcom, 2001_911, 2007_quant, 2008_gfc,
+    2010_flash, 2011_euro, 2013_taper, 2015_china, 2016_brexit,
+    2018_volmageddon, 2018_q4, 2019_repo, 2020_covid, 2021_meme,
+    2022_rates, 2023_svb, 2024_carry]
+  full_cohens_d:
+    mean_ratio:
+      1998_ltcm: 2.248
+      2000_dotcom: 0.656
+      2001_911: 1.177
+      2007_quant: 0.525
+      2008_gfc: 3.268
+      2010_flash: 0.070
+      2011_euro: 1.328
+      2013_taper: 0.275
+      2015_china: 0.319
+      2016_brexit: 0.474
+      2018_volmageddon: 0.122
+      2018_q4: 0.359
+      2019_repo: 0.079
+      2020_covid: 3.436
+      2021_meme: 0.353
+      2022_rates: 0.882
+      2023_svb: 0.555
+      2024_carry: 0.166
+    poisson_fraction:
+      1998_ltcm: 3.522
+      2000_dotcom: 1.302
+      2001_911: 2.859
+      2007_quant: 0.198
+      2008_gfc: 5.911
+      2010_flash: 0.424
+      2011_euro: 0.267
+      2013_taper: 0.246
+      2015_china: 0.301
+      2016_brexit: 0.320
+      2018_volmageddon: 0.353
+      2018_q4: 0.365
+      2019_repo: 0.379
+      2020_covid: 6.274
+      2021_meme: 0.384
+      2022_rates: 0.096
+      2023_svb: 0.366
+      2024_carry: 0.384
+  full_median_d_mean_ratio: 0.500
+  full_mean_d_mean_ratio: 0.905
+  full_n_above_0.8_mean_ratio: 6
+  full_n_above_0.5_mean_ratio: 9
+  full_median_d_poisson_fraction: 0.373
+  full_mean_d_poisson_fraction: 1.331
+  passes_threshold: true
+  overall_mean_ratio: 0.685
+  closest_ensemble: "above GUE (super-repulsive)"
+
+verdict:
+  keep: true
+  reason: >
+    SPECIALIST DETECTOR — exceptional on systemic crises, weak on localized ones.
+    Full 18-crisis benchmark: mean_ratio median d=0.500 (mean=0.905), highly
+    bimodal. Systemic crises show extraordinary effect sizes (GFC d=3.27, COVID
+    d=3.44, LTCM d=2.25, 9/11 d=1.18, Euro d=1.33) while localized crises show
+    near-zero (flash crash d=0.07, repo d=0.08, carry d=0.17). The poisson_fraction
+    variant is even more extreme: GFC d=5.91, COVID d=6.27 — the largest effect
+    sizes in the entire observatory — but median d=0.37 across all crises. The
+    smoke test median (d=2.00) was inflated by oversampling systemic crises (3/4
+    smoke crises were systemic). Computation remains trivial (0.3s), parameter-free,
+    and theoretically grounded in RMT. The bimodal response is itself scientifically
+    interesting: level spacing ratio may be a systemic-crisis-specific detector,
+    complementary to rate-driven-crisis detectors like Reduced Purity. Must use
+    operator_method='random' (pca_inspired fatal).
+  strength: "high"
+  recommended_variant: "mean_ratio"
+  crisis_specialization: "systemic (GFC/COVID/LTCM/9-11/Euro) — NOT rate/localized"
+  follow_up_questions:
+    - "What is the actual Spearman correlation between level spacing ratio and Spectral Entropy?"
+    - "Can mean_ratio + poisson_fraction be fused for a combined systemic-crisis index?"
+    - "Does the systemic/localized bimodality persist under HPO parameter variation?"
+    - "Would level spacing ratio improve the regime-adaptive fusion as a systemic-crisis specialist?"
+
+artifacts:
+  code_dir: "research/ideation/level_spacing/"
+  key_files: ["detector.py", "smoke_test.py", "smoke_results.json", "full_benchmark.py", "full_benchmark_results.json"]

@@ -1,0 +1,106 @@
+id: "0122"
+round: 122
+timestamp: "2026-03-09T12:00:00"
+question: "Can quantum coherence (l1-norm or relative entropy of coherence in the energy basis) detect regime shifts differently from purity?"
+theme: "novel_observables_ii"
+status: "keep"
+
+hypothesis:
+  statement: "Quantum coherence in a fixed basis measures state delocalization, distinct from purity and IPR"
+  mechanism: "During crises, QCML ground states concentrate in fewer computational basis states (coherence drops) or drift far from reference equilibrium (reference coherence spikes)"
+  prior_plausibility: "medium"
+
+knight_findings:
+  - knight: 1
+    role: "theoretical_validity"
+    workers_used: 0
+    conclusion: >
+      Coherence in the ENERGY basis is identically zero for ground states (they are
+      eigenstates of H by definition). Must use computational basis or cross-time reference
+      basis. l1-norm C_l1 = (sum|psi_i|)^2 - 1 is parameter-free, O(d^2), backed by
+      resource theory (Baumgratz et al. 2014). Mathematical distinction from metric-IPR
+      (DimensionalityCollapse) confirmed: different mathematical objects entirely.
+    evidence: "Ground state has C=0 in own energy basis; computational basis C_l1 operates on state amplitudes vs metric eigenvalues"
+    confidence: 0.72
+    key_insight: "Energy-basis coherence is a fatal trap (identically zero). Computational basis is the correct and parameter-free choice."
+
+  - knight: 2
+    role: "empirical_implementation"
+    workers_used: 1
+    conclusion: >
+      PASSES DECISIVELY. Computational-basis coherence: median d=1.03, all 4 crises positive
+      (GFC 1.19, COVID 0.88, Rates 2.15, SVB 0.52). NOT redundant with IPR (raw r=-0.29,
+      z-score r=0.41). Reference-basis coherence even stronger (median d=1.79) but fails SVB.
+      Temporal variant is weakest (median d=0.24). Computation: 0.8s for 5013 observations.
+    evidence: "Computational: d=1.19/0.88/2.15/0.52 median=1.03; Reference: d=2.95/2.38/1.21/-0.97 median=1.79"
+    confidence: 0.85
+    key_insight: "Computational coherence is most robust (all crises d>0.5), NOT redundant with IPR despite algebraic relation"
+
+  - knight: 3
+    role: "comparative_analysis"
+    workers_used: 6
+    conclusion: >
+      Initial IPR-redundancy concern disproven on two levels: (1) l1 and IPR are not
+      monotonically related, (2) DimensionalityCollapse uses metric-eigenvalue IPR, not
+      state-vector IPR (r=0.06 between them). Reference-basis l1-coherence captures
+      18% unique variance beyond fidelity (leakage distribution across excited states).
+      Main concern: reference-basis is 90% correlated with Multi-Lag Fidelity.
+    evidence: "CB coherence vs DimCollapse: r=0.06; CB vs Purity: r=-0.11; Ref-basis vs infidelity: r=0.90"
+    confidence: 0.75
+    key_insight: "Category error in redundancy claim — metric-IPR and state-IPR are completely different quantities"
+
+  - knight: 4
+    role: "failure_mode_analysis"
+    workers_used: 0
+    conclusion: >
+      Three basis variants create a garden-of-forking-paths risk. Computational basis is
+      the safest choice (no parameters, fixed basis). Temporal variant suffers eigenvalue
+      crossing instabilities. H_ref window choice is a researcher degree of freedom.
+      Must use operator_method='random' (not pca_inspired) to avoid Kramers degeneracy.
+    evidence: "3 variants = 3 effective DoF; temporal eigenvector discontinuities at near-degeneracies"
+    confidence: 0.92
+    key_insight: "Pre-register computational basis as primary variant to avoid p-hacking; temporal variant needs numerical stabilization"
+
+test_results:
+  crises_tested: [2008_gfc, 2020_covid, 2022_rates, 2023_svb]
+  cohens_d_per_crisis:
+    computational:
+      2008_gfc: 1.192
+      2020_covid: 0.875
+      2022_rates: 2.148
+      2023_svb: 0.524
+    reference:
+      2008_gfc: 2.953
+      2020_covid: 2.378
+      2022_rates: 1.205
+      2023_svb: -0.969
+    temporal:
+      2008_gfc: 0.908
+      2020_covid: 1.320
+      2022_rates: -0.562
+      2023_svb: -0.428
+  median_d_computational: 1.034
+  median_d_reference: 1.792
+  median_d_temporal: 0.240
+  passes_threshold: true
+  computational_ipr_correlation: -0.293
+
+verdict:
+  keep: true
+  reason: >
+    Strong empirical performance (computational d=1.03, reference d=1.79) with clear
+    non-redundancy (r=0.06 vs DimensionalityCollapse, r=-0.29 vs state IPR). The
+    computational-basis variant is robust across all 4 crisis types, parameter-free,
+    and computationally trivial (0.8s for 5K observations). The theoretical foundation
+    (Baumgratz resource theory) is rigorous. Key methodological finding: energy-basis
+    coherence is identically zero in QCML — only fixed-basis coherence works.
+  strength: "high"
+  recommended_variant: "computational_basis"
+  follow_up_questions:
+    - "Does computational-basis coherence maintain d>0.5 on the full 17-crisis benchmark?"
+    - "What is the correlation with Reduced Purity (top performer d=0.835) on real market data?"
+    - "Can reference-basis and computational-basis coherence be fused for better coverage?"
+
+artifacts:
+  code_dir: "research/ideation/quantum_coherence/"
+  key_files: ["detector.py", "smoke_test.py", "smoke_results.json"]

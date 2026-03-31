@@ -1,0 +1,83 @@
+{
+  "detector": "WignerNegativityDetector",
+  "hilbert_dim": 8,
+  "n_pca_components": 8,
+  "operator_method": "random",
+  "normalization": "soft",
+  "median_d": 0.1944,
+  "max_d": 1.1498,
+  "passes_threshold": true,
+  "threshold": 0.3,
+  "raw_negativity_stats": {
+    "global_mean": 0.409666,
+    "global_std": 0.009907,
+    "global_max": 0.442394,
+    "fraction_nonzero": 1.0
+  },
+  "per_crisis": {
+    "2008_gfc": {
+      "d_signed": -0.2277,
+      "d_abs": 0.0005,
+      "p_signed": 0.004856,
+      "p_abs": 0.995023,
+      "n_crisis": 146,
+      "n_normal": 3942,
+      "label": "GFC 2008",
+      "mean_crisis_score": -0.2503,
+      "mean_normal_score": 0.0033,
+      "mean_crisis_abs_score": 0.8806,
+      "mean_normal_abs_score": 0.8803,
+      "raw_negativity_d": -0.172,
+      "mean_crisis_negativity": 0.40832,
+      "mean_normal_negativity": 0.409986
+    },
+    "2020_covid": {
+      "d_signed": 0.1785,
+      "d_abs": 0.1812,
+      "p_signed": 0.199849,
+      "p_abs": 0.043138,
+      "n_crisis": 50,
+      "n_normal": 3942,
+      "label": "COVID 2020",
+      "mean_crisis_score": 0.2024,
+      "mean_normal_score": 0.0033,
+      "mean_crisis_abs_score": 1.004,
+      "mean_normal_abs_score": 0.8803,
+      "raw_negativity_d": 0.2827,
+      "mean_crisis_negativity": 0.412729,
+      "mean_normal_negativity": 0.409986
+    },
+    "2022_rates": {
+      "d_signed": -1.4663,
+      "d_abs": 1.1498,
+      "p_signed": 0.0,
+      "p_abs": 0.0,
+      "n_crisis": 209,
+      "n_normal": 3942,
+      "label": "Rate Hikes 2022",
+      "mean_crisis_score": -1.6474,
+      "mean_normal_score": 0.0033,
+      "mean_crisis_abs_score": 1.7098,
+      "mean_normal_abs_score": 0.8803,
+      "raw_negativity_d": -0.8484,
+      "mean_crisis_negativity": 0.401725,
+      "mean_normal_negativity": 0.409986
+    },
+    "2023_svb": {
+      "d_signed": -0.8644,
+      "d_abs": 0.2076,
+      "p_signed": 0.0,
+      "p_abs": 0.056779,
+      "n_crisis": 42,
+      "n_normal": 3942,
+      "label": "SVB 2023",
+      "mean_crisis_score": -0.9578,
+      "mean_normal_score": 0.0033,
+      "mean_crisis_abs_score": 1.0222,
+      "mean_normal_abs_score": 0.8803,
+      "raw_negativity_d": -0.2152,
+      "mean_crisis_negativity": 0.407901,
+      "mean_normal_negativity": 0.409986
+    }
+  }
+}

@@ -1,0 +1,129 @@
+{
+  "detector": "LevelSpacingRatioDetector",
+  "hilbert_dim": 8,
+  "n_pca_components": 8,
+  "operator_method": "random",
+  "normalization": "soft",
+  "best_variant": "mean_ratio",
+  "passes_threshold": true,
+  "threshold": 0.3,
+  "rmt_comparison": {
+    "overall_mean_ratio": 0.6842,
+    "closest_ensemble": "GOE",
+    "distance_to_GOE": 0.1535,
+    "distance_to_GUE": 0.0846,
+    "distance_to_Poisson": 0.2979
+  },
+  "per_variant": {
+    "mean_ratio": {
+      "per_crisis": {
+        "2008_gfc": {
+          "d": 2.8825,
+          "p": 0.0,
+          "n_crisis": 146,
+          "label": "GFC 2008"
+        },
+        "2020_covid": {
+          "d": 3.0019,
+          "p": 1e-06,
+          "n_crisis": 50,
+          "label": "COVID 2020"
+        },
+        "2022_rates": {
+          "d": 1.1115,
+          "p": 0.0,
+          "n_crisis": 209,
+          "label": "Rate Hikes 2022"
+        },
+        "2023_svb": {
+          "d": -0.5738,
+          "p": 0.0,
+          "n_crisis": 42,
+          "label": "SVB 2023"
+        }
+      },
+      "median_d": 1.997,
+      "max_d": 3.0019
+    },
+    "std_ratio": {
+      "per_crisis": {
+        "2008_gfc": {
+          "d": 2.187,
+          "p": 0.0,
+          "n_crisis": 146,
+          "label": "GFC 2008"
+        },
+        "2020_covid": {
+          "d": 0.5134,
+          "p": 0.008196,
+          "n_crisis": 50,
+          "label": "COVID 2020"
+        },
+        "2022_rates": {
+          "d": 0.9684,
+          "p": 0.0,
+          "n_crisis": 209,
+          "label": "Rate Hikes 2022"
+        },
+        "2023_svb": {
+          "d": -0.1666,
+          "p": 0.196218,
+          "n_crisis": 42,
+          "label": "SVB 2023"
+        }
+      },
+      "median_d": 0.7409,
+      "max_d": 2.187
+    },
+    "poisson_fraction": {
+      "per_crisis": {
+        "2008_gfc": {
+          "d": 3.5057,
+          "p": 0.0,
+          "n_crisis": 146,
+          "label": "GFC 2008"
+        },
+        "2020_covid": {
+          "d": 3.6856,
+          "p": 0.0,
+          "n_crisis": 50,
+          "label": "COVID 2020"
+        },
+        "2022_rates": {
+          "d": 0.2651,
+          "p": 1e-06,
+          "n_crisis": 209,
+          "label": "Rate Hikes 2022"
+        },
+        "2023_svb": {
+          "d": -0.1288,
+          "p": 0.0,
+          "n_crisis": 42,
+          "label": "SVB 2023"
+        }
+      },
+      "median_d": 1.8854,
+      "max_d": 3.6856
+    }
+  },
+  "raw_stats": {
+    "mean_ratio": {
+      "mean": 0.684161,
+      "std": 0.036676,
+      "min": 0.463191,
+      "max": 0.777928
+    },
+    "std_ratio": {
+      "mean": 0.132732,
+      "std": 0.029954,
+      "min": 0.039412,
+      "max": 0.23426
+    },
+    "poisson_fraction": {
+      "mean": 0.006616,
+      "std": 0.034843,
+      "min": 0.0,
+      "max": 0.5
+    }
+  }
+}

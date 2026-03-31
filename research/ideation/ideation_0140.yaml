@@ -1,0 +1,68 @@
+id: "0140"
+round: 140
+timestamp: "2026-03-09T20:00:00"
+question: "Can we identify the specific market mechanism each top observable detects (herding, liquidity withdrawal, leverage unwind, contagion)?"
+theme: "interpretability"
+status: "reject"
+
+hypothesis:
+  statement: "Each observable responds to a specific market mechanism, enabling mechanism-based crisis classification"
+  mechanism: "Different mechanisms produce different patterns in quantum state space, activating different observables"
+  prior_plausibility: "low"
+
+knight_findings:
+  - knight: 1
+    role: "theoretical_validity"
+    workers_used: 3
+    conclusion: >
+      REJECT. Three fundamental problems: (1) Mechanism definitions are not
+      operationalizable from price data alone. The pipeline inputs (returns,
+      volatility, momentum, cross-correlation from SPY/DIA) cannot distinguish
+      between mechanisms — herding and contagion both produce high correlation;
+      liquidity withdrawal and leverage unwind both produce high volatility.
+      (2) Post-hoc narrative risk: 2008 GFC involved herding AND liquidity AND
+      leverage AND contagion simultaneously. Claiming 'Reduced Purity detects
+      herding' because it performed well on GFC is unfalsifiable. (3) The
+      strongest validation (synthetic mechanism simulation) violates the
+      project's real-data-only constraint.
+    evidence: "Price data insufficient for mechanism identification; GFC had all 4 mechanisms; synthetic data forbidden"
+    confidence: 0.92
+    key_insight: "Underdetermined from price data. Would require order-book, margin, and credit spread data."
+
+  - knight: 2
+    role: "failure_mode_analysis"
+    workers_used: 2
+    conclusion: >
+      REJECT. A weaker alternative — correlating each observable's crisis scores
+      with external mechanism proxies (TED spread for liquidity, margin debt for
+      leverage, cross-sectional correlation for herding) — requires Bloomberg/FRED
+      data integration and would produce noisy correlations with n=17 crises.
+      Better suited for a dedicated market microstructure paper with appropriate
+      data infrastructure.
+    evidence: "n=17 crises insufficient for mechanism proxy correlation; requires external data sources"
+    confidence: 0.88
+    key_insight: "Better suited for a dedicated microstructure paper, not the geometric observatory framework."
+
+test_results:
+  crises_tested: []
+  passes_threshold: false
+
+verdict:
+  keep: false
+  reason: >
+    Underdetermined from price data alone — the QCML pipeline's inputs
+    (returns, volatilities, correlations) cannot distinguish between herding,
+    liquidity, leverage, and contagion mechanisms. Post-hoc narrative
+    construction risk is severe with n=17 crises where multiple mechanisms
+    co-occur. The strongest validation (synthetic mechanism simulation)
+    violates the project's real-data-only constraint. Would require
+    substantial external data collection (order flow, margin, credit spreads)
+    that is out of scope.
+  strength: "high"
+  follow_up_questions:
+    - "Frame as 'mechanism affinity' rather than 'mechanism identification' to lower evidentiary bar"
+    - "Collect TED spread, VIX term structure, margin debt as mechanism proxies for future work"
+
+artifacts:
+  code_dir: null
+  key_files: []

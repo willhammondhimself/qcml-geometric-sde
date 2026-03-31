@@ -1,0 +1,62 @@
+id: "0135"
+round: 135
+timestamp: "2026-03-09T19:00:00"
+question: "Does Nystrom approximation for kernel matrices maintain detection quality while scaling to >1000 assets?"
+theme: "scalability"
+status: "reject"
+
+hypothesis:
+  statement: "Nystrom approximation can reduce kernel matrix computation cost for large asset universes"
+  mechanism: "Approximate the W x W Gram matrix using a low-rank factorization from landmark points"
+  prior_plausibility: "low"
+
+knight_findings:
+  - knight: 1
+    role: "theoretical_validity"
+    workers_used: 2
+    conclusion: >
+      REJECT. Category error. Nystrom targets large kernel matrices (n >> 1000).
+      In QCML, the Gram matrix G_{ss'} = |<psi_s|psi_{s'}>|^2 has size W x W
+      where W = rolling_window (20-60 points). These are tiny matrices. The
+      eigensolve bottleneck is the d x d Hamiltonian (d=4 to 16), which is
+      O(d^3) = O(4096) at worst — microseconds regardless of asset count.
+    evidence: "Gram matrix size = W x W = 20-60; Nystrom designed for n >> 1000; eigh(16x16) still microseconds"
+    confidence: 0.95
+    key_insight: "Nystrom solves a problem that does not exist in the QCML architecture."
+
+  - knight: 2
+    role: "failure_mode_analysis"
+    workers_used: 2
+    conclusion: >
+      REJECT. The actual scaling challenge for 1000 assets is (1) PCA/feature
+      engineering from 1000-dim returns to n_pca_components (~8-15), which is
+      standard and already handled; (2) eigensolve of d x d Hamiltonians, which
+      is O(d^3) per point regardless of asset count; (3) finite-difference
+      metric/curvature computations requiring 2*n_features eigensolves per
+      point. None of these are kernel approximation problems. The question
+      misidentifies the scaling constraint.
+    evidence: "PCA reduces 1000-dim to 8-15; H eigensolve O(d^3) independent of n_assets; no kernel bottleneck"
+    confidence: 0.93
+    key_insight: "With 1000 assets, the real question is whether PCA-reduced features preserve geometric signal."
+
+test_results:
+  crises_tested: []
+  passes_threshold: false
+
+verdict:
+  keep: false
+  reason: >
+    Category error — Nystrom approximation targets large kernel matrices
+    (n >> 1000), but the QCML Gram matrices are W x W = 20-60 (tiny). The
+    eigensolve bottleneck is d x d (4-16) Hamiltonians, O(d^3) = microseconds
+    regardless of asset count. The actual scaling challenge for 1000 assets
+    is whether PCA compression preserves the geometric signal — a question
+    about information content, not computational approximation.
+  strength: "high"
+  follow_up_questions:
+    - "Does QCML geometric signal survive aggressive PCA compression (n_pca << n_assets)?"
+    - "Test on sector ETFs (11 assets) as intermediate scaling step before 1000"
+
+artifacts:
+  code_dir: null
+  key_files: []

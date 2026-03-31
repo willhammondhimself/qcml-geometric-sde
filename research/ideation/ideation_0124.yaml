@@ -1,0 +1,122 @@
+id: "0124"
+round: 124
+timestamp: "2026-03-09T13:00:00"
+question: "Can Renyi entropy (alpha=2, alpha=0.5) outperform von Neumann entropy for regime detection due to different tail sensitivity?"
+theme: "novel_observables_ii"
+status: "reject"
+
+hypothesis:
+  statement: "Renyi entropy at different alpha values weights eigenvalue tails differently, potentially capturing crisis-specific spectral features that von Neumann misses"
+  mechanism: "Alpha<1 emphasizes small eigenvalues (early warning from tail), alpha>1 emphasizes dominant eigenvalue (crisis confirmation)"
+  prior_plausibility: "low"
+
+knight_findings:
+  - knight: 1
+    role: "theoretical_validity"
+    workers_used: 0
+    conclusion: >
+      MATHEMATICALLY IMPOSSIBLE. For any bipartition of the 3-qubit (d=8) system,
+      Schmidt rank <= min(dim_A, dim_B) = 2. The reduced density matrix rho_A has
+      eigenvalues {lambda, 1-lambda} — a ONE-PARAMETER family. ALL Renyi entropies
+      S_alpha are monotone functions of this single parameter lambda. Therefore ALL
+      alpha values produce identical rank orderings and identical Cohen's d. Renyi-2
+      = -log(Tr(rho^2)) = -log(purity) — literally a rescaling of the #1 detector.
+      Only escape: d=16 (4 qubits) with (4,4) partition for rank-4 rho_A.
+    evidence: "Schmidt rank = min(dim_A, dim_B) = 2 for all bipartitions of 3 qubits; S_alpha = h_alpha(lambda) is monotone"
+    confidence: 0.95
+    key_insight: "Mathematical impossibility result — NOT an empirical question. The answer is predetermined by linear algebra."
+
+  - knight: 2
+    role: "empirical_implementation"
+    workers_used: 1
+    conclusion: >
+      CONFIRMED REDUNDANT. All Renyi alphas show |r| > 0.999 correlation with
+      Reduced Purity. Cohen's d varies by at most 0.009 across all alpha values:
+      GFC (0.577-0.583), COVID (2.066-2.089), Rates (0.696-0.724), SVB (0.565-0.588).
+      Median d ranges from 0.642 to 0.651 across all methods. The empirical results
+      perfectly confirm the theoretical prediction: rank-2 rho_A makes all Renyi
+      entropies algebraically equivalent after z-scoring.
+    evidence: "r(Renyi-0.5, purity)=-0.9997; r(Renyi-2, purity)=-0.9999; max d spread=0.009"
+    confidence: 0.98
+    key_insight: "Empirical confirmation of mathematical redundancy — all alpha values within 0.009 Cohen's d of each other"
+
+  - knight: 3
+    role: "comparative_analysis"
+    workers_used: 6
+    conclusion: >
+      Spearman rank correlation between ANY Renyi-alpha and Purity is exactly
+      -1.000 for the current (2,4) partition. Even for a hypothetical 4x4
+      partition (rank-4 rho_A), Spearman between R(0.5) and R(2) is 0.939,
+      and Cohen's d differs by <7% — well within bootstrap CI. The observatory
+      already covers this information. Suggested alternatives: Schmidt gap,
+      entanglement negativity, or subsystem asymmetry — these access genuinely
+      different quantum state structure.
+    evidence: "Spearman = -1.000 exactly; hypothetical 4x4 case: <7% d difference, |r|=0.94"
+    confidence: 0.97
+    key_insight: "Even the most generous analysis (4x4 partition) shows <7% improvement — not worth adding"
+
+  - knight: 4
+    role: "failure_mode_analysis"
+    workers_used: 0
+    conclusion: >
+      Fatal redundancy confirmed. Information-theoretic ceiling: 2x2 rho_A has
+      ONE free parameter, all Renyi entropies are monotone functions of it.
+      Neither (4,2) nor (2,4) partition escapes this (both have rank ≤ 2).
+      Multiple testing burden (4 alphas × 2 partitions × 3 dims = 24 configs)
+      with zero information gain. Complexity penalty: adds hyperparameter alpha
+      to already-best detector. Holdout fragility inherited: Reduced Purity's
+      -66% holdout drop applies identically to all Renyi variants.
+    evidence: "rank(rho_A) <= min(dim_A, dim_B) = 2 for ALL bipartitions of d=8"
+    confidence: 0.93
+    key_insight: "This question contains a mathematical trap — the answer is predetermined by the Schmidt decomposition theorem"
+
+test_results:
+  crises_tested: [2008_gfc, 2020_covid, 2022_rates, 2023_svb]
+  cohens_d_per_crisis:
+    renyi_0.5:
+      2008_gfc: 0.583
+      2020_covid: 2.089
+      2022_rates: 0.696
+      2023_svb: 0.588
+    renyi_1.0:
+      2008_gfc: 0.582
+      2020_covid: 2.085
+      2022_rates: 0.704
+      2023_svb: 0.581
+    renyi_2.0:
+      2008_gfc: 0.579
+      2020_covid: 2.074
+      2022_rates: 0.717
+      2023_svb: 0.570
+    renyi_3.0:
+      2008_gfc: 0.577
+      2020_covid: 2.066
+      2022_rates: 0.724
+      2023_svb: 0.565
+    purity:
+      2008_gfc: 0.581
+      2020_covid: 2.081
+      2022_rates: 0.710
+      2023_svb: 0.576
+  correlation_renyi_vs_purity: "|r| > 0.999 for all alpha"
+  max_d_spread: 0.009
+  passes_threshold: false
+
+verdict:
+  keep: false
+  reason: >
+    Mathematical impossibility result. For the 3-qubit (d=8) system, the Schmidt
+    decomposition theorem constrains rho_A to rank ≤ 2 for ANY bipartition, making
+    ALL Renyi entropies monotone functions of a single eigenvalue parameter. All
+    alpha values produce identical Cohen's d (within 0.009). Renyi-2 = -log(purity)
+    is literally the #1 detector under a log transform. Empirically confirmed:
+    |r| > 0.999 across all alpha values. This is the most clear-cut rejection in
+    the ideation sprint — the question is mathematically vacuous for d=8.
+  strength: "high"
+  follow_up_questions:
+    - "Would d=16 (4 qubits) with (4,4) partition make Renyi-alpha genuinely non-degenerate?"
+    - "Are there genuinely orthogonal entanglement measures (Schmidt gap, negativity) worth exploring?"
+
+artifacts:
+  code_dir: "research/ideation/renyi_entropy/"
+  key_files: ["detector.py", "smoke_test.py", "smoke_results.json"]

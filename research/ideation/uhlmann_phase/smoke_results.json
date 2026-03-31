@@ -1,0 +1,363 @@
+{
+  "detector": "Uhlmann Phase",
+  "question": "Q0128: Can the Uhlmann phase (mixed-state Berry phase) improve detection for noisy/mixed market states?",
+  "config": {
+    "hilbert_dim": 8,
+    "n_pca_components": 8,
+    "operator_method": "random",
+    "normalization": "soft",
+    "rolling_window": 20,
+    "n_bootstrap": 2000,
+    "context_days": 60
+  },
+  "data": {
+    "symbols": [
+      "SPY",
+      "DIA"
+    ],
+    "start_date": "2005-01-01",
+    "end_date": "2024-12-31",
+    "feature_shape": [
+      5012,
+      13
+    ],
+    "n_states": 5012
+  },
+  "variants": {
+    "uhlmann_phase_24": {
+      "per_crisis": {
+        "2008_gfc": {
+          "cohens_d": 0.0,
+          "ci_lo": 0.0,
+          "ci_hi": 0.0,
+          "crisis_n": 146,
+          "normal_n": 41
+        },
+        "2020_covid": {
+          "cohens_d": 0.0,
+          "ci_lo": 0.0,
+          "ci_hi": 0.0,
+          "crisis_n": 50,
+          "normal_n": 39
+        },
+        "2022_rates": {
+          "cohens_d": 0.0,
+          "ci_lo": 0.0,
+          "ci_hi": 0.0,
+          "crisis_n": 209,
+          "normal_n": 42
+        },
+        "2023_svb": {
+          "cohens_d": 0.0,
+          "ci_lo": 0.0,
+          "ci_hi": 0.0,
+          "crisis_n": 42,
+          "normal_n": 39
+        }
+      },
+      "summary": {
+        "median_d": 0.0,
+        "max_d": 0.0,
+        "n_above_0.8": 0,
+        "passes_threshold_0.3": false
+      }
+    },
+    "uhlmann_phase_42": {
+      "per_crisis": {
+        "2008_gfc": {
+          "cohens_d": 0.0,
+          "ci_lo": 0.0,
+          "ci_hi": 0.0,
+          "crisis_n": 146,
+          "normal_n": 41
+        },
+        "2020_covid": {
+          "cohens_d": 0.0,
+          "ci_lo": 0.0,
+          "ci_hi": 0.0,
+          "crisis_n": 50,
+          "normal_n": 39
+        },
+        "2022_rates": {
+          "cohens_d": 0.0,
+          "ci_lo": 0.0,
+          "ci_hi": 0.0,
+          "crisis_n": 209,
+          "normal_n": 42
+        },
+        "2023_svb": {
+          "cohens_d": 0.0,
+          "ci_lo": 0.0,
+          "ci_hi": 0.0,
+          "crisis_n": 42,
+          "normal_n": 39
+        }
+      },
+      "summary": {
+        "median_d": 0.0,
+        "max_d": 0.0,
+        "n_above_0.8": 0,
+        "passes_threshold_0.3": false
+      }
+    },
+    "uhlmann_infidelity_24": {
+      "per_crisis": {
+        "2008_gfc": {
+          "cohens_d": 0.888,
+          "ci_lo": 0.136,
+          "ci_hi": 1.919,
+          "crisis_n": 146,
+          "normal_n": 41
+        },
+        "2020_covid": {
+          "cohens_d": 2.542,
+          "ci_lo": 1.806,
+          "ci_hi": 3.914,
+          "crisis_n": 50,
+          "normal_n": 39
+        },
+        "2022_rates": {
+          "cohens_d": 0.274,
+          "ci_lo": 0.016,
+          "ci_hi": 0.737,
+          "crisis_n": 209,
+          "normal_n": 42
+        },
+        "2023_svb": {
+          "cohens_d": 2.684,
+          "ci_lo": 2.033,
+          "ci_hi": 3.851,
+          "crisis_n": 42,
+          "normal_n": 39
+        }
+      },
+      "summary": {
+        "median_d": 1.715,
+        "max_d": 2.684,
+        "n_above_0.8": 3,
+        "passes_threshold_0.3": true
+      }
+    },
+    "pure_berry_phase": {
+      "per_crisis": {
+        "2008_gfc": {
+          "cohens_d": 0.347,
+          "ci_lo": 0.024,
+          "ci_hi": 0.819,
+          "crisis_n": 146,
+          "normal_n": 41
+        },
+        "2020_covid": {
+          "cohens_d": 0.504,
+          "ci_lo": 0.03,
+          "ci_hi": 1.634,
+          "crisis_n": 50,
+          "normal_n": 39
+        },
+        "2022_rates": {
+          "cohens_d": 0.212,
+          "ci_lo": 0.012,
+          "ci_hi": 0.893,
+          "crisis_n": 209,
+          "normal_n": 42
+        },
+        "2023_svb": {
+          "cohens_d": 0.88,
+          "ci_lo": 0.187,
+          "ci_hi": 1.924,
+          "crisis_n": 42,
+          "normal_n": 39
+        }
+      },
+      "summary": {
+        "median_d": 0.425,
+        "max_d": 0.88,
+        "n_above_0.8": 1,
+        "passes_threshold_0.3": true
+      }
+    },
+    "infidelity_42": {
+      "per_crisis": {
+        "2008_gfc": {
+          "cohens_d": 0.01,
+          "ci_lo": 0.013,
+          "ci_hi": 0.93,
+          "crisis_n": 146,
+          "normal_n": 41
+        },
+        "2020_covid": {
+          "cohens_d": 2.293,
+          "ci_lo": 1.785,
+          "ci_hi": 3.306,
+          "crisis_n": 50,
+          "normal_n": 39
+        },
+        "2022_rates": {
+          "cohens_d": 0.576,
+          "ci_lo": 0.157,
+          "ci_hi": 1.112,
+          "crisis_n": 209,
+          "normal_n": 42
+        },
+        "2023_svb": {
+          "cohens_d": 1.344,
+          "ci_lo": 0.631,
+          "ci_hi": 2.32,
+          "crisis_n": 42,
+          "normal_n": 39
+        }
+      },
+      "summary": {
+        "median_d": 0.96,
+        "max_d": 2.293,
+        "n_above_0.8": 2,
+        "passes_threshold_0.3": true
+      }
+    },
+    "bures_24": {
+      "per_crisis": {
+        "2008_gfc": {
+          "cohens_d": 1.107,
+          "ci_lo": 0.287,
+          "ci_hi": 2.16,
+          "crisis_n": 146,
+          "normal_n": 41
+        },
+        "2020_covid": {
+          "cohens_d": 2.492,
+          "ci_lo": 1.751,
+          "ci_hi": 3.739,
+          "crisis_n": 50,
+          "normal_n": 39
+        },
+        "2022_rates": {
+          "cohens_d": 0.397,
+          "ci_lo": 0.024,
+          "ci_hi": 1.041,
+          "crisis_n": 209,
+          "normal_n": 42
+        },
+        "2023_svb": {
+          "cohens_d": 2.748,
+          "ci_lo": 2.209,
+          "ci_hi": 3.677,
+          "crisis_n": 42,
+          "normal_n": 39
+        }
+      },
+      "summary": {
+        "median_d": 1.8,
+        "max_d": 2.748,
+        "n_above_0.8": 3,
+        "passes_threshold_0.3": true
+      }
+    },
+    "bures_42": {
+      "per_crisis": {
+        "2008_gfc": {
+          "cohens_d": 0.128,
+          "ci_lo": 0.013,
+          "ci_hi": 0.956,
+          "crisis_n": 146,
+          "normal_n": 41
+        },
+        "2020_covid": {
+          "cohens_d": 2.73,
+          "ci_lo": 2.166,
+          "ci_hi": 3.815,
+          "crisis_n": 50,
+          "normal_n": 39
+        },
+        "2022_rates": {
+          "cohens_d": 0.319,
+          "ci_lo": 0.016,
+          "ci_hi": 0.862,
+          "crisis_n": 209,
+          "normal_n": 42
+        },
+        "2023_svb": {
+          "cohens_d": 1.007,
+          "ci_lo": 0.34,
+          "ci_hi": 1.808,
+          "crisis_n": 42,
+          "normal_n": 39
+        }
+      },
+      "summary": {
+        "median_d": 0.663,
+        "max_d": 2.73,
+        "n_above_0.8": 2,
+        "passes_threshold_0.3": true
+      }
+    }
+  },
+  "correlations": {
+    "uhlmann_phase_24_vs_berry": NaN,
+    "uhlmann_phase_42_vs_berry": NaN,
+    "uhlmann_phase_24_vs_purity_rate": NaN,
+    "uhlmann_phase_42_vs_purity_rate": NaN,
+    "infidelity_24_vs_purity_rate_24": 0.752,
+    "phase_24_vs_42": NaN,
+    "infidelity_24_vs_42": 0.918,
+    "infidelity_24_vs_bures_24": 0.983,
+    "bures_24_vs_42": 0.929,
+    "infidelity_24_vs_pure_infidelity": 0.901,
+    "infidelity_42_vs_pure_infidelity": 0.995
+  },
+  "purity_stats": {
+    "partition_24": {
+      "mean_purity": 0.7241,
+      "std_purity": 0.0208,
+      "min_purity": 0.6516,
+      "max_purity": 0.7715
+    },
+    "partition_42": {
+      "mean_purity": 0.7031,
+      "std_purity": 0.0237,
+      "min_purity": 0.618,
+      "max_purity": 0.7554
+    }
+  },
+  "diagnostics": {
+    "uhlmann_phase_24": {
+      "n_valid": 4951,
+      "mean": 0.0,
+      "std": 0.0,
+      "min": 0.0,
+      "max": 0.0
+    },
+    "uhlmann_phase_42": {
+      "n_valid": 4951,
+      "mean": 0.0,
+      "std": 0.0,
+      "min": 0.0,
+      "max": 0.0
+    },
+    "uhlmann_infidelity_24": {
+      "n_valid": 4951,
+      "mean": 0.0681,
+      "std": 1.0565,
+      "min": -1.966,
+      "max": 5.4115
+    },
+    "pure_berry_phase": {
+      "n_valid": 4951,
+      "mean": -0.0056,
+      "std": 1.0444,
+      "min": -3.7359,
+      "max": 3.1829
+    }
+  },
+  "timing": {
+    "state_build_seconds": 0.2,
+    "uhlmann_24_seconds": 0.2,
+    "uhlmann_42_seconds": 0.2,
+    "total_seconds": 1.4
+  },
+  "best_variant": "bures_24",
+  "best_median_d": 1.8,
+  "theoretical_finding": {
+    "uhlmann_phase_identically_zero": true,
+    "reason": "For consecutive pairs, Tr(sqrt(sqrt(rho_1) rho_2 sqrt(rho_1))) is the sum of square roots of eigenvalues of a PSD matrix, hence always real and positive. arg(positive real) = 0. The Uhlmann phase requires holonomy around closed loops in state space, not just pairwise comparison."
+  }
+}

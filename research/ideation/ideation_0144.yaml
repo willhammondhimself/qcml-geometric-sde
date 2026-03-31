@@ -1,0 +1,64 @@
+id: "0144"
+round: 144
+timestamp: "2026-03-09T20:00:00"
+question: "Does LIME (Local Interpretable Model-agnostic Explanations) applied to our fusion model reveal stable or unstable feature importance across crises?"
+theme: "interpretability"
+status: "reject"
+
+hypothesis:
+  statement: "LIME explanations reveal whether the fusion model uses fixed or crisis-adaptive patterns"
+  mechanism: "Local linear approximations around individual predictions via input perturbation"
+  prior_plausibility: "low"
+
+knight_findings:
+  - knight: 1
+    role: "theoretical_validity"
+    workers_used: 2
+    conclusion: >
+      REJECT. Tautological application: the fusion model is approximately
+      linear (Ridge regression per regime). LIME on a near-linear model
+      recovers the model's own coefficients — the explanation IS the model.
+      The stability question is better answered by directly examining
+      weight_history (already stored in fusion.py line 796-798), which
+      contains per-timestep Ridge weights. Plotting weight evolution across
+      crises is simpler, more direct, and more interpretable than LIME.
+    evidence: "Ridge regression is near-linear; LIME recovers Ridge coefficients; weight_history already available"
+    confidence: 0.92
+    key_insight: "LIME on a linear model is tautological. Direct weight history analysis is strictly better."
+
+  - knight: 2
+    role: "comparative_analysis"
+    workers_used: 2
+    conclusion: >
+      REJECT. Significant overlap with Q0137 (Shapley, global) and Q0143
+      (decision tree, surrogate). LIME is local while Shapley is global, but
+      both address feature attribution for the fusion model. LIME's well-known
+      instability issues (Alvarez-Melis & Jaakkola 2018) would require
+      extensive calibration. If LIME is desired later, use SHAP TreeExplainer
+      on the decision tree from Q0143 rather than LIME on the fusion.
+    evidence: "Overlaps Q0137 and Q0143; LIME instability (Alvarez-Melis 2018); SHAP on decision tree is cleaner"
+    confidence: 0.88
+    key_insight: "Overlaps with Shapley and decision tree. Use SHAP on the tree from Q0143 instead."
+
+test_results:
+  crises_tested: []
+  passes_threshold: false
+
+verdict:
+  keep: false
+  reason: >
+    Tautological: LIME on the near-linear Ridge regression fusion model
+    recovers the model's own coefficients. The stability question is better
+    answered by directly plotting weight_history (already stored). Significant
+    overlap with Q0137 (Shapley) and Q0143 (decision tree) without adding
+    proportional insight. LIME's known instability issues add methodological
+    risk. If local explanations are needed, use SHAP TreeExplainer on the
+    Q0143 decision tree surrogate.
+  strength: "high"
+  follow_up_questions:
+    - "Plot weight_history heatmap across time with crisis windows highlighted"
+    - "Use SHAP TreeExplainer on Q0143's decision tree for local explanations"
+
+artifacts:
+  code_dir: null
+  key_files: []

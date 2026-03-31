@@ -1,0 +1,92 @@
+id: "0145"
+round: 145
+timestamp: "2026-03-09T20:00:00"
+question: "Is there a geometric interpretation of why certain observables specialize on certain crisis types — does the curvature of the observable manifold explain specialization?"
+theme: "interpretability"
+status: "keep"
+
+hypothesis:
+  statement: "Observable gradient concentration in parameter space predicts crisis specialization — a geometric property of the operator, not the crisis"
+  mechanism: "||grad O|| varies across the state manifold; crises traversing regions of high ||grad O|| produce high Cohen's d"
+  prior_plausibility: "medium"
+
+knight_findings:
+  - knight: 1
+    role: "theoretical_validity"
+    workers_used: 4
+    conclusion: >
+      KEEP. The formalization is clean: for observable O and crisis trajectory
+      {psi_t}, define sensitivity S(O, crisis) = max_t ||dO/dt||.
+      Specialization = S being sharply peaked across crisis types. The
+      non-trivial claim: gradient concentration is a GEOMETRIC property of the
+      observable (determined by operator structure), not of the crisis. This
+      means specialization can be PREDICTED from the operator spectrum without
+      running detection. Falsifiable: predict which observable will perform
+      best on a new crisis from parameter space location, verify on 4 holdout
+      crises.
+    evidence: "S(O, crisis) = max_t ||dO/dt||; gradient concentration predicts specialization; falsifiable via holdout"
+    confidence: 0.82
+    key_insight: "The non-trivial claim: specialization is predictable from operator structure, not crisis labels."
+
+  - knight: 2
+    role: "empirical_implementation"
+    workers_used: 3
+    conclusion: >
+      KEEP. The codebase provides all the differential geometry machinery:
+      quantum_metric (core.py:331-376), berry_curvature (378-415), full
+      Christoffel/Riemann/Ricci stack (611-691). Observable gradients are
+      computable via the same finite-difference pattern used throughout core.py.
+      Implementation: (1) compute ||grad O|| over a grid in PCA space for 5-6
+      key observables, (2) map 17 crisis trajectories onto the grid, (3)
+      correlate overlap with empirical Cohen's d. If Spearman r > 0.6, it is
+      a publishable result.
+    evidence: "Full DG machinery in core.py; finite-difference gradients; Spearman r > 0.6 threshold"
+    confidence: 0.80
+    key_insight: "Gradient heatmaps + crisis trajectory overlays = compelling visualization + quantitative test."
+
+  - knight: 3
+    role: "failure_mode_analysis"
+    workers_used: 2
+    conclusion: >
+      CONDITIONAL KEEP. Tautology risk: 'observables detect crises where they
+      change fast' restates the definition. The non-trivial escape: if gradient
+      concentration is a STATIC property of the operator (computable without
+      any crisis data), then predicting specialization from operator structure
+      is genuinely new. If gradient concentration only becomes apparent when
+      evaluated on crisis trajectories, the explanation is circular. The
+      holdout test (predict best detector for 4 post-2020 crises) is the
+      critical discriminator. Also: the explanation might be that specialization
+      arises from nonlinear dynamics (level crossings) rather than smooth
+      gradient structure — a useful negative result.
+    evidence: "Tautology escape: static operator property vs crisis-dependent evaluation; holdout test discriminates"
+    confidence: 0.75
+    key_insight: "Non-trivial IFF gradient concentration is a static operator property independent of crisis data."
+
+test_results:
+  crises_tested: []
+  passes_threshold: true
+  notes: "No smoke test — theoretical + computational analysis"
+
+verdict:
+  keep: true
+  reason: >
+    Most theoretically ambitious question. The falsifiable claim: observable
+    gradient concentration in parameter space is a STATIC property of the
+    operator that predicts specialization WITHOUT crisis labels. If verified
+    (Spearman r > 0.6 between gradient-crisis overlap and empirical Cohen's d),
+    this provides a unifying geometric explanation for the observatory's
+    behavior and could yield a theorem-level contribution. All differential
+    geometry machinery exists in core.py. The 4 holdout crises provide an
+    immediate prediction test. Even negative results (specialization from
+    level crossings rather than gradient structure) are publishable.
+  strength: "high"
+  follow_up_questions:
+    - "Compute ||grad O|| heatmaps in top-2 PCA components for 5-6 key observables"
+    - "Overlay crisis trajectories on heatmaps to visualize gradient-crisis alignment"
+    - "Spearman correlation between overlap integral and empirical Cohen's d across 17 crises"
+    - "Predict best detector for holdout crises from gradient structure — falsifiability test"
+    - "If successful: formalize as Theorem (gradient concentration => specialization bound)"
+
+artifacts:
+  code_dir: null
+  key_files: []

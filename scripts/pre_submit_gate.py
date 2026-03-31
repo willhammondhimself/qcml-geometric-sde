@@ -219,7 +219,62 @@ def gate_registry_completeness(g: Gate) -> None:
 
 
 def gate_review_coverage(g: Gate) -> None:
-    """Gate 8: Check if review concerns are addressed."""
+    """Gate 8: Check if review concerns are addressed.
+
+    If an issue_registry.yaml exists, checks individual issue resolution.
+    Falls back to string-counting heuristic otherwise.
+    """
+    registry_path = REPO_ROOT / 'paper' / 'review' / 'issue_registry.yaml'
+
+    # Prefer structured registry if available
+    if registry_path.exists():
+        try:
+            import yaml
+            with open(registry_path) as f:
+                registry = yaml.safe_load(f) or {}
+        except ImportError:
+            registry = None
+
+        if registry and registry.get('issues'):
+            issues = registry['issues']
+            by_sev = {}
+            for issue in issues:
+                sev = issue.get('severity', 'MINOR').upper()
+                by_sev.setdefault(sev, []).append(issue)
+
+            # Check CRITICAL items
+            critical = by_sev.get('CRITICAL', [])
+            critical_resolved = sum(
+                1 for i in critical
+                if i.get('status') in ('verified', 'wontfix')
+            )
+            critical_total = len(critical)
+
+            # Check MAJOR items
+            major = by_sev.get('MAJOR', [])
+            major_resolved = sum(
+                1 for i in major
+                if i.get('status') in ('verified', 'wontfix', 'deferred')
+            )
+            major_total = len(major)
+
+            detail = (f'{critical_resolved}/{critical_total} CRITICAL resolved, '
+                      f'{major_resolved}/{major_total} MAJOR resolved')
+            g.details.append(detail)
+
+            if critical_resolved < critical_total:
+                unresolved = [i['id'] for i in critical
+                              if i.get('status') not in ('verified', 'wontfix')]
+                g.fail(f'Unresolved CRITICAL: {", ".join(unresolved)}')
+            elif major_resolved < major_total:
+                unresolved = [i['id'] for i in major
+                              if i.get('status') not in ('verified', 'wontfix', 'deferred')]
+                g.warn(f'Unresolved MAJOR: {", ".join(unresolved)}')
+            else:
+                g.pass_(f'All {critical_total} CRITICAL + {major_total} MAJOR resolved')
+            return
+
+    # Fallback: string-counting heuristic (no registry)
     reviews_dir = REPO_ROOT / 'paper' / 'review' / 'reviews'
     response_file = REPO_ROOT / 'paper' / 'response_to_reviewers.md'
 
@@ -227,7 +282,6 @@ def gate_review_coverage(g: Gate) -> None:
         g.warn('No reviews directory')
         return
 
-    # Find synthesis files
     syntheses = sorted(reviews_dir.glob('synthesis_*.md'))
     reviews = sorted(reviews_dir.glob('review_*.md'))
 
@@ -235,7 +289,6 @@ def gate_review_coverage(g: Gate) -> None:
         g.warn('No review files found')
         return
 
-    # Count critical/major items from latest synthesis
     if syntheses:
         latest = syntheses[-1]
         content = latest.read_text()
@@ -243,7 +296,6 @@ def gate_review_coverage(g: Gate) -> None:
         n_major = content.lower().count('major')
 
         if response_file.exists():
-            response = response_file.read_text()
             g.pass_(f'{len(reviews)} reviews, response file exists '
                     f'({n_critical} critical, {n_major} major mentions in synthesis)')
         else:
