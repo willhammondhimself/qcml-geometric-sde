@@ -55,7 +55,7 @@ jobs:
       - name: Compile LaTeX
         uses: xu-cheng/latex-action@v3
         with:
-          root_file: paper/qcml_geometric_sde.tex
+          root_file: qcml_geometric_sde.tex
           working_directory: paper
 
       - name: Upload PDF
