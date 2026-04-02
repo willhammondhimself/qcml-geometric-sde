@@ -14,16 +14,16 @@ Tests verify:
 import numpy as np
 import pytest
 
-from qcml_geometry.info_geometry import (
-    FisherRaoDetector,
-    WassersteinDetector,
-    KLDivergenceDetector,
-    SinkhornDetector,
-)
 from qcml_geometry.fusion import (
+    DynamicSwitchingDetector,
     RankFusionDetector,
     StackingFusionDetector,
-    DynamicSwitchingDetector,
+)
+from qcml_geometry.info_geometry import (
+    FisherRaoDetector,
+    KLDivergenceDetector,
+    SinkhornDetector,
+    WassersteinDetector,
 )
 
 

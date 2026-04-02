@@ -18,15 +18,15 @@ import pytest
 
 from qcml_geometry import QCMLGeometry, create_test_data_sphere
 from qcml_geometry.observables import (
+    CommutatorNormDetector,
+    DimensionalityCollapseDetector,
+    GeodesicVelocityDetector,
     LevelSpacingRatioDetector,
     QuantumRelativeEntropyDetector,
     RicciScalarDetector,
     SectionalCurvatureDetector,
-    GeodesicVelocityDetector,
-    SpeedLimitRatioDetector,
-    DimensionalityCollapseDetector,
     SpectralFlowDetector,
-    CommutatorNormDetector,
+    SpeedLimitRatioDetector,
 )
 
 
@@ -417,7 +417,7 @@ class TestLevelSpacingRatio:
         assert np.all(ratios <= 1)
 
     def test_rmt_constants(self):
-        from qcml_geometry.observables import RMT_POISSON, RMT_GOE, RMT_GUE
+        from qcml_geometry.observables import RMT_GOE, RMT_GUE, RMT_POISSON
 
         assert 0.38 < RMT_POISSON < 0.40
         assert 0.52 < RMT_GOE < 0.54

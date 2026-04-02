@@ -6,20 +6,16 @@ synthetic data — no live API calls or pipeline runs.
 """
 
 import numpy as np
-import pytest
-
 
 # ---------------------------------------------------------------------------
 # Imports — will fail until implementation exists
 # ---------------------------------------------------------------------------
-
 from experiments.detection_metrics import (
-    compute_f1_with_tolerance,
     compute_auc_pr,
     compute_detection_delay,
+    compute_f1_with_tolerance,
     compute_false_alarm_rate,
 )
-
 
 # ---------------------------------------------------------------------------
 # TestF1WithTolerance

@@ -16,7 +16,6 @@ Key mathematical facts tested here:
 """
 
 import numpy as np
-import pytest
 
 from qcml_geometry.core import QCMLGeometry
 

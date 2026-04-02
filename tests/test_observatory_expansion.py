@@ -18,16 +18,16 @@ import pytest
 
 from qcml_geometry import QCMLGeometry, create_test_data_sphere
 from qcml_geometry.observables import (
-    SpectralEntropyDetector,
+    BerryVelocityCouplingDetector,
+    CurvatureRateDetector,
+    EffectiveStateDimensionDetector,
+    GeodesicCurvatureDetector,
     GeometricPhaseRateDetector,
     HamiltonianSensitivityDetector,
-    GeodesicCurvatureDetector,
-    EffectiveStateDimensionDetector,
     QGTPhaseRigidityDetector,
     ReducedPurityDetector,
     SpectralComplexityDetector,
-    BerryVelocityCouplingDetector,
-    CurvatureRateDetector,
+    SpectralEntropyDetector,
 )
 
 

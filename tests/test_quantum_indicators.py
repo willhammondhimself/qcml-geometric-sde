@@ -13,11 +13,10 @@ Tested indicators:
 - GeometricIndicatorSuite: Composite score combining all indicators
 """
 
-import numpy as np
-import pandas as pd
-import pytest
-import os
 import sys
+
+import numpy as np
+import pytest
 
 sys.path.insert(0, "..")
 
@@ -27,14 +26,13 @@ load_dotenv()
 
 from qcml_geometry import QCMLGeometry
 from qcml_geometry.indicators import (
-    IndicatorResult,
-    SpectralGapIndicator,
     EnergyEvolutionIndicator,
     FidelityDecayIndicator,
-    MultiScaleChernConsensus,
     GeometricIndicatorSuite,
+    IndicatorResult,
+    MultiScaleChernConsensus,
+    SpectralGapIndicator,
 )
-
 
 # ---------------------------------------------------------------------------
 # Fixtures: Real market data
@@ -50,7 +48,7 @@ def real_market_data():
     Lehman Brothers collapse, providing a genuine regime transition.
     Cached at module scope so the API is only called once per test run.
     """
-    from experiments.data_loader import PolygonDataSource, MinimalFeatureEngine
+    from experiments.data_loader import MinimalFeatureEngine, PolygonDataSource
 
     ds = PolygonDataSource()
     df = ds.fetch_equities(["SPY"], start_date="2008-06-01", end_date="2008-12-31")

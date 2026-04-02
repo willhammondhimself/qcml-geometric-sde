@@ -13,10 +13,10 @@ Tested detectors:
 - RandomForestRegimeDetector: Supervised RF baseline
 """
 
-import numpy as np
-import pandas as pd
-import pytest
 import sys
+
+import numpy as np
+import pytest
 
 sys.path.insert(0, "..")
 
@@ -24,20 +24,18 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-from qcml_geometry import BaseRegimeDetector
+from experiments.additional_detectors import (
+    GeometricConsensusDetector,
+    QCMLChernDetector,
+)
 from experiments.baselines import (
-    RollingVolatilityDetector,
     CUSUMDetector,
     HMMRegimeDetector,
     RandomForestRegimeDetector,
+    RollingVolatilityDetector,
     RollingWindowRFDetector,
     VIXThresholdDetector,
 )
-from experiments.additional_detectors import (
-    QCMLChernDetector,
-    GeometricConsensusDetector,
-)
-
 
 # ---------------------------------------------------------------------------
 # Fixtures: Real market data
@@ -53,7 +51,7 @@ def real_market_data():
     Lehman Brothers collapse, providing a genuine regime transition.
     Cached at module scope so the API is only called once per test run.
     """
-    from experiments.data_loader import PolygonDataSource, MinimalFeatureEngine
+    from experiments.data_loader import MinimalFeatureEngine, PolygonDataSource
 
     ds = PolygonDataSource()
     df = ds.fetch_equities(["SPY"], start_date="2008-06-01", end_date="2008-12-31")

@@ -8,8 +8,6 @@ Integration test verifies the composite on real data via the full pipeline.
 """
 
 import numpy as np
-import pytest
-from scipy import stats
 
 # ---------------------------------------------------------------------------
 # Helpers — replicate the composite logic at small scale for unit testing

@@ -9,9 +9,10 @@ Tests verify correctness of:
 - Topological invariants (Chern numbers)
 """
 
+import sys
+
 import numpy as np
 import pytest
-import sys
 
 sys.path.insert(0, "..")
 
@@ -156,7 +157,7 @@ class TestQCMLGeometry:
         x = X[0]
 
         # Compute state (should cache)
-        psi1 = geometry.quasi_coherent_state(x)
+        geometry.quasi_coherent_state(x)
         cache_size = len(geometry._ground_state_cache)
         assert cache_size > 0, "Cache should have entries"
 
