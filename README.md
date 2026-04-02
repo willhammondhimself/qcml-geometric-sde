@@ -34,36 +34,35 @@ Fusion taxonomy (display names match `OBSERVABLE_FAMILIES`):
 
 Implementations and HPO keys live in [`qcml_geometry/observables.py`](qcml_geometry/observables.py); paper tables are authoritative for headline *d* values.
 
-## Project Structure
+## Project Structure (Paper 1 Scope)
 
 ```
 qcml_geometry/              Core library (pure math, no I/O)
-  core.py                   QCMLGeometry: metric tensor, Berry curvature, Chern numbers
-  observables.py            Geometric regime detectors (19 in main panel; 17 fused)
+  core.py                   QCMLGeometry: Hamiltonian, ground state, Berry curvature, metric tensor
+  observables.py            Geometric regime detectors (4 headline + 15 extended)
+  fusion.py                 Channel taxonomy + fusion methods
   indicators.py             Spectral gap, energy, fidelity indicators
   topology.py               Topological regime detectors
-  fusion.py                 Composite signal fusion
   info_geometry.py          Information-geometric utilities
-  adaptive_threshold.py     Online adaptive thresholding
-  online_detection.py       Streaming regime detection
 
-experiments/                Reproducible experiment scripts
+experiments/                Paper 1 experiment scripts
   regime_comparison.py      Main 46-method x 17-crisis pipeline
-  fusion_experiments.py     Multi-channel fusion experiments
-  runner.py                 Incremental cell-based experiment runner
-  config.yaml               Experiment configuration
-  baselines.py              RF, VolZ, CUSUM, HMM, BOCPD, IF, GARCH, Hamilton MS, EWMA, ...
   data_loader.py            yfinance + feature engineering (17 crises)
-  holdout_evaluation.py     Holdout crisis evaluation
+  baselines.py              RF, GARCH, HMM, CUSUM, BOCPD, IF, EWMA, ...
+  evaluation.py             Cohen's d, Friedman test, bootstrap CI
+  generate_paper_figures.py Narrative panels (2008 GFC, 2020 COVID, 2022 rates)
   lead_time_analysis.py     Lead time measurement
-  observatory_analysis.py   Orthogonality matrix + oracle fusion
   backtest/                 Walk-forward backtest suite
+  config.yaml               Experiment configuration
 
-demo/                       Interactive Streamlit app
 paper/                      LaTeX paper (~25 pages, 3 theorems, 1 proposition, ~44 refs)
-tests/                      pytest suite (10 test_*.py files)
-scripts/                    Verification utilities
+tests/                      pytest suite
+scripts/                    Verification utilities (make verify, make pre-submit)
+demo/                       Interactive Streamlit app
+
+paper2_staging/             Deferred work (Papers 2/3: observatory, fusion)
 archive/                    Dead experiments, old code
+qcml_course.html            Interactive course (open in browser)
 ```
 
 ## Quick Start
@@ -105,7 +104,7 @@ make clean             # Remove build artifacts
 
 **Paper 1**: ~25 pages, 3 theorems, 1 proposition, ~44 references.
 Source: `paper/qcml_geometric_sde.tex`
-Full 19-channel version archived as `paper/qcml_geometric_sde_full.tex`.
+Full 19-channel version archived in `paper2_staging/paper/qcml_geometric_sde_full.tex`.
 
 ### Citation
 
