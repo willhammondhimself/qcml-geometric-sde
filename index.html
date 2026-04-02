@@ -3,1059 +3,2139 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>QCML — Geometric Observables for Financial Regime Detection</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,400&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<title>QCML Geometric Observables -- Interactive Course</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400;1,9..40,500&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$'], ['\\[','\\]']],
+    processEscapes: true
+  },
+  options: {
+    skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
 <style>
-  :root {
-    --bg: #0a0e1a;
-    --bg2: #0d1224;
-    --surface: #111830;
-    --surface2: #161f3a;
-    --surface3: #1c2748;
-    --border: rgba(200, 180, 120, 0.08);
-    --border-bright: rgba(200, 180, 120, 0.18);
-    --text: #e8e4dc;
-    --text-dim: #8a8678;
-    --text-muted: #5a5748;
-    --gold: #d4a853;
-    --gold-bright: #ecc060;
-    --gold-dim: rgba(212, 168, 83, 0.08);
-    --teal: #3ecfcf;
-    --teal-dim: rgba(62, 207, 207, 0.06);
-    --cyan: #56d4e8;
-    --blue: #5b8def;
-    --violet: #9b7bea;
-    --rose: #e8637a;
-    --green: #4fd89a;
-    --amber: #e8a84c;
-    --slate: #6b7ea0;
-    --font-display: 'Inter', -apple-system, sans-serif;
-    --font-body: 'Source Serif 4', Georgia, serif;
-    --font-mono: 'JetBrains Mono', 'SF Mono', monospace;
-  }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  html {
-    font-size: 16px;
-    scroll-behavior: smooth;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-
-  body {
-    font-family: var(--font-body);
-    color: var(--text);
-    background: var(--bg);
-    line-height: 1.6;
-    overflow-x: hidden;
-  }
-
-  /* ─── LAYOUT ─── */
-  .page {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 clamp(24px, 5vw, 64px);
-  }
-
-  section {
-    padding: clamp(64px, 10vh, 120px) 0;
-    position: relative;
-  }
-
-  section + section {
-    border-top: 1px solid var(--border);
-  }
-
-  /* ─── REVEAL ANIMATION ─── */
-  .reveal {
-    opacity: 0;
-    transform: translateY(28px);
-    transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
-                transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  .reveal.visible {
-    opacity: 1;
-    transform: none;
-  }
-  .reveal.visible:nth-child(2) { transition-delay: 0.08s; }
-  .reveal.visible:nth-child(3) { transition-delay: 0.16s; }
-  .reveal.visible:nth-child(4) { transition-delay: 0.24s; }
-  .reveal.visible:nth-child(5) { transition-delay: 0.32s; }
-  .reveal.visible:nth-child(6) { transition-delay: 0.40s; }
-  .reveal.visible:nth-child(7) { transition-delay: 0.48s; }
-
-  /* ═══════════════════════════════════════════
-     SECTION 1: HERO
-     ═══════════════════════════════════════════ */
-  .hero {
-    padding: clamp(80px, 14vh, 160px) 0 clamp(56px, 10vh, 120px);
-    text-align: center;
-    position: relative;
-  }
-
-  .hero::before {
-    content: '';
-    position: absolute;
-    inset: -80%;
-    background:
-      radial-gradient(ellipse 100% 80% at 50% 40%, rgba(212, 168, 83, 0.02) 0%, transparent 70%),
-      radial-gradient(ellipse 90% 100% at 70% 60%, rgba(62, 207, 207, 0.015) 0%, transparent 70%),
-      radial-gradient(ellipse 120% 60% at 50% 10%, rgba(91, 141, 239, 0.01) 0%, transparent 70%);
-    pointer-events: none;
-  }
-
-  .hero__eyebrow {
-    font-family: var(--font-mono);
-    font-size: clamp(11px, 1.4vw, 14px);
-    font-weight: 600;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: var(--gold);
-    margin-bottom: 24px;
-    opacity: 0.85;
-  }
-
-  .hero__title {
-    font-family: var(--font-display);
-    font-size: clamp(32px, 6vw, 72px);
-    font-weight: 800;
-    line-height: 1.05;
-    letter-spacing: -1.5px;
-    color: var(--text);
-    max-width: 900px;
-    margin: 0 auto 28px;
-    text-wrap: balance;
-  }
-
-  .hero__title em {
-    font-style: normal;
-    color: var(--text);
-  }
-
-  .hero__subtitle {
-    font-family: var(--font-body);
-    font-size: clamp(16px, 2.2vw, 22px);
-    color: var(--text-dim);
-    max-width: 640px;
-    margin: 0 auto 52px;
-    font-weight: 300;
-    line-height: 1.5;
-    font-style: italic;
-  }
-
-  .hero__stats {
-    display: flex;
-    justify-content: center;
-    gap: clamp(32px, 5vw, 64px);
-    flex-wrap: wrap;
-  }
-
-  .hero__stat {
-    text-align: center;
-  }
-
-  .hero__stat-value {
-    font-family: var(--font-mono);
-    font-size: clamp(28px, 4.5vw, 48px);
-    font-weight: 700;
-    color: var(--gold-bright);
-    line-height: 1;
-    letter-spacing: -1px;
-  }
-
-  .hero__stat-label {
-    font-family: var(--font-mono);
-    font-size: clamp(9px, 1.1vw, 11px);
-    color: var(--text-dim);
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    margin-top: 10px;
-  }
-
-  .hero__divider {
-    width: 60px;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, var(--gold), transparent);
-    margin: 60px auto 0;
-    opacity: 0.5;
-  }
-
-  /* ═══════════════════════════════════════════
-     SECTION 2: PIPELINE
-     ═══════════════════════════════════════════ */
-  .pipeline-section { padding-bottom: clamp(40px, 6vh, 72px); }
-
-  .section-label {
-    font-family: var(--font-mono);
-    font-size: clamp(10px, 1.2vw, 12px);
-    font-weight: 600;
-    letter-spacing: 2.5px;
-    text-transform: uppercase;
-    color: var(--gold);
-    margin-bottom: 16px;
-    opacity: 0.7;
-  }
-
-  .section-title {
-    font-family: var(--font-display);
-    font-size: clamp(22px, 3.5vw, 36px);
-    font-weight: 700;
-    letter-spacing: -0.5px;
-    margin-bottom: clamp(36px, 5vh, 60px);
-    color: var(--text);
-  }
-
-  .pipeline {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: clamp(8px, 1.2vw, 16px);
-    position: relative;
-    align-items: stretch;
-  }
-
-  .pipeline__step {
-    position: relative;
-    text-align: center;
-    padding: clamp(24px, 3.5vw, 40px) clamp(12px, 1.8vw, 20px);
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
-  }
-
-  .pipeline__step:hover {
-    border-color: var(--border-bright);
-    box-shadow: 0 0 30px rgba(212, 168, 83, 0.04);
-  }
-
-  .pipeline__step-icon {
-    width: 44px;
-    height: 44px;
-    margin: 0 auto 18px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
-  }
-
-  .pipeline__step-title {
-    font-family: var(--font-display);
-    font-size: clamp(12px, 1.5vw, 15px);
-    font-weight: 700;
-    margin-bottom: 8px;
-    color: var(--text);
-    letter-spacing: -0.2px;
-  }
-
-  .pipeline__step-math {
-    font-family: var(--font-mono);
-    font-size: clamp(10px, 1.1vw, 12px);
-    color: var(--teal);
-    margin-bottom: 6px;
-    line-height: 1.4;
-    opacity: 0.85;
-  }
-
-  .pipeline__step-detail {
-    font-family: var(--font-mono);
-    font-size: clamp(9px, 1vw, 11px);
-    color: var(--text-dim);
-    line-height: 1.4;
-  }
-
-  .pipeline__arrow {
-    position: absolute;
-    right: -14px;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 2;
-    color: var(--gold);
-    font-size: 18px;
-    opacity: 0.5;
-    pointer-events: none;
-  }
-
-  /* ═══════════════════════════════════════════
-     SECTION 3: OBSERVABLE FAMILIES
-     ═══════════════════════════════════════════ */
-  .families-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: clamp(16px, 2.5vw, 24px);
-  }
-
-  .family-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: clamp(20px, 3vw, 32px);
-    position: relative;
-    overflow: hidden;
-    transition: border-color 0.3s ease, transform 0.2s ease;
-  }
-
-  .family-card:hover {
-    border-color: var(--border-bright);
-    transform: translateY(-2px);
-  }
-
-  .family-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    border-radius: 12px 12px 0 0;
-  }
-
-  .family-card[data-color="gold"]::before { background: var(--gold); }
-  .family-card[data-color="teal"]::before { background: var(--teal); }
-  .family-card[data-color="blue"]::before { background: var(--blue); }
-  .family-card[data-color="violet"]::before { background: var(--violet); }
-  .family-card[data-color="cyan"]::before { background: var(--cyan); }
-  .family-card[data-color="rose"]::before { background: var(--rose); }
-  .family-card[data-color="green"]::before { background: var(--green); }
-
-  .family-card__header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 14px;
-  }
-
-  .family-card__name {
-    font-family: var(--font-display);
-    font-size: clamp(13px, 1.6vw, 16px);
-    font-weight: 700;
-    letter-spacing: -0.2px;
-  }
-
-  .family-card__count {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--text-dim);
-    background: var(--surface2);
-    padding: 2px 8px;
-    border-radius: 10px;
-  }
-
-  .family-card__channels {
-    list-style: none;
-    margin-bottom: 14px;
-  }
-
-  .family-card__channels li {
-    font-family: var(--font-mono);
-    font-size: clamp(10px, 1.1vw, 12px);
-    color: var(--text-dim);
-    padding: 5px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.02);
-  }
-
-  .family-card__channels li:last-child { border-bottom: none; }
-
-  .family-card__quantity {
-    font-size: clamp(11px, 1.2vw, 13px);
-    color: var(--text-muted);
-    font-style: italic;
-    margin-top: 8px;
-  }
-
-  /* ═══════════════════════════════════════════
-     SECTION 4: KEY RESULTS
-     ═══════════════════════════════════════════ */
-  .results-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: clamp(20px, 3.5vw, 40px);
-  }
-
-  @media (max-width: 768px) {
-    .results-grid { grid-template-columns: 1fr; }
-    .pipeline { grid-template-columns: 1fr; gap: 12px; }
-    .pipeline__arrow { display: none; }
-  }
-
-  .result-col {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: clamp(24px, 3.5vw, 40px);
-    position: relative;
-  }
-
-  .result-col__badge {
-    font-family: var(--font-mono);
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    padding: 4px 10px;
-    border-radius: 6px;
-    display: inline-block;
-    margin-bottom: 20px;
-  }
-
-  .result-col__badge--offline {
-    background: rgba(91, 141, 239, 0.12);
-    color: var(--blue);
-  }
-
-  .result-col__badge--oos {
-    background: rgba(212, 168, 83, 0.12);
-    color: var(--gold-bright);
-  }
-
-  .result-col__badge--ortho {
-    background: rgba(62, 207, 207, 0.12);
-    color: var(--teal);
-  }
-
-  .result-col__title {
-    font-family: var(--font-display);
-    font-size: clamp(16px, 2vw, 20px);
-    font-weight: 700;
-    margin-bottom: 20px;
-    letter-spacing: -0.3px;
-  }
-
-  .result-item {
-    display: flex;
-    align-items: baseline;
-    gap: 12px;
-    padding: 10px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.03);
-  }
-
-  .result-item:last-child { border-bottom: none; }
-
-  .result-item__value {
-    font-family: var(--font-mono);
-    font-size: clamp(18px, 2.5vw, 26px);
-    font-weight: 700;
-    letter-spacing: -0.5px;
-    flex-shrink: 0;
-  }
-
-  .result-item__label {
-    font-size: clamp(12px, 1.4vw, 14px);
-    color: var(--text-dim);
-    line-height: 1.3;
-  }
-
-  .result-item__rank {
-    font-family: var(--font-mono);
-    font-size: 10px;
-    color: var(--text-muted);
-    background: var(--surface2);
-    padding: 1px 6px;
-    border-radius: 4px;
-    margin-left: 4px;
-    white-space: nowrap;
-  }
-
-  /* Highlight the headline number */
-  .result-item--hero .result-item__value {
-    font-size: clamp(28px, 4vw, 40px);
-    color: var(--gold-bright);
-  }
-
-  /* ═══════════════════════════════════════════
-     SECTION 5: TIMELINE + COMPARISON
-     ═══════════════════════════════════════════ */
-  .bottom-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: clamp(20px, 3vw, 40px);
-    align-items: start;
-  }
-
-  @media (max-width: 900px) {
-    .bottom-grid { grid-template-columns: 1fr; }
-  }
-
-  /* Timeline */
-  .timeline {
-    position: relative;
-    padding: clamp(24px, 3.5vw, 36px);
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-  }
-
-  .timeline__title {
-    font-family: var(--font-display);
-    font-size: clamp(14px, 1.8vw, 18px);
-    font-weight: 700;
-    margin-bottom: 20px;
-    letter-spacing: -0.2px;
-  }
-
-  .timeline__track {
-    position: relative;
-    height: 280px;
-    overflow: hidden;
-  }
-
-  .timeline__axis {
-    position: absolute;
-    left: 54px;
-    top: 0;
-    bottom: 0;
-    width: 2px;
-    background: linear-gradient(180deg, var(--gold) 0%, var(--border) 100%);
-    opacity: 0.3;
-  }
-
-  .timeline__event {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 4px 0;
-    position: relative;
-  }
-
-  .timeline__year {
-    font-family: var(--font-mono);
-    font-size: 10px;
-    color: var(--text-muted);
-    width: 42px;
-    text-align: right;
-    flex-shrink: 0;
-  }
-
-  .timeline__dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    flex-shrink: 0;
-    position: relative;
-    z-index: 1;
-  }
-
-  .timeline__dot--conv { background: var(--blue); }
-  .timeline__dot--novel { background: var(--gold); }
-
-  .timeline__name {
-    font-family: var(--font-mono);
-    font-size: clamp(9px, 1vw, 11px);
-    color: var(--text-dim);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .timeline__legend {
-    display: flex;
-    gap: 16px;
-    margin-top: 16px;
-    padding-top: 14px;
-    border-top: 1px solid var(--border);
-  }
-
-  .timeline__legend-item {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-family: var(--font-mono);
-    font-size: 10px;
-    color: var(--text-dim);
-  }
-
-  .timeline__legend-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-  }
-
-  /* Comparison table */
-  .comparison {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: clamp(24px, 3.5vw, 36px);
-    overflow-x: auto;
-  }
-
-  .comparison__title {
-    font-family: var(--font-display);
-    font-size: clamp(14px, 1.8vw, 18px);
-    font-weight: 700;
-    margin-bottom: 20px;
-    letter-spacing: -0.2px;
-  }
-
-  .comparison table {
-    width: 100%;
-    border-collapse: collapse;
-    font-family: var(--font-mono);
-    font-size: clamp(10px, 1.1vw, 12px);
-  }
-
-  .comparison th {
-    text-align: left;
-    padding: 10px 10px;
-    color: var(--text-dim);
-    font-weight: 600;
-    font-size: clamp(9px, 1vw, 10px);
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    border-bottom: 1px solid var(--border-bright);
-    white-space: nowrap;
-  }
-
-  .comparison td {
-    padding: 8px 10px;
-    color: var(--text-dim);
-    border-bottom: 1px solid rgba(255,255,255,0.02);
-    white-space: nowrap;
-  }
-
-  .comparison tr:last-child td { border-bottom: none; }
-
-  .comparison tr.highlight td {
-    color: var(--gold-bright);
-    font-weight: 600;
-  }
-
-  .check { color: var(--green); }
-  .dash { color: var(--text-muted); }
-
-  /* ─── FOOTER ─── */
-  .footer {
-    padding: clamp(24px, 4vh, 48px) 0;
-    text-align: center;
-    border-top: 1px solid var(--border);
-  }
-
-  .footer__text {
-    font-family: var(--font-mono);
-    font-size: clamp(10px, 1.2vw, 12px);
-    color: var(--text-muted);
-    letter-spacing: 0.5px;
-  }
-
-  .footer__text a {
-    color: var(--gold);
-    text-decoration: none;
-    opacity: 0.7;
-  }
-
-  /* ─── PRINT ─── */
-  @media print {
-    body { background: #fff; color: #111; }
-    .reveal { opacity: 1 !important; transform: none !important; }
-    section + section { border-top-color: #ddd; }
-    .family-card, .result-col, .timeline, .comparison,
-    .pipeline__step { border-color: #ddd; background: #f8f8f8; }
-    .hero__title em { -webkit-text-fill-color: #333; }
-    .hero__stat-value { color: #111; }
-    .section-label, .hero__eyebrow { color: #666; }
-  }
+/* ===== CSS Custom Properties ===== */
+:root {
+  --color-bg: #FAF7F2;
+  --color-bg-warm: #F5F0E8;
+  --color-code-bg: #1E1E2E;
+  --color-text: #2C2A28;
+  --color-text-secondary: #6B6560;
+  --color-accent: #D94F30;
+  --color-berry: #D94F30;
+  --color-spectral: #2A7B9B;
+  --color-hamiltonian: #7B6DAA;
+  --color-purity: #D4A843;
+  --color-border: #E0D8CC;
+  --color-tooltip-bg: #2C2A28;
+  --color-tooltip-text: #FAF7F2;
+  --color-nav-bg: rgba(250,247,242,0.92);
+  --color-search-bg: rgba(250,247,242,0.98);
+  --color-quiz-correct: #3A8F5C;
+  --color-quiz-incorrect: #D94F30;
+  --font-display: 'Bricolage Grotesque', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+  --font-code: 'JetBrains Mono', monospace;
+  --max-width: 800px;
+  --max-width-wide: 1000px;
+  --code-kw: #CBA6F7;
+  --code-str: #A6E3A1;
+  --code-fn: #89B4FA;
+  --code-comment: #6C7086;
+  --code-num: #FAB387;
+  --code-var: #F9E2AF;
+  --code-op: #94E2D5;
+  --code-text: #CDD6F4;
+}
+
+[data-theme="dark"] {
+  --color-bg: #1A1A2E;
+  --color-bg-warm: #16213E;
+  --color-text: #E0DDD8;
+  --color-text-secondary: #9A958F;
+  --color-border: #2A2A4A;
+  --color-nav-bg: rgba(26,26,46,0.92);
+  --color-search-bg: rgba(26,26,46,0.98);
+  --color-tooltip-bg: #E0DDD8;
+  --color-tooltip-text: #1A1A2E;
+}
+
+/* ===== Reset & Base ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  scroll-snap-type: y proximity;
+  scroll-behavior: smooth;
+  font-size: 16px;
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--color-text);
+  background: var(--color-bg);
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  transition: background 0.3s, color 0.3s;
+}
+
+/* ===== Navigation ===== */
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  height: 56px;
+  background: var(--color-nav-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  transition: background 0.3s;
+}
+
+.nav-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--color-text);
+  white-space: nowrap;
+}
+
+.nav-dots {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.nav-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid var(--color-text-secondary);
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.nav-dot.active {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+.nav-dot.visited {
+  border-color: var(--color-accent);
+}
+
+.nav-dot::after {
+  content: attr(data-label);
+  position: absolute;
+  top: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.65rem;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+
+.nav-dot:hover::after { opacity: 1; }
+
+.nav-controls {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.nav-btn {
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 6px 12px;
+  cursor: pointer;
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s;
+}
+
+.nav-btn:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.nav-btn kbd {
+  font-family: var(--font-code);
+  font-size: 0.7rem;
+  background: var(--color-bg-warm);
+  border-radius: 3px;
+  padding: 1px 5px;
+}
+
+/* ===== Search Modal ===== */
+.search-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: rgba(0,0,0,0.5);
+  display: none;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 15vh;
+}
+
+.search-overlay.open { display: flex; }
+
+.search-box {
+  width: 560px;
+  max-width: 90vw;
+  background: var(--color-search-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.2);
+  overflow: hidden;
+}
+
+.search-input {
+  width: 100%;
+  padding: 16px 20px;
+  border: none;
+  background: transparent;
+  font-family: var(--font-body);
+  font-size: 1.1rem;
+  color: var(--color-text);
+  outline: none;
+}
+
+.search-results {
+  max-height: 320px;
+  overflow-y: auto;
+  border-top: 1px solid var(--color-border);
+}
+
+.search-result {
+  padding: 12px 20px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.search-result:hover, .search-result.focused {
+  background: var(--color-bg-warm);
+}
+
+.search-result-module {
+  font-size: 0.7rem;
+  color: var(--color-accent);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+
+.search-result-text {
+  font-size: 0.9rem;
+  color: var(--color-text);
+  margin-top: 2px;
+}
+
+.search-empty {
+  padding: 24px 20px;
+  text-align: center;
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+}
+
+/* ===== Module Sections ===== */
+.module {
+  min-height: 100vh;
+  min-height: 100dvh;
+  scroll-snap-align: start;
+  padding: 80px 24px 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: background 0.3s;
+}
+
+.module:nth-child(odd) { background: var(--color-bg); }
+.module:nth-child(even) { background: var(--color-bg-warm); }
+
+.module-inner {
+  width: 100%;
+  max-width: var(--max-width);
+}
+
+.module-inner.wide {
+  max-width: var(--max-width-wide);
+}
+
+.module-number {
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-accent);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+}
+
+.module-title {
+  font-family: var(--font-display);
+  font-size: 2.4rem;
+  font-weight: 800;
+  line-height: 1.15;
+  color: var(--color-text);
+  margin-bottom: 32px;
+}
+
+.module-subtitle {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-top: 48px;
+  margin-bottom: 16px;
+}
+
+.module-text {
+  font-size: 1.05rem;
+  color: var(--color-text);
+  margin-bottom: 20px;
+  max-width: 680px;
+}
+
+.module-text strong {
+  color: var(--color-text);
+}
+
+/* ===== Code Blocks ===== */
+.code-block {
+  background: var(--color-code-bg);
+  border-radius: 10px;
+  margin: 24px 0;
+  overflow: hidden;
+}
+
+.code-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: rgba(255,255,255,0.04);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.code-filepath {
+  font-family: var(--font-code);
+  font-size: 0.75rem;
+  color: var(--code-comment);
+}
+
+.code-lang {
+  font-family: var(--font-code);
+  font-size: 0.7rem;
+  color: var(--code-comment);
+  text-transform: uppercase;
+}
+
+.code-content {
+  padding: 16px 20px;
+  overflow-x: auto;
+  font-family: var(--font-code);
+  font-size: 0.82rem;
+  line-height: 1.65;
+  color: var(--code-text);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.code-content .kw { color: var(--code-kw); }
+.code-content .str { color: var(--code-str); }
+.code-content .fn { color: var(--code-fn); }
+.code-content .cm { color: var(--code-comment); font-style: italic; }
+.code-content .num { color: var(--code-num); }
+.code-content .var { color: var(--code-var); }
+.code-content .op { color: var(--code-op); }
+
+/* ===== Code Translation (side-by-side) ===== */
+.translation-block {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 24px 0;
+  border: 1px solid var(--color-border);
+}
+
+.translation-side {
+  padding: 20px;
+}
+
+.translation-side.code-side {
+  background: var(--color-code-bg);
+  font-family: var(--font-code);
+  font-size: 0.8rem;
+  line-height: 1.65;
+  color: var(--code-text);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.translation-side.english-side {
+  background: var(--color-bg);
+  border-left: 1px solid var(--color-border);
+}
+
+.translation-label {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 12px;
+}
+
+.translation-side.code-side .translation-label {
+  color: var(--code-comment);
+}
+
+.translation-side.english-side .translation-label {
+  color: var(--color-accent);
+}
+
+.translation-line {
+  margin-bottom: 12px;
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+.translation-line .line-marker {
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-align: center;
+  line-height: 22px;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .translation-block {
+    grid-template-columns: 1fr;
+  }
+  .translation-side.english-side {
+    border-left: none;
+    border-top: 1px solid var(--color-border);
+  }
+}
+
+/* ===== Group Chat ===== */
+.group-chat {
+  background: var(--color-code-bg);
+  border-radius: 12px;
+  padding: 24px;
+  margin: 32px 0;
+  max-width: 600px;
+}
+
+.group-chat-header {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.8rem;
+  color: var(--code-comment);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.chat-message {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.chat-message.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.chat-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  font-family: var(--font-code);
+  color: #fff;
+}
+
+.chat-avatar.berry { background: var(--color-berry); }
+.chat-avatar.spectral { background: var(--color-spectral); }
+.chat-avatar.hamiltonian { background: var(--color-hamiltonian); }
+.chat-avatar.purity { background: var(--color-purity); }
+
+.chat-body {
+  flex: 1;
+}
+
+.chat-name {
+  font-family: var(--font-code);
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.chat-name.berry { color: var(--color-berry); }
+.chat-name.spectral { color: var(--color-spectral); }
+.chat-name.hamiltonian { color: var(--color-hamiltonian); }
+.chat-name.purity { color: var(--color-purity); }
+
+.chat-text {
+  font-size: 0.88rem;
+  color: var(--code-text);
+  line-height: 1.55;
+}
+
+.chat-text code {
+  font-family: var(--font-code);
+  font-size: 0.8rem;
+  color: var(--code-fn);
+}
+
+.chat-replay-btn {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 6px 14px;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--code-comment);
+  font-family: var(--font-code);
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.chat-replay-btn:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+/* ===== Data Flow Animation ===== */
+.pipeline-flow {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin: 32px 0;
+  overflow-x: auto;
+  padding: 20px 0;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.pipeline-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 2px solid var(--color-border);
+  background: var(--color-bg);
+  min-width: 100px;
+  opacity: 0;
+  transform: scale(0.9);
+  transition: opacity 0.4s ease, transform 0.4s ease, border-color 0.3s;
+}
+
+.pipeline-stage.visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.pipeline-stage.active {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 20px rgba(217,79,48,0.15);
+}
+
+.pipeline-stage-icon {
+  font-size: 1.4rem;
+  margin-bottom: 6px;
+}
+
+.pipeline-stage-label {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.75rem;
+  color: var(--color-text);
+}
+
+.pipeline-stage-sub {
+  font-size: 0.68rem;
+  color: var(--color-text-secondary);
+  margin-top: 2px;
+}
+
+.pipeline-arrow {
+  font-size: 1.2rem;
+  color: var(--color-text-secondary);
+  padding: 0 4px;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.pipeline-arrow.visible { opacity: 1; }
+
+/* ===== Quiz ===== */
+.quiz {
+  background: var(--color-bg);
+  border: 2px solid var(--color-border);
+  border-radius: 12px;
+  padding: 28px;
+  margin: 36px 0;
+}
+
+[data-theme="dark"] .quiz {
+  background: var(--color-bg-warm);
+}
+
+.quiz-header {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--color-accent);
+  margin-bottom: 12px;
+}
+
+.quiz-question {
+  font-size: 1.05rem;
+  font-weight: 500;
+  margin-bottom: 20px;
+  line-height: 1.55;
+}
+
+.quiz-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.quiz-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 16px;
+  border: 1.5px solid var(--color-border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.quiz-option:hover:not(.disabled) {
+  border-color: var(--color-accent);
+  background: rgba(217,79,48,0.04);
+}
+
+.quiz-option.selected.correct {
+  border-color: var(--color-quiz-correct);
+  background: rgba(58,143,92,0.08);
+}
+
+.quiz-option.selected.incorrect {
+  border-color: var(--color-quiz-incorrect);
+  background: rgba(217,79,48,0.08);
+}
+
+.quiz-option.correct-answer {
+  border-color: var(--color-quiz-correct);
+}
+
+.quiz-option.disabled { cursor: default; }
+.quiz-option mjx-container { display: inline !important; }
+.quiz-option mjx-container[jax="CHTML"][display="true"] { display: inline !important; margin: 0 !important; }
+.quiz-explanation mjx-container { display: inline !important; }
+.quiz-explanation mjx-container[jax="CHTML"][display="true"] { display: inline !important; margin: 0 !important; }
+
+.quiz-marker {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+
+.quiz-option.selected .quiz-marker {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: #fff;
+}
+
+.quiz-option.selected.correct .quiz-marker {
+  background: var(--color-quiz-correct);
+  border-color: var(--color-quiz-correct);
+}
+
+.quiz-explanation {
+  margin-top: 16px;
+  padding: 14px;
+  border-radius: 8px;
+  background: rgba(217,79,48,0.05);
+  font-size: 0.9rem;
+  line-height: 1.55;
+  display: none;
+}
+
+.quiz-explanation.show { display: block; }
+
+/* ===== Tooltips ===== */
+.glossary-term {
+  border-bottom: 1.5px dotted var(--color-accent);
+  cursor: help;
+  position: relative;
+}
+
+.tooltip {
+  position: fixed;
+  z-index: 3000;
+  background: var(--color-tooltip-bg);
+  color: var(--color-tooltip-text);
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  max-width: 320px;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.2s, transform 0.2s;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+}
+
+.tooltip.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ===== Observable Cards ===== */
+.observable-card {
+  border-left: 4px solid;
+  padding: 24px;
+  margin: 28px 0;
+  border-radius: 0 10px 10px 0;
+  background: var(--color-bg);
+}
+
+[data-theme="dark"] .observable-card {
+  background: rgba(255,255,255,0.03);
+}
+
+.observable-card.berry { border-color: var(--color-berry); }
+.observable-card.spectral { border-color: var(--color-spectral); }
+.observable-card.hamiltonian { border-color: var(--color-hamiltonian); }
+.observable-card.purity { border-color: var(--color-purity); }
+
+.observable-card-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.2rem;
+  margin-bottom: 12px;
+}
+
+.observable-card-title.berry { color: var(--color-berry); }
+.observable-card-title.spectral { color: var(--color-spectral); }
+.observable-card-title.hamiltonian { color: var(--color-hamiltonian); }
+.observable-card-title.purity { color: var(--color-purity); }
+
+/* ===== Math blocks ===== */
+.math-block {
+  padding: 20px 24px;
+  margin: 20px 0;
+  background: var(--color-bg-warm);
+  border-radius: 8px;
+  border-left: 3px solid var(--color-accent);
+  overflow-x: auto;
+}
+
+[data-theme="dark"] .math-block {
+  background: rgba(255,255,255,0.03);
+}
+
+/* ===== Result highlight ===== */
+.result-box {
+  background: linear-gradient(135deg, rgba(217,79,48,0.06), rgba(217,79,48,0.02));
+  border: 1px solid rgba(217,79,48,0.2);
+  border-radius: 10px;
+  padding: 20px 24px;
+  margin: 24px 0;
+}
+
+.result-box .result-label {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--color-accent);
+  margin-bottom: 8px;
+}
+
+.result-box .result-value {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--color-text);
+}
+
+.result-box .result-desc {
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  margin-top: 6px;
+}
+
+/* ===== Pipeline Diagram (Module 7) ===== */
+.pipeline-diagram {
+  background: var(--color-code-bg);
+  border-radius: 12px;
+  padding: 28px;
+  margin: 32px 0;
+  color: var(--code-text);
+  font-family: var(--font-code);
+  font-size: 0.78rem;
+  line-height: 2;
+  white-space: pre-wrap;
+}
+
+/* ===== Rankings Table ===== */
+.rankings-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 24px 0;
+  font-size: 0.9rem;
+}
+
+.rankings-table th {
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-align: left;
+  padding: 10px 14px;
+  border-bottom: 2px solid var(--color-border);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--color-text-secondary);
+}
+
+.rankings-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.rankings-table tr:hover {
+  background: rgba(217,79,48,0.03);
+}
+
+.rank-highlight {
+  font-weight: 700;
+  color: var(--color-accent);
+}
+
+/* ===== Caveat box ===== */
+.caveat-box {
+  background: rgba(212,168,67,0.08);
+  border: 1px solid rgba(212,168,67,0.3);
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin: 24px 0;
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+.caveat-box-label {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--color-purity);
+  margin-bottom: 6px;
+}
+
+/* ===== Utility ===== */
+.mt-s { margin-top: 16px; }
+.mt-m { margin-top: 32px; }
+.mt-l { margin-top: 48px; }
+.mb-s { margin-bottom: 16px; }
+.mb-m { margin-bottom: 32px; }
+.mb-l { margin-bottom: 48px; }
+
+.text-accent { color: var(--color-accent); }
+.text-secondary { color: var(--color-text-secondary); }
+
+ul.clean-list {
+  list-style: none;
+  padding-left: 0;
+}
+
+ul.clean-list li {
+  padding-left: 20px;
+  position: relative;
+  margin-bottom: 8px;
+}
+
+ul.clean-list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 10px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-accent);
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 600px) {
+  .module-title { font-size: 1.8rem; }
+  .module { padding: 70px 16px 40px; }
+  .nav-title { display: none; }
+  .pipeline-flow { gap: 8px; }
+  .pipeline-stage { min-width: 70px; padding: 8px 10px; }
+  .pipeline-stage-label { font-size: 0.65rem; }
+}
+
+/* ===== Scrollbar ===== */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-text-secondary); }
 </style>
 </head>
 <body>
-<div class="page">
 
-  <!-- ════════ HERO ════════ -->
-  <section class="hero">
-    <div class="hero__eyebrow reveal">Quantum Cognitive Machine Learning</div>
-    <h1 class="hero__title reveal">
-      <em>Geometric Observables</em><br>for Financial Regime Detection
-    </h1>
-    <p class="hero__subtitle reveal">
-      Unsupervised Hilbert space geometry detects market regime shifts without crisis labels — 19 channels from a single embedding
-    </p>
-    <div class="hero__stats reveal">
-      <div class="hero__stat">
-        <div class="hero__stat-value">0.72</div>
-        <div class="hero__stat-label">OOS Cohen's d</div>
-      </div>
-      <div class="hero__stat">
-        <div class="hero__stat-value">30%</div>
-        <div class="hero__stat-label">Fewer false alarms</div>
-      </div>
-      <div class="hero__stat">
-        <div class="hero__stat-value">17</div>
-        <div class="hero__stat-label">Historical crises</div>
-      </div>
-      <div class="hero__stat">
-        <div class="hero__stat-value">46</div>
-        <div class="hero__stat-label">Methods compared</div>
-      </div>
-    </div>
-    <div class="hero__divider reveal"></div>
-  </section>
+<!-- ===== NAVIGATION ===== -->
+<nav class="nav" role="navigation" aria-label="Course navigation">
+  <span class="nav-title">QCML Geometric Observables</span>
+  <div class="nav-dots" id="navDots">
+    <div class="nav-dot active" data-module="0" data-label="Overview" aria-label="Module 1" role="button" tabindex="0"></div>
+    <div class="nav-dot" data-module="1" data-label="Data" aria-label="Module 2" role="button" tabindex="0"></div>
+    <div class="nav-dot" data-module="2" data-label="Embedding" aria-label="Module 3" role="button" tabindex="0"></div>
+    <div class="nav-dot" data-module="3" data-label="Observables" aria-label="Module 4" role="button" tabindex="0"></div>
+    <div class="nav-dot" data-module="4" data-label="Detection" aria-label="Module 5" role="button" tabindex="0"></div>
+    <div class="nav-dot" data-module="5" data-label="Horse Race" aria-label="Module 6" role="button" tabindex="0"></div>
+    <div class="nav-dot" data-module="6" data-label="Results" aria-label="Module 7" role="button" tabindex="0"></div>
+  </div>
+  <div class="nav-controls">
+    <button class="nav-btn" id="searchBtn" aria-label="Search"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> <kbd>&#8984;K</kbd></button>
+    <button class="nav-btn" id="themeToggle" aria-label="Toggle dark mode"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button>
+  </div>
+</nav>
 
-  <!-- ════════ PIPELINE ════════ -->
-  <section class="pipeline-section">
-    <div class="section-label reveal">Architecture</div>
-    <h2 class="section-title reveal">From Time Series to Geometric Regime Signals</h2>
-    <div class="pipeline reveal">
-
-      <div class="pipeline__step">
-        <div class="pipeline__step-icon" style="background: rgba(91,141,239,0.12); color: var(--blue);">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>
-        </div>
-        <div class="pipeline__step-title">Financial Data</div>
-        <div class="pipeline__step-math">SPY, DIA</div>
-        <div class="pipeline__step-detail">1995 &ndash; 2024<br>enriched features</div>
-        <span class="pipeline__arrow">&rarr;</span>
-      </div>
-
-      <div class="pipeline__step">
-        <div class="pipeline__step-icon" style="background: rgba(155,123,234,0.12); color: var(--violet);">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-        </div>
-        <div class="pipeline__step-title">QCML Embedding</div>
-        <div class="pipeline__step-math">H(x) = &frac12;&Sigma;(A<sub>k</sub> &minus; x<sub>k</sub>I)&sup2;</div>
-        <div class="pipeline__step-detail">|&psi;<sub>0</sub>(x)&rang; ground state<br>dim = 4 &hellip; 16</div>
-        <span class="pipeline__arrow">&rarr;</span>
-      </div>
-
-      <div class="pipeline__step">
-        <div class="pipeline__step-icon" style="background: rgba(62,207,207,0.12); color: var(--teal);">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2a10 10 0 0 1 0 20 10 10 0 0 1 0-20"/><path d="M2 12h4M18 12h4"/></svg>
-        </div>
-        <div class="pipeline__step-title">Quantum Geometry</div>
-        <div class="pipeline__step-math">g<sub>ab</sub>, F<sub>ab</sub>, Ch<sub>1</sub></div>
-        <div class="pipeline__step-detail">Fubini&ndash;Study metric<br>Berry curvature &bull; Chern</div>
-        <span class="pipeline__arrow">&rarr;</span>
-      </div>
-
-      <div class="pipeline__step">
-        <div class="pipeline__step-icon" style="background: rgba(212,168,83,0.12); color: var(--gold);">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-        </div>
-        <div class="pipeline__step-title">19 Observables</div>
-        <div class="pipeline__step-math">7 families &bull; 17 active</div>
-        <div class="pipeline__step-detail">Hermitian operators<br>geometric invariants</div>
-        <span class="pipeline__arrow">&rarr;</span>
-      </div>
-
-      <div class="pipeline__step">
-        <div class="pipeline__step-icon" style="background: rgba(79,216,154,0.12); color: var(--green);">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-        </div>
-        <div class="pipeline__step-title">Regime Detection</div>
-        <div class="pipeline__step-math">&chi;&sup2; = 233.1</div>
-        <div class="pipeline__step-detail">46 methods &times; 17 crises<br>walk-forward OOS</div>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- ════════ OBSERVABLE FAMILIES ════════ -->
-  <section>
-    <div class="section-label reveal">Observable Taxonomy</div>
-    <h2 class="section-title reveal">Seven Families of Geometric Channels</h2>
-    <div class="families-grid">
-
-      <div class="family-card reveal" data-color="gold">
-        <div class="family-card__header">
-          <span class="family-card__name">Holonomy</span>
-          <span class="family-card__count">2 ch</span>
-        </div>
-        <ul class="family-card__channels">
-          <li>Berry Phase Rate</li>
-          <li>Geometric Phase Rate</li>
-        </ul>
-        <div class="family-card__quantity">Phase along closed loops in parameter space</div>
-      </div>
-
-      <div class="family-card reveal" data-color="teal">
-        <div class="family-card__header">
-          <span class="family-card__name">Metric</span>
-          <span class="family-card__count">2 ch</span>
-        </div>
-        <ul class="family-card__channels">
-          <li>QFI Determinant</li>
-          <li>Hamiltonian Sensitivity</li>
-        </ul>
-        <div class="family-card__quantity">Quantum Fisher information &amp; manifold volume</div>
-      </div>
-
-      <div class="family-card reveal" data-color="blue">
-        <div class="family-card__header">
-          <span class="family-card__name">State Dynamics</span>
-          <span class="family-card__count">3 ch</span>
-        </div>
-        <ul class="family-card__channels">
-          <li>Multi-Lag Fidelity</li>
-          <li>Reduced Purity</li>
-          <li>Quantum Relative Entropy</li>
-        </ul>
-        <div class="family-card__quantity">State overlap, entanglement &amp; divergence</div>
-      </div>
-
-      <div class="family-card reveal" data-color="violet">
-        <div class="family-card__header">
-          <span class="family-card__name">Kinematics</span>
-          <span class="family-card__count">2 ch</span>
-        </div>
-        <ul class="family-card__channels">
-          <li>Geodesic Velocity</li>
-          <li>Speed Limit Ratio</li>
-        </ul>
-        <div class="family-card__quantity">Hamiltonian speed &amp; quantum speed limit</div>
-      </div>
-
-      <div class="family-card reveal" data-color="cyan">
-        <div class="family-card__header">
-          <span class="family-card__name">Spectral</span>
-          <span class="family-card__count">4 ch</span>
-        </div>
-        <ul class="family-card__channels">
-          <li>Spectral Entropy</li>
-          <li>Spectral Complexity</li>
-          <li>Effective State Dimension</li>
-          <li>Level Spacing Ratio</li>
-        </ul>
-        <div class="family-card__quantity">Eigenvalue distribution shape &amp; disorder</div>
-      </div>
-
-      <div class="family-card reveal" data-color="rose">
-        <div class="family-card__header">
-          <span class="family-card__name">Curvature</span>
-          <span class="family-card__count">2 ch</span>
-        </div>
-        <ul class="family-card__channels">
-          <li>Sectional Curvature Sign</li>
-          <li>Geodesic Curvature</li>
-        </ul>
-        <div class="family-card__quantity">Gaussian curvature &amp; geodesic deviation</div>
-      </div>
-
-      <div class="family-card reveal" data-color="green">
-        <div class="family-card__header">
-          <span class="family-card__name">Topology</span>
-          <span class="family-card__count">2 ch</span>
-        </div>
-        <ul class="family-card__channels">
-          <li>QCML Chern</li>
-          <li>Dimensionality Collapse</li>
-        </ul>
-        <div class="family-card__quantity">Topological winding &amp; manifold dimension</div>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- ════════ KEY RESULTS ════════ -->
-  <section>
-    <div class="section-label reveal">Empirical Results</div>
-    <h2 class="section-title reveal">46 Methods &times; 17 Crises (2000 &ndash; 2024)</h2>
-    <div class="results-grid">
-
-      <!-- Offline -->
-      <div class="result-col reveal">
-        <span class="result-col__badge result-col__badge--offline">Offline Separability</span>
-        <div class="result-col__title">Retrospective Panel</div>
-        <div class="result-item">
-          <span class="result-item__value" style="color: var(--blue);">0.83</span>
-          <span class="result-item__label">Reduced Purity <span class="result-item__rank">#1 / 46</span></span>
-        </div>
-        <div class="result-item">
-          <span class="result-item__value" style="color: var(--slate);">0.80</span>
-          <span class="result-item__label">Absorption Ratio <span class="result-item__rank">#2 classical</span></span>
-        </div>
-        <div class="result-item">
-          <span class="result-item__value" style="color: var(--blue);">0.61</span>
-          <span class="result-item__label">Berry Phase Rate <span class="result-item__rank">#9 / 46</span></span>
-        </div>
-        <div class="result-item">
-          <span class="result-item__value" style="color: var(--text-muted); font-size: 16px;">0.36</span>
-          <span class="result-item__label" style="opacity:0.6;">Random Forest <span class="result-item__rank">#30</span></span>
-        </div>
-      </div>
-
-      <!-- Walk-Forward OOS -->
-      <div class="result-col reveal" style="border-color: rgba(212,168,83,0.2);">
-        <span class="result-col__badge result-col__badge--oos">Walk-Forward OOS</span>
-        <div class="result-col__title">Unbiased Estimate</div>
-        <div class="result-item result-item--hero">
-          <span class="result-item__value">0.72</span>
-          <span class="result-item__label">Berry Phase Rate<br><span style="font-family: var(--font-mono); font-size: 11px; color: var(--gold); opacity: 0.7;">nested HPO &bull; 5/9 windows</span></span>
-        </div>
-        <div class="result-item">
-          <span class="result-item__value" style="color: var(--green); font-size: 20px;">2.5</span>
-          <span class="result-item__label">false alarms / yr<br><span style="font-family:var(--font-mono); font-size:10px; color:var(--text-muted);">vs RF 3.6 / yr (30% fewer)</span></span>
-        </div>
-        <div class="result-item">
-          <span class="result-item__value" style="color: var(--gold); font-size: 20px;">~90d</span>
-          <span class="result-item__label">lead time vs RF<br><span style="font-family:var(--font-mono); font-size:10px; color:var(--text-muted);">retrospective methodology</span></span>
-        </div>
-      </div>
-
-      <!-- Orthogonality -->
-      <div class="result-col reveal">
-        <span class="result-col__badge result-col__badge--ortho">Orthogonality</span>
-        <div class="result-col__title">Complementary Coverage</div>
-        <div class="result-item">
-          <span class="result-item__value" style="color: var(--teal);">0.13</span>
-          <span class="result-item__label">mean |&rho;| to baselines<br><span style="font-family:var(--font-mono); font-size:10px; color:var(--text-muted);">near-zero cross-correlation</span></span>
-        </div>
-        <div class="result-item">
-          <span class="result-item__value" style="color: var(--green); font-size: 20px;">+25%</span>
-          <span class="result-item__label">geometry on novel crises<br><span style="font-family:var(--font-mono); font-size:10px; color:var(--text-muted);">vs CUSUM &minus;73%</span></span>
-        </div>
-        <div class="result-item">
-          <span class="result-item__value" style="color: var(--teal); font-size: 18px;">233.1</span>
-          <span class="result-item__label">Friedman &chi;&sup2;<br><span style="font-family:var(--font-mono); font-size:10px; color:var(--text-muted);">p &lt; 10<sup>&minus;16</sup></span></span>
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- ════════ TIMELINE + COMPARISON ════════ -->
-  <section>
-    <div class="bottom-grid">
-
-      <!-- Crisis Timeline -->
-      <div class="timeline reveal">
-        <div class="timeline__title">17 Crisis Episodes</div>
-        <div class="timeline__track">
-          <div class="timeline__axis"></div>
-
-          <div class="timeline__event"><span class="timeline__year">2000</span><span class="timeline__dot timeline__dot--conv"></span><span class="timeline__name">Dot-Com Crash</span></div>
-          <div class="timeline__event"><span class="timeline__year">2001</span><span class="timeline__dot timeline__dot--conv"></span><span class="timeline__name">September 11</span></div>
-          <div class="timeline__event"><span class="timeline__year">2007</span><span class="timeline__dot timeline__dot--conv"></span><span class="timeline__name">Quant Crisis</span></div>
-          <div class="timeline__event"><span class="timeline__year">2008</span><span class="timeline__dot timeline__dot--conv"></span><span class="timeline__name">Global Financial Crisis</span></div>
-          <div class="timeline__event"><span class="timeline__year">2010</span><span class="timeline__dot timeline__dot--conv"></span><span class="timeline__name">Flash Crash</span></div>
-          <div class="timeline__event"><span class="timeline__year">2011</span><span class="timeline__dot timeline__dot--conv"></span><span class="timeline__name">Euro Debt Crisis</span></div>
-          <div class="timeline__event"><span class="timeline__year">2013</span><span class="timeline__dot timeline__dot--conv"></span><span class="timeline__name">Taper Tantrum</span></div>
-          <div class="timeline__event"><span class="timeline__year">2015</span><span class="timeline__dot timeline__dot--conv"></span><span class="timeline__name">China Crash</span></div>
-          <div class="timeline__event"><span class="timeline__year">2016</span><span class="timeline__dot timeline__dot--novel"></span><span class="timeline__name">Brexit Vote</span></div>
-          <div class="timeline__event"><span class="timeline__year">2018</span><span class="timeline__dot timeline__dot--novel"></span><span class="timeline__name">Volmageddon</span></div>
-          <div class="timeline__event"><span class="timeline__year">2018</span><span class="timeline__dot timeline__dot--novel"></span><span class="timeline__name">Q4 Selloff</span></div>
-          <div class="timeline__event"><span class="timeline__year">2019</span><span class="timeline__dot timeline__dot--novel"></span><span class="timeline__name">Repo Crisis</span></div>
-          <div class="timeline__event"><span class="timeline__year">2020</span><span class="timeline__dot timeline__dot--conv"></span><span class="timeline__name">COVID-19 Pandemic</span></div>
-          <div class="timeline__event"><span class="timeline__year">2021</span><span class="timeline__dot timeline__dot--novel"></span><span class="timeline__name">Meme / Archegos</span></div>
-          <div class="timeline__event"><span class="timeline__year">2022</span><span class="timeline__dot timeline__dot--novel"></span><span class="timeline__name">Rate Hike Regime</span></div>
-          <div class="timeline__event"><span class="timeline__year">2023</span><span class="timeline__dot timeline__dot--novel"></span><span class="timeline__name">SVB Contagion</span></div>
-          <div class="timeline__event"><span class="timeline__year">2024</span><span class="timeline__dot timeline__dot--novel"></span><span class="timeline__name">Carry Unwind</span></div>
-        </div>
-        <div class="timeline__legend">
-          <div class="timeline__legend-item"><span class="timeline__legend-dot" style="background:var(--blue)"></span> Conventional</div>
-          <div class="timeline__legend-item"><span class="timeline__legend-dot" style="background:var(--gold)"></span> Structurally novel</div>
-        </div>
-      </div>
-
-      <!-- Comparison Table -->
-      <div class="comparison reveal">
-        <div class="comparison__title">Framework Comparison</div>
-        <table>
-          <thead>
-            <tr>
-              <th>Framework</th>
-              <th>Metric</th>
-              <th>Curvature</th>
-              <th>Gauge</th>
-              <th>Topo. Inv.</th>
-              <th>&Delta;(x)</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Info. Geometry</td>
-              <td>Fisher&ndash;Rao</td>
-              <td>Sectional</td>
-              <td>&alpha;-conn.</td>
-              <td class="dash">&mdash;</td>
-              <td class="dash">&mdash;</td>
-            </tr>
-            <tr>
-              <td>Opt. Transport</td>
-              <td>Wasserstein</td>
-              <td class="dash">&mdash;</td>
-              <td class="dash">&mdash;</td>
-              <td class="dash">&mdash;</td>
-              <td class="dash">&mdash;</td>
-            </tr>
-            <tr>
-              <td>TDA</td>
-              <td class="dash">&mdash;</td>
-              <td class="dash">&mdash;</td>
-              <td class="dash">&mdash;</td>
-              <td>Betti</td>
-              <td class="dash">&mdash;</td>
-            </tr>
-            <tr>
-              <td>Network Ricci</td>
-              <td class="dash">&mdash;</td>
-              <td>Ollivier</td>
-              <td class="dash">&mdash;</td>
-              <td class="dash">&mdash;</td>
-              <td class="dash">&mdash;</td>
-            </tr>
-            <tr>
-              <td>RMT</td>
-              <td class="dash">&mdash;</td>
-              <td class="dash">&mdash;</td>
-              <td class="dash">&mdash;</td>
-              <td class="dash">&mdash;</td>
-              <td>MP edge</td>
-            </tr>
-            <tr>
-              <td>Signatures</td>
-              <td>Sig. kernel</td>
-              <td class="dash">&mdash;</td>
-              <td class="dash">&mdash;</td>
-              <td class="dash">&mdash;</td>
-              <td class="dash">&mdash;</td>
-            </tr>
-            <tr class="highlight">
-              <td>QCML (ours)</td>
-              <td class="check">Fubini&ndash;Study</td>
-              <td class="check">Berry</td>
-              <td class="check">U(1)</td>
-              <td class="check">Chern</td>
-              <td class="check">&Delta;(x)</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <div style="margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border);">
-          <div style="font-family: var(--font-display); font-size: 13px; font-weight: 600; color: var(--text-dim); margin-bottom: 8px;">Three-Paper Series</div>
-          <div style="font-family: var(--font-mono); font-size: 10px; color: var(--text-muted); line-height: 1.6;">
-            <strong style="color: var(--gold);">Paper 1</strong> &mdash; 4 core observables &bull; walk-forward validation<br>
-            <strong style="color: var(--text-dim);">Paper 2</strong> &mdash; 19-channel observatory &bull; orthogonality analysis<br>
-            <strong style="color: var(--text-dim);">Paper 3</strong> &mdash; adaptive fusion &bull; regime-conditional weighting
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- ════════ FOOTER ════════ -->
-  <footer class="footer">
-    <p class="footer__text">
-      QCML Geometric SDE &mdash; 3 theorems &bull; 19 channels &bull; 17 crises &bull; walk-forward validated
-    </p>
-  </footer>
-
+<!-- ===== SEARCH OVERLAY ===== -->
+<div class="search-overlay" id="searchOverlay" role="dialog" aria-label="Search course">
+  <div class="search-box">
+    <input class="search-input" id="searchInput" type="text" placeholder="Search modules, concepts, functions..." autocomplete="off" aria-label="Search query">
+    <div class="search-results" id="searchResults"></div>
+  </div>
 </div>
 
+<!-- ===== TOOLTIP ELEMENT ===== -->
+<div class="tooltip" id="tooltip" role="tooltip"></div>
+
+
+<!-- =========================================================== -->
+<!-- MODULE 1: What This Project Does                            -->
+<!-- =========================================================== -->
+<section class="module" id="module-0" data-search-title="What This Project Does">
+<div class="module-inner">
+  <div class="module-number">Module 1</div>
+  <h1 class="module-title">What This Project Does</h1>
+
+  <p class="module-text">
+    Financial markets have <strong>regimes</strong>: extended stretches of calm punctuated by crises (the 2008 GFC, COVID-19, the 2022 rate-hike sell-off, ...). A trading desk that can detect a regime shift in real time -- even a few days early -- gains a decisive edge in risk management.
+  </p>
+
+  <p class="module-text">
+    The central insight of this project: <strong>encode each day's market data as a quantum state in a Hilbert space, then measure geometric properties of the resulting state manifold.</strong> When the market transitions between regimes, the geometry of the manifold changes -- curvature spikes, spectral gaps collapse, entanglement structure reorganizes. These geometric observables become crisis detectors.
+  </p>
+
+  <div class="result-box">
+    <div class="result-label">Headline Result</div>
+    <div class="result-value">Berry Phase Rate: <em>d</em> = 0.72 OOS</div>
+    <div class="result-desc">Out-of-sample <span class="glossary-term" data-def="Cohen's d measures the standardized difference between two group means (crisis vs. normal). d=0.2 is small, 0.5 medium, 0.8 large. Here it quantifies how well a detector separates crisis periods from calm periods.">Cohen's d</span> via <span class="glossary-term" data-def="Walk-forward evaluation: train on historical data, freeze the model, then test on the next unseen period. Repeat across multiple windows. Prevents look-ahead bias -- the model never sees future data during training.">walk-forward evaluation</span>, with 30% fewer false alarms per year than a Random Forest baseline (2.5 vs. 3.6/yr).</div>
+  </div>
+
+  <p class="module-text">
+    The paper, <em>Geometric Observables for Financial Regime Detection</em>, compares <strong>46 methods</strong> across <strong>17 historical crises</strong> (2000--2024): 22 geometric QCML channels, 18 classical baselines (Random Forest, GARCH, Hidden Markov, BOCPD, VIX, ...), and 6 ensembles.
+  </p>
+
+  <p class="module-text">
+    This course walks through the entire pipeline, from downloading prices to the final statistical horse race, mapping every step to the mathematics you already know.
+  </p>
+
+  <!-- Pipeline flow animation -->
+  <div class="pipeline-flow" id="mainPipeline" aria-label="Pipeline overview">
+    <div class="pipeline-stage" data-delay="0"><div class="pipeline-stage-icon">$</div><div class="pipeline-stage-label">Prices</div><div class="pipeline-stage-sub"><span class="glossary-term" data-def="yfinance: a free Python library that downloads historical stock prices from Yahoo Finance. We use it to get adjusted close prices for SPY and DIA ETFs.">yfinance</span></div></div>
+    <div class="pipeline-arrow" data-delay="200">&rarr;</div>
+    <div class="pipeline-stage" data-delay="400"><div class="pipeline-stage-icon">&nabla;</div><div class="pipeline-stage-label">Features</div><div class="pipeline-stage-sub">13 columns</div></div>
+    <div class="pipeline-arrow" data-delay="600">&rarr;</div>
+    <div class="pipeline-stage" data-delay="800"><div class="pipeline-stage-icon">&#8711;</div><div class="pipeline-stage-label"><span class="glossary-term" data-def="Principal Component Analysis: linear dimensionality reduction that projects data onto the directions of maximum variance. Reduces the 13-feature space to ~8 orthogonal components.">PCA</span></div><div class="pipeline-stage-sub">dim reduction</div></div>
+    <div class="pipeline-arrow" data-delay="1000">&rarr;</div>
+    <div class="pipeline-stage" data-delay="1200"><div class="pipeline-stage-icon">&#x0124;</div><div class="pipeline-stage-label">Hamiltonian</div><div class="pipeline-stage-sub">H(x)</div></div>
+    <div class="pipeline-arrow" data-delay="1400">&rarr;</div>
+    <div class="pipeline-stage" data-delay="1600"><div class="pipeline-stage-icon">|&psi;&rang;</div><div class="pipeline-stage-label">Ground State</div><div class="pipeline-stage-sub">eigh(H)</div></div>
+    <div class="pipeline-arrow" data-delay="1800">&rarr;</div>
+    <div class="pipeline-stage" data-delay="2000"><div class="pipeline-stage-icon">F</div><div class="pipeline-stage-label">Observables</div><div class="pipeline-stage-sub">Berry, Entropy, ...</div></div>
+    <div class="pipeline-arrow" data-delay="2200">&rarr;</div>
+    <div class="pipeline-stage" data-delay="2400"><div class="pipeline-stage-icon">z</div><div class="pipeline-stage-label">Z-scores</div><div class="pipeline-stage-sub">expanding window</div></div>
+    <div class="pipeline-arrow" data-delay="2600">&rarr;</div>
+    <div class="pipeline-stage" data-delay="2800"><div class="pipeline-stage-icon">!</div><div class="pipeline-stage-label">Detection</div><div class="pipeline-stage-sub">crisis alert</div></div>
+  </div>
+
+  <!-- Quiz 1 -->
+  <div class="quiz" data-quiz="q1">
+    <div class="quiz-header">Comprehension Check</div>
+    <div class="quiz-question">The QCML embedding maps each day's market data to a quantum state $|\psi(x_t)\rangle$. As the market evolves from calm to crisis, which geometric quantity is most analogous to the <em>rate of change of the adiabatic connection</em> along the state path?</div>
+    <div class="quiz-options">
+      <div class="quiz-option" data-correct="false"><span class="quiz-marker">A</span> Spectral entropy of the error Hamiltonian</div>
+      <div class="quiz-option" data-correct="true"><span class="quiz-marker">B</span> Berry curvature (the rate of accumulated geometric phase)</div>
+      <div class="quiz-option" data-correct="false"><span class="quiz-marker">C</span> Purity of the reduced density matrix</div>
+      <div class="quiz-option" data-correct="false"><span class="quiz-marker">D</span> The ground-state energy $E_0(x)$</div>
+    </div>
+    <div class="quiz-explanation">The Berry curvature $F_{ab}$ is the field strength of the Berry connection $\mathcal{A}_a = i\langle\psi|\partial_a\psi\rangle$, making it the natural measure of how the adiabatic connection rotates as parameters change. The other observables measure different geometric/spectral properties: entropy captures the excitation spectrum structure, purity captures subsystem entanglement, and $E_0$ is a scalar (not a connection curvature).</div>
+  </div>
+</div>
+</section>
+
+
+<!-- =========================================================== -->
+<!-- MODULE 2: From Market Data to Feature Space                 -->
+<!-- =========================================================== -->
+<section class="module" id="module-1" data-search-title="From Market Data to Feature Space">
+<div class="module-inner wide">
+  <div class="module-number">Module 2</div>
+  <h1 class="module-title">From Market Data to Feature Space</h1>
+
+  <p class="module-text">
+    The raw input is daily adjusted close prices for two ETFs: <strong>SPY</strong> (S&amp;P 500) and <strong>DIA</strong> (Dow Jones), downloaded via <span class="glossary-term" data-def="yfinance: a free Python library that downloads historical stock prices from Yahoo Finance. We use it to get adjusted close prices for SPY and DIA ETFs.">yfinance</span>. From these two price series, we build a 13-column feature matrix capturing returns, volatility at two scales, momentum at two scales, and cross-sectional statistics.
+  </p>
+
+  <h2 class="module-subtitle">Step 1: Log Returns and Rolling Statistics</h2>
+
+  <p class="module-text">
+    The feature engineering is deliberately simple -- no proprietary signals, no alternative data. For each symbol we compute:
+  </p>
+
+  <ul class="clean-list module-text">
+    <li>Log return: $r_t = \ln(P_t / P_{t-1})$</li>
+    <li>5-day rolling volatility: $\sigma^{(5)}_t = \mathrm{std}(r_{t-4:t})$</li>
+    <li>20-day rolling volatility: $\sigma^{(20)}_t$</li>
+    <li>5-day momentum: $(P_t - P_{t-5})/P_{t-5}$</li>
+    <li>20-day momentum: $(P_t - P_{t-20})/P_{t-20}$</li>
+  </ul>
+
+  <p class="module-text">
+    With 2 symbols that gives $2 \times 5 = 10$ per-asset features. Three cross-sectional features are added: 5-day rolling cross-correlation, 20-day cross-volatility dispersion, and average return. Total: <strong>13 features</strong>.
+  </p>
+
+  <!-- Code + English translation -->
+  <div class="translation-block">
+    <div class="translation-side code-side">
+      <div class="translation-label">Code -- data_loader.py:393-427</div>
+<span class="kw">def</span> <span class="fn">create_feature_matrix</span>(prices_df):
+    log_ret = np.<span class="fn">log</span>(prices_df / prices_df.<span class="fn">shift</span>(<span class="num">1</span>))
+
+    features_dict = {}
+    <span class="kw">for</span> col <span class="kw">in</span> prices_df.columns:
+        features_dict[<span class="str">f'{col}_ret'</span>] = log_ret[col]
+        features_dict[<span class="str">f'{col}_vol5'</span>] = \
+            log_ret[col].<span class="fn">rolling</span>(<span class="num">5</span>).<span class="fn">std</span>()
+        features_dict[<span class="str">f'{col}_vol20'</span>] = \
+            log_ret[col].<span class="fn">rolling</span>(<span class="num">20</span>).<span class="fn">std</span>()
+        features_dict[<span class="str">f'{col}_mom5'</span>] = \
+            prices_df[col].<span class="fn">pct_change</span>(<span class="num">5</span>)
+        features_dict[<span class="str">f'{col}_mom20'</span>] = \
+            prices_df[col].<span class="fn">pct_change</span>(<span class="num">20</span>)
+
+    <span class="kw">if</span> <span class="fn">len</span>(prices_df.columns) > <span class="num">1</span>:
+        features_dict[<span class="str">'cross_corr5'</span>] = (
+            log_ret.<span class="fn">rolling</span>(<span class="num">5</span>)
+            .<span class="fn">corr</span>().<span class="fn">groupby</span>(level=<span class="num">0</span>)
+            .<span class="fn">mean</span>().<span class="fn">mean</span>(axis=<span class="num">1</span>))
+        features_dict[<span class="str">'cross_vol_disp'</span>] = \
+            log_ret.<span class="fn">rolling</span>(<span class="num">20</span>).<span class="fn">std</span>().<span class="fn">std</span>(axis=<span class="num">1</span>)
+        features_dict[<span class="str">'avg_ret'</span>] = log_ret.<span class="fn">mean</span>(axis=<span class="num">1</span>)
+
+    feat_df = pd.<span class="fn">DataFrame</span>(features_dict)
+    feat_df = feat_df.<span class="fn">replace</span>(
+        [np.inf, -np.inf], np.nan).<span class="fn">dropna</span>()
+    <span class="kw">return</span> feat_df.values, feat_df.index
+    </div>
+    <div class="translation-side english-side">
+      <div class="translation-label">What Each Line Does</div>
+      <div class="translation-line"><span class="line-marker">1</span> Compute daily log-returns $r_t = \ln(P_t/P_{t-1})$ for every symbol.</div>
+      <div class="translation-line"><span class="line-marker">2</span> For each symbol, build 5 features: the raw return, 5-day and 20-day rolling standard deviations (realized vol), and 5-day and 20-day percentage momentum.</div>
+      <div class="translation-line"><span class="line-marker">3</span> If there are multiple symbols, add cross-sectional features: the mean pairwise correlation over 5-day windows, the dispersion of rolling vols across symbols, and the market-wide average return.</div>
+      <div class="translation-line"><span class="line-marker">4</span> Assemble into a matrix, remove infinite values and NaN warm-up rows. Return a numpy array of shape $(T', d)$ where $d = 13$ and $T'$ is the number of valid trading days.</div>
+    </div>
+  </div>
+
+  <h2 class="module-subtitle">Step 2: StandardScaler + PCA + Sphere Normalization</h2>
+
+  <p class="module-text">
+    Before embedding into Hilbert space, the features are standardized (zero mean, unit variance), then projected via <span class="glossary-term" data-def="Principal Component Analysis: linear dimensionality reduction that projects data onto the directions of maximum variance. Reduces the 13-feature space to ~8 orthogonal components.">PCA</span> to $n_{\mathrm{pca}}$ components (typically 8). Finally, a soft normalization maps each feature vector toward the unit sphere, preventing any single day from dominating the Hamiltonian scale.
+  </p>
+
+  <div class="math-block">
+    $$\tilde{x}_t = \frac{x_t^{\mathrm{pca}}}{\|x_t^{\mathrm{pca}}\| + \epsilon}, \qquad \epsilon \sim 10^{-10}$$
+  </div>
+
+  <p class="module-text">
+    This is the "soft" normalization mode used by default. The result is a time series of approximately unit vectors on $S^{n_{\mathrm{pca}}-1}$ -- each day is a point in a low-dimensional feature space, ready for the QCML embedding.
+  </p>
+
+  <!-- Quiz 2 -->
+  <div class="quiz" data-quiz="q2">
+    <div class="quiz-header">Comprehension Check</div>
+    <div class="quiz-question">The feature matrix uses 5-day and 20-day rolling windows for volatility and momentum. If you wanted to detect <em>faster</em> regime shifts (e.g., the 2010 Flash Crash, which unfolded in minutes-to-days), what is the primary trade-off of shrinking these windows to, say, 2-day and 5-day?</div>
+    <div class="quiz-options">
+      <div class="quiz-option" data-correct="false"><span class="quiz-marker">A</span> The Hilbert space dimension would need to increase</div>
+      <div class="quiz-option" data-correct="false"><span class="quiz-marker">B</span> PCA would fail to converge</div>
+      <div class="quiz-option" data-correct="true"><span class="quiz-marker">C</span> Rolling statistics become noisier, increasing false alarm rate in the z-score detector</div>
+      <div class="quiz-option" data-correct="false"><span class="quiz-marker">D</span> The Berry connection would become trivial (zero curvature)</div>
+    </div>
+    <div class="quiz-explanation">Shorter rolling windows produce noisier estimates of volatility and momentum. The downstream z-score detector would see more spurious spikes, raising the false alarm rate. The Hilbert space dimension and Berry curvature structure are independent of the feature window length. PCA convergence is determined by sample size relative to dimensionality, not rolling window width.</div>
+  </div>
+</div>
+</section>
+
+
+<!-- =========================================================== -->
+<!-- MODULE 3: The QCML Embedding                                -->
+<!-- =========================================================== -->
+<section class="module" id="module-2" data-search-title="The QCML Embedding">
+<div class="module-inner wide">
+  <div class="module-number">Module 3</div>
+  <h1 class="module-title">The QCML Embedding</h1>
+
+  <p class="module-text">
+    This is the core mathematical construction. Given a feature vector $x \in \mathbb{R}^d$, we build a Hermitian operator $H(x)$ whose ground state $|\psi(x)\rangle$ defines a map from the feature space into a projective Hilbert space. As $x$ varies, $|\psi(x)\rangle$ traces a curve on the quantum state manifold, and the geometry of this manifold encodes information about the data structure.
+  </p>
+
+  <h2 class="module-subtitle">Hermitian Operators $\{A_k\}$</h2>
+
+  <p class="module-text">
+    The embedding requires one Hermitian operator $A_k$ per feature dimension $k = 1, \ldots, d$. These live in $\mathrm{Herm}(\mathcal{H})$ where $\dim \mathcal{H}$ is chosen between 4 and 16 per observable (tuned via ablation, not a single global value). Three construction methods:
+  </p>
+
+  <ul class="clean-list module-text">
+    <li><strong>Random</strong> (default for production): seeded random Hermitian matrices $A_k = (M + M^\dagger)/2$ where $M$ has i.i.d. complex Gaussian entries. Different seeds produce different embeddings, breaking Kramers-type degeneracies.</li>
+    <li><strong>Pauli tensor products</strong>: for $n$-qubit systems ($\dim \mathcal{H} = 2^n$), use tensor products of Pauli matrices $\{\sigma_i \otimes \sigma_j \otimes \cdots\}$.</li>
+    <li><strong>Gell-Mann SU(N) generators</strong>: the $N^2 - 1$ traceless Hermitian generators of $\mathfrak{su}(N)$, with optional PCA eigenvalue scaling.</li>
+  </ul>
+
+  <h2 class="module-subtitle">The Error Hamiltonian</h2>
+
+  <div class="math-block">
+    $$H(x) = \frac{1}{2} \sum_{k=1}^{d} (A_k - x_k \mathbb{I})^2$$
+  </div>
+
+  <p class="module-text">
+    This is a sum of squared "error" terms. Each operator $A_k$ is trying to have eigenvalue $x_k$; the ground state $|\psi(x)\rangle$ is the state that simultaneously comes closest to being an eigenstate of every $A_k$ with eigenvalue $x_k$. When the $A_k$ don't commute, this is a nontrivial optimization -- the ground state encodes the best compromise, and the geometry reflects the frustration.
+  </p>
+
+  <div class="translation-block">
+    <div class="translation-side code-side">
+      <div class="translation-label">Code -- core.py:271-294</div>
+<span class="kw">def</span> <span class="fn">error_hamiltonian</span>(self, x):
+    H = np.<span class="fn">zeros</span>(
+        (self.<span class="var">hilbert_dim</span>, self.<span class="var">hilbert_dim</span>),
+        dtype=np.<span class="var">complex128</span>)
+
+    <span class="kw">for</span> k, (<span class="var">A_k</span>, <span class="var">x_k</span>) <span class="kw">in</span> <span class="fn">enumerate</span>(
+            <span class="fn">zip</span>(self.<span class="var">operators</span>, x)):
+        diff = <span class="var">A_k</span> <span class="op">-</span> <span class="var">x_k</span> <span class="op">*</span> self.<span class="var">_identity</span>
+        H <span class="op">+=</span> <span class="num">0.5</span> <span class="op">*</span> (diff <span class="op">@</span> diff)
+
+    <span class="kw">return</span> H
+    </div>
+    <div class="translation-side english-side">
+      <div class="translation-label">What This Computes</div>
+      <div class="translation-line"><span class="line-marker">1</span> Allocate a zero matrix of size $n \times n$ in $\mathbb{C}$, where $n$ = <code>hilbert_dim</code>.</div>
+      <div class="translation-line"><span class="line-marker">2</span> For each feature $k$: compute the deviation operator $(A_k - x_k \mathbb{I})$, square it, accumulate with weight $\tfrac{1}{2}$.</div>
+      <div class="translation-line"><span class="line-marker">3</span> The result $H(x)$ is Hermitian and positive semidefinite (sum of squared Hermitian operators). Its ground state is the quasi-coherent state.</div>
+    </div>
+  </div>
+
+  <h2 class="module-subtitle">Ground State via Diagonalization</h2>
+
+  <p class="module-text">
+    The ground state $|\psi(x)\rangle$ is the eigenvector of $H(x)$ corresponding to its smallest eigenvalue, found by exact diagonalization via <code>numpy.linalg.eigh</code> (exploiting Hermiticity for $O(n^3)$ cost with guaranteed real eigenvalues).
+  </p>
+
+  <div class="code-block">
+    <div class="code-header"><span class="code-filepath">qcml_geometry/core.py:296-331</span><span class="code-lang">Python</span></div>
+    <div class="code-content"><span class="kw">def</span> <span class="fn">quasi_coherent_state</span>(self, x, return_energy=<span class="num">False</span>):
+    x = np.<span class="fn">asarray</span>(x).<span class="fn">flatten</span>()
+    x_tuple = <span class="fn">tuple</span>(x)
+
+    <span class="cm"># Cache lookup -- same x gives same |psi></span>
+    <span class="kw">if</span> x_tuple <span class="kw">in</span> self.<span class="var">_ground_state_cache</span>:
+        psi, energy = self.<span class="var">_ground_state_cache</span>[x_tuple]
+        <span class="kw">return</span> (psi, energy) <span class="kw">if</span> return_energy <span class="kw">else</span> psi
+
+    H = self.<span class="fn">error_hamiltonian</span>(x)
+
+    eigenvalues, eigenvectors = np.linalg.<span class="fn">eigh</span>(H)
+    idx = np.<span class="fn">argmin</span>(eigenvalues)
+
+    psi = eigenvectors[:, idx].<span class="fn">astype</span>(np.<span class="var">complex128</span>)
+    energy = eigenvalues[idx].real
+
+    psi = psi / np.linalg.<span class="fn">norm</span>(psi)  <span class="cm"># normalize</span>
+
+    self.<span class="var">_ground_state_cache</span>[x_tuple] = (psi, energy)
+
+    <span class="kw">if</span> return_energy:
+        <span class="kw">return</span> psi, energy
+    <span class="kw">return</span> psi</div>
+  </div>
+
+  <p class="module-text">
+    The cache is important: Berry curvature computation requires evaluating $|\psi(x)\rangle$ at four nearby points per plaquette, so caching avoids redundant diagonalizations. As the market evolves day by day, $|\psi(x_t)\rangle$ traces a path on the projective Hilbert space $\mathbb{C}P^{n-1}$.
+  </p>
+
+  <!-- Quiz 3 -->
+  <div class="quiz" data-quiz="q3">
+    <div class="quiz-header">Comprehension Check</div>
+    <div class="quiz-question">The error Hamiltonian $H(x) = \frac{1}{2}\sum_k (A_k - x_k \mathbb{I})^2$ is positive semidefinite, with $E_0(x) = 0$ if and only if all $A_k$ share a simultaneous eigenstate with eigenvalues $x_k$. Under what condition on the operators $\{A_k\}$ is this achievable for <em>every</em> $x \in \mathbb{R}^d$?</div>
+    <div class="quiz-options">
+      <div class="quiz-option" data-correct="false"><span class="quiz-marker">A</span> The $A_k$ must be traceless</div>
+      <div class="quiz-option" data-correct="true"><span class="quiz-marker">B</span> The $A_k$ must mutually commute: $[A_j, A_k] = 0$ for all $j, k$</div>
+      <div class="quiz-option" data-correct="false"><span class="quiz-marker">C</span> The $A_k$ must form a representation of $\mathfrak{su}(d)$</div>
+      <div class="quiz-option" data-correct="false"><span class="quiz-marker">D</span> The Hilbert space dimension must equal $d$</div>
+    </div>
+    <div class="quiz-explanation">$E_0(x) = 0$ for all $x$ requires a simultaneous eigenbasis for all $A_k$, which is exactly the condition $[A_j, A_k] = 0$ for all pairs. When the operators don't commute, $E_0(x) > 0$ everywhere, and the "frustration" creates nontrivial geometry on the state manifold. This is the regime where the QCML embedding is interesting: the Berry curvature $F_{ab}$ vanishes identically when all $[A_j, A_k] = 0$.</div>
+  </div>
+</div>
+</section>
+
+
+<!-- =========================================================== -->
+<!-- MODULE 4: Four Geometric Observables                        -->
+<!-- =========================================================== -->
+<section class="module" id="module-3" data-search-title="Four Geometric Observables">
+<div class="module-inner wide">
+  <div class="module-number">Module 4</div>
+  <h1 class="module-title">Four Geometric Observables</h1>
+
+  <p class="module-text">
+    From the single QCML embedding $x \mapsto |\psi(x)\rangle$, we extract four independent observables. Each measures a different aspect of the quantum geometry and responds to different crisis signatures. Think of them as four instruments reading the same underlying manifold from orthogonal perspectives.
+  </p>
+
+  <!-- Berry Phase Rate -->
+  <div class="observable-card berry">
+    <h3 class="observable-card-title berry">1. Berry Phase Rate</h3>
+    <p class="module-text">
+      The headline observable. The Berry curvature $F_{ab}$ is the field strength of the Berry connection on the state manifold. We compute it via the discrete plaquette (Wilson loop) method -- gauge-invariant by construction.
+    </p>
+
+    <div class="math-block">
+      $$F_{ab}(x) = -2\,\mathrm{Im}\langle \partial_a \psi | \partial_b \psi \rangle$$
+    </div>
+    <p class="module-text mb-s">
+      The plaquette method evaluates $|\psi\rangle$ at four corners of an infinitesimal square in the $(a, b)$ plane and computes the Wilson loop:
+    </p>
+    <div class="math-block">
+      $$W = \langle\psi_{00}|\psi_{10}\rangle\langle\psi_{10}|\psi_{11}\rangle\langle\psi_{11}|\psi_{01}\rangle\langle\psi_{01}|\psi_{00}\rangle, \qquad F_{ab} \approx \frac{\mathrm{Im}\,\ln W}{\epsilon^2}$$
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-filepath">qcml_geometry/core.py:419-457</span><span class="code-lang">Python</span></div>
+      <div class="code-content"><span class="kw">def</span> <span class="fn">berry_curvature_2d</span>(self, x, indices=(<span class="num">0</span>, <span class="num">1</span>), epsilon=<span class="num">1e-5</span>):
+    x = np.<span class="fn">asarray</span>(x).<span class="fn">flatten</span>()
+    a, b = indices
+
+    <span class="cm"># Four corners of the plaquette</span>
+    <span class="var">x00</span> = x.<span class="fn">copy</span>()
+    <span class="var">x10</span> = x.<span class="fn">copy</span>(); <span class="var">x10</span>[a] <span class="op">+=</span> epsilon
+    <span class="var">x11</span> = x.<span class="fn">copy</span>(); <span class="var">x11</span>[a] <span class="op">+=</span> epsilon; <span class="var">x11</span>[b] <span class="op">+=</span> epsilon
+    <span class="var">x01</span> = x.<span class="fn">copy</span>(); <span class="var">x01</span>[b] <span class="op">+=</span> epsilon
+
+    <span class="cm"># Ground states at each corner</span>
+    <span class="var">psi00</span> = self.<span class="fn">quasi_coherent_state</span>(<span class="var">x00</span>)
+    <span class="var">psi10</span> = self.<span class="fn">quasi_coherent_state</span>(<span class="var">x10</span>)
+    <span class="var">psi11</span> = self.<span class="fn">quasi_coherent_state</span>(<span class="var">x11</span>)
+    <span class="var">psi01</span> = self.<span class="fn">quasi_coherent_state</span>(<span class="var">x01</span>)
+
+    <span class="cm"># Wilson loop overlaps</span>
+    <span class="var">U01</span> = np.<span class="fn">vdot</span>(<span class="var">psi00</span>, <span class="var">psi10</span>)
+    <span class="var">U12</span> = np.<span class="fn">vdot</span>(<span class="var">psi10</span>, <span class="var">psi11</span>)
+    <span class="var">U23</span> = np.<span class="fn">vdot</span>(<span class="var">psi11</span>, <span class="var">psi01</span>)
+    <span class="var">U30</span> = np.<span class="fn">vdot</span>(<span class="var">psi01</span>, <span class="var">psi00</span>)
+
+    wilson = <span class="var">U01</span> <span class="op">*</span> <span class="var">U12</span> <span class="op">*</span> <span class="var">U23</span> <span class="op">*</span> <span class="var">U30</span>
+    berry_phase = np.<span class="fn">imag</span>(np.<span class="fn">log</span>(wilson))
+
+    <span class="kw">return</span> berry_phase / (epsilon <span class="op">**</span> <span class="num">2</span>)</div>
+    </div>
+
+    <p class="module-text">
+      The <strong>Berry Phase Rate</strong> detector takes $|F_{01}(x_t)|$, computes the absolute day-over-day change $|\Delta F_{01}|$, smooths with a 20-day rolling mean, then standardizes via an expanding-window <span class="glossary-term" data-def="Z-score in the financial detection context: z_t = (value_t - mean of all past values) / (std of all past values). The 'expanding window' means only data before time t is used -- never future data. A large z-score means the current value is many standard deviations from the historical norm.">z-score</span>. Spikes in this z-score signal that the manifold geometry is changing anomalously fast.
+    </p>
+  </div>
+
+  <!-- Spectral Entropy -->
+  <div class="observable-card spectral">
+    <h3 class="observable-card-title spectral">2. Spectral Entropy</h3>
+    <p class="module-text">
+      The Shannon entropy of the excitation spectrum of $H(x)$, weighted by energy gaps above the ground state:
+    </p>
+    <div class="math-block">
+      $$w_n = \frac{E_n - E_0}{\sum_{n' \geq 1}(E_{n'} - E_0)}, \qquad S(x) = -\sum_{n \geq 1} w_n \ln w_n$$
+    </div>
+    <p class="module-text">
+      High entropy means the excitation spectrum is broadly distributed (many modes contribute) -- this is the "normal" regime. Low entropy means spectral collapse: a few modes dominate, the gap structure has reorganized. This observable is sensitive to the <em>spectral</em> geometry of the Hamiltonian, complementary to the Berry curvature which captures <em>fiber bundle</em> geometry.
+    </p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-filepath">qcml_geometry/core.py:789-808</span><span class="code-lang">Python</span></div>
+      <div class="code-content"><span class="kw">def</span> <span class="fn">spectral_entropy</span>(self, x, c=<span class="num">1.0</span>):
+    eigenvalues = self.<span class="fn">full_spectrum</span>(x)
+    <span class="var">E0</span> = eigenvalues[<span class="num">0</span>]
+    excitations = eigenvalues[<span class="num">1</span>:] <span class="op">-</span> <span class="var">E0</span>
+    excitations = np.<span class="fn">maximum</span>(excitations, <span class="num">1e-15</span>)
+    weights = excitations / np.<span class="fn">sum</span>(excitations)
+    <span class="kw">return</span> <span class="fn">float</span>(<span class="op">-</span>np.<span class="fn">sum</span>(
+        weights <span class="op">*</span> np.<span class="fn">log</span>(weights <span class="op">+</span> <span class="num">1e-15</span>)))</div>
+    </div>
+  </div>
+
+  <!-- Hamiltonian Sensitivity -->
+  <div class="observable-card hamiltonian">
+    <h3 class="observable-card-title hamiltonian">3. Hamiltonian Sensitivity</h3>
+    <p class="module-text">
+      The variance of the Hamiltonian perturbation $\Delta H = H(x_{t+1}) - H(x_t)$ measured in the current ground state:
+    </p>
+    <div class="math-block">
+      $$\mathrm{Var}_{|\psi\rangle}(\Delta H) = \langle\psi|\Delta H^2|\psi\rangle - \langle\psi|\Delta H|\psi\rangle^2$$
+    </div>
+    <p class="module-text">
+      This is the quantum mechanical energy uncertainty of the perturbation. Near a quantum phase transition, susceptibilities diverge; analogously, when the market is at a regime boundary, the ground state becomes highly sensitive to small parameter shifts. Large $\mathrm{Var}(\Delta H)$ signals the system is near a critical point.
+    </p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-filepath">qcml_geometry/core.py:833-857</span><span class="code-lang">Python</span></div>
+      <div class="code-content"><span class="kw">def</span> <span class="fn">hamiltonian_sensitivity</span>(self, x_curr, x_next):
+    psi = self.<span class="fn">quasi_coherent_state</span>(x_curr)
+    <span class="var">H_curr</span> = self.<span class="fn">error_hamiltonian</span>(x_curr)
+    <span class="var">H_next</span> = self.<span class="fn">error_hamiltonian</span>(x_next)
+    <span class="var">DH</span> = <span class="var">H_next</span> <span class="op">-</span> <span class="var">H_curr</span>
+
+    <span class="var">DH_psi</span> = <span class="var">DH</span> <span class="op">@</span> psi
+    <span class="var">mean_DH</span> = np.<span class="fn">real</span>(np.<span class="fn">vdot</span>(psi, <span class="var">DH_psi</span>))
+    <span class="var">mean_DH2</span> = np.<span class="fn">real</span>(np.<span class="fn">vdot</span>(<span class="var">DH_psi</span>, <span class="var">DH_psi</span>))
+    <span class="kw">return</span> <span class="fn">float</span>(<span class="fn">max</span>(<span class="var">mean_DH2</span> <span class="op">-</span> <span class="var">mean_DH</span> <span class="op">**</span> <span class="num">2</span>, <span class="num">0.0</span>))</div>
+    </div>
+  </div>
+
+  <!-- Reduced State Purity -->
+  <div class="observable-card purity">
+    <h3 class="observable-card-title purity">4. Reduced State Purity</h3>
+    <p class="module-text">
+      Bipartition the Hilbert space as $\mathcal{H} = \mathcal{H}_A \otimes \mathcal{H}_B$, partial-trace out subsystem $B$, and measure the purity of the reduced state:
+    </p>
+    <div class="math-block">
+      $$\rho_A = \mathrm{Tr}_B(|\psi\rangle\langle\psi|), \qquad \mathcal{P} = \mathrm{Tr}(\rho_A^2) \in [1/d_A,\; 1]$$
+    </div>
+    <p class="module-text">
+      Purity $\mathcal{P} = 1$ means no entanglement between subsystems; $\mathcal{P} = 1/d_A$ is maximally entangled. During crises, cross-sector correlations spike, and this shows up as increased entanglement (lower purity) in the QCML embedding. This was the top-ranked offline detector ($d = 0.83$), though it proved fragile on out-of-sample holdout data.
+    </p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-filepath">qcml_geometry/core.py:957-984</span><span class="code-lang">Python</span></div>
+      <div class="code-content"><span class="kw">def</span> <span class="fn">reduced_state_purity</span>(self, x, partition=(<span class="num">2</span>, <span class="num">4</span>)):
+    <span class="var">dim_A</span>, <span class="var">dim_B</span> = partition
+
+    psi = self.<span class="fn">quasi_coherent_state</span>(x)
+    <span class="cm"># Reshape |psi> into bipartite matrix</span>
+    <span class="var">psi_matrix</span> = psi.<span class="fn">reshape</span>(<span class="var">dim_A</span>, <span class="var">dim_B</span>)
+    <span class="cm"># Reduced density matrix: rho_A = psi @ psi^dagger</span>
+    <span class="var">rho_A</span> = <span class="var">psi_matrix</span> <span class="op">@</span> <span class="var">psi_matrix</span>.<span class="fn">conj</span>().T
+    <span class="cm"># Purity = Tr(rho_A^2)</span>
+    <span class="kw">return</span> <span class="fn">float</span>(np.<span class="fn">real</span>(
+        np.<span class="fn">trace</span>(<span class="var">rho_A</span> <span class="op">@</span> <span class="var">rho_A</span>)))</div>
+    </div>
+  </div>
+
+  <!-- GROUP CHAT -->
+  <h2 class="module-subtitle">How the Four Observables Talk to Each Other</h2>
+  <p class="module-text">
+    During the 2008 Global Financial Crisis, each observable told a different part of the story. Here's what their conversation might look like:
+  </p>
+
+  <div class="group-chat" id="groupChat1">
+    <div class="group-chat-header">Observable Group Chat -- GFC 2008</div>
+    <div class="chat-message" data-delay="0">
+      <div class="chat-avatar purity">P</div>
+      <div class="chat-body">
+        <div class="chat-name purity">Reduced Purity</div>
+        <div class="chat-text">Something is wrong. Cross-sector entanglement just spiked -- my purity dropped from 0.92 to 0.41 in two weeks. Correlations are going to one across the board.</div>
+      </div>
+    </div>
+    <div class="chat-message" data-delay="800">
+      <div class="chat-avatar berry">B</div>
+      <div class="chat-body">
+        <div class="chat-name berry">Berry Phase Rate</div>
+        <div class="chat-text">I'm seeing it too. The curvature of the state manifold is changing faster than any time in my training window. My z-score just crossed 4.0 -- the geometry is undergoing a rapid deformation.</div>
+      </div>
+    </div>
+    <div class="chat-message" data-delay="1600">
+      <div class="chat-avatar spectral">S</div>
+      <div class="chat-body">
+        <div class="chat-name spectral">Spectral Entropy</div>
+        <div class="chat-text">The excitation spectrum just collapsed. Two weeks ago I was at $S \approx 1.8$ (healthy, lots of excited modes). Now $S \approx 0.6$ -- almost all the spectral weight is in the first excitation. The Hamiltonian has effectively become a two-level system.</div>
+      </div>
+    </div>
+    <div class="chat-message" data-delay="2400">
+      <div class="chat-avatar hamiltonian">H</div>
+      <div class="chat-body">
+        <div class="chat-name hamiltonian">Hamiltonian Sensitivity</div>
+        <div class="chat-text">My variance $\mathrm{Var}(\Delta H)$ is 8 standard deviations above normal. The ground state is trembling -- tiny changes in tomorrow's features produce huge energy uncertainty. We're at a critical point.</div>
+      </div>
+    </div>
+    <div class="chat-message" data-delay="3200">
+      <div class="chat-avatar berry">B</div>
+      <div class="chat-body">
+        <div class="chat-name berry">Berry Phase Rate</div>
+        <div class="chat-text">Key point: I'm measuring the <em>fiber bundle</em> geometry (holonomy), while Spectral Entropy measures the <em>spectrum</em> of $H(x)$. We're looking at the same crisis from orthogonal directions. If a regime shift showed up in only one of us, we'd call it noise. All four spiking? That's a genuine phase transition in the market.</div>
+      </div>
+    </div>
+    <div class="chat-message" data-delay="4000">
+      <div class="chat-avatar purity">P</div>
+      <div class="chat-body">
+        <div class="chat-name purity">Reduced Purity</div>
+        <div class="chat-text">Fair warning though -- I was ranked #1 offline ($d = 0.83$) on this crisis panel. But when they froze me on the holdout set, I collapsed to $d = 0.26$. Berry Phase Rate held steady at $d = 0.72$ OOS. I'm great at pattern-matching crises I've seen before, but I don't generalize.</div>
+      </div>
+    </div>
+    <button class="chat-replay-btn" onclick="replayChat('groupChat1')">Replay conversation</button>
+  </div>
+
+  <!-- Quiz 4 -->
+  <div class="quiz" data-quiz="q4">
+    <div class="quiz-header">Comprehension Check</div>
+    <div class="quiz-question">Suppose Berry curvature $|F_{01}|$ is spiking (large z-score) but Spectral Entropy is <em>stable</em> (z-score near zero). What does this combination tell you?</div>
+    <div class="quiz-options">
+      <div class="quiz-option" data-correct="false"><span class="quiz-marker">A</span> The crisis is a false alarm -- both must spike for a real regime change</div>
+      <div class="quiz-option" data-correct="true"><span class="quiz-marker">B</span> The state manifold's holonomy structure is reorganizing, but the excitation spectrum is unchanged -- the regime shift is geometric, not spectral</div>
+      <div class="quiz-option" data-correct="false"><span class="quiz-marker">C</span> The Hamiltonian operators $A_k$ have become commuting</div>
+      <div class="quiz-option" data-correct="false"><span class="quiz-marker">D</span> The z-score normalization has a bug</div>
+    </div>
+    <div class="quiz-explanation">Berry curvature and spectral entropy probe different geometric structures. Berry curvature measures the curvature of the fiber bundle (how the phase rotates as parameters change), while spectral entropy measures the distribution of excitation energies. A crisis that shows up only in Berry curvature is one where the state's holonomy structure is rapidly reorganizing (e.g., changes in how sectors co-move geometrically) without changing the overall spectral gap structure. This demonstrates the value of measuring multiple complementary observables -- each crisis has a different geometric signature.</div>
+  </div>
+</div>
+</section>
+
+
+<!-- =========================================================== -->
+<!-- MODULE 5: From Observable to Detector                       -->
+<!-- =========================================================== -->
+<section class="module" id="module-4" data-search-title="From Observable to Detector">
+<div class="module-inner wide">
+  <div class="module-number">Module 5</div>
+  <h1 class="module-title">From Observable to Detector</h1>
+
+  <p class="module-text">
+    A geometric observable like Berry curvature produces a raw time series of numbers. To turn it into a <em>detector</em> -- one that fires a "crisis alert" signal -- we need a normalization scheme that answers: "how unusual is today's value compared to everything we've seen so far?"
+  </p>
+
+  <h2 class="module-subtitle">Expanding-Window Z-Score</h2>
+
+  <p class="module-text">
+    The key constraint is <strong>causality</strong>: the detector at time $t$ may only use data from times $\{1, \ldots, t-1\}$. No peeking at the future. The expanding-window <span class="glossary-term" data-def="Z-score in the financial detection context: z_t = (value_t - mean of all past values) / (std of all past values). The 'expanding window' means only data before time t is used -- never future data. A large z-score means the current value is many standard deviations from the historical norm.">z-score</span> achieves this:
+  </p>
+
+  <div class="math-block">
+    $$z_t = \frac{\bar{v}_t - \mu_{&lt;t}}{\sigma_{&lt;t}}, \qquad \mu_{&lt;t} = \frac{1}{t-1}\sum_{s=1}^{t-1}\bar{v}_s, \quad \sigma_{&lt;t} = \mathrm{std}(\bar{v}_{1:t-1})$$
+  </div>
+
+  <p class="module-text">
+    where $\bar{v}_t$ is the rolling-mean-smoothed observable value (window = 20 days). The smoothing removes day-to-day noise; the expanding normalization adapts to the evolving baseline.
+  </p>
+
+  <div class="translation-block">
+    <div class="translation-side code-side">
+      <div class="translation-label">Code -- observables.py:2488-2511</div>
+<span class="kw">def</span> <span class="fn">_expanding_zscore</span>(raw_values, rolling_window,
+                      min_expanding, T,
+                      skip_nan_start=<span class="num">0</span>):
+    <span class="cm">"""Expanding-window z-score of rolling-mean."""</span>
+    <span class="kw">import</span> pandas <span class="kw">as</span> pd
+    <span class="var">rolling_vals</span> = (
+        pd.<span class="fn">Series</span>(raw_values)
+        .<span class="fn">rolling</span>(window=rolling_window,
+                min_periods=<span class="num">1</span>)
+        .<span class="fn">mean</span>().values)
+
+    <span class="var">z_scores</span> = np.<span class="fn">full</span>(T, np.nan)
+    start = <span class="fn">max</span>(min_expanding, skip_nan_start)
+
+    <span class="kw">for</span> t <span class="kw">in</span> <span class="fn">range</span>(start, T):
+        past = <span class="var">rolling_vals</span>[skip_nan_start:t]
+        past_valid = past[<span class="op">~</span>np.<span class="fn">isnan</span>(past)]
+        <span class="kw">if</span> <span class="fn">len</span>(past_valid) <span class="op">&lt;</span> <span class="num">10</span>:
+            <span class="kw">continue</span>
+        mu = np.<span class="fn">mean</span>(past_valid)
+        sigma = np.<span class="fn">std</span>(past_valid, ddof=<span class="num">1</span>)
+        <span class="kw">if</span> sigma <span class="op">&gt;</span> <span class="num">1e-12</span>:
+            <span class="var">z_scores</span>[t] = (<span class="var">rolling_vals</span>[t]
+                           <span class="op">-</span> mu) / sigma
+        <span class="kw">else</span>:
+            <span class="var">z_scores</span>[t] = <span class="num">0.0</span>
+    <span class="kw">return</span> <span class="var">z_scores</span>
+    </div>
+    <div class="translation-side english-side">
+      <div class="translation-label">Step by Step</div>
+      <div class="translation-line"><span class="line-marker">1</span> Smooth the raw observable with a rolling mean (window = 20 days, allowing partial windows at the start).</div>
+      <div class="translation-line"><span class="line-marker">2</span> Initialize all z-scores to NaN (we can't compute a meaningful z-score until we have enough history).</div>
+      <div class="translation-line"><span class="line-marker">3</span> For each day $t$ from <code>min_expanding</code> onward: gather <em>all past</em> smoothed values (strictly before $t$).</div>
+      <div class="translation-line"><span class="line-marker">4</span> Need at least 10 valid past values to compute reliable statistics. Otherwise skip.</div>
+      <div class="translation-line"><span class="line-marker">5</span> Compute the mean and standard deviation of the past window. If $\sigma > 0$, standardize: $z_t = (\bar{v}_t - \mu) / \sigma$.</div>
+      <div class="translation-line"><span class="line-marker">6</span> The expanding window grows every day, so the baseline becomes more robust over time while remaining strictly causal.</div>
+    </div>
+  </div>
+
+  <p class="module-text">
+    The output $z_t$ is the detector's regime score. Large positive values (e.g., $z > 2$) indicate the observable is anomalously elevated compared to its historical distribution -- a potential crisis signal.
+  </p>
+
+  <!-- Quiz 5 -->
+  <div class="quiz" data-quiz="q5">
+    <div class="quiz-header">Comprehension Check</div>
+    <div class="quiz-question">The expanding-window z-score uses <code>min_expanding=60</code> (roughly 3 months). Why not start computing z-scores immediately from day 1?</div>
+    <div class="quiz-options">
+      <div class="quiz-option" data-correct="false"><span class="quiz-marker">A</span> The Berry curvature is undefined for the first 60 days</div>
+      <div class="quiz-option" data-correct="true"><span class="quiz-marker">B</span> With too few data points, the sample mean and standard deviation are unreliable, leading to spuriously large or small z-scores</div>
+      <div class="quiz-option" data-correct="false"><span class="quiz-marker">C</span> The PCA transform is not valid until 60 samples are collected</div>
+      <div class="quiz-option" data-correct="false"><span class="quiz-marker">D</span> It takes 60 days for the Hamiltonian eigenvalues to stabilize numerically</div>
+    </div>
+    <div class="quiz-explanation">The sample standard deviation from, say, 5 data points is extremely noisy. A single outlier could inflate or suppress $\sigma$ drastically, producing meaningless z-scores. Requiring 60+ days of history ensures that $\mu$ and $\sigma$ are estimated from a representative sample. This is a standard warm-up period in financial time-series analysis, not related to the Berry curvature computation or PCA fitting (those are handled separately).</div>
+  </div>
+</div>
+</section>
+
+
+<!-- =========================================================== -->
+<!-- MODULE 6: The Horse Race                                    -->
+<!-- =========================================================== -->
+<section class="module" id="module-5" data-search-title="The Horse Race">
+<div class="module-inner wide">
+  <div class="module-number">Module 6</div>
+  <h1 class="module-title">The Horse Race</h1>
+
+  <p class="module-text">
+    With 46 detection methods and 17 crises, we need a rigorous statistical framework to answer: <em>which methods actually work, and how confidently can we rank them?</em>
+  </p>
+
+  <h2 class="module-subtitle">The 46 Contenders</h2>
+
+  <ul class="clean-list module-text">
+    <li><strong>22 QCML geometric channels</strong>: Berry Phase Rate, Spectral Entropy, Hamiltonian Sensitivity, Reduced State Purity, plus 18 others (Fubini-Study velocity, geodesic curvature, spectral gap, Chern number, quantum relative entropy, level spacing ratio, ...)</li>
+    <li><strong>18 classical baselines</strong>: Random Forest, GARCH(1,1), Hamilton Markov-switching, BOCPD, Isolation Forest, VIX, Rolling Vol, CUSUM, EWMA, Mahalanobis distance, LSTM autoencoder, kernel PCA, ...</li>
+    <li><strong>6 ensemble methods</strong>: Flat rank, hierarchical rank, regime-adaptive fusion, SPRT, ...</li>
+  </ul>
+
+  <h2 class="module-subtitle">The 17 Crises (2000--2024)</h2>
+
+  <p class="module-text">
+    Each crisis has a defined start and end date. The crises span a wide range of mechanisms: the Dot-Com crash (2000), September 11 (2001), the Quant Crisis (2007), the Global Financial Crisis (2008), the Flash Crash (2010), the Euro Crisis (2011), the Taper Tantrum (2013), China (2015), Brexit (2016), Volmageddon (2018), Q4 Selloff (2018), the Repo Crisis (2019), COVID-19 (2020), Meme/Archegos (2021), Rate Hikes (2022), SVB (2023), and the Carry Unwind (2024).
+  </p>
+
+  <h2 class="module-subtitle">Effect Size: <span class="glossary-term" data-def="Cohen's d measures the standardized difference between two group means (crisis vs. normal). d=0.2 is small, 0.5 medium, 0.8 large. Here it quantifies how well a detector separates crisis periods from calm periods.">Cohen's d</span></h2>
+
+  <p class="module-text">
+    For each (method, crisis) pair, we compute the <span class="glossary-term" data-def="Cohen's d measures the standardized difference between two group means (crisis vs. normal). d=0.2 is small, 0.5 medium, 0.8 large. Here it quantifies how well a detector separates crisis periods from calm periods.">Cohen's d</span> between the method's scores during the crisis window and its scores during normal periods. Large $d$ means the detector clearly separates crisis from calm.
+  </p>
+
+  <div class="math-block">
+    $$d = \frac{|\bar{x}_{\text{crisis}} - \bar{x}_{\text{normal}}|}{s_{\text{pooled}}}, \qquad s_{\text{pooled}} = \sqrt{\frac{(n_c - 1)s_c^2 + (n_n - 1)s_n^2}{n_c + n_n - 2}}$$
+  </div>
+
+  <p class="module-text">
+    The confidence interval on $d$ is computed via <strong>circular block bootstrap</strong> ($n = 10{,}000$ resamples) to account for serial correlation in the time series. This is critical -- naive i.i.d. bootstrap would understate the CI width.
+  </p>
+
+  <div class="code-block">
+    <div class="code-header"><span class="code-filepath">experiments/evaluation.py:82-132</span><span class="code-lang">Python</span></div>
+    <div class="code-content"><span class="kw">def</span> <span class="fn">compute_cohens_d_with_ci</span>(
+    crisis_scores, normal_scores,
+    n_bootstrap=<span class="num">10000</span>, seed=<span class="num">42</span>, method=<span class="str">"block"</span>,
+    block_size=<span class="num">None</span>):
+
+    crisis_scores = np.<span class="fn">asarray</span>(crisis_scores, dtype=<span class="fn">float</span>)
+    normal_scores = np.<span class="fn">asarray</span>(normal_scores, dtype=<span class="fn">float</span>)
+
+    <span class="cm"># Remove NaN values</span>
+    crisis_scores = crisis_scores[<span class="op">~</span>np.<span class="fn">isnan</span>(crisis_scores)]
+    normal_scores = normal_scores[<span class="op">~</span>np.<span class="fn">isnan</span>(normal_scores)]
+
+    <span class="cm"># Point estimate</span>
+    d = <span class="fn">_cohens_d</span>(crisis_scores, normal_scores)
+
+    <span class="cm"># Block bootstrap (Politis & White 2004)</span>
+    rng = np.random.<span class="fn">default_rng</span>(seed)
+    boot_ds = np.<span class="fn">empty</span>(n_bootstrap)
+
+    bs_c = block_size <span class="kw">or</span> <span class="fn">_optimal_block_size</span>(
+        <span class="fn">len</span>(crisis_scores))   <span class="cm"># n^(1/3)</span>
+    bs_n = block_size <span class="kw">or</span> <span class="fn">_optimal_block_size</span>(
+        <span class="fn">len</span>(normal_scores))
+
+    c_samples = <span class="fn">_batch_block_bootstrap</span>(
+        crisis_scores, bs_c, <span class="fn">len</span>(crisis_scores),
+        n_bootstrap, rng)
+    n_samples = <span class="fn">_batch_block_bootstrap</span>(
+        normal_scores, bs_n, <span class="fn">len</span>(normal_scores),
+        n_bootstrap, rng)
+
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(n_bootstrap):
+        boot_ds[i] = <span class="fn">_cohens_d</span>(
+            c_samples[i], n_samples[i])
+
+    ci_lo, ci_hi = np.<span class="fn">percentile</span>(boot_ds, [<span class="num">2.5</span>, <span class="num">97.5</span>])
+    <span class="kw">return</span> d, ci_lo, ci_hi</div>
+  </div>
+
+  <h2 class="module-subtitle">The Friedman Test</h2>
+
+  <p class="module-text">
+    With 46 methods and 17 crises, we have a matrix of ranks. The <strong>Friedman test</strong> is a non-parametric alternative to repeated-measures ANOVA that asks: "Do the methods differ significantly in their median rank across crises?"
+  </p>
+
+  <div class="result-box">
+    <div class="result-label">Friedman Statistic</div>
+    <div class="result-value">$\chi^2 = 233.13$, $p &lt; 10^{-16}$</div>
+    <div class="result-desc">The null hypothesis (all methods perform equally) is overwhelmingly rejected. Methods differ significantly.</div>
+  </div>
+
+  <h2 class="module-subtitle"><span class="glossary-term" data-def="Walk-forward evaluation: train on historical data, freeze the model, then test on the next unseen period. Repeat across multiple windows. Prevents look-ahead bias -- the model never sees future data during training.">Walk-Forward</span> Evaluation</h2>
+
+  <p class="module-text">
+    The offline rankings (computed on the full 17-crisis panel) are retrospective: the detector has seen all the data. To test real-world viability, we use <strong>walk-forward evaluation</strong> with nested <span class="glossary-term" data-def="Hyperparameter Optimization. Automated search for the best model settings (Hilbert dimension, rolling window size, etc.) using Optuna with a Tree-Structured Parzen Estimator. Nested inside each walk-forward fold so the test set is never used for tuning.">HPO</span> (<span class="glossary-term" data-def="Optuna: a Python library for automated hyperparameter optimization using Bayesian search (Tree-Structured Parzen Estimator). It efficiently explores the parameter space without exhaustive grid search.">Optuna</span> with TPE sampler):
+  </p>
+
+  <ul class="clean-list module-text">
+    <li>Split the timeline into overlapping windows</li>
+    <li>For each window: train on past data, tune hyperparameters on a validation split, freeze the model, evaluate on the next unseen crisis</li>
+    <li>The test set is <strong>never</strong> used for tuning</li>
+    <li>Repeat across 9 windows; report median $d$ and win rate</li>
+  </ul>
+
+  <!-- Quiz 6 -->
+  <div class="quiz" data-quiz="q6">
+    <div class="quiz-header">Comprehension Check</div>
+    <div class="quiz-question">A method has offline $d = 0.95$ (top 3 in the retrospective ranking) but walk-forward $d = 0.35$ (below the RF baseline). The most likely explanation is:</div>
+    <div class="quiz-options">
+      <div class="quiz-option" data-correct="false"><span class="quiz-marker">A</span> The Friedman test has a type I error for this method</div>
+      <div class="quiz-option" data-correct="true"><span class="quiz-marker">B</span> The method (or its hyperparameters) overfit to the retrospective crisis panel via <span class="glossary-term" data-def="Hyperparameter Optimization. Automated search for the best model settings (Hilbert dimension, rolling window size, etc.) using Optuna with a Tree-Structured Parzen Estimator. Nested inside each walk-forward fold so the test set is never used for tuning.">HPO</span>, and fails to generalize out-of-sample</div>
+      <div class="quiz-option" data-correct="false"><span class="quiz-marker">C</span> The block bootstrap CI must be too narrow</div>
+      <div class="quiz-option" data-correct="false"><span class="quiz-marker">D</span> The crisis definitions must be wrong for the walk-forward windows</div>
+    </div>
+    <div class="quiz-explanation">This is exactly what happened with Reduced State Purity in this study: offline $d = 0.83$ (#1 of 46), but it collapsed to $d = 0.26$ on the holdout set. The HPO process can tune hyperparameters to match the specific crises in the retrospective panel, producing artificially high effect sizes that don't transfer. The walk-forward evaluation, by strictly separating training from test data, reveals this overfitting. This is why the paper's headline result is the walk-forward Berry Phase Rate ($d = 0.72$), not the offline leader.</div>
+  </div>
+</div>
+</section>
+
+
+<!-- =========================================================== -->
+<!-- MODULE 7: Results & What It Proves                          -->
+<!-- =========================================================== -->
+<section class="module" id="module-6" data-search-title="Results and What It Proves">
+<div class="module-inner wide">
+  <div class="module-number">Module 7</div>
+  <h1 class="module-title">Results &amp; What It Proves</h1>
+
+  <h2 class="module-subtitle">Offline Rankings (46 Methods, 17 Crises)</h2>
+
+  <table class="rankings-table" aria-label="Top offline detection methods">
+    <thead>
+      <tr><th>Rank</th><th>Method</th><th>Type</th><th>Median <em>d</em></th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="rank-highlight">1</td><td>Reduced State Purity</td><td>QCML Geometric</td><td>0.83</td></tr>
+      <tr><td class="rank-highlight">2</td><td>Absorption Ratio</td><td>Classical Baseline</td><td>0.80</td></tr>
+      <tr><td>3</td><td>Hamilton Markov-Switching</td><td>Classical Baseline</td><td>0.71</td></tr>
+      <tr><td>4</td><td>Commutator Norm</td><td>QCML Geometric</td><td>0.70</td></tr>
+      <tr><td>...</td><td>...</td><td></td><td></td></tr>
+      <tr><td>9</td><td style="color:var(--color-berry);font-weight:600">Berry Phase Rate</td><td>QCML Geometric</td><td>0.61</td></tr>
+      <tr><td>...</td><td>...</td><td></td><td></td></tr>
+      <tr><td>30</td><td>Random Forest</td><td>Classical Baseline</td><td>0.36</td></tr>
+      <tr><td>33</td><td>GARCH(1,1)</td><td>Classical Baseline</td><td>0.27</td></tr>
+    </tbody>
+  </table>
+
+  <h2 class="module-subtitle">Walk-Forward Results (The Real Test)</h2>
+
+  <div class="result-box">
+    <div class="result-label">Walk-Forward Champion</div>
+    <div class="result-value">Berry Phase Rate: <em>d</em> = 0.72 OOS</div>
+    <div class="result-desc">Won 5 of 9 walk-forward windows. False alarm rate: 2.5/year vs. 3.6/year for Random Forest (30% reduction).</div>
+  </div>
+
+  <p class="module-text">
+    The key insight: <strong>offline rank does not predict walk-forward performance.</strong> Reduced Purity was #1 offline but collapsed on holdout. Berry Phase Rate was #9 offline but proved the most robust out-of-sample detector.
+  </p>
+
+  <h2 class="module-subtitle">Orthogonal Crisis Coverage</h2>
+
+  <p class="module-text">
+    Different geometric channels excel at different crises. The best geometric channel per crisis improves roughly +25% over any single fixed method on novel crises, while a rigid detector like CUSUM collapses -73%. This complementarity is the strongest argument for the geometric approach: a single QCML embedding yields multiple independent crisis signatures.
+  </p>
+
+  <!-- Caveats -->
+  <div class="caveat-box">
+    <div class="caveat-box-label">Caveats &amp; Honest Limitations</div>
+    <p><strong>Reduced Purity is fragile on holdout</strong>: $d = 0.83$ offline, $d = 0.26$ on the post-2021 holdout. It overfit to the retrospective panel. The paper flags this explicitly.</p>
+    <p class="mt-s"><strong><span class="glossary-term" data-def="Hyperparameter Optimization. Automated search for the best model settings (Hilbert dimension, rolling window size, etc.) using Optuna with a Tree-Structured Parzen Estimator. Nested inside each walk-forward fold so the test set is never used for tuning.">HPO</span> bias</strong>: the walk-forward result of $d = 0.72$ includes nested HPO. An estimated +0.415$d$ boost may be attributable to HPO; the paper includes this caveat in the methods section.</p>
+    <p class="mt-s"><strong>Computational cost</strong>: each Berry curvature evaluation requires 4 Hamiltonian diagonalizations (one per plaquette corner), each $O(n^3)$ in Hilbert dimension. For $\dim \mathcal{H} = 16$, this is manageable; scaling to $\dim \mathcal{H} = 64$+ would require iterative eigensolvers.</p>
+  </div>
+
+  <h2 class="module-subtitle">Summary: The Complete Pipeline</h2>
+
+  <div class="pipeline-diagram" aria-label="Complete pipeline summary">
+ Prices (SPY, DIA via yfinance)
+    |
+    v
+ Feature Matrix (13 cols: returns, vol, momentum, cross-stats)
+    |
+    v
+ StandardScaler + PCA (d ~ 8) + Sphere Normalization
+    |
+    v
+ Error Hamiltonian: H(x) = 1/2 Sum_k (A_k - x_k I)^2
+    |
+    v
+ Ground State: |psi(x)> = argmin eigh(H(x))
+    |
+    +-------+-------+-------+
+    |       |       |       |
+    v       v       v       v
+  Berry   Spectral  Ham.   Reduced
+  Phase   Entropy  Sensit. Purity
+  Rate
+    |       |       |       |
+    v       v       v       v
+ Rolling Mean Smoothing (window = 20)
+    |
+    v
+ Expanding-Window Z-Score (causal, past-only)
+    |
+    v
+ Cohen's d + Block Bootstrap CI (n = 10,000)
+    |
+    v
+ Friedman Test:  chi^2 = 233.13,  p < 1e-16
+    |
+    v
+ Walk-Forward Evaluation:
+   Berry Phase Rate d = 0.72 OOS, 30% fewer false alarms</div>
+
+  <!-- Quiz 7 -->
+  <div class="quiz" data-quiz="q7">
+    <div class="quiz-header">Final Comprehension Check</div>
+    <div class="quiz-question">A colleague proposes replacing the random Hermitian operators $\{A_k\}$ with commuting diagonal matrices (so $[A_j, A_k] = 0$ for all $j, k$). This would make the computation faster since $H(x)$ is already diagonal. What is the fundamental problem with this proposal?</div>
+    <div class="quiz-options">
+      <div class="quiz-option" data-correct="false"><span class="quiz-marker">A</span> Diagonal matrices aren't Hermitian</div>
+      <div class="quiz-option" data-correct="false"><span class="quiz-marker">B</span> The z-score normalization would fail</div>
+      <div class="quiz-option" data-correct="true"><span class="quiz-marker">C</span> All Berry curvature vanishes identically ($F_{ab} = 0$ everywhere) and reduced-state purity becomes trivial ($\mathcal{P} = 1$), destroying the geometric content</div>
+      <div class="quiz-option" data-correct="false"><span class="quiz-marker">D</span> The spectral entropy would diverge</div>
+    </div>
+    <div class="quiz-explanation">When all $A_k$ commute, they share a simultaneous eigenbasis. The ground state $|\psi(x)\rangle$ is always a basis vector (it just selects the eigenvalue combination closest to $x$), so the state path consists of discrete jumps between basis vectors rather than smooth rotations on the manifold. The Berry connection becomes flat ($F_{ab} = 0$), the bipartite entanglement vanishes ($\mathcal{P} = 1$), and most of the geometric structure disappears. The entire QCML construction depends on the non-commutativity of the operators creating "frustration" in the ground state, which is what generates nontrivial geometry. This is the quantum-inspired insight: non-commuting observables create richer geometric structure than any classical (commuting) embedding.</div>
+  </div>
+
+  <p class="module-text mt-l" style="text-align:center; color: var(--color-text-secondary); font-size: 0.9rem;">
+    Paper: <em>Geometric Observables for Financial Regime Detection</em><br>
+    46 methods. 17 crises. 10,000 bootstrap resamples. One geometric insight.
+  </p>
+</div>
+</section>
+
+
+<!-- ===== JAVASCRIPT ===== -->
 <script>
-  // Reveal-on-scroll via IntersectionObserver
-  const obs = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        e.target.classList.add('visible');
-        obs.unobserve(e.target);
+(function() {
+  'use strict';
+
+  // ===== GLOSSARY DEFINITIONS =====
+  var glossaryDefs = {
+    'Cohen\'s d': 'Cohen\'s d measures the standardized difference between two group means (crisis vs. normal). d=0.2 is small, 0.5 medium, 0.8 large. Here it quantifies how well a detector separates crisis periods from calm periods.',
+    'walk-forward evaluation': 'Walk-forward evaluation: train on historical data, freeze the model, then test on the next unseen period. Repeat across multiple windows. Prevents look-ahead bias -- the model never sees future data during training.',
+    'yfinance': 'yfinance: a free Python library that downloads historical stock prices from Yahoo Finance. Used here to get adjusted close prices for SPY and DIA ETFs.',
+    'PCA': 'Principal Component Analysis: linear dimensionality reduction that projects data onto the directions of maximum variance. Reduces the 13-feature space to ~8 orthogonal components.',
+    'z-score': 'Z-score in the financial detection context: z_t = (value_t - mean of all past values) / (std of all past values). The expanding window means only data before time t is used. A large z-score means the current value is many standard deviations from the historical norm.',
+    'HPO': 'Hyperparameter Optimization. Automated search for the best model settings (Hilbert dimension, rolling window size, etc.) using Optuna with a Tree-Structured Parzen Estimator. Nested inside each walk-forward fold so the test set is never used for tuning.',
+    'Optuna': 'Optuna: a Python library for automated hyperparameter optimization using Bayesian search (Tree-Structured Parzen Estimator). It efficiently explores the parameter space without exhaustive grid search.'
+  };
+
+  // ===== DARK MODE =====
+  var themeToggle = document.getElementById('themeToggle');
+  var savedTheme = localStorage.getItem('qcml-theme');
+  if (savedTheme) {
+    document.documentElement.setAttribute('data-theme', savedTheme);
+  } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    document.documentElement.setAttribute('data-theme', 'dark');
+  }
+
+  themeToggle.addEventListener('click', function() {
+    var current = document.documentElement.getAttribute('data-theme');
+    var next = current === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('qcml-theme', next);
+  });
+
+  // ===== NAVIGATION DOTS =====
+  var modules = document.querySelectorAll('.module');
+  var dots = document.querySelectorAll('.nav-dot');
+  var visitedModules = JSON.parse(localStorage.getItem('qcml-visited') || '[]');
+
+  visitedModules.forEach(function(idx) {
+    if (dots[idx]) dots[idx].classList.add('visited');
+  });
+
+  dots.forEach(function(dot) {
+    dot.addEventListener('click', function() {
+      var idx = parseInt(this.getAttribute('data-module'));
+      modules[idx].scrollIntoView({ behavior: 'smooth' });
+    });
+    dot.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') this.click();
+    });
+  });
+
+  // Scroll tracking with rAF throttle
+  var ticking = false;
+  window.addEventListener('scroll', function() {
+    if (!ticking) {
+      requestAnimationFrame(function() {
+        updateActiveModule();
+        ticking = false;
+      });
+      ticking = true;
+    }
+  }, { passive: true });
+
+  function updateActiveModule() {
+    var scrollY = window.scrollY + window.innerHeight / 3;
+    var activeIdx = 0;
+    modules.forEach(function(mod, i) {
+      if (scrollY >= mod.offsetTop) activeIdx = i;
+    });
+    dots.forEach(function(dot, i) {
+      dot.classList.toggle('active', i === activeIdx);
+    });
+    if (visitedModules.indexOf(activeIdx) === -1) {
+      visitedModules.push(activeIdx);
+      localStorage.setItem('qcml-visited', JSON.stringify(visitedModules));
+      dots[activeIdx].classList.add('visited');
+    }
+  }
+
+  // ===== SEARCH =====
+  var searchOverlay = document.getElementById('searchOverlay');
+  var searchInput = document.getElementById('searchInput');
+  var searchResults = document.getElementById('searchResults');
+  var searchBtn = document.getElementById('searchBtn');
+
+  var searchIndex = [];
+  modules.forEach(function(mod, i) {
+    var title = mod.getAttribute('data-search-title') || '';
+    var text = mod.textContent;
+    searchIndex.push({ index: i, title: title, text: text });
+  });
+
+  function openSearch() {
+    searchOverlay.classList.add('open');
+    searchInput.value = '';
+    searchResults.innerHTML = '';
+    setTimeout(function() { searchInput.focus(); }, 100);
+  }
+
+  function closeSearch() {
+    searchOverlay.classList.remove('open');
+  }
+
+  searchBtn.addEventListener('click', openSearch);
+  searchOverlay.addEventListener('click', function(e) {
+    if (e.target === searchOverlay) closeSearch();
+  });
+
+  document.addEventListener('keydown', function(e) {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+      e.preventDefault();
+      if (searchOverlay.classList.contains('open')) closeSearch();
+      else openSearch();
+    }
+    if (e.key === 'Escape' && searchOverlay.classList.contains('open')) {
+      closeSearch();
+    }
+  });
+
+  var focusedResult = -1;
+  searchInput.addEventListener('input', function() {
+    var query = this.value.toLowerCase().trim();
+    searchResults.innerHTML = '';
+    focusedResult = -1;
+    if (!query) return;
+
+    var matches = [];
+    searchIndex.forEach(function(item) {
+      var idx = item.text.toLowerCase().indexOf(query);
+      if (idx !== -1) {
+        var start = Math.max(0, idx - 40);
+        var end = Math.min(item.text.length, idx + query.length + 60);
+        var snippet = (start > 0 ? '...' : '') + item.text.substring(start, end).trim() + (end < item.text.length ? '...' : '');
+        matches.push({ index: item.index, title: item.title, snippet: snippet });
       }
     });
-  }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
 
-  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+    if (matches.length === 0) {
+      searchResults.innerHTML = '<div class="search-empty">No results found</div>';
+      return;
+    }
+
+    matches.forEach(function(m) {
+      var div = document.createElement('div');
+      div.className = 'search-result';
+      div.innerHTML = '<div class="search-result-module">Module ' + (m.index + 1) + ': ' + m.title + '</div><div class="search-result-text">' + m.snippet + '</div>';
+      div.addEventListener('click', function() {
+        closeSearch();
+        modules[m.index].scrollIntoView({ behavior: 'smooth' });
+      });
+      searchResults.appendChild(div);
+    });
+  });
+
+  searchInput.addEventListener('keydown', function(e) {
+    var items = searchResults.querySelectorAll('.search-result');
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      focusedResult = Math.min(focusedResult + 1, items.length - 1);
+      items.forEach(function(it, i) { it.classList.toggle('focused', i === focusedResult); });
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      focusedResult = Math.max(focusedResult - 1, 0);
+      items.forEach(function(it, i) { it.classList.toggle('focused', i === focusedResult); });
+    } else if (e.key === 'Enter' && focusedResult >= 0 && items[focusedResult]) {
+      items[focusedResult].click();
+    }
+  });
+
+  // ===== TOOLTIPS =====
+  var tooltip = document.getElementById('tooltip');
+  var glossaryTerms = document.querySelectorAll('.glossary-term');
+
+  glossaryTerms.forEach(function(term) {
+    var def = term.getAttribute('data-def');
+    if (!def) {
+      var text = term.textContent;
+      for (var key in glossaryDefs) {
+        if (text.toLowerCase().indexOf(key.toLowerCase()) !== -1) {
+          def = glossaryDefs[key];
+          break;
+        }
+      }
+    }
+    if (!def) return;
+
+    function showTooltip(e) {
+      var rect = term.getBoundingClientRect();
+      tooltip.textContent = def;
+      tooltip.classList.add('show');
+      var ttRect = tooltip.getBoundingClientRect();
+      var left = rect.left + rect.width / 2 - ttRect.width / 2;
+      left = Math.max(8, Math.min(left, window.innerWidth - ttRect.width - 8));
+      var top = rect.bottom + 8;
+      if (top + ttRect.height > window.innerHeight) {
+        top = rect.top - ttRect.height - 8;
+      }
+      tooltip.style.left = left + 'px';
+      tooltip.style.top = top + 'px';
+    }
+
+    function hideTooltip() {
+      tooltip.classList.remove('show');
+    }
+
+    term.addEventListener('mouseenter', showTooltip);
+    term.addEventListener('mouseleave', hideTooltip);
+    term.addEventListener('touchstart', function(e) {
+      e.preventDefault();
+      if (tooltip.classList.contains('show')) hideTooltip();
+      else showTooltip(e);
+    }, { passive: false });
+  });
+
+  // ===== QUIZZES =====
+  var savedQuizzes = JSON.parse(localStorage.getItem('qcml-quizzes') || '{}');
+
+  document.querySelectorAll('.quiz').forEach(function(quiz) {
+    var quizId = quiz.getAttribute('data-quiz');
+    var options = quiz.querySelectorAll('.quiz-option');
+    var explanation = quiz.querySelector('.quiz-explanation');
+
+    // Restore saved state
+    if (savedQuizzes[quizId] !== undefined) {
+      var savedIdx = savedQuizzes[quizId];
+      options.forEach(function(opt, i) {
+        opt.classList.add('disabled');
+        if (i === savedIdx) {
+          opt.classList.add('selected');
+          if (opt.getAttribute('data-correct') === 'true') opt.classList.add('correct');
+          else opt.classList.add('incorrect');
+        }
+        if (opt.getAttribute('data-correct') === 'true') opt.classList.add('correct-answer');
+      });
+      explanation.classList.add('show');
+    }
+
+    options.forEach(function(opt, i) {
+      opt.addEventListener('click', function() {
+        if (opt.classList.contains('disabled')) return;
+        options.forEach(function(o) {
+          o.classList.add('disabled');
+          if (o.getAttribute('data-correct') === 'true') o.classList.add('correct-answer');
+        });
+        opt.classList.add('selected');
+        if (opt.getAttribute('data-correct') === 'true') opt.classList.add('correct');
+        else opt.classList.add('incorrect');
+        explanation.classList.add('show');
+
+        savedQuizzes[quizId] = i;
+        localStorage.setItem('qcml-quizzes', JSON.stringify(savedQuizzes));
+      });
+    });
+  });
+
+  // ===== PIPELINE ANIMATION =====
+  function animatePipeline(container) {
+    var stages = container.querySelectorAll('.pipeline-stage, .pipeline-arrow');
+    stages.forEach(function(stage) {
+      var delay = parseInt(stage.getAttribute('data-delay') || '0');
+      setTimeout(function() {
+        stage.classList.add('visible');
+      }, delay);
+    });
+  }
+
+  // Intersection observer for pipeline
+  if ('IntersectionObserver' in window) {
+    var pipelineObserver = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          animatePipeline(entry.target);
+          pipelineObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.3 });
+
+    document.querySelectorAll('.pipeline-flow').forEach(function(pf) {
+      pipelineObserver.observe(pf);
+    });
+  }
+
+  // ===== GROUP CHAT ANIMATION =====
+  function animateChat(chatId) {
+    var chat = document.getElementById(chatId);
+    if (!chat) return;
+    var messages = chat.querySelectorAll('.chat-message');
+    messages.forEach(function(msg) {
+      msg.classList.remove('visible');
+    });
+    messages.forEach(function(msg) {
+      var delay = parseInt(msg.getAttribute('data-delay') || '0');
+      setTimeout(function() {
+        msg.classList.add('visible');
+      }, delay);
+    });
+  }
+
+  window.replayChat = function(chatId) {
+    animateChat(chatId);
+  };
+
+  // Intersection observer for chats
+  if ('IntersectionObserver' in window) {
+    var chatObserver = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          animateChat(entry.target.id);
+          chatObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.2 });
+
+    document.querySelectorAll('.group-chat').forEach(function(gc) {
+      chatObserver.observe(gc);
+    });
+  }
+
+  // ===== SCROLL POSITION PERSISTENCE =====
+  var savedScroll = localStorage.getItem('qcml-scroll');
+  if (savedScroll) {
+    setTimeout(function() {
+      window.scrollTo(0, parseInt(savedScroll));
+    }, 100);
+  }
+
+  var scrollSaveTimer;
+  window.addEventListener('scroll', function() {
+    clearTimeout(scrollSaveTimer);
+    scrollSaveTimer = setTimeout(function() {
+      localStorage.setItem('qcml-scroll', window.scrollY);
+    }, 500);
+  }, { passive: true });
+
+  // Initial module check
+  updateActiveModule();
+
+})();
 </script>
 </body>
 </html>
