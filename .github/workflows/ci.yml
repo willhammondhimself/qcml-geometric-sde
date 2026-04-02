@@ -27,7 +27,7 @@ jobs:
           pip install -e ".[dev,experiments]"
 
       - name: Check formatting with black
-        run: python -m black --check --target-version py310 qcml_geometry/ tests/
+        run: python -m black --check qcml_geometry/ tests/
 
       - name: Lint with ruff
         run: python -m ruff check qcml_geometry/ tests/
