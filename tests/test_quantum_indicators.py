@@ -40,6 +40,7 @@ from qcml_geometry.indicators import (
 # Fixtures: Real market data
 # ---------------------------------------------------------------------------
 
+
 @pytest.fixture(scope="module")
 def real_market_data():
     """
@@ -259,9 +260,9 @@ class TestFidelityDecayIndicator:
         f5 = fid_lag5.compute_fidelity_series(X)
 
         # Mean fidelity at lag=5 should generally be lower than lag=1
-        assert np.mean(f5) <= np.mean(f1) + 0.1, (
-            "Larger lag should produce lower or similar fidelity"
-        )
+        assert (
+            np.mean(f5) <= np.mean(f1) + 0.1
+        ), "Larger lag should produce lower or similar fidelity"
 
 
 # ---------------------------------------------------------------------------
@@ -287,9 +288,7 @@ class TestMultiScaleChernConsensus:
     def test_consensus_result_structure(self, geometry_and_features):
         """compute_consensus returns valid IndicatorResult."""
         geometry, X = geometry_and_features
-        indicator = MultiScaleChernConsensus(
-            geometry, scales=[10, 20], consensus_threshold=0.6
-        )
+        indicator = MultiScaleChernConsensus(geometry, scales=[10, 20], consensus_threshold=0.6)
         result = indicator.compute_consensus(X)
 
         assert isinstance(result, IndicatorResult)
@@ -302,9 +301,7 @@ class TestMultiScaleChernConsensus:
     def test_consensus_values_non_negative_and_finite(self, geometry_and_features):
         """Consensus values must be non-negative and finite."""
         geometry, X = geometry_and_features
-        indicator = MultiScaleChernConsensus(
-            geometry, scales=[10, 20], consensus_threshold=0.6
-        )
+        indicator = MultiScaleChernConsensus(geometry, scales=[10, 20], consensus_threshold=0.6)
         result = indicator.compute_consensus(X)
 
         assert np.all(result.values >= -1e-10), "Consensus must be >= 0"
@@ -313,9 +310,7 @@ class TestMultiScaleChernConsensus:
     def test_custom_weights_normalization(self, geometry_and_features):
         """Custom weights should be normalized to sum to 1."""
         geometry, X = geometry_and_features
-        indicator = MultiScaleChernConsensus(
-            geometry, scales=[10, 20], weights=[3.0, 7.0]
-        )
+        indicator = MultiScaleChernConsensus(geometry, scales=[10, 20], weights=[3.0, 7.0])
 
         assert abs(sum(indicator.weights) - 1.0) < 1e-10
 
@@ -323,9 +318,7 @@ class TestMultiScaleChernConsensus:
         """Mismatched weights and scales should raise ValueError."""
         geometry, X = geometry_and_features
         with pytest.raises(ValueError, match="weights length"):
-            MultiScaleChernConsensus(
-                geometry, scales=[10, 20, 30], weights=[0.5, 0.5]
-            )
+            MultiScaleChernConsensus(geometry, scales=[10, 20, 30], weights=[0.5, 0.5])
 
 
 # ---------------------------------------------------------------------------
@@ -339,9 +332,7 @@ class TestGeometricIndicatorSuite:
     def test_compute_all_returns_four_indicators(self, geometry_and_features):
         """compute_all must return exactly 4 named indicator results."""
         geometry, X = geometry_and_features
-        suite = GeometricIndicatorSuite(
-            geometry, window_size=10, scales=[10, 20]
-        )
+        suite = GeometricIndicatorSuite(geometry, window_size=10, scales=[10, 20])
         results = suite.compute_all(X)
 
         expected_keys = {
@@ -360,9 +351,7 @@ class TestGeometricIndicatorSuite:
     def test_composite_score_shape(self, geometry_and_features):
         """Composite score length equals minimum indicator length."""
         geometry, X = geometry_and_features
-        suite = GeometricIndicatorSuite(
-            geometry, window_size=10, scales=[10, 20]
-        )
+        suite = GeometricIndicatorSuite(geometry, window_size=10, scales=[10, 20])
         composite, results = suite.compute_composite_score(X)
 
         min_len = min(len(r.values) for r in results.values())
@@ -371,9 +360,7 @@ class TestGeometricIndicatorSuite:
     def test_composite_score_finite(self, geometry_and_features):
         """Composite score values must be finite."""
         geometry, X = geometry_and_features
-        suite = GeometricIndicatorSuite(
-            geometry, window_size=10, scales=[10, 20]
-        )
+        suite = GeometricIndicatorSuite(geometry, window_size=10, scales=[10, 20])
         composite, _ = suite.compute_composite_score(X)
 
         assert np.all(np.isfinite(composite)), "Composite score must be finite"
@@ -381,9 +368,7 @@ class TestGeometricIndicatorSuite:
     def test_composite_with_custom_weights(self, geometry_and_features):
         """Custom weights should change the composite score."""
         geometry, X = geometry_and_features
-        suite = GeometricIndicatorSuite(
-            geometry, window_size=10, scales=[10, 20]
-        )
+        suite = GeometricIndicatorSuite(geometry, window_size=10, scales=[10, 20])
 
         composite_equal, _ = suite.compute_composite_score(X)
 
@@ -397,16 +382,14 @@ class TestGeometricIndicatorSuite:
         composite_sg, _ = suite.compute_composite_score(X, weights=weights_sg)
 
         # They should differ (unless all indicators are identical, which is unlikely)
-        assert not np.allclose(composite_equal, composite_sg), (
-            "Different weights should produce different composite scores"
-        )
+        assert not np.allclose(
+            composite_equal, composite_sg
+        ), "Different weights should produce different composite scores"
 
     def test_suite_sub_indicators_accessible(self, geometry_and_features):
         """Suite should expose its sub-indicator instances."""
         geometry, X = geometry_and_features
-        suite = GeometricIndicatorSuite(
-            geometry, window_size=10, scales=[10, 20]
-        )
+        suite = GeometricIndicatorSuite(geometry, window_size=10, scales=[10, 20])
 
         assert isinstance(suite.spectral_gap, SpectralGapIndicator)
         assert isinstance(suite.energy, EnergyEvolutionIndicator)
@@ -439,9 +422,7 @@ class TestIndicatorResult:
 
     def test_metadata_default_empty(self):
         """Metadata should default to empty dict."""
-        result = IndicatorResult(
-            name="test", values=np.array([]), transitions=[], threshold=0.0
-        )
+        result = IndicatorResult(name="test", values=np.array([]), transitions=[], threshold=0.0)
         assert result.metadata == {}
 
     def test_metadata_with_values(self):
@@ -482,12 +463,11 @@ class TestQFISusceptibility:
     def test_qfi_susceptibility_varies_across_regime(self, geometry_and_features):
         """QFI susceptibility should vary across the crisis period."""
         geometry, X = geometry_and_features
-        chis = np.array([geometry.compute_qfi_susceptibility(X[i])
-                         for i in range(min(20, len(X)))])
+        chis = np.array([geometry.compute_qfi_susceptibility(X[i]) for i in range(min(20, len(X)))])
 
-        assert np.std(chis) > 1e-12, (
-            "QFI susceptibility is constant — should vary across market states"
-        )
+        assert (
+            np.std(chis) > 1e-12
+        ), "QFI susceptibility is constant — should vary across market states"
 
     def test_qfi_determinant_finite(self, geometry_and_features):
         """QFI metric determinant must be finite."""
@@ -511,9 +491,7 @@ class TestQFISusceptibility:
         chi = geometry.compute_qfi_susceptibility(x)
         g = geometry.quantum_metric(x)
 
-        assert abs(chi - np.trace(g)) < 1e-10, (
-            f"QFI susceptibility {chi} != tr(g) {np.trace(g)}"
-        )
+        assert abs(chi - np.trace(g)) < 1e-10, f"QFI susceptibility {chi} != tr(g) {np.trace(g)}"
 
 
 # ---------------------------------------------------------------------------
@@ -533,9 +511,9 @@ class TestScalarCurvature:
         for sigma in range(n):
             for mu in range(n):
                 for nu in range(n):
-                    assert abs(christoffel[sigma, mu, nu] - christoffel[sigma, nu, mu]) < 1e-6, (
-                        f"Torsion-free violated: Gamma^{sigma}_{mu}{nu} != Gamma^{sigma}_{nu}{mu}"
-                    )
+                    assert (
+                        abs(christoffel[sigma, mu, nu] - christoffel[sigma, nu, mu]) < 1e-6
+                    ), f"Torsion-free violated: Gamma^{sigma}_{mu}{nu} != Gamma^{sigma}_{nu}{mu}"
 
     def test_ricci_scalar_finite(self, geometry_and_features):
         """Ricci scalar R must be finite (not NaN/Inf)."""
@@ -550,9 +528,9 @@ class TestScalarCurvature:
         # Sample early (pre-crisis) and late (crisis) points
         R_values = np.array([geometry.ricci_scalar(X[i]) for i in range(0, min(20, len(X)), 2)])
 
-        assert np.std(R_values) > 1e-15, (
-            "Ricci scalar is constant — should vary across market states"
-        )
+        assert (
+            np.std(R_values) > 1e-15
+        ), "Ricci scalar is constant — should vary across market states"
 
     def test_metric_inverse_consistency(self, geometry_and_features):
         """g @ g_inv should approximate identity (validates regularized inverse)."""
@@ -563,9 +541,9 @@ class TestScalarCurvature:
         n = g.shape[0]
         identity = np.eye(n)
 
-        assert np.allclose(product, identity, atol=1e-4), (
-            f"g @ g_inv deviates from identity: max error = {np.max(np.abs(product - identity))}"
-        )
+        assert np.allclose(
+            product, identity, atol=1e-4
+        ), f"g @ g_inv deviates from identity: max error = {np.max(np.abs(product - identity))}"
 
     @pytest.mark.skip(reason="ScalarCurvatureDetector not yet implemented in additional_detectors")
     def test_scalar_curvature_detector_runs(self, geometry_and_features):
@@ -576,7 +554,7 @@ class TestScalarCurvature:
         det = ScalarCurvatureDetector(
             hilbert_dim=8,
             n_curvature_components=3,  # small for speed
-            operator_method='random',
+            operator_method="random",
             rolling_window=5,
             min_expanding=10,
             seed=42,

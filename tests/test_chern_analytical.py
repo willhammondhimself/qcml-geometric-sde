@@ -40,6 +40,7 @@ class TestChernAnalytical:
         Berry curvature through the level repulsion mechanism.
         """
         rng = np.random.RandomState(42)
+
         def rand_hermitian(n):
             A = rng.randn(n, n) + 1j * rng.randn(n, n)
             return (A + A.conj().T) / 2
@@ -51,8 +52,9 @@ class TestChernAnalytical:
         geom.set_operators([A0, A1])
         return geom
 
-    def _make_grid(self, n_grid: int, extent: float, n_features: int = 2,
-                   offset: float = 0.0) -> np.ndarray:
+    def _make_grid(
+        self, n_grid: int, extent: float, n_features: int = 2, offset: float = 0.0
+    ) -> np.ndarray:
         """Create a 2D grid of points in parameter space."""
         vals = np.linspace(-extent + offset, extent + offset, n_grid)
         X_grid = np.zeros((n_grid, n_grid, n_features))
@@ -74,7 +76,7 @@ class TestChernAnalytical:
         # Grid entirely in positive quadrant — no degeneracy
         X_grid = self._make_grid(n_grid=20, extent=1.5, offset=2.0)
 
-        chern = geom.chern_number(X_grid, indices=(0, 1), method='plaquette')
+        chern = geom.chern_number(X_grid, indices=(0, 1), method="plaquette")
         assert abs(chern) < 0.05, (
             f"Chern number |C| = {abs(chern):.4f} for 2-level system away from "
             f"degeneracy, expected ~0"
@@ -92,7 +94,7 @@ class TestChernAnalytical:
         # Grid centered on origin — contains the degeneracy
         X_grid = self._make_grid(n_grid=30, extent=2.0)
 
-        chern = geom.chern_number(X_grid, indices=(0, 1), method='plaquette')
+        chern = geom.chern_number(X_grid, indices=(0, 1), method="plaquette")
         assert abs(abs(chern) - 0.5) < 0.05, (
             f"Chern number |C| = {abs(chern):.4f} with degeneracy, "
             f"expected ~0.5 (half-monopole charge)"
@@ -137,7 +139,7 @@ class TestChernAnalytical:
         chern_values = []
         for n_grid in [10, 20, 30]:
             X_grid = self._make_grid(n_grid, extent=2.0)
-            chern = geom.chern_number(X_grid, indices=(0, 1), method='plaquette')
+            chern = geom.chern_number(X_grid, indices=(0, 1), method="plaquette")
             chern_values.append(chern)
 
         # Successive differences should decrease (convergence)
@@ -156,9 +158,9 @@ class TestChernAnalytical:
         gap_origin = geom.spectral_gap(np.array([0.0, 0.0]))
         gap_far = geom.spectral_gap(np.array([3.0, 3.0]))
 
-        assert gap_origin < gap_far, (
-            f"Gap at origin ({gap_origin:.4f}) should be < gap far away ({gap_far:.4f})"
-        )
+        assert (
+            gap_origin < gap_far
+        ), f"Gap at origin ({gap_origin:.4f}) should be < gap far away ({gap_far:.4f})"
 
     def test_spectral_gap_positive_away_from_origin(self):
         """Spectral gap should be strictly positive away from degeneracy."""
@@ -173,18 +175,15 @@ class TestChernAnalytical:
 
         for x in test_points:
             gap = geom.spectral_gap(x)
-            assert gap > 0.1, (
-                f"Spectral gap at {x} is {gap:.4f}, expected > 0.1"
-            )
+            assert gap > 0.1, f"Spectral gap at {x} is {gap:.4f}, expected > 0.1"
 
     def test_chern_nontrivial_4level(self):
         """4-level system should have non-zero Chern number over a large grid."""
         geom = self._make_4level_geometry()
 
         X_grid = self._make_grid(n_grid=25, extent=2.0)
-        chern = geom.chern_number(X_grid, indices=(0, 1), method='plaquette')
+        chern = geom.chern_number(X_grid, indices=(0, 1), method="plaquette")
 
         assert abs(chern) > 0.05, (
-            f"Chern number |C| = {abs(chern):.4f} for 4-level system, "
-            f"expected non-zero"
+            f"Chern number |C| = {abs(chern):.4f} for 4-level system, " f"expected non-zero"
         )

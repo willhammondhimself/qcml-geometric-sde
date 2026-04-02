@@ -25,6 +25,7 @@ from experiments.detection_metrics import (
 # TestF1WithTolerance
 # ---------------------------------------------------------------------------
 
+
 class TestF1WithTolerance:
     """F1 with tolerance windows following TCPDBench protocol."""
 
@@ -41,7 +42,11 @@ class TestF1WithTolerance:
         scores[crisis_end_idx] = 1.0
 
         result = compute_f1_with_tolerance(
-            scores, threshold, crisis_start_idx, crisis_end_idx, tolerance_days=5,
+            scores,
+            threshold,
+            crisis_start_idx,
+            crisis_end_idx,
+            tolerance_days=5,
         )
         assert result["precision"] == 1.0, "Only TP alarms, precision should be 1.0"
         assert result["recall"] == 1.0, "Both boundaries detected, recall should be 1.0"
@@ -60,10 +65,14 @@ class TestF1WithTolerance:
 
         # Place alarms near but not exactly at boundaries
         scores[crisis_start_idx + 3] = 1.0  # 3 days after start
-        scores[crisis_end_idx - 2] = 1.0    # 2 days before end
+        scores[crisis_end_idx - 2] = 1.0  # 2 days before end
 
         result = compute_f1_with_tolerance(
-            scores, threshold, crisis_start_idx, crisis_end_idx, tolerance_days=5,
+            scores,
+            threshold,
+            crisis_start_idx,
+            crisis_end_idx,
+            tolerance_days=5,
         )
         assert result["n_boundaries_detected"] == 2, "Both boundaries within tolerance"
         assert result["recall"] == 1.0
@@ -82,7 +91,11 @@ class TestF1WithTolerance:
         scores[90] = 1.0
 
         result = compute_f1_with_tolerance(
-            scores, threshold, crisis_start_idx, crisis_end_idx, tolerance_days=5,
+            scores,
+            threshold,
+            crisis_start_idx,
+            crisis_end_idx,
+            tolerance_days=5,
         )
         assert result["n_boundaries_detected"] == 0
         assert result["recall"] == 0.0
@@ -96,7 +109,11 @@ class TestF1WithTolerance:
         threshold = np.full(T, 0.5)
 
         result = compute_f1_with_tolerance(
-            scores, threshold, crisis_start_idx=40, crisis_end_idx=60, tolerance_days=10,
+            scores,
+            threshold,
+            crisis_start_idx=40,
+            crisis_end_idx=60,
+            tolerance_days=10,
         )
         assert result["recall"] == 0.0
         assert result["f1"] == 0.0
@@ -111,12 +128,16 @@ class TestF1WithTolerance:
         crisis_end_idx = 60
 
         result = compute_f1_with_tolerance(
-            scores, threshold, crisis_start_idx, crisis_end_idx, tolerance_days=5,
+            scores,
+            threshold,
+            crisis_start_idx,
+            crisis_end_idx,
+            tolerance_days=5,
         )
         assert result["recall"] == 1.0, "Both boundaries detected among many alarms"
-        assert result["precision"] < 0.3, (
-            f"Precision should be low with all alarms, got {result['precision']}"
-        )
+        assert (
+            result["precision"] < 0.3
+        ), f"Precision should be low with all alarms, got {result['precision']}"
 
     def test_each_boundary_matched_once(self):
         """Multiple alarms near same boundary count as 1 TP + N-1 FPs."""
@@ -131,7 +152,11 @@ class TestF1WithTolerance:
             scores[crisis_start_idx + i] = 1.0
 
         result = compute_f1_with_tolerance(
-            scores, threshold, crisis_start_idx, crisis_end_idx, tolerance_days=5,
+            scores,
+            threshold,
+            crisis_start_idx,
+            crisis_end_idx,
+            tolerance_days=5,
         )
         assert result["n_boundaries_detected"] == 1, "Only start boundary matched"
         assert result["n_tp"] == 1, "One TP (closest to start boundary)"
@@ -150,7 +175,11 @@ class TestF1WithTolerance:
         scores[41] = 1.0
 
         result = compute_f1_with_tolerance(
-            scores, threshold, crisis_start_idx, crisis_end_idx, tolerance_days=0,
+            scores,
+            threshold,
+            crisis_start_idx,
+            crisis_end_idx,
+            tolerance_days=0,
         )
         assert result["n_boundaries_detected"] == 0
 
@@ -158,6 +187,7 @@ class TestF1WithTolerance:
 # ---------------------------------------------------------------------------
 # TestAUCPR
 # ---------------------------------------------------------------------------
+
 
 class TestAUCPR:
     """Area under precision-recall curve."""
@@ -169,7 +199,7 @@ class TestAUCPR:
         crisis_mask[100:140] = True  # 40 crisis days
 
         scores = np.zeros(T)
-        scores[crisis_mask] = 5.0   # high during crisis
+        scores[crisis_mask] = 5.0  # high during crisis
         scores[~crisis_mask] = 0.1  # low during normal
 
         auc = compute_auc_pr(scores, crisis_mask)
@@ -214,6 +244,7 @@ class TestAUCPR:
 # ---------------------------------------------------------------------------
 # TestDetectionDelay
 # ---------------------------------------------------------------------------
+
 
 class TestDetectionDelay:
     """Detection delay: days from crisis start to first alarm."""
@@ -264,8 +295,8 @@ class TestDetectionDelay:
         T = 100
         scores = np.zeros(T)
         threshold = np.full(T, 0.5)
-        scores[42] = 0.8   # first alarm (weaker)
-        scores[50] = 5.0   # stronger alarm but later
+        scores[42] = 0.8  # first alarm (weaker)
+        scores[50] = 5.0  # stronger alarm but later
 
         delay = compute_detection_delay(scores, threshold, crisis_start_idx=40, crisis_end_idx=60)
         assert delay == 2, "Should use first alarm (day 42), not strongest"
@@ -283,6 +314,7 @@ class TestDetectionDelay:
 # ---------------------------------------------------------------------------
 # TestFalseAlarmRate
 # ---------------------------------------------------------------------------
+
 
 class TestFalseAlarmRate:
     """False alarm rate: alarms per year outside crisis windows."""

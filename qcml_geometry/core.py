@@ -34,8 +34,7 @@ class QCMLGeometry:
         is_fitted: Whether the model has been fitted to data
     """
 
-    def __init__(self, n_features: int, hilbert_dim: int = 4,
-                 regularization: float = 1e-6):
+    def __init__(self, n_features: int, hilbert_dim: int = 4, regularization: float = 1e-6):
         """
         Initialize QCML geometry learner.
 
@@ -56,8 +55,9 @@ class QCMLGeometry:
     def _create_random_hermitian(self, seed: Optional[int] = None) -> np.ndarray:
         """Create a random Hermitian matrix."""
         rng = np.random.default_rng(seed)
-        A = rng.standard_normal((self.hilbert_dim, self.hilbert_dim)) + \
-            1j * rng.standard_normal((self.hilbert_dim, self.hilbert_dim))
+        A = rng.standard_normal((self.hilbert_dim, self.hilbert_dim)) + 1j * rng.standard_normal(
+            (self.hilbert_dim, self.hilbert_dim)
+        )
         return (A + A.conj().T) / 2
 
     def _create_pauli_basis_operator(self, idx: int) -> np.ndarray:
@@ -85,11 +85,11 @@ class QCMLGeometry:
         paulis = [eye2, X, Y, Z]
 
         n_qubits = int(round(np.log2(self.hilbert_dim)))
-        if 2 ** n_qubits != self.hilbert_dim:
+        if 2**n_qubits != self.hilbert_dim:
             return self._create_random_hermitian(seed=idx)
 
         # Skip identity (all-I product at index 0) by using idx+1
-        pauli_idx = (idx + 1) % (4 ** n_qubits)
+        pauli_idx = (idx + 1) % (4**n_qubits)
 
         op = np.array([[1.0]], dtype=np.complex128)
         remainder = pauli_idx
@@ -165,9 +165,13 @@ class QCMLGeometry:
             op[k, k] = -k * norm
             return op
 
-    def fit_operators(self, X: np.ndarray, method: str = 'pca_inspired',
-                     n_components: Optional[int] = None,
-                     scale_exponent: Optional[float] = None) -> 'QCMLGeometry':
+    def fit_operators(
+        self,
+        X: np.ndarray,
+        method: str = "pca_inspired",
+        n_components: Optional[int] = None,
+        scale_exponent: Optional[float] = None,
+    ) -> "QCMLGeometry":
         """
         Learn Hermitian operators A_k from data.
 
@@ -198,7 +202,7 @@ class QCMLGeometry:
         n_ops = n_components if n_components else n_features
 
         # Methods that use PCA eigenvalue scaling
-        pca_methods = {'pca_inspired', 'pca_pauli', 'pca_gell_mann'}
+        pca_methods = {"pca_inspired", "pca_pauli", "pca_gell_mann"}
 
         if method in pca_methods:
             exp = scale_exponent if scale_exponent is not None else 0.5
@@ -212,7 +216,7 @@ class QCMLGeometry:
             eigenvalues = eigenvalues[idx_sort]
 
             # Select base operator constructor
-            if method == 'pca_gell_mann':
+            if method == "pca_gell_mann":
                 base_fn = self._create_gell_mann_operator
             else:
                 base_fn = self._create_pauli_basis_operator
@@ -223,24 +227,19 @@ class QCMLGeometry:
                 scale = max(eigenvalues[k], self.regularization) ** exp
                 self.operators.append(scale * base_op)
 
-        elif method == 'random':
+        elif method == "random":
+            self.operators = [self._create_random_hermitian(seed=k) for k in range(n_ops)]
+
+        elif method == "pauli":
+            max_ops = self.hilbert_dim**2
             self.operators = [
-                self._create_random_hermitian(seed=k)
-                for k in range(n_ops)
+                self._create_pauli_basis_operator(k) for k in range(min(n_ops, max_ops))
             ]
 
-        elif method == 'pauli':
-            max_ops = self.hilbert_dim ** 2
+        elif method == "gell_mann":
+            max_ops = self.hilbert_dim**2 - 1
             self.operators = [
-                self._create_pauli_basis_operator(k)
-                for k in range(min(n_ops, max_ops))
-            ]
-
-        elif method == 'gell_mann':
-            max_ops = self.hilbert_dim ** 2 - 1
-            self.operators = [
-                self._create_gell_mann_operator(k)
-                for k in range(min(n_ops, max_ops))
+                self._create_gell_mann_operator(k) for k in range(min(n_ops, max_ops))
             ]
 
         else:
@@ -254,7 +253,7 @@ class QCMLGeometry:
 
         return self
 
-    def set_operators(self, operators: list) -> 'QCMLGeometry':
+    def set_operators(self, operators: list) -> "QCMLGeometry":
         """Set operators directly (e.g., from learned operators).
 
         Args:
@@ -294,7 +293,9 @@ class QCMLGeometry:
         return H
 
     def quasi_coherent_state(
-        self, x: np.ndarray, return_energy: bool = False,
+        self,
+        x: np.ndarray,
+        return_energy: bool = False,
     ) -> Union[np.ndarray, Tuple[np.ndarray, float]]:
         """
         Compute quasi-coherent state |psi(x)> = ground state of H(x).
@@ -416,8 +417,9 @@ class QCMLGeometry:
 
         return F
 
-    def berry_curvature_2d(self, x: np.ndarray, indices: Tuple[int, int] = (0, 1),
-                          epsilon: float = 1e-5) -> float:
+    def berry_curvature_2d(
+        self, x: np.ndarray, indices: Tuple[int, int] = (0, 1), epsilon: float = 1e-5
+    ) -> float:
         """
         Compute Berry curvature for a 2D subspace using the plaquette method.
 
@@ -454,10 +456,11 @@ class QCMLGeometry:
         wilson = U01 * U12 * U23 * U30
         berry_phase = np.imag(np.log(wilson))
 
-        return berry_phase / (epsilon ** 2)
+        return berry_phase / (epsilon**2)
 
-    def chern_number(self, X_grid: np.ndarray, indices: Tuple[int, int] = (0, 1),
-                    method: str = 'plaquette') -> float:
+    def chern_number(
+        self, X_grid: np.ndarray, indices: Tuple[int, int] = (0, 1), method: str = "plaquette"
+    ) -> float:
         """
         Compute Chern number over a 2D region.
 
@@ -475,15 +478,15 @@ class QCMLGeometry:
         n_x, n_y = X_grid.shape[:2]
         a, b = indices
 
-        if method == 'plaquette':
+        if method == "plaquette":
             total_berry_phase = 0.0
 
             for i in range(n_x - 1):
                 for j in range(n_y - 1):
                     psi00 = self.quasi_coherent_state(X_grid[i, j])
-                    psi10 = self.quasi_coherent_state(X_grid[i+1, j])
-                    psi11 = self.quasi_coherent_state(X_grid[i+1, j+1])
-                    psi01 = self.quasi_coherent_state(X_grid[i, j+1])
+                    psi10 = self.quasi_coherent_state(X_grid[i + 1, j])
+                    psi11 = self.quasi_coherent_state(X_grid[i + 1, j + 1])
+                    psi01 = self.quasi_coherent_state(X_grid[i, j + 1])
 
                     U01 = np.vdot(psi00, psi10)
                     U12 = np.vdot(psi10, psi11)
@@ -496,7 +499,7 @@ class QCMLGeometry:
 
             return total_berry_phase / (2 * np.pi)
 
-        elif method == 'integrate':
+        elif method == "integrate":
             total = 0.0
 
             for i in range(n_x):
@@ -505,8 +508,8 @@ class QCMLGeometry:
                     F = self.berry_curvature(x)
 
                     if i < n_x - 1 and j < n_y - 1:
-                        dx_a = np.linalg.norm(X_grid[i+1, j, a] - X_grid[i, j, a])
-                        dx_b = np.linalg.norm(X_grid[i, j+1, b] - X_grid[i, j, b])
+                        dx_a = np.linalg.norm(X_grid[i + 1, j, a] - X_grid[i, j, a])
+                        dx_b = np.linalg.norm(X_grid[i, j + 1, b] - X_grid[i, j, b])
                         total += F[a, b] * dx_a * dx_b
 
             return total / (2 * np.pi)
@@ -551,8 +554,7 @@ class QCMLGeometry:
 
         return np.abs(np.vdot(psi1, psi2)) ** 2
 
-    def geodesic_distance(self, x1: np.ndarray, x2: np.ndarray,
-                         n_steps: int = 100) -> float:
+    def geodesic_distance(self, x1: np.ndarray, x2: np.ndarray, n_steps: int = 100) -> float:
         """
         Compute approximate geodesic distance on the learned manifold.
 
@@ -614,8 +616,9 @@ class QCMLGeometry:
         g = self.quantum_metric(x, epsilon=epsilon)
         return float(np.linalg.det(g))
 
-    def _christoffel_symbols(self, x: np.ndarray, epsilon_metric: float = 1e-5,
-                             epsilon_christoffel: float = 1e-4) -> tuple:
+    def _christoffel_symbols(
+        self, x: np.ndarray, epsilon_metric: float = 1e-5, epsilon_christoffel: float = 1e-4
+    ) -> tuple:
         """Compute Christoffel symbols of the Levi-Civita connection.
 
         Args:
@@ -653,9 +656,13 @@ class QCMLGeometry:
 
         return christoffel, g, g_inv
 
-    def ricci_scalar(self, x: np.ndarray, epsilon_metric: float = 1e-5,
-                     epsilon_christoffel: float = 1e-4,
-                     epsilon_ricci: float = 1e-3) -> float:
+    def ricci_scalar(
+        self,
+        x: np.ndarray,
+        epsilon_metric: float = 1e-5,
+        epsilon_christoffel: float = 1e-4,
+        epsilon_ricci: float = 1e-3,
+    ) -> float:
         """Compute Ricci scalar curvature R = g^{mu nu} R_{mu nu}.
 
         Uses hierarchical finite differences: metric (1e-5) -> Christoffel (1e-4)
@@ -694,7 +701,7 @@ class QCMLGeometry:
                         val -= christoffel[sigma, nu, lam] * christoffel[lam, sigma, mu]
                     ricci[mu, nu] += val
 
-        return float(np.einsum('ij,ij->', g_inv, ricci))
+        return float(np.einsum("ij,ij->", g_inv, ricci))
 
     def spectral_gap(self, x: np.ndarray) -> float:
         """
@@ -728,10 +735,15 @@ class QCMLGeometry:
         H = self.error_hamiltonian(x)
         return np.sort(np.linalg.eigvalsh(H))
 
-    def sectional_curvature(self, x: np.ndarray, i: int = 0, j: int = 1,
-                            epsilon_metric: float = 1e-5,
-                            epsilon_christoffel: float = 1e-4,
-                            epsilon_riemann: float = 1e-3) -> float:
+    def sectional_curvature(
+        self,
+        x: np.ndarray,
+        i: int = 0,
+        j: int = 1,
+        epsilon_metric: float = 1e-5,
+        epsilon_christoffel: float = 1e-4,
+        epsilon_riemann: float = 1e-3,
+    ) -> float:
         """Compute sectional curvature K(e_i, e_j) from the Riemann tensor.
 
         K(e_i, e_j) = R_{ijij} / (g_{ii} g_{jj} - g_{ij}^2)
@@ -854,12 +866,16 @@ class QCMLGeometry:
         DH_psi = DH @ psi
         mean_DH = np.real(np.vdot(psi, DH_psi))
         mean_DH2 = np.real(np.vdot(DH_psi, DH_psi))
-        return float(max(mean_DH2 - mean_DH ** 2, 0.0))
+        return float(max(mean_DH2 - mean_DH**2, 0.0))
 
-    def geodesic_curvature(self, x_prev: np.ndarray, x_curr: np.ndarray,
-                           x_next: np.ndarray,
-                           epsilon_metric: float = 1e-5,
-                           epsilon_christoffel: float = 1e-4) -> float:
+    def geodesic_curvature(
+        self,
+        x_prev: np.ndarray,
+        x_curr: np.ndarray,
+        x_next: np.ndarray,
+        epsilon_metric: float = 1e-5,
+        epsilon_christoffel: float = 1e-4,
+    ) -> float:
         """Compute geodesic curvature (covariant acceleration norm).
 
         kappa = ||nabla_{gamma'} gamma'||_g where gamma is the discrete
@@ -882,9 +898,7 @@ class QCMLGeometry:
         x_next = np.asarray(x_next).flatten()
         n = len(x_curr)
 
-        christoffel, g, _ = self._christoffel_symbols(
-            x_curr, epsilon_metric, epsilon_christoffel
-        )
+        christoffel, g, _ = self._christoffel_symbols(x_curr, epsilon_metric, epsilon_christoffel)
 
         # Discrete velocity and acceleration
         v = x_next - x_prev  # central difference (2*dt)
@@ -930,7 +944,7 @@ class QCMLGeometry:
 
         if gram_sum < 1e-15:
             return float(W)
-        return float(W ** 2 / gram_sum)
+        return float(W**2 / gram_sum)
 
     def qgt_phase_rigidity(self, x: np.ndarray, epsilon: float = 1e-5) -> float:
         """Compute Berry-to-metric Frobenius ratio ||F||_F / ||g||_F.
@@ -950,12 +964,11 @@ class QCMLGeometry:
         """
         g = self.quantum_metric(x, epsilon=epsilon)
         F = self.berry_curvature(x, epsilon=epsilon)
-        norm_F = np.linalg.norm(F, 'fro')
-        norm_g = np.linalg.norm(g, 'fro')
+        norm_F = np.linalg.norm(F, "fro")
+        norm_g = np.linalg.norm(g, "fro")
         return float(norm_F / (norm_g + 1e-10))
 
-    def reduced_state_purity(self, x: np.ndarray,
-                             partition: Tuple[int, int] = (2, 4)) -> float:
+    def reduced_state_purity(self, x: np.ndarray, partition: Tuple[int, int] = (2, 4)) -> float:
         """Compute purity of reduced density matrix under bipartition.
 
         Tr(rho_A^2) where rho_A = Tr_B(|psi><psi|). Low purity indicates
@@ -1012,8 +1025,9 @@ class QCMLGeometry:
         probs = weights / Z
         return float(-np.sum(probs * np.log(probs + 1e-15)))
 
-    def berry_velocity_coupling(self, x_curr: np.ndarray, x_prev: np.ndarray,
-                                epsilon: float = 1e-5) -> float:
+    def berry_velocity_coupling(
+        self, x_curr: np.ndarray, x_prev: np.ndarray, epsilon: float = 1e-5
+    ) -> float:
         """Compute Berry curvature contracted with velocity: ||iota_v F||_g.
 
         (iota_v F)_a = F_{ab} v^b, then ||iota_v F||_g = sqrt(g^{ac} (iota_v F)_a (iota_v F)_c).
@@ -1048,10 +1062,14 @@ class QCMLGeometry:
         norm_sq = iota @ g_inv @ iota
         return float(np.sqrt(max(norm_sq, 0.0)))
 
-    def ricci_scalar_rate(self, x_curr: np.ndarray, x_prev: np.ndarray,
-                          epsilon_metric: float = 1e-5,
-                          epsilon_christoffel: float = 1e-4,
-                          epsilon_ricci: float = 1e-3) -> float:
+    def ricci_scalar_rate(
+        self,
+        x_curr: np.ndarray,
+        x_prev: np.ndarray,
+        epsilon_metric: float = 1e-5,
+        epsilon_christoffel: float = 1e-4,
+        epsilon_ricci: float = 1e-3,
+    ) -> float:
         """Compute absolute rate of change of Ricci scalar curvature.
 
         |R(t) - R(t-1)| where R is the Ricci scalar. Captures how fast
@@ -1088,15 +1106,15 @@ class QCMLGeometry:
         H1 = self.error_hamiltonian(x1)
         H2 = self.error_hamiltonian(x2)
         commutator = H1 @ H2 - H2 @ H1
-        return float(np.linalg.norm(commutator, 'fro'))
+        return float(np.linalg.norm(commutator, "fro"))
 
 
 # ---------------------------------------------------------------------------
 # Test data generators (known topology)
 # ---------------------------------------------------------------------------
 
-def create_test_data_sphere(n_samples: int = 500, noise: float = 0.1,
-                           seed: int = 42) -> np.ndarray:
+
+def create_test_data_sphere(n_samples: int = 500, noise: float = 0.1, seed: int = 42) -> np.ndarray:
     """
     Create test data on a 2D sphere embedded in 3D (known topology).
 
@@ -1131,8 +1149,9 @@ def create_test_data_sphere(n_samples: int = 500, noise: float = 0.1,
     return X
 
 
-def create_test_data_torus(n_samples: int = 500, R: float = 2.0, r: float = 0.5,
-                          noise: float = 0.1, seed: int = 42) -> np.ndarray:
+def create_test_data_torus(
+    n_samples: int = 500, R: float = 2.0, r: float = 0.5, noise: float = 0.1, seed: int = 42
+) -> np.ndarray:
     """
     Create test data on a torus embedded in 3D (zero Chern number).
 

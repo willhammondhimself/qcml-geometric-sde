@@ -32,52 +32,52 @@ logger = logging.getLogger(__name__)
 
 # Dead signals excluded from fusion — fail due to Kramers degeneracy or
 # noise amplification (all d < 0.02 across 17 crises).
-DEAD_CHANNELS = frozenset([
-    'QGT Phase Rigidity',       # d=0.013, ||F||/||g|| nearly constant
-    'Berry Velocity Coupling',  # d=0.012, inner product averages out
-    'Curvature Rate',           # d=0.013, finite-difference noise
-])
+DEAD_CHANNELS = frozenset(
+    [
+        "QGT Phase Rigidity",  # d=0.013, ||F||/||g|| nearly constant
+        "Berry Velocity Coupling",  # d=0.012, inner product averages out
+        "Curvature Rate",  # d=0.013, finite-difference noise
+    ]
+)
 
 # Observable families mirroring Paper 1 Table 1.  Keys are family names,
 # values are lists of detector display names (matching HPO_CONFIGS keys).
 OBSERVABLE_FAMILIES: Dict[str, List[str]] = {
-    'Holonomy': [
-        'Berry Phase Rate',
-        'Geometric Phase Rate',
+    "Holonomy": [
+        "Berry Phase Rate",
+        "Geometric Phase Rate",
     ],
-    'Metric': [
-        'QFI Determinant',
-        'Hamiltonian Sensitivity',
+    "Metric": [
+        "QFI Determinant",
+        "Hamiltonian Sensitivity",
     ],
-    'State Dynamics': [
-        'Multi-Lag Fidelity',
-        'Reduced Purity',
-        'Quantum Relative Entropy',
+    "State Dynamics": [
+        "Multi-Lag Fidelity",
+        "Reduced Purity",
+        "Quantum Relative Entropy",
     ],
-    'Kinematics': [
-        'Geodesic Velocity',
-        'Speed Limit Ratio',
+    "Kinematics": [
+        "Geodesic Velocity",
+        "Speed Limit Ratio",
     ],
-    'Spectral': [
-        'Spectral Entropy',
-        'Spectral Complexity',
-        'Effective State Dim',
-        'Level Spacing Ratio',
+    "Spectral": [
+        "Spectral Entropy",
+        "Spectral Complexity",
+        "Effective State Dim",
+        "Level Spacing Ratio",
     ],
-    'Curvature': [
-        'Sectional Curvature Sign',
-        'Geodesic Curvature',
+    "Curvature": [
+        "Sectional Curvature Sign",
+        "Geodesic Curvature",
     ],
-    'Topology': [
-        'QCML Chern',
-        'Dimensionality Collapse',
+    "Topology": [
+        "QCML Chern",
+        "Dimensionality Collapse",
     ],
 }
 
 # Flat set of all active channels (excludes dead signals)
-ACTIVE_CHANNELS = frozenset(
-    ch for family in OBSERVABLE_FAMILIES.values() for ch in family
-)
+ACTIVE_CHANNELS = frozenset(ch for family in OBSERVABLE_FAMILIES.values() for ch in family)
 
 
 def _expanding_zscore_1d(vals: np.ndarray, min_obs: int = 60) -> np.ndarray:
@@ -134,13 +134,13 @@ class RankFusionDetector(BaseRegimeDetector):
     def name(self) -> str:
         return "Rank Fusion"
 
-    def fit(self, X: np.ndarray, **kwargs) -> 'RankFusionDetector':
+    def fit(self, X: np.ndarray, **kwargs) -> "RankFusionDetector":
         for det in self.detectors:
             det.fit(X, **kwargs)
         self._is_fitted = True
         return self
 
-    def set_precomputed_scores(self, score_matrix: np.ndarray) -> 'RankFusionDetector':
+    def set_precomputed_scores(self, score_matrix: np.ndarray) -> "RankFusionDetector":
         """Set pre-computed score matrix instead of running detectors.
 
         Args:
@@ -157,9 +157,7 @@ class RankFusionDetector(BaseRegimeDetector):
         if self._score_matrix is not None:
             scores = self._score_matrix
         else:
-            scores = np.column_stack([
-                det.compute_regime_scores(X) for det in self.detectors
-            ])
+            scores = np.column_stack([det.compute_regime_scores(X) for det in self.detectors])
 
         T, n_methods = scores.shape
 
@@ -168,7 +166,7 @@ class RankFusionDetector(BaseRegimeDetector):
         for t in range(self.min_expanding, T):
             ranks = np.zeros(n_methods)
             for m in range(n_methods):
-                col = scores[:t + 1, m]
+                col = scores[: t + 1, m]
                 valid = col[~np.isnan(col)]
                 if len(valid) < 10:
                     ranks[m] = 0.5
@@ -182,10 +180,7 @@ class RankFusionDetector(BaseRegimeDetector):
 
         # Z-score the rank average
         rolling_vals = (
-            pd.Series(rank_avg)
-            .rolling(window=self.rolling_window, min_periods=1)
-            .mean()
-            .values
+            pd.Series(rank_avg).rolling(window=self.rolling_window, min_periods=1).mean().values
         )
 
         z_scores = np.full(T, np.nan)
@@ -238,20 +233,18 @@ class StackingFusionDetector(BaseRegimeDetector):
     def name(self) -> str:
         return "Stacking Fusion"
 
-    def set_precomputed_scores(self, score_matrix: np.ndarray) -> 'StackingFusionDetector':
+    def set_precomputed_scores(self, score_matrix: np.ndarray) -> "StackingFusionDetector":
         """Set pre-computed score matrix."""
         self._score_matrix = score_matrix
         return self
 
-    def fit(self, X: np.ndarray, **kwargs) -> 'StackingFusionDetector':
+    def fit(self, X: np.ndarray, **kwargs) -> "StackingFusionDetector":
         from sklearn.linear_model import LogisticRegression
 
         if self._score_matrix is None:
             for det in self.detectors:
                 det.fit(X, **kwargs)
-            scores = np.column_stack([
-                det.compute_regime_scores(X) for det in self.detectors
-            ])
+            scores = np.column_stack([det.compute_regime_scores(X) for det in self.detectors])
         else:
             scores = self._score_matrix
 
@@ -282,7 +275,7 @@ class StackingFusionDetector(BaseRegimeDetector):
         # Replace NaN with 0 for any remaining
         X_valid = np.nan_to_num(X_valid, nan=0.0)
 
-        lr = LogisticRegression(C=0.1, penalty='l2', max_iter=1000, random_state=42)
+        lr = LogisticRegression(C=0.1, penalty="l2", max_iter=1000, random_state=42)
         lr.fit(X_valid, y_valid)
 
         self._weights = lr.coef_.ravel()
@@ -297,9 +290,7 @@ class StackingFusionDetector(BaseRegimeDetector):
         if self._score_matrix is not None:
             scores = self._score_matrix
         else:
-            scores = np.column_stack([
-                det.compute_regime_scores(X) for det in self.detectors
-            ])
+            scores = np.column_stack([det.compute_regime_scores(X) for det in self.detectors])
 
         T = scores.shape[0]
         scores_clean = np.nan_to_num(scores, nan=0.0)
@@ -353,12 +344,12 @@ class DynamicSwitchingDetector(BaseRegimeDetector):
     def name(self) -> str:
         return "Dynamic Switching"
 
-    def set_precomputed_scores(self, score_matrix: np.ndarray) -> 'DynamicSwitchingDetector':
+    def set_precomputed_scores(self, score_matrix: np.ndarray) -> "DynamicSwitchingDetector":
         """Set pre-computed score matrix."""
         self._score_matrix = score_matrix
         return self
 
-    def fit(self, X: np.ndarray, **kwargs) -> 'DynamicSwitchingDetector':
+    def fit(self, X: np.ndarray, **kwargs) -> "DynamicSwitchingDetector":
         for det in self.detectors:
             det.fit(X, **kwargs)
         self._is_fitted = True
@@ -371,9 +362,7 @@ class DynamicSwitchingDetector(BaseRegimeDetector):
         if self._score_matrix is not None:
             scores = self._score_matrix
         else:
-            scores = np.column_stack([
-                det.compute_regime_scores(X) for det in self.detectors
-            ])
+            scores = np.column_stack([det.compute_regime_scores(X) for det in self.detectors])
 
         T, n_methods = scores.shape
 
@@ -389,8 +378,8 @@ class DynamicSwitchingDetector(BaseRegimeDetector):
         for t in range(max(ew, self.min_expanding), T):
             weights = np.zeros(n_methods)
             for m in range(n_methods):
-                s = scores[t - ew:t, m]
-                tgt = target[t - ew:t]
+                s = scores[t - ew : t, m]
+                tgt = target[t - ew : t]
                 valid = ~(np.isnan(s) | np.isnan(tgt))
                 if np.sum(valid) < 10:
                     weights[m] = 1.0 / n_methods
@@ -412,10 +401,7 @@ class DynamicSwitchingDetector(BaseRegimeDetector):
 
         # Z-score the fused signal
         rolling_vals = (
-            pd.Series(fused)
-            .rolling(window=self.rolling_window, min_periods=1)
-            .mean()
-            .values
+            pd.Series(fused).rolling(window=self.rolling_window, min_periods=1).mean().values
         )
 
         z_scores = np.full(T, np.nan)
@@ -437,6 +423,7 @@ class DynamicSwitchingDetector(BaseRegimeDetector):
 # =============================================================================
 # Paper 2: Hierarchical Fusion
 # =============================================================================
+
 
 class HierarchicalFusionDetector(BaseRegimeDetector):
     """Two-level hierarchical fusion mirroring the 7 observable families.
@@ -464,7 +451,7 @@ class HierarchicalFusionDetector(BaseRegimeDetector):
         self,
         families: Optional[Dict[str, List[int]]] = None,
         channel_names: Optional[List[str]] = None,
-        cross_family_mode: str = 'rank',
+        cross_family_mode: str = "rank",
         rolling_window: int = 15,
         min_expanding: int = 60,
         crisis_labels: Optional[np.ndarray] = None,
@@ -501,13 +488,13 @@ class HierarchicalFusionDetector(BaseRegimeDetector):
                 resolved[fam] = idxs
         return resolved
 
-    def set_precomputed_scores(self, score_matrix: np.ndarray) -> 'HierarchicalFusionDetector':
+    def set_precomputed_scores(self, score_matrix: np.ndarray) -> "HierarchicalFusionDetector":
         """Set pre-computed score matrix of shape (T, n_channels)."""
         self._score_matrix = score_matrix
         self._is_fitted = True
         return self
 
-    def fit(self, X: np.ndarray, **kwargs) -> 'HierarchicalFusionDetector':
+    def fit(self, X: np.ndarray, **kwargs) -> "HierarchicalFusionDetector":
         self._is_fitted = True
         return self
 
@@ -516,7 +503,7 @@ class HierarchicalFusionDetector(BaseRegimeDetector):
         T = len(col)
         out = np.full(T, np.nan)
         for t in range(self.min_expanding, T):
-            past = col[:t + 1]
+            past = col[: t + 1]
             valid = past[~np.isnan(past)]
             if len(valid) < 10 or np.isnan(col[t]):
                 continue
@@ -544,29 +531,21 @@ class HierarchicalFusionDetector(BaseRegimeDetector):
             if len(cols) == 1:
                 family_scores[:, fi] = self._rank_normalize_column(scores[:, cols[0]])
             else:
-                ranked = np.column_stack([
-                    self._rank_normalize_column(scores[:, c]) for c in cols
-                ])
+                ranked = np.column_stack([self._rank_normalize_column(scores[:, c]) for c in cols])
                 family_scores[:, fi] = np.nanmean(ranked, axis=1)
 
         self._family_scores = family_scores
 
         # --- Level 2: cross-family fusion ---
-        if self.cross_family_mode == 'learned' and self.crisis_labels is not None:
+        if self.cross_family_mode == "learned" and self.crisis_labels is not None:
             fused = self._learned_cross_family(family_scores)
         else:
-            cross_ranked = np.column_stack([
-                self._rank_normalize_column(family_scores[:, fi])
-                for fi in range(n_fam)
-            ])
+            cross_ranked = np.column_stack(
+                [self._rank_normalize_column(family_scores[:, fi]) for fi in range(n_fam)]
+            )
             fused = np.nanmean(cross_ranked, axis=1)
 
-        smoothed = (
-            pd.Series(fused)
-            .rolling(window=self.rolling_window, min_periods=1)
-            .mean()
-            .values
-        )
+        smoothed = pd.Series(fused).rolling(window=self.rolling_window, min_periods=1).mean().values
         return _expanding_zscore_1d(smoothed, self.min_expanding)
 
     def _learned_cross_family(self, family_scores: np.ndarray) -> np.ndarray:
@@ -586,7 +565,7 @@ class HierarchicalFusionDetector(BaseRegimeDetector):
             self._cross_weights = np.ones(n_fam) / n_fam
             self._cross_intercept = 0.0
         else:
-            lr = LogisticRegression(C=0.1, penalty='l2', max_iter=1000, random_state=42)
+            lr = LogisticRegression(C=0.1, penalty="l2", max_iter=1000, random_state=42)
             lr.fit(X_valid, y_valid)
             self._cross_weights = lr.coef_.ravel()
             self._cross_intercept = lr.intercept_[0]
@@ -607,6 +586,7 @@ class HierarchicalFusionDetector(BaseRegimeDetector):
 # =============================================================================
 # Paper 2: Regime-Adaptive Fusion
 # =============================================================================
+
 
 class RegimeAdaptiveFusionDetector(BaseRegimeDetector):
     """Regime-conditional fusion weights via walk-forward clustering + regression.
@@ -654,12 +634,12 @@ class RegimeAdaptiveFusionDetector(BaseRegimeDetector):
     def name(self) -> str:
         return "Regime-Adaptive Fusion"
 
-    def set_precomputed_scores(self, score_matrix: np.ndarray) -> 'RegimeAdaptiveFusionDetector':
+    def set_precomputed_scores(self, score_matrix: np.ndarray) -> "RegimeAdaptiveFusionDetector":
         self._score_matrix = score_matrix
         self._is_fitted = True
         return self
 
-    def fit(self, X: np.ndarray, **kwargs) -> 'RegimeAdaptiveFusionDetector':
+    def fit(self, X: np.ndarray, **kwargs) -> "RegimeAdaptiveFusionDetector":
         self._is_fitted = True
         return self
 
@@ -678,11 +658,11 @@ class RegimeAdaptiveFusionDetector(BaseRegimeDetector):
         scores_clean = np.nan_to_num(scores, nan=0.0)
 
         meta_list = [
-            np.nanstd(scores, axis=1),                              # cross-channel dispersion
-            np.nanmax(np.abs(scores_clean), axis=1),                # max activation
+            np.nanstd(scores, axis=1),  # cross-channel dispersion
+            np.nanmax(np.abs(scores_clean), axis=1),  # max activation
             np.sum(scores_clean > 1.0, axis=1) / max(scores.shape[1], 1),  # fraction > 1σ
             pd.Series(np.nanstd(scores, axis=1)).rolling(20, min_periods=1).mean().values,
-            np.nanmean(np.abs(scores_clean), axis=1),               # mean abs score
+            np.nanmean(np.abs(scores_clean), axis=1),  # mean abs score
         ]
         return np.column_stack(meta_list)
 
@@ -707,13 +687,14 @@ class RegimeAdaptiveFusionDetector(BaseRegimeDetector):
         for t in range(self.min_train_obs, T):
             if cluster_model is None or (t - last_train) >= self.retrain_interval:
                 cluster_model, regime_weights = self._train_regime_model(
-                    scores_clean[:t], meta[:t],
+                    scores_clean[:t],
+                    meta[:t],
                     self.crisis_labels[:t] if self.crisis_labels is not None else None,
                 )
                 last_train = t
 
             if cluster_model is not None and not np.any(np.isnan(meta[t])):
-                regime = int(cluster_model.predict(meta[t:t+1])[0])
+                regime = int(cluster_model.predict(meta[t : t + 1])[0])
             else:
                 regime = 0
 
@@ -725,12 +706,7 @@ class RegimeAdaptiveFusionDetector(BaseRegimeDetector):
         self._regime_labels = regime_labels
         self._weight_history = weight_history
 
-        smoothed = (
-            pd.Series(fused)
-            .rolling(window=self.rolling_window, min_periods=1)
-            .mean()
-            .values
-        )
+        smoothed = pd.Series(fused).rolling(window=self.rolling_window, min_periods=1).mean().values
         return _expanding_zscore_1d(smoothed, self.min_expanding)
 
     def _train_regime_model(
@@ -803,6 +779,7 @@ class RegimeAdaptiveFusionDetector(BaseRegimeDetector):
 # Paper 2: Bayesian Evidence Accumulator (Online SPRT)
 # =============================================================================
 
+
 class BayesianEvidenceAccumulator(BaseRegimeDetector):
     """Sequential Bayesian evidence accumulation across detection channels.
 
@@ -827,7 +804,7 @@ class BayesianEvidenceAccumulator(BaseRegimeDetector):
         self,
         channel_names: Optional[List[str]] = None,
         log_alpha: float = -2.9957,  # log(0.05)
-        log_beta: float = -1.6094,   # log(0.20)
+        log_beta: float = -1.6094,  # log(0.20)
         reset_on_alarm: bool = True,
         decay: float = 0.995,
         min_expanding: int = 60,
@@ -847,12 +824,12 @@ class BayesianEvidenceAccumulator(BaseRegimeDetector):
     def name(self) -> str:
         return "Bayesian Evidence"
 
-    def set_precomputed_scores(self, score_matrix: np.ndarray) -> 'BayesianEvidenceAccumulator':
+    def set_precomputed_scores(self, score_matrix: np.ndarray) -> "BayesianEvidenceAccumulator":
         self._score_matrix = score_matrix
         self._is_fitted = True
         return self
 
-    def fit(self, X: np.ndarray, **kwargs) -> 'BayesianEvidenceAccumulator':
+    def fit(self, X: np.ndarray, **kwargs) -> "BayesianEvidenceAccumulator":
         self._is_fitted = True
         return self
 
@@ -904,7 +881,7 @@ class BayesianEvidenceAccumulator(BaseRegimeDetector):
                 sigma = max(sigma, 1e-8)
 
                 mu_crisis = sigma  # 1-sigma shift under H1
-                llr = (v * mu_crisis / (sigma ** 2)) - (mu_crisis ** 2 / (2 * sigma ** 2))
+                llr = (v * mu_crisis / (sigma**2)) - (mu_crisis**2 / (2 * sigma**2))
                 llr_total += llr
                 n_valid += 1
 

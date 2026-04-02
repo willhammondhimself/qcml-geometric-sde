@@ -12,13 +12,10 @@ Tests verify correctness of:
 import numpy as np
 import pytest
 import sys
-sys.path.insert(0, '..')
 
-from qcml_geometry import (
-    QCMLGeometry,
-    create_test_data_sphere,
-    create_test_data_torus
-)
+sys.path.insert(0, "..")
+
+from qcml_geometry import QCMLGeometry, create_test_data_sphere, create_test_data_torus
 
 
 class TestQCMLGeometry:
@@ -29,7 +26,7 @@ class TestQCMLGeometry:
         """Create test data and fitted geometry."""
         X = create_test_data_sphere(n_samples=100, noise=0.05, seed=42)
         geometry = QCMLGeometry(n_features=3, hilbert_dim=4)
-        geometry.fit_operators(X, method='pca_inspired')
+        geometry.fit_operators(X, method="pca_inspired")
         return geometry, X
 
     def test_initialization(self):
@@ -43,7 +40,7 @@ class TestQCMLGeometry:
         """Test operator fitting with PCA method."""
         X = create_test_data_sphere(n_samples=50, noise=0.05)
         geometry = QCMLGeometry(n_features=3, hilbert_dim=4)
-        geometry.fit_operators(X, method='pca_inspired')
+        geometry.fit_operators(X, method="pca_inspired")
 
         assert geometry.is_fitted
         assert len(geometry.operators) == 3
@@ -55,7 +52,7 @@ class TestQCMLGeometry:
         """Test operator fitting with Pauli method."""
         X = create_test_data_sphere(n_samples=50, noise=0.05)
         geometry = QCMLGeometry(n_features=3, hilbert_dim=4)
-        geometry.fit_operators(X, method='pauli', n_components=3)
+        geometry.fit_operators(X, method="pauli", n_components=3)
 
         assert geometry.is_fitted
         assert len(geometry.operators) == 3
@@ -177,13 +174,15 @@ class TestQCMLGeometry:
         # Use hilbert_dim=2 so Pauli operators (I,X,Y) are non-degenerate
         # (hilbert_dim=4 uses I⊗I, I⊗X, I⊗Y which have doubly-degenerate spectra)
         geometry_sphere = QCMLGeometry(n_features=3, hilbert_dim=2)
-        geometry_sphere.fit_operators(X_sphere, method='pca_inspired')
+        geometry_sphere.fit_operators(X_sphere, method="pca_inspired")
 
         geometry_torus = QCMLGeometry(n_features=3, hilbert_dim=2)
-        geometry_torus.fit_operators(X_torus, method='pca_inspired')
+        geometry_torus.fit_operators(X_torus, method="pca_inspired")
 
         # Compute spectral gaps for both
-        gaps_sphere = [geometry_sphere.spectral_gap(X_sphere[i]) for i in range(0, len(X_sphere), 10)]
+        gaps_sphere = [
+            geometry_sphere.spectral_gap(X_sphere[i]) for i in range(0, len(X_sphere), 10)
+        ]
         gaps_torus = [geometry_torus.spectral_gap(X_torus[i]) for i in range(0, len(X_torus), 10)]
 
         # Both should have some non-zero gaps (topological structure detected)

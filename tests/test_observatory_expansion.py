@@ -38,7 +38,7 @@ class TestNewCoreMethods:
     def geometry(self):
         X = create_test_data_sphere(n_samples=50, noise=0.05, seed=42)
         geo = QCMLGeometry(n_features=3, hilbert_dim=4)
-        geo.fit_operators(X, method='pca_inspired')
+        geo.fit_operators(X, method="pca_inspired")
         return geo
 
     @pytest.fixture
@@ -46,7 +46,7 @@ class TestNewCoreMethods:
         """Larger Hilbert space for reduced purity bipartition."""
         X = create_test_data_sphere(n_samples=50, noise=0.05, seed=42)
         geo = QCMLGeometry(n_features=3, hilbert_dim=8)
-        geo.fit_operators(X, method='random')
+        geo.fit_operators(X, method="random")
         return geo
 
     def test_spectral_entropy_nonneg(self, geometry):
@@ -94,12 +94,14 @@ class TestNewCoreMethods:
         assert gc >= 0.0
 
     def test_effective_state_dimension_bounded(self, geometry):
-        x_points = np.array([
-            [0.5, 0.3, 0.1],
-            [0.6, 0.4, 0.2],
-            [0.7, 0.5, 0.3],
-            [0.4, 0.2, 0.0],
-        ])
+        x_points = np.array(
+            [
+                [0.5, 0.3, 0.1],
+                [0.6, 0.4, 0.2],
+                [0.7, 0.5, 0.3],
+                [0.4, 0.2, 0.0],
+            ]
+        )
         states = []
         for x in x_points:
             psi = geometry.quasi_coherent_state(x)
@@ -179,9 +181,12 @@ class TestNewDetectors:
     def _smoke_test_detector(self, detector_cls, X, **kwargs):
         """Common smoke test: fit + compute_regime_scores returns array of correct length."""
         det = detector_cls(
-            hilbert_dim=4, n_pca_components=3, rolling_window=10,
-            operator_method='random', seed=42,
-            normalization='sphere',
+            hilbert_dim=4,
+            n_pca_components=3,
+            rolling_window=10,
+            operator_method="random",
+            seed=42,
+            normalization="sphere",
             **kwargs,
         )
         det.fit(X)
@@ -202,7 +207,8 @@ class TestNewDetectors:
 
     def test_geodesic_curvature_detector(self, test_data_large):
         self._smoke_test_detector(
-            GeodesicCurvatureDetector, test_data_large,
+            GeodesicCurvatureDetector,
+            test_data_large,
             subsample=3,
         )
 
@@ -214,9 +220,12 @@ class TestNewDetectors:
 
     def test_reduced_purity_detector(self, test_data):
         det = ReducedPurityDetector(
-            hilbert_dim=8, n_pca_components=3, rolling_window=10,
-            operator_method='random', seed=42,
-            normalization='sphere',
+            hilbert_dim=8,
+            n_pca_components=3,
+            rolling_window=10,
+            operator_method="random",
+            seed=42,
+            normalization="sphere",
             partition=(2, 4),
         )
         det.fit(test_data)
@@ -232,7 +241,8 @@ class TestNewDetectors:
 
     def test_curvature_rate_detector(self, test_data_large):
         self._smoke_test_detector(
-            CurvatureRateDetector, test_data_large,
+            CurvatureRateDetector,
+            test_data_large,
             subsample=3,
         )
 
@@ -270,6 +280,7 @@ class TestNewBaselines:
 
     def test_ewma_detector(self, test_data):
         from experiments.baselines import EWMADetector
+
         det = EWMADetector(decay=0.94, min_expanding=30)
         det.fit(test_data)
         scores = det.compute_regime_scores(test_data)
@@ -278,6 +289,7 @@ class TestNewBaselines:
 
     def test_mahalanobis_detector(self, test_data):
         from experiments.baselines import MahalanobisDetector
+
         det = MahalanobisDetector(min_expanding=30)
         det.fit(test_data)
         scores = det.compute_regime_scores(test_data)
@@ -286,6 +298,7 @@ class TestNewBaselines:
 
     def test_structural_break_detector(self, test_data):
         from experiments.baselines import StructuralBreakDetector
+
         det = StructuralBreakDetector(min_expanding=30)
         det.fit(test_data)
         scores = det.compute_regime_scores(test_data)
@@ -293,6 +306,7 @@ class TestNewBaselines:
 
     def test_transfer_entropy_detector(self, test_data):
         from experiments.baselines import TransferEntropyDetector
+
         det = TransferEntropyDetector(te_window=30, min_expanding=30)
         det.fit(test_data)
         scores = det.compute_regime_scores(test_data)

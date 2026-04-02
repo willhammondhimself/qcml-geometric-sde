@@ -43,6 +43,7 @@ from experiments.additional_detectors import (
 # Fixtures: Real market data
 # ---------------------------------------------------------------------------
 
+
 @pytest.fixture(scope="module")
 def real_market_data():
     """
@@ -76,13 +77,16 @@ def feature_array(real_market_data):
 # Base interface contract tests
 # ---------------------------------------------------------------------------
 
+
 class TestBaseRegimeDetector:
     """Test that all detectors satisfy the BaseRegimeDetector interface."""
 
-    @pytest.fixture(params=[
-        RollingVolatilityDetector,
-        CUSUMDetector,
-    ])
+    @pytest.fixture(
+        params=[
+            RollingVolatilityDetector,
+            CUSUMDetector,
+        ]
+    )
     def stateless_detector_cls(self, request):
         return request.param
 
@@ -108,6 +112,7 @@ class TestBaseRegimeDetector:
 # Rolling Volatility
 # ---------------------------------------------------------------------------
 
+
 class TestRollingVolatilityDetector:
 
     def test_output_has_nans_at_start(self, feature_array):
@@ -129,6 +134,7 @@ class TestRollingVolatilityDetector:
 # ---------------------------------------------------------------------------
 # CUSUM
 # ---------------------------------------------------------------------------
+
 
 class TestCUSUMDetector:
 
@@ -166,6 +172,7 @@ class TestCUSUMDetector:
 # HMM
 # ---------------------------------------------------------------------------
 
+
 class TestHMMRegimeDetector:
 
     def test_fit_returns_self(self, feature_array):
@@ -197,13 +204,14 @@ class TestHMMRegimeDetector:
 # Random Forest
 # ---------------------------------------------------------------------------
 
+
 class TestRandomForestRegimeDetector:
 
     def test_fit_with_labels(self, feature_array):
         det = RandomForestRegimeDetector(n_estimators=10, seed=42, lookback=10)
         T = len(feature_array)
         y = np.zeros(T)
-        y[T // 2:] = 1  # Second half is "crisis"
+        y[T // 2 :] = 1  # Second half is "crisis"
         det.fit_with_labels(feature_array, y)
         assert det._model is not None
 
@@ -211,7 +219,7 @@ class TestRandomForestRegimeDetector:
         det = RandomForestRegimeDetector(n_estimators=10, seed=42, lookback=10)
         T = len(feature_array)
         y = np.zeros(T)
-        y[T // 2:] = 1
+        y[T // 2 :] = 1
         det.fit_with_labels(feature_array, y)
         scores = det.compute_regime_scores(feature_array)
         valid = scores[~np.isnan(scores)]
@@ -222,7 +230,7 @@ class TestRandomForestRegimeDetector:
         det = RandomForestRegimeDetector(n_estimators=10, seed=42, lookback=10)
         T = len(feature_array)
         y = np.zeros(T)
-        y[T // 2:] = 1
+        y[T // 2 :] = 1
         det.fit_with_labels(feature_array, y)
         scores = det.compute_regime_scores(feature_array)
         assert len(scores) == T
@@ -238,27 +246,22 @@ class TestRandomForestRegimeDetector:
 # QCML Chern wrapper
 # ---------------------------------------------------------------------------
 
+
 class TestQCMLChernDetector:
 
     def test_fit_returns_self(self, feature_array):
-        det = QCMLChernDetector(
-            hilbert_dim=4, window_size=10, n_pca_components=5, seed=42
-        )
+        det = QCMLChernDetector(hilbert_dim=4, window_size=10, n_pca_components=5, seed=42)
         result = det.fit(feature_array)
         assert result is det
 
     def test_scores_correct_length(self, feature_array):
-        det = QCMLChernDetector(
-            hilbert_dim=4, window_size=10, n_pca_components=5, seed=42
-        )
+        det = QCMLChernDetector(hilbert_dim=4, window_size=10, n_pca_components=5, seed=42)
         det.fit(feature_array)
         scores = det.compute_regime_scores(feature_array)
         assert len(scores) == len(feature_array)
 
     def test_scores_have_valid_values(self, feature_array):
-        det = QCMLChernDetector(
-            hilbert_dim=4, window_size=10, n_pca_components=5, seed=42
-        )
+        det = QCMLChernDetector(hilbert_dim=4, window_size=10, n_pca_components=5, seed=42)
         det.fit(feature_array)
         scores = det.compute_regime_scores(feature_array)
         valid = scores[~np.isnan(scores)]
@@ -275,20 +278,27 @@ class TestQCMLChernDetector:
 # Geometric Consensus Detector
 # ---------------------------------------------------------------------------
 
+
 class TestGeometricConsensusDetector:
 
     def test_fit_returns_self(self, feature_array):
         det = GeometricConsensusDetector(
-            hilbert_dim=4, n_pca_components=3, n_curvature_components=3,
-            min_expanding=20, seed=42,
+            hilbert_dim=4,
+            n_pca_components=3,
+            n_curvature_components=3,
+            min_expanding=20,
+            seed=42,
         )
         result = det.fit(feature_array)
         assert result is det
 
     def test_scores_correct_length(self, feature_array):
         det = GeometricConsensusDetector(
-            hilbert_dim=4, n_pca_components=3, n_curvature_components=3,
-            min_expanding=20, seed=42,
+            hilbert_dim=4,
+            n_pca_components=3,
+            n_curvature_components=3,
+            min_expanding=20,
+            seed=42,
         )
         det.fit(feature_array)
         scores = det.compute_regime_scores(feature_array)
@@ -296,8 +306,11 @@ class TestGeometricConsensusDetector:
 
     def test_scores_finite_or_nan(self, feature_array):
         det = GeometricConsensusDetector(
-            hilbert_dim=4, n_pca_components=3, n_curvature_components=3,
-            min_expanding=20, seed=42,
+            hilbert_dim=4,
+            n_pca_components=3,
+            n_curvature_components=3,
+            min_expanding=20,
+            seed=42,
         )
         det.fit(feature_array)
         scores = det.compute_regime_scores(feature_array)
@@ -317,15 +330,21 @@ class TestGeometricConsensusDetector:
         """Consensus should be more selective than standalone Chern."""
         # Fit standalone Chern
         chern = QCMLChernDetector(
-            hilbert_dim=4, window_size=10, n_pca_components=3, seed=42,
+            hilbert_dim=4,
+            window_size=10,
+            n_pca_components=3,
+            seed=42,
         )
         chern.fit(feature_array)
         chern_scores = chern.compute_regime_scores(feature_array)
 
         # Fit consensus
         consensus = GeometricConsensusDetector(
-            hilbert_dim=4, n_pca_components=3, n_curvature_components=3,
-            min_expanding=20, seed=42,
+            hilbert_dim=4,
+            n_pca_components=3,
+            n_curvature_components=3,
+            min_expanding=20,
+            seed=42,
         )
         consensus.fit(feature_array)
         consensus_scores = consensus.compute_regime_scores(feature_array)
@@ -351,6 +370,7 @@ class TestGeometricConsensusDetector:
 # ---------------------------------------------------------------------------
 # Evaluation helpers (from regime_comparison.py)
 # ---------------------------------------------------------------------------
+
 
 class TestEvaluationHelpers:
     """Test the adaptive threshold and persistence filter helpers."""
@@ -389,6 +409,7 @@ class TestEvaluationHelpers:
 # ---------------------------------------------------------------------------
 # Rolling Window RF Detector
 # ---------------------------------------------------------------------------
+
 
 class TestRollingWindowRFDetector:
 
@@ -438,6 +459,7 @@ class TestRollingWindowRFDetector:
 # ---------------------------------------------------------------------------
 # VIX Threshold Detector
 # ---------------------------------------------------------------------------
+
 
 class TestVIXThresholdDetector:
 

@@ -135,12 +135,7 @@ class ScoreVelocityThreshold:
         Returns:
             velocity: 1-D array of absolute score velocity.
         """
-        smoothed = (
-            pd.Series(scores)
-            .rolling(self.smoothing_window, min_periods=1)
-            .mean()
-            .values
-        )
+        smoothed = pd.Series(scores).rolling(self.smoothing_window, min_periods=1).mean().values
         velocity = np.abs(np.diff(smoothed, prepend=smoothed[0]))
         return velocity
 
@@ -215,10 +210,10 @@ class CombinedAdaptiveThreshold:
         combined_alarm = q_alarm | v_alarm
 
         details = {
-            'quantile_alarm': q_alarm,
-            'quantile_thresholds': q_thresholds,
-            'velocity_alarm': v_alarm,
-            'velocity_z_scores': v_z_scores,
+            "quantile_alarm": q_alarm,
+            "quantile_thresholds": q_thresholds,
+            "velocity_alarm": v_alarm,
+            "velocity_z_scores": v_z_scores,
         }
         return combined_alarm, details
 

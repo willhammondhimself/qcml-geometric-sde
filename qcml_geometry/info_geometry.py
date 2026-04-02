@@ -58,7 +58,7 @@ class FisherRaoDetector(BaseRegimeDetector):
     def name(self) -> str:
         return "Fisher-Rao"
 
-    def fit(self, X: np.ndarray, **kwargs) -> 'FisherRaoDetector':
+    def fit(self, X: np.ndarray, **kwargs) -> "FisherRaoDetector":
         self._is_fitted = True
         return self
 
@@ -79,9 +79,9 @@ class FisherRaoDetector(BaseRegimeDetector):
 
         for t in range(w + lag, T):
             # Current window
-            win_curr = returns[t - w:t]
+            win_curr = returns[t - w : t]
             # Lagged window
-            win_prev = returns[t - w - lag:t - lag]
+            win_prev = returns[t - w - lag : t - lag]
 
             mu1, sigma1 = np.mean(win_curr), np.std(win_curr, ddof=1)
             mu2, sigma2 = np.mean(win_prev), np.std(win_prev, ddof=1)
@@ -96,10 +96,7 @@ class FisherRaoDetector(BaseRegimeDetector):
             fisher_rao[t] = np.sqrt(2) * np.arccosh(max(arg, 1.0))
 
         rolling_vals = (
-            pd.Series(fisher_rao)
-            .rolling(window=self.rolling_window, min_periods=1)
-            .mean()
-            .values
+            pd.Series(fisher_rao).rolling(window=self.rolling_window, min_periods=1).mean().values
         )
 
         z_scores = np.full(T, np.nan)
@@ -151,12 +148,13 @@ class WassersteinDetector(BaseRegimeDetector):
     def name(self) -> str:
         return "Wasserstein"
 
-    def fit(self, X: np.ndarray, **kwargs) -> 'WassersteinDetector':
+    def fit(self, X: np.ndarray, **kwargs) -> "WassersteinDetector":
         self._is_fitted = True
         return self
 
-    def _sliced_wasserstein(self, X1: np.ndarray, X2: np.ndarray,
-                            rng: np.random.Generator) -> float:
+    def _sliced_wasserstein(
+        self, X1: np.ndarray, X2: np.ndarray, rng: np.random.Generator
+    ) -> float:
         """Compute sliced Wasserstein distance between two multivariate samples."""
         d = X1.shape[1]
         if d == 1:
@@ -186,21 +184,16 @@ class WassersteinDetector(BaseRegimeDetector):
         lag = self.lag
 
         for t in range(w + lag, T):
-            win_curr = X[t - w:t]
-            win_prev = X[t - w - lag:t - lag]
+            win_curr = X[t - w : t]
+            win_prev = X[t - w - lag : t - lag]
 
             if d == 1:
-                wass[t] = float(stats.wasserstein_distance(
-                    win_curr.ravel(), win_prev.ravel()
-                ))
+                wass[t] = float(stats.wasserstein_distance(win_curr.ravel(), win_prev.ravel()))
             else:
                 wass[t] = self._sliced_wasserstein(win_curr, win_prev, rng)
 
         rolling_vals = (
-            pd.Series(wass)
-            .rolling(window=self.rolling_window, min_periods=1)
-            .mean()
-            .values
+            pd.Series(wass).rolling(window=self.rolling_window, min_periods=1).mean().values
         )
 
         z_scores = np.full(T, np.nan)
@@ -252,7 +245,7 @@ class KLDivergenceDetector(BaseRegimeDetector):
     def name(self) -> str:
         return "KL Divergence"
 
-    def fit(self, X: np.ndarray, **kwargs) -> 'KLDivergenceDetector':
+    def fit(self, X: np.ndarray, **kwargs) -> "KLDivergenceDetector":
         self._is_fitted = True
         return self
 
@@ -293,16 +286,13 @@ class KLDivergenceDetector(BaseRegimeDetector):
         for t in range(w + lag, T):
             total_jsd = 0.0
             for col in range(d):
-                win_curr = X[t - w:t, col]
-                win_prev = X[t - w - lag:t - lag, col]
+                win_curr = X[t - w : t, col]
+                win_prev = X[t - w - lag : t - lag, col]
                 total_jsd += self._jsd_1d(win_curr, win_prev)
             jsd_vals[t] = total_jsd / d
 
         rolling_vals = (
-            pd.Series(jsd_vals)
-            .rolling(window=self.rolling_window, min_periods=1)
-            .mean()
-            .values
+            pd.Series(jsd_vals).rolling(window=self.rolling_window, min_periods=1).mean().values
         )
 
         z_scores = np.full(T, np.nan)
@@ -355,9 +345,10 @@ class SinkhornDetector(BaseRegimeDetector):
     def name(self) -> str:
         return "Sinkhorn"
 
-    def fit(self, X: np.ndarray, **kwargs) -> 'SinkhornDetector':
+    def fit(self, X: np.ndarray, **kwargs) -> "SinkhornDetector":
         try:
             import ot  # noqa: F401
+
             self._use_pot = True
         except ImportError:
             logger.info("POT not installed; Sinkhorn falls back to Wasserstein-1.")
@@ -405,16 +396,13 @@ class SinkhornDetector(BaseRegimeDetector):
         for t in range(w + lag, T):
             total = 0.0
             for col in range(d):
-                win_curr = X[t - w:t, col]
-                win_prev = X[t - w - lag:t - lag, col]
+                win_curr = X[t - w : t, col]
+                win_prev = X[t - w - lag : t - lag, col]
                 total += self._sinkhorn_1d(win_curr, win_prev)
             sink_vals[t] = total / d
 
         rolling_vals = (
-            pd.Series(sink_vals)
-            .rolling(window=self.rolling_window, min_periods=1)
-            .mean()
-            .values
+            pd.Series(sink_vals).rolling(window=self.rolling_window, min_periods=1).mean().values
         )
 
         z_scores = np.full(T, np.nan)

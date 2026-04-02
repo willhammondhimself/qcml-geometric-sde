@@ -15,6 +15,7 @@ from scipy import stats
 # Helpers — replicate the composite logic at small scale for unit testing
 # ---------------------------------------------------------------------------
 
+
 def expanding_zscore(signal, min_expanding=60, signed=False):
     """Causal expanding-window z-score (mirrors exploration script)."""
     T = len(signal)
@@ -112,6 +113,7 @@ def composite_pca(Z, min_window=252):
 # Unit Tests
 # ---------------------------------------------------------------------------
 
+
 class TestMaxZscore:
     """Max composite >= every individual component at every timestep."""
 
@@ -121,14 +123,14 @@ class TestMaxZscore:
         Z = np.abs(Z)  # z-scores are absolute values
         max_z = composite_max(Z)
         for col in range(4):
-            assert np.all(max_z >= Z[:, col] - 1e-12), (
-                f"Max composite should >= component {col} at every timestep"
-            )
+            assert np.all(
+                max_z >= Z[:, col] - 1e-12
+            ), f"Max composite should >= component {col} at every timestep"
 
     def test_with_nans(self):
-        Z = np.array([[1.0, np.nan, 3.0, 2.0],
-                       [np.nan, np.nan, np.nan, np.nan],
-                       [0.5, 0.8, 1.2, 0.3]])
+        Z = np.array(
+            [[1.0, np.nan, 3.0, 2.0], [np.nan, np.nan, np.nan, np.nan], [0.5, 0.8, 1.2, 0.3]]
+        )
         max_z = composite_max(Z)
         assert max_z[0] == 3.0
         assert np.isnan(max_z[1])
@@ -187,8 +189,7 @@ class TestNanHandling:
         assert composite_mean(Z)[0] == 2.0
 
     def test_mixed_nans(self):
-        Z = np.array([[1.0, np.nan, 3.0, 2.0],
-                       [np.nan, 4.0, np.nan, 1.0]])
+        Z = np.array([[1.0, np.nan, 3.0, 2.0], [np.nan, 4.0, np.nan, 1.0]])
         max_z = composite_max(Z)
         assert max_z[0] == 3.0
         assert max_z[1] == 4.0
@@ -219,8 +220,10 @@ class TestPcaExpandingNoLookahead:
         for t in range(252, 350):
             if not np.isnan(pca_z[t]) and not np.isnan(pca_z_modified[t]):
                 np.testing.assert_allclose(
-                    pca_z[t], pca_z_modified[t], atol=1e-10,
-                    err_msg=f"PCA at t={t} should not depend on data after t"
+                    pca_z[t],
+                    pca_z_modified[t],
+                    atol=1e-10,
+                    err_msg=f"PCA at t={t} should not depend on data after t",
                 )
 
     def test_fallback_before_min_window(self):

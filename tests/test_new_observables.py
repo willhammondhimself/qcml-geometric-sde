@@ -37,7 +37,7 @@ class TestCoreExtensions:
     def geometry(self):
         X = create_test_data_sphere(n_samples=50, noise=0.05, seed=42)
         geo = QCMLGeometry(n_features=3, hilbert_dim=4)
-        geo.fit_operators(X, method='pca_inspired')
+        geo.fit_operators(X, method="pca_inspired")
         return geo
 
     def test_full_spectrum_shape(self, geometry):
@@ -101,8 +101,11 @@ class TestGeodesicVelocityDetector:
 
     def test_smoke(self, enriched_data):
         det = GeodesicVelocityDetector(
-            hilbert_dim=4, n_pca_components=3, rolling_window=10,
-            min_expanding=30, seed=42,
+            hilbert_dim=4,
+            n_pca_components=3,
+            rolling_window=10,
+            min_expanding=30,
+            seed=42,
         )
         det.fit(enriched_data)
         scores = det.compute_regime_scores(enriched_data)
@@ -115,8 +118,11 @@ class TestGeodesicVelocityDetector:
 
     def test_scores_vary_during_shift(self, enriched_data):
         det = GeodesicVelocityDetector(
-            hilbert_dim=4, n_pca_components=3, rolling_window=10,
-            min_expanding=30, seed=42,
+            hilbert_dim=4,
+            n_pca_components=3,
+            rolling_window=10,
+            min_expanding=30,
+            seed=42,
         )
         det.fit(enriched_data)
         scores = det.compute_regime_scores(enriched_data)
@@ -142,8 +148,11 @@ class TestSpectralFlowDetector:
 
     def test_smoke(self, enriched_data):
         det = SpectralFlowDetector(
-            hilbert_dim=4, n_pca_components=3, rolling_window=10,
-            min_expanding=30, seed=42,
+            hilbert_dim=4,
+            n_pca_components=3,
+            rolling_window=10,
+            min_expanding=30,
+            seed=42,
         )
         det.fit(enriched_data)
         scores = det.compute_regime_scores(enriched_data)
@@ -168,8 +177,11 @@ class TestCommutatorNormDetector:
 
     def test_smoke(self, enriched_data):
         det = CommutatorNormDetector(
-            hilbert_dim=4, n_pca_components=3, rolling_window=10,
-            min_expanding=30, seed=42,
+            hilbert_dim=4,
+            n_pca_components=3,
+            rolling_window=10,
+            min_expanding=30,
+            seed=42,
         )
         det.fit(enriched_data)
         scores = det.compute_regime_scores(enriched_data)
@@ -189,8 +201,11 @@ class TestRicciScalarDetector:
         # Very small data for expensive Ricci computation
         X = rng.standard_normal((100, 4))
         det = RicciScalarDetector(
-            hilbert_dim=4, n_pca_components=2, rolling_window=10,
-            min_expanding=30, seed=42,
+            hilbert_dim=4,
+            n_pca_components=2,
+            rolling_window=10,
+            min_expanding=30,
+            seed=42,
         )
         det.fit(X)
         scores = det.compute_regime_scores(X)
@@ -208,8 +223,11 @@ class TestSectionalCurvatureDetector:
         rng = np.random.default_rng(42)
         X = rng.standard_normal((100, 4))
         det = SectionalCurvatureDetector(
-            hilbert_dim=4, n_pca_components=2, rolling_window=10,
-            min_expanding=30, seed=42,
+            hilbert_dim=4,
+            n_pca_components=2,
+            rolling_window=10,
+            min_expanding=30,
+            seed=42,
         )
         det.fit(X)
         scores = det.compute_regime_scores(X)
@@ -223,8 +241,12 @@ class TestSectionalCurvatureDetector:
         rng = np.random.default_rng(42)
         X = rng.standard_normal((100, 4))
         det = SectionalCurvatureDetector(
-            hilbert_dim=4, n_pca_components=2, rolling_window=10,
-            min_expanding=30, seed=42, score_mode='neg_fraction',
+            hilbert_dim=4,
+            n_pca_components=2,
+            rolling_window=10,
+            min_expanding=30,
+            seed=42,
+            score_mode="neg_fraction",
             neg_fraction_window=10,
         )
         det.fit(X)
@@ -236,12 +258,12 @@ class TestSectionalCurvatureDetector:
         assert np.all(valid <= 1.0)
 
     def test_neg_fraction_name(self):
-        det = SectionalCurvatureDetector(score_mode='neg_fraction')
+        det = SectionalCurvatureDetector(score_mode="neg_fraction")
         assert "Sign" in det.name
 
     def test_default_mode_backward_compat(self):
         det = SectionalCurvatureDetector()
-        assert det.score_mode == 'abs_zscore'
+        assert det.score_mode == "abs_zscore"
 
 
 class TestSpeedLimitRatioDetector:
@@ -257,8 +279,11 @@ class TestSpeedLimitRatioDetector:
 
     def test_smoke(self, enriched_data):
         det = SpeedLimitRatioDetector(
-            hilbert_dim=4, n_pca_components=3, rolling_window=10,
-            min_expanding=30, seed=42,
+            hilbert_dim=4,
+            n_pca_components=3,
+            rolling_window=10,
+            min_expanding=30,
+            seed=42,
         )
         det.fit(enriched_data)
         scores = det.compute_regime_scores(enriched_data)
@@ -267,8 +292,11 @@ class TestSpeedLimitRatioDetector:
 
     def test_no_infinities(self, enriched_data):
         det = SpeedLimitRatioDetector(
-            hilbert_dim=4, n_pca_components=3, rolling_window=10,
-            min_expanding=30, seed=42,
+            hilbert_dim=4,
+            n_pca_components=3,
+            rolling_window=10,
+            min_expanding=30,
+            seed=42,
         )
         det.fit(enriched_data)
         scores = det.compute_regime_scores(enriched_data)
@@ -293,8 +321,11 @@ class TestDimensionalityCollapseDetector:
 
     def test_smoke(self, enriched_data):
         det = DimensionalityCollapseDetector(
-            hilbert_dim=4, n_pca_components=3, rolling_window=10,
-            min_expanding=30, seed=42,
+            hilbert_dim=4,
+            n_pca_components=3,
+            rolling_window=10,
+            min_expanding=30,
+            seed=42,
         )
         det.fit(enriched_data)
         scores = det.compute_regime_scores(enriched_data)
@@ -308,14 +339,20 @@ class TestDimensionalityCollapseDetector:
     def test_ipr_bounded(self, enriched_data):
         """IPR should be in [0, 1] before z-scoring."""
         det = DimensionalityCollapseDetector(
-            hilbert_dim=4, n_pca_components=3, rolling_window=10,
-            min_expanding=30, seed=42,
+            hilbert_dim=4,
+            n_pca_components=3,
+            rolling_window=10,
+            min_expanding=30,
+            seed=42,
         )
         det.fit(enriched_data)
         # Access internal IPR computation by running a small check
         from qcml_geometry.observables import _transform_array
+
         Xt = _transform_array(
-            enriched_data, det._scaler, det._pca,
+            enriched_data,
+            det._scaler,
+            det._pca,
             normalization=det.normalization,
             train_norms=det._train_norms,
             train_std=det._train_std,
@@ -351,12 +388,14 @@ class TestLevelSpacingRatio:
 
     def test_default_operator_method(self):
         det = LevelSpacingRatioDetector()
-        assert det.operator_method == 'random'
+        assert det.operator_method == "random"
 
     def test_variant_selection(self, data):
-        for variant in ['mean_ratio', 'std_ratio', 'poisson_fraction']:
+        for variant in ["mean_ratio", "std_ratio", "poisson_fraction"]:
             det = LevelSpacingRatioDetector(
-                hilbert_dim=4, n_pca_components=4, variant=variant,
+                hilbert_dim=4,
+                n_pca_components=4,
+                variant=variant,
             )
             det.fit(data)
             scores = det.compute_regime_scores(data)
@@ -364,12 +403,14 @@ class TestLevelSpacingRatio:
 
     def test_level_spacing_ratios_shape(self):
         from qcml_geometry.observables import compute_level_spacing_ratios
+
         eigenvalues = np.array([0.1, 0.3, 0.7, 1.2, 2.0, 3.5, 5.0, 8.0])
         ratios = compute_level_spacing_ratios(eigenvalues)
         assert ratios.shape == (6,)  # d - 2 ratios for d=8
 
     def test_level_spacing_ratios_range(self):
         from qcml_geometry.observables import compute_level_spacing_ratios
+
         eigenvalues = np.sort(np.random.rand(8))
         ratios = compute_level_spacing_ratios(eigenvalues)
         assert np.all(ratios >= 0)
@@ -377,6 +418,7 @@ class TestLevelSpacingRatio:
 
     def test_rmt_constants(self):
         from qcml_geometry.observables import RMT_POISSON, RMT_GOE, RMT_GUE
+
         assert 0.38 < RMT_POISSON < 0.40
         assert 0.52 < RMT_GOE < 0.54
         assert 0.59 < RMT_GUE < 0.61
@@ -405,6 +447,7 @@ class TestQuantumRelativeEntropy:
 
     def test_qre_nonnegative(self):
         from qcml_geometry.observables import _quantum_relative_entropy
+
         d = 4
         psi = np.zeros(d, dtype=complex)
         psi[0] = 1.0
@@ -414,6 +457,7 @@ class TestQuantumRelativeEntropy:
 
     def test_qre_pure_ref_zero(self):
         from qcml_geometry.observables import _quantum_relative_entropy
+
         d = 4
         psi = np.zeros(d, dtype=complex)
         psi[0] = 1.0
@@ -423,6 +467,7 @@ class TestQuantumRelativeEntropy:
 
     def test_expanding_rho_ref(self):
         from qcml_geometry.observables import _build_expanding_rho_ref
+
         d = 4
         states = [np.random.randn(d) + 0j for _ in range(50)]
         for s in states:

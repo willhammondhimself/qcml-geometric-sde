@@ -41,6 +41,7 @@ class IndicatorResult:
         threshold: Threshold used for transition detection
         metadata: Additional metadata (statistics, parameters)
     """
+
     name: str
     values: np.ndarray
     transitions: List[int]
@@ -62,10 +63,7 @@ class SpectralGapIndicator:
     """
 
     def __init__(
-        self,
-        geometry: QCMLGeometry,
-        window_size: int = 20,
-        collapse_threshold_std: float = 2.0
+        self, geometry: QCMLGeometry, window_size: int = 20, collapse_threshold_std: float = 2.0
     ):
         self.geometry = geometry
         self.window_size = window_size
@@ -128,7 +126,7 @@ class SpectralGapIndicator:
                 "min_gap": float(np.nanmin(gaps)),
                 "n_collapses": len(transitions),
                 "window_size": self.window_size,
-            }
+            },
         )
 
 
@@ -145,10 +143,7 @@ class EnergyEvolutionIndicator:
     """
 
     def __init__(
-        self,
-        geometry: QCMLGeometry,
-        window_size: int = 20,
-        stress_threshold_std: float = 2.0
+        self, geometry: QCMLGeometry, window_size: int = 20, stress_threshold_std: float = 2.0
     ):
         self.geometry = geometry
         self.window_size = window_size
@@ -198,7 +193,7 @@ class EnergyEvolutionIndicator:
                 "max_energy": float(np.nanmax(energies)),
                 "n_stress_events": len(transitions),
                 "window_size": self.window_size,
-            }
+            },
         )
 
 
@@ -221,7 +216,7 @@ class FidelityDecayIndicator:
         geometry: QCMLGeometry,
         lag: int = 1,
         window_size: int = 20,
-        instability_threshold_std: float = 2.0
+        instability_threshold_std: float = 2.0,
     ):
         self.geometry = geometry
         self.lag = lag
@@ -240,7 +235,7 @@ class FidelityDecayIndicator:
 
         for t in range(T - self.lag):
             overlap = np.abs(np.vdot(states[t], states[t + self.lag]))
-            fidelities[t] = overlap ** 2
+            fidelities[t] = overlap**2
 
         return fidelities
 
@@ -280,7 +275,7 @@ class FidelityDecayIndicator:
                 "lag": self.lag,
                 "n_instabilities": len(transitions),
                 "window_size": self.window_size,
-            }
+            },
         )
 
 
@@ -304,7 +299,7 @@ class MultiScaleChernConsensus:
         scales: List[int] = None,
         weights: Optional[List[float]] = None,
         consensus_threshold: float = 0.6,
-        normalization_strategy: str = 'rolling_adaptive',
+        normalization_strategy: str = "rolling_adaptive",
         normalization_window: Optional[int] = None,
     ):
         self.geometry = geometry
@@ -330,18 +325,14 @@ class MultiScaleChernConsensus:
         chern_dict = {}
         for scale in self.scales:
             detector = TopologicalRegimeDetector(
-                geometry=self.geometry,
-                window_size=scale,
-                chern_threshold=0.1
+                geometry=self.geometry, window_size=scale, chern_threshold=0.1
             )
             chern_values = detector.rolling_chern_number(X, window=scale)
             chern_dict[scale] = chern_values
         return chern_dict
 
     def compute_scale_signals(
-        self,
-        chern_dict: Dict[int, np.ndarray],
-        threshold_std: float = 2.0
+        self, chern_dict: Dict[int, np.ndarray], threshold_std: float = 2.0
     ) -> Dict[int, np.ndarray]:
         """Compute normalized magnitude signals at each scale."""
         signal_dict = {}
@@ -350,27 +341,25 @@ class MultiScaleChernConsensus:
             delta = np.diff(chern, prepend=chern[0])
             series = pd.Series(np.abs(delta))
 
-            if self.normalization_strategy == 'rolling_adaptive':
+            if self.normalization_strategy == "rolling_adaptive":
                 window = max(60, scale * 3)
                 rolling_std = series.rolling(window=window, min_periods=20).std()
                 normalizer = rolling_std
 
-            elif self.normalization_strategy == 'rolling_fixed':
+            elif self.normalization_strategy == "rolling_fixed":
                 window = self.normalization_window or 60
                 rolling_std = series.rolling(window=window, min_periods=20).std()
                 normalizer = rolling_std
 
-            elif self.normalization_strategy == 'percentile':
+            elif self.normalization_strategy == "percentile":
                 p95 = series.rolling(window=100, min_periods=20).quantile(0.95)
                 normalizer = p95
 
-            elif self.normalization_strategy == 'zscore':
+            elif self.normalization_strategy == "zscore":
                 normalizer = series.std()
 
             else:
-                raise ValueError(
-                    f"Unknown normalization_strategy: {self.normalization_strategy}"
-                )
+                raise ValueError(f"Unknown normalization_strategy: {self.normalization_strategy}")
 
             # Backfill NaN normalizer values from rolling windows to prevent NaN propagation
             if isinstance(normalizer, pd.Series):
@@ -379,11 +368,7 @@ class MultiScaleChernConsensus:
 
         return signal_dict
 
-    def compute_consensus(
-        self,
-        X: np.ndarray,
-        threshold_std: float = 2.0
-    ) -> IndicatorResult:
+    def compute_consensus(self, X: np.ndarray, threshold_std: float = 2.0) -> IndicatorResult:
         """Compute weighted consensus across scales."""
         chern_dict = self.compute_multi_scale_chern(X)
         signal_dict = self.compute_scale_signals(chern_dict, threshold_std)
@@ -393,7 +378,7 @@ class MultiScaleChernConsensus:
         consensus = np.zeros(min_len)
         for scale, weight in zip(self.scales, self.weights):
             signal = signal_dict[scale]
-            aligned = signal[len(signal) - min_len:]
+            aligned = signal[len(signal) - min_len :]
             consensus += weight * aligned
 
         transitions = []
@@ -412,8 +397,8 @@ class MultiScaleChernConsensus:
                 s_i = signal_dict[scale_list[i]]
                 s_j = signal_dict[scale_list[j]]
                 common_len = min(len(s_i), len(s_j))
-                s_i_aligned = s_i[len(s_i) - common_len:]
-                s_j_aligned = s_j[len(s_j) - common_len:]
+                s_i_aligned = s_i[len(s_i) - common_len :]
+                s_j_aligned = s_j[len(s_j) - common_len :]
                 if np.std(s_i_aligned) > 0 and np.std(s_j_aligned) > 0:
                     corr = np.corrcoef(s_i_aligned, s_j_aligned)[0, 1]
                 else:
@@ -432,7 +417,7 @@ class MultiScaleChernConsensus:
                 "mean_consensus": float(np.nanmean(consensus)),
                 "max_consensus": float(np.nanmax(consensus)),
                 "scale_correlations": scale_correlations,
-            }
+            },
         )
 
 
@@ -450,25 +435,23 @@ class GeometricIndicatorSuite:
         window_size: int = 20,
         fidelity_lag: int = 1,
         scales: Optional[List[int]] = None,
-        threshold_std: float = 2.0
+        threshold_std: float = 2.0,
     ):
         self.geometry = geometry
 
         self.spectral_gap = SpectralGapIndicator(
-            geometry, window_size=window_size,
-            collapse_threshold_std=threshold_std
+            geometry, window_size=window_size, collapse_threshold_std=threshold_std
         )
         self.energy = EnergyEvolutionIndicator(
-            geometry, window_size=window_size,
-            stress_threshold_std=threshold_std
+            geometry, window_size=window_size, stress_threshold_std=threshold_std
         )
         self.fidelity = FidelityDecayIndicator(
-            geometry, lag=fidelity_lag, window_size=window_size,
-            instability_threshold_std=threshold_std
+            geometry,
+            lag=fidelity_lag,
+            window_size=window_size,
+            instability_threshold_std=threshold_std,
         )
-        self.consensus = MultiScaleChernConsensus(
-            geometry, scales=scales
-        )
+        self.consensus = MultiScaleChernConsensus(geometry, scales=scales)
 
     def compute_all(self, X: np.ndarray) -> Dict[str, IndicatorResult]:
         """Compute all geometric indicators."""
@@ -489,9 +472,7 @@ class GeometricIndicatorSuite:
         return results
 
     def compute_composite_score(
-        self,
-        X: np.ndarray,
-        weights: Optional[Dict[str, float]] = None
+        self, X: np.ndarray, weights: Optional[Dict[str, float]] = None
     ) -> Tuple[np.ndarray, Dict[str, IndicatorResult]]:
         """Compute composite score combining all indicators."""
         if weights is None:
@@ -511,7 +492,7 @@ class GeometricIndicatorSuite:
 
         for name, result in results.items():
             vals = result.values
-            aligned = vals[len(vals) - min_len:]
+            aligned = vals[len(vals) - min_len :]
 
             mean_val = np.nanmean(aligned)
             std_val = np.nanstd(aligned)

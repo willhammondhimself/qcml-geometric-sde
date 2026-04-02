@@ -171,9 +171,7 @@ class TestStackingFusionDetector:
         labels = np.zeros(T)
         labels[200:280] = 1.0
 
-        det = StackingFusionDetector(
-            crisis_labels=labels, train_end=T, min_expanding=30
-        )
+        det = StackingFusionDetector(crisis_labels=labels, train_end=T, min_expanding=30)
         det.set_precomputed_scores(score_matrix)
         det.fit(regime_shift_data)
         scores = det.compute_regime_scores(regime_shift_data)
@@ -203,9 +201,7 @@ class TestDynamicSwitchingDetector:
         score_matrix = rng.standard_normal((T, 3))
         score_matrix[:30] = np.nan
 
-        det = DynamicSwitchingDetector(
-            eval_window=30, rolling_window=10, min_expanding=30
-        )
+        det = DynamicSwitchingDetector(eval_window=30, rolling_window=10, min_expanding=30)
         det.set_precomputed_scores(score_matrix)
         det._is_fitted = True
         scores = det.compute_regime_scores(regime_shift_data)

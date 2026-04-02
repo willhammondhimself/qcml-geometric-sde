@@ -35,12 +35,18 @@ logger = logging.getLogger(__name__)
 # =============================================================================
 
 FEATURE_NAMES = [
-    'berry_rate', 'qfi_logdet', 'multilag_infid',
-    'inv_spectral_gap', 'log_condition',
-    'multi_berry_max', 'multi_berry_mean', 'ricci_scalar', 'geodesic_dist',
+    "berry_rate",
+    "qfi_logdet",
+    "multilag_infid",
+    "inv_spectral_gap",
+    "log_condition",
+    "multi_berry_max",
+    "multi_berry_mean",
+    "ricci_scalar",
+    "geodesic_dist",
 ]
 
-VELOCITY_NAMES = [f'{f}_velocity' for f in FEATURE_NAMES]
+VELOCITY_NAMES = [f"{f}_velocity" for f in FEATURE_NAMES]
 
 ALL_FEATURE_NAMES = FEATURE_NAMES + VELOCITY_NAMES
 
@@ -48,6 +54,7 @@ ALL_FEATURE_NAMES = FEATURE_NAMES + VELOCITY_NAMES
 # =============================================================================
 # Online Geometric Feature Computer
 # =============================================================================
+
 
 class OnlineGeometricFeatureComputer:
     """Streaming version of GeometricFeatureExtractor.
@@ -76,7 +83,7 @@ class OnlineGeometricFeatureComputer:
         self,
         hilbert_dim=8,
         n_pca_components=15,
-        operator_method='pca_inspired',
+        operator_method="pca_inspired",
         refit_interval=21,
         min_history=126,
         rolling_window=10,
@@ -127,9 +134,7 @@ class OnlineGeometricFeatureComputer:
         norms = np.linalg.norm(X_pca, axis=1, keepdims=True)
         X_pca = X_pca / (norms + 1e-8)
 
-        self._geometry = QCMLGeometry(
-            n_features=X_pca.shape[1], hilbert_dim=self.hilbert_dim
-        )
+        self._geometry = QCMLGeometry(n_features=X_pca.shape[1], hilbert_dim=self.hilbert_dim)
         self._geometry.fit_operators(X_pca, method=self.operator_method)
 
     def _transform_point(self, x_raw):
@@ -154,12 +159,11 @@ class OnlineGeometricFeatureComputer:
 
         # Cap history to prevent O(T^2) scaling during refit
         if len(self._history) > self.max_history:
-            self._history = self._history[-self.max_history:]
+            self._history = self._history[-self.max_history :]
 
         # Check if we need to refit
         if self._t >= self.min_history and (
-            self._geometry is None or
-            self._t - self._last_refit >= self.refit_interval
+            self._geometry is None or self._t - self._last_refit >= self.refit_interval
         ):
             self._fit_pipeline(self._history)
             self._last_refit = self._t
@@ -214,14 +218,15 @@ class OnlineGeometricFeatureComputer:
                 past_state = self._states[-1 - lag]
                 if past_state is not None:
                     overlap = np.abs(np.vdot(psi, past_state))
-                    infidelity += w * (1.0 - overlap ** 2)
+                    infidelity += w * (1.0 - overlap**2)
 
         # Multi-plane Berry curvature (top-10 planes by PCA variance order)
         n_dims = len(xt)
         pairs = [(i, j) for i in range(min(n_dims, 5)) for j in range(i + 1, min(n_dims, 5))]
         if pairs:
-            curvatures = [abs(self._geometry.berry_curvature_2d(xt, indices=(i, j)))
-                          for i, j in pairs]
+            curvatures = [
+                abs(self._geometry.berry_curvature_2d(xt, indices=(i, j))) for i, j in pairs
+            ]
             multi_berry_max = max(curvatures)
             multi_berry_mean = float(np.mean(curvatures))
         else:
@@ -259,15 +264,15 @@ class OnlineGeometricFeatureComputer:
             geodesic_dist = 0.0
 
         # Store raw features (trim to last 20 — only used for EMA seeding)
-        self._raw_features['berry_rate'].append(berry_rate)
-        self._raw_features['qfi_logdet'].append(logdet)
-        self._raw_features['multilag_infid'].append(infidelity)
-        self._raw_features['inv_spectral_gap'].append(inv_gap)
-        self._raw_features['log_condition'].append(log_cond)
-        self._raw_features['multi_berry_max'].append(multi_berry_max_rate)
-        self._raw_features['multi_berry_mean'].append(multi_berry_mean)
-        self._raw_features['ricci_scalar'].append(ricci_val)
-        self._raw_features['geodesic_dist'].append(geodesic_dist)
+        self._raw_features["berry_rate"].append(berry_rate)
+        self._raw_features["qfi_logdet"].append(logdet)
+        self._raw_features["multilag_infid"].append(infidelity)
+        self._raw_features["inv_spectral_gap"].append(inv_gap)
+        self._raw_features["log_condition"].append(log_cond)
+        self._raw_features["multi_berry_max"].append(multi_berry_max_rate)
+        self._raw_features["multi_berry_mean"].append(multi_berry_mean)
+        self._raw_features["ricci_scalar"].append(ricci_val)
+        self._raw_features["geodesic_dist"].append(geodesic_dist)
         for name in FEATURE_NAMES:
             if len(self._raw_features[name]) > 20:
                 self._raw_features[name] = self._raw_features[name][-20:]
@@ -281,7 +286,7 @@ class OnlineGeometricFeatureComputer:
 
             if np.isnan(val):
                 result[name] = 0.0
-                result[f'{name}_velocity'] = 0.0
+                result[f"{name}_velocity"] = 0.0
                 continue
 
             # EMA update
@@ -297,9 +302,9 @@ class OnlineGeometricFeatureComputer:
             # Velocity: 5-step change in EMA
             buf = self._ema_history[name]
             if len(buf) > 5:
-                result[f'{name}_velocity'] = self._ema[name] - buf[-6]
+                result[f"{name}_velocity"] = self._ema[name] - buf[-6]
             else:
-                result[f'{name}_velocity'] = 0.0
+                result[f"{name}_velocity"] = 0.0
 
             # Trim buffer to last 10 entries
             if len(buf) > 10:
@@ -328,13 +333,13 @@ class OnlineGeometricFeatureComputer:
 # Online Detector Base
 # =============================================================================
 
+
 class OnlineDetectorBase(ABC):
     """Base class for online regime detectors."""
 
     @property
     @abstractmethod
-    def name(self) -> str:
-        ...
+    def name(self) -> str: ...
 
     @abstractmethod
     def update(self, features: Dict[str, float]) -> float:
@@ -350,6 +355,7 @@ class OnlineDetectorBase(ABC):
 # =============================================================================
 # Model 1: Expanding Percentile Detector (unsupervised baseline)
 # =============================================================================
+
 
 class ExpandingPercentileDetector(OnlineDetectorBase):
     """P(crisis) = RMS percentile rank of features against expanding history.
@@ -407,6 +413,7 @@ class ExpandingPercentileDetector(OnlineDetectorBase):
 # Welford Accumulators
 # =============================================================================
 
+
 class _WelfordAccumulator:
     """Online mean/variance via Welford's algorithm (scalar)."""
 
@@ -460,6 +467,7 @@ class _MultivariateWelfordAccumulator:
 # =============================================================================
 # Model 2: Online Bayesian Detector (Multivariate)
 # =============================================================================
+
 
 class OnlineBayesianDetector(OnlineDetectorBase):
     """Multivariate Bayesian filtering with sticky regime transitions.
@@ -542,9 +550,7 @@ class OnlineBayesianDetector(OnlineDetectorBase):
         log_den_calm = ll_calm + np.log(max(prior_calm, 1e-300))
 
         max_log = max(log_num, log_den_calm)
-        log_den = max_log + np.log(
-            np.exp(log_num - max_log) + np.exp(log_den_calm - max_log)
-        )
+        log_den = max_log + np.log(np.exp(log_num - max_log) + np.exp(log_den_calm - max_log))
 
         self._p_crisis = float(np.exp(log_num - log_den))
 
@@ -581,7 +587,7 @@ class OnlineBayesianDetector(OnlineDetectorBase):
                 z_scores.append(0.0)
                 continue
 
-            key = f'_acc_{fname}'
+            key = f"_acc_{fname}"
             if not hasattr(self, key):
                 setattr(self, key, _WelfordAccumulator())
             acc = getattr(self, key)
@@ -657,7 +663,7 @@ class OnlineBayesianDetector(OnlineDetectorBase):
         self._d = None
         # Clear per-feature accumulators
         for fname in ALL_FEATURE_NAMES:
-            key = f'_acc_{fname}'
+            key = f"_acc_{fname}"
             if hasattr(self, key):
                 delattr(self, key)
 
@@ -665,6 +671,7 @@ class OnlineBayesianDetector(OnlineDetectorBase):
 # =============================================================================
 # Model 3: Online HMM Detector
 # =============================================================================
+
 
 class OnlineHMMDetector(OnlineDetectorBase):
     """Periodic HMM refit + forward algorithm for causal inference.
@@ -678,8 +685,9 @@ class OnlineHMMDetector(OnlineDetectorBase):
         n_iter: EM iterations for HMM fitting.
     """
 
-    def __init__(self, refit_interval=10, min_history=126, n_iter=100, seed=42,
-                 vol_trigger_sigma=2.0):
+    def __init__(
+        self, refit_interval=10, min_history=126, n_iter=100, seed=42, vol_trigger_sigma=2.0
+    ):
         self.refit_interval = refit_interval
         self.min_history = min_history
         self.n_iter = n_iter
@@ -703,10 +711,7 @@ class OnlineHMMDetector(OnlineDetectorBase):
         self._t += 1
 
         # Build feature vector from all 10 features
-        fvec = np.array([
-            features.get(fname, 0.0)
-            for fname in ALL_FEATURE_NAMES
-        ])
+        fvec = np.array([features.get(fname, 0.0) for fname in ALL_FEATURE_NAMES])
         self._history.append(fvec)
 
         # Cap history to prevent O(T^2) scaling
@@ -724,9 +729,9 @@ class OnlineHMMDetector(OnlineDetectorBase):
 
         # Check if we need to refit
         if self._t >= self.min_history and (
-            self._model is None or
-            self._t - self._last_refit >= self.refit_interval or
-            vol_triggered
+            self._model is None
+            or self._t - self._last_refit >= self.refit_interval
+            or vol_triggered
         ):
             self._fit_hmm()
             self._last_refit = self._t
@@ -735,7 +740,7 @@ class OnlineHMMDetector(OnlineDetectorBase):
             return np.nan
 
         # Forward algorithm on recent window (causal)
-        recent = np.array(self._history[-min(len(self._history), 500):])
+        recent = np.array(self._history[-min(len(self._history), 500) :])
         # Filter NaN rows for predict_proba
         valid_mask = ~np.any(np.isnan(recent), axis=1)
         recent_clean = recent[valid_mask]
@@ -761,7 +766,7 @@ class OnlineHMMDetector(OnlineDetectorBase):
         try:
             model = GaussianHMM(
                 n_components=2,
-                covariance_type='full',
+                covariance_type="full",
                 n_iter=self.n_iter,
                 random_state=self.seed,
             )
@@ -784,6 +789,7 @@ class OnlineHMMDetector(OnlineDetectorBase):
 # =============================================================================
 # Model 4: Online Logistic Detector (supervised)
 # =============================================================================
+
 
 class OnlineLogisticDetector(OnlineDetectorBase):
     """Expanding-window logistic regression on geometric features.
@@ -818,10 +824,7 @@ class OnlineLogisticDetector(OnlineDetectorBase):
             return np.nan
         self._t += 1
 
-        fvec = np.array([
-            features.get(fname, 0.0)
-            for fname in ALL_FEATURE_NAMES
-        ])
+        fvec = np.array([features.get(fname, 0.0) for fname in ALL_FEATURE_NAMES])
         self._X_history.append(fvec)
 
         # Cap history to prevent O(T^2) scaling
@@ -832,9 +835,9 @@ class OnlineLogisticDetector(OnlineDetectorBase):
 
         # Check if we need to refit
         if (
-            self._t >= self.min_history and
-            len(self._y_history) >= self.min_history and
-            (self._model is None or self._t - self._last_refit >= self.refit_interval)
+            self._t >= self.min_history
+            and len(self._y_history) >= self.min_history
+            and (self._model is None or self._t - self._last_refit >= self.refit_interval)
         ):
             self._fit_logistic()
             self._last_refit = self._t
@@ -883,6 +886,7 @@ class OnlineLogisticDetector(OnlineDetectorBase):
 # =============================================================================
 # Model 5: Online Ensemble Detector
 # =============================================================================
+
 
 class OnlineEnsembleDetector(OnlineDetectorBase):
     """Weighted average of multiple online detectors.
@@ -935,6 +939,7 @@ class OnlineEnsembleDetector(OnlineDetectorBase):
 # =============================================================================
 # Model 6: Stacking Meta-Learner Ensemble
 # =============================================================================
+
 
 class OnlineStackingEnsemble(OnlineDetectorBase):
     """Stacking ensemble: logistic meta-learner on component detector outputs.
@@ -994,9 +999,8 @@ class OnlineStackingEnsemble(OnlineDetectorBase):
             self._y_meta = self._y_meta[-1000:]
 
         # Try to refit meta-learner
-        if (
-            len(self._y_meta) >= self.min_meta_history and
-            (self._meta_model is None or self._t - self._last_refit >= self.refit_interval)
+        if len(self._y_meta) >= self.min_meta_history and (
+            self._meta_model is None or self._t - self._last_refit >= self.refit_interval
         ):
             self._fit_meta()
             self._last_refit = self._t
