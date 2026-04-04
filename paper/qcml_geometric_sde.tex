@@ -195,7 +195,9 @@ crash detection (algebraic topology); Sandhu et al.~\cite{sandhu2016}
 use Ollivier--Ricci curvature on correlation networks (the closest
 curvature-based comparator).  Our Berry curvature operates on the data
 manifold rather than inter-asset graphs, yielding topological invariants
-via Chern--Weil theory.
+via Chern--Weil theory.  Guritanu et al.~\cite{guritanu2025} use
+persistent homology as a causal early-warning signal; their topological
+features are complementary to our differential-geometric observables.
 
 \paragraph{Random matrix theory and signatures.}
 Laloux et al.~\cite{laloux1999} separate signal from noise via
@@ -442,9 +444,10 @@ Reduced purity & State & Subsystem separability & \eqref{eq:reduced_purity} \\
 \end{tabular}
 \end{table}
 
-\subsection{Berry Curvature Increment}\label{subsec:berry}
+\subsection{Berry Phase Rate}\label{subsec:berry}
 
-The rate of change of Berry curvature between consecutive time steps:
+The Berry Phase Rate is the absolute increment of Berry curvature
+between consecutive time steps:
 \begin{equation}\label{eq:berry_rate}
   \dot{\gamma}(t) = |F_{01}(x_t) - F_{01}(x_{t-1})|\,,
 \end{equation}
@@ -714,7 +717,7 @@ rank~10), and Spectral Entropy ($0.53$, rank~12).
 Absorption Ratio ($0.80$, rank~2) provides the classical benchmark;
 Hamilton Markov-switching ranks 3rd ($0.71$), Random Forest 30th
 ($0.35$), and GARCH(1,1) 33rd ($0.29$).
-The Friedman test ($\chi^2 = 233.1$, $p < 10^{-16}$)
+The Friedman test ($\chi^2_{45} = 233.1$, $p < 10^{-16}$)
 confirms significant ranking differences across the full 46-method
 comparison.  The Nemenyi post-hoc test (critical difference
 $\mathrm{CD} = 18.2$ at $\alpha = 0.05$) identifies 105 of 1{,}035
@@ -731,7 +734,7 @@ are broadly robust to distributional assumptions.
 
 \noindent\textit{Caveat:} These offline $d$ values reflect
 contemporaneous crisis sensitivity, not predictive lead time.
-Granger causality analysis (Section~\ref{subsec:walk_forward})
+Granger causality analysis (Section~\ref{subsec:walkforward})
 reveals that reverse causality (market~$\to$~QCML) dominates forward,
 confirming that observables \emph{detect} rather than \emph{anticipate}
 regime shifts.
