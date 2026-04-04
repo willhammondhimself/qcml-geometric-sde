@@ -170,7 +170,9 @@ selected by ablation (Section~\ref{subsec:operator_ablation}).
 
 \noindent A caveat.  The offline rankings measure sensitivity, not
 real-time detection.  Reduced Purity ($d = 0.83$ offline) is sensitive
-to bipartition choice.  Berry Phase Rate, which ranks lower offline
+to bipartition choice and drops to $d \approx 0.26$ on frozen holdout,
+underscoring that high offline separability does not guarantee
+out-of-sample stability.  Berry Phase Rate, which ranks lower offline
 ($d = 0.61$), gives the strongest walk-forward evidence.
 These channels augment, not replace, existing
 methods~\cite{timmermann2006,bates_granger1969}.
@@ -635,7 +637,7 @@ the causal window.  This eliminates lookahead in preprocessing.
 \paragraph{Statistical evaluation.}
 Each method--crisis pair: Cohen's~$d$ with block-bootstrap 95\% CI
 ($n = 10{,}000$; block size $= \lceil n^{1/3} \rceil$ per
-Politis \& White~\cite{politis2004}).  Financial z-scores may violate
+Politis \& White~\cite{politis2004}; percentile method).  Financial z-scores may violate
 the normality assumption underlying Cohen's~$d$; the block bootstrap
 CIs and Cliff's~$\delta$ (computed alongside $d$ as a
 distribution-free robustness check) provide nonparametric alternatives.
@@ -659,6 +661,10 @@ Nested cross-validation reveals a mean optimism bias of $+0.415\,d$;
 reported HPO-tuned $d$ values should be interpreted as upper bounds.
 The walk-forward results (Section~\ref{subsec:walkforward})
 provide causally valid estimates.
+The 46-method benchmark comprises four featured QCML observables,
+eighteen additional geometric channels (deferred to the companion
+paper for individual analysis), and twenty-four classical and
+machine-learning baselines.
 
 \subsection{Detection Pipeline}\label{subsec:pipeline}
 
@@ -740,11 +746,14 @@ regime shifts.
 \end{table}
 
 \paragraph{Per-crisis variation.}
-No single channel dominates all 17~crises.  Different geometric
-observables lead on different crisis types---Berry Phase Rate wins
-Volmageddon ($d = 1.05$) and Q4~Selloff ($d = 2.00$), while
+No single channel dominates all 17~crises.  Descriptively, different
+geometric observables lead on different crisis types---Berry Phase Rate
+wins Volmageddon ($d = 1.05$) and Q4~Selloff ($d = 2.00$), while
 Spectral Entropy and Reduced Purity excel on prolonged structural
-crises.  A companion paper presents the full per-crisis analysis
+crises.  However, formal testing finds no significant per-crisis
+specialization ($p = 0.31$; see Section~\ref{sec:conclusion}), so
+these patterns should not be used as a selection rule.
+A companion paper presents the full per-crisis analysis
 with specialization heatmaps across all nineteen channels.
 
 
@@ -1102,12 +1111,19 @@ topology~\cite{schuld_killoran2019,busemeyer2012}.
   (Section~\ref{subsec:operator_ablation}).  The reconstruction
   objective of Candelori et al.~\cite{candelori2025} was not tested.
 
-\item \textbf{Equity-only validation.}  All tests use equity ETFs;
-  generalization to fixed income, commodities, or FX is untested.
+\item \textbf{Single asset pair.}  All tests use the SPY/DIA equity
+  pair; generalization to other pairs, asset classes (fixed income,
+  commodities, FX), or non-U.S.\ markets is untested.
 
 \item \textbf{Reverse Granger causality.}  As detailed in
   Section~\ref{subsec:walkforward}, observables largely react to
   rather than predict stress (17/45 reverse vs.\ 6/45 forward).
+
+\item \textbf{Advanced baselines not compared.}
+  Wavelet-based detectors, deep-learning models (LSTM autoencoders
+  excepted), and path-signature methods~\cite{bronstein2021} are
+  omitted to focus on interpretable, low-dimensional baselines;
+  extension to neural and kernel methods is left to future work.
 \end{enumerate}
 
 % =============================================================================
