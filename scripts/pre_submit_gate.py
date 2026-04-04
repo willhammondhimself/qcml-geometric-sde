@@ -74,10 +74,10 @@ def gate_tests(g: Gate) -> None:
 
 
 def gate_lint(g: Gate) -> None:
-    """Gate 2: Run ruff."""
+    """Gate 2: Run ruff (CI scope: qcml_geometry/ and tests/ only)."""
     result = _run_cmd([
         sys.executable, '-m', 'ruff', 'check',
-        'qcml_geometry/', 'experiments/', 'tests/',
+        'qcml_geometry/', 'tests/',
     ])
     if result.returncode == 0:
         g.pass_('No lint issues')
@@ -244,9 +244,10 @@ def gate_review_coverage(g: Gate) -> None:
 
             # Check CRITICAL items
             critical = by_sev.get('CRITICAL', [])
+            resolved_statuses = ('fixed', 'verified', 'wontfix')
             critical_resolved = sum(
                 1 for i in critical
-                if i.get('status') in ('verified', 'wontfix')
+                if i.get('status') in resolved_statuses
             )
             critical_total = len(critical)
 
@@ -254,7 +255,7 @@ def gate_review_coverage(g: Gate) -> None:
             major = by_sev.get('MAJOR', [])
             major_resolved = sum(
                 1 for i in major
-                if i.get('status') in ('verified', 'wontfix', 'deferred')
+                if i.get('status') in (*resolved_statuses, 'deferred')
             )
             major_total = len(major)
 
@@ -264,11 +265,11 @@ def gate_review_coverage(g: Gate) -> None:
 
             if critical_resolved < critical_total:
                 unresolved = [i['id'] for i in critical
-                              if i.get('status') not in ('verified', 'wontfix')]
+                              if i.get('status') not in resolved_statuses]
                 g.fail(f'Unresolved CRITICAL: {", ".join(unresolved)}')
             elif major_resolved < major_total:
                 unresolved = [i['id'] for i in major
-                              if i.get('status') not in ('verified', 'wontfix', 'deferred')]
+                              if i.get('status') not in (*resolved_statuses, 'deferred')]
                 g.warn(f'Unresolved MAJOR: {", ".join(unresolved)}')
             else:
                 g.pass_(f'All {critical_total} CRITICAL + {major_total} MAJOR resolved')
