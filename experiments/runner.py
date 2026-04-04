@@ -190,10 +190,11 @@ class ExperimentRunner:
         """Run a single (detector, crisis) cell.
 
         Returns:
-            {'d': float, 'ci_lo': float, 'ci_hi': float, 'timing_s': float}
+            {'d': float, 'ci_lo': float, 'ci_hi': float, 'cliff_d': float,
+             'cliff_label': str, 'timing_s': float}
         """
         from experiments.config import resolve_class
-        from experiments.evaluation import compute_cohens_d_with_ci
+        from experiments.evaluation import cliffs_delta, compute_cohens_d_with_ci
 
         eval_cfg = self.cfg['evaluation']
         window_size = eval_cfg['window_size']
@@ -230,10 +231,14 @@ class ExperimentRunner:
             scores[crisis_mask], scores[normal_mask], n_bootstrap=n_bootstrap,
         )
 
+        cd, cl = cliffs_delta(scores[crisis_mask], scores[normal_mask])
+
         return {
             'd': float(d) if not np.isnan(d) else None,
             'ci_lo': float(ci_lo) if not np.isnan(ci_lo) else None,
             'ci_hi': float(ci_hi) if not np.isnan(ci_hi) else None,
+            'cliff_d': float(cd),
+            'cliff_label': cl,
             'timing_s': round(timing, 2),
         }
 
@@ -242,7 +247,7 @@ class ExperimentRunner:
                            data: dict) -> dict:
         """Run a single (baseline, crisis) cell."""
         from experiments.config import resolve_class
-        from experiments.evaluation import compute_cohens_d_with_ci
+        from experiments.evaluation import cliffs_delta, compute_cohens_d_with_ci
 
         eval_cfg = self.cfg['evaluation']
         window_size = eval_cfg['window_size']
@@ -290,10 +295,14 @@ class ExperimentRunner:
             scores[crisis_mask], scores[normal_mask], n_bootstrap=n_bootstrap,
         )
 
+        cd, cl = cliffs_delta(scores[crisis_mask], scores[normal_mask])
+
         return {
             'd': float(d) if not np.isnan(d) else None,
             'ci_lo': float(ci_lo) if not np.isnan(ci_lo) else None,
             'ci_hi': float(ci_hi) if not np.isnan(ci_hi) else None,
+            'cliff_d': float(cd),
+            'cliff_label': cl,
             'timing_s': round(timing, 2),
         }
 
@@ -305,7 +314,7 @@ class ExperimentRunner:
             Dict mapping crisis_key -> cell result dict.
         """
         from experiments.config import resolve_class
-        from experiments.evaluation import compute_cohens_d_with_ci
+        from experiments.evaluation import cliffs_delta, compute_cohens_d_with_ci
 
         eval_cfg = self.cfg['evaluation']
         window_size = eval_cfg['window_size']
@@ -366,13 +375,17 @@ class ExperimentRunner:
                     rf_scores[crisis_mask], rf_scores[normal_mask],
                     n_bootstrap=n_bootstrap,
                 )
+                cd, cl = cliffs_delta(rf_scores[crisis_mask], rf_scores[normal_mask])
             else:
                 d, ci_lo, ci_hi = np.nan, np.nan, np.nan
+                cd, cl = np.nan, 'N/A'
 
             rf_results[held_out_key] = {
                 'd': float(d) if not np.isnan(d) else None,
                 'ci_lo': float(ci_lo) if not np.isnan(ci_lo) else None,
                 'ci_hi': float(ci_hi) if not np.isnan(ci_hi) else None,
+                'cliff_d': float(cd) if not np.isnan(cd) else None,
+                'cliff_label': cl,
                 'timing_s': round(timing, 2),
             }
 
@@ -388,7 +401,7 @@ class ExperimentRunner:
             Full results dict (same format as regime_comparison.py output).
         """
         from experiments.config import resolve_experiment, get_method_config
-        from experiments.evaluation import friedman_test
+        from experiments.evaluation import friedman_test, nemenyi_posthoc
 
         method_keys, crises = resolve_experiment(self.cfg, experiment_name)
 
@@ -501,11 +514,25 @@ class ExperimentRunner:
 
         chi_sq, p_val, mean_ranks = friedman_test(d_matrix)
 
+        # Nemenyi post-hoc when Friedman is significant
+        nemenyi_result = None
+        if not np.isnan(chi_sq) and p_val < 0.05:
+            nemenyi_result = nemenyi_posthoc(d_matrix, method_names, alpha=0.05)
+
         median_d = {}
+        median_cliff = {}
         for j, mname in enumerate(method_names):
             col = d_matrix[:, j]
             valid = col[~np.isnan(col)]
             median_d[mname] = float(np.median(valid)) if len(valid) > 0 else None
+
+            # Cliff's delta per crisis, then median
+            deltas = []
+            for ck in crisis_list:
+                cell = results[mname].get(ck, {})
+                if 'cliff_d' in cell and cell['cliff_d'] is not None:
+                    deltas.append(cell['cliff_d'])
+            median_cliff[mname] = float(np.median(deltas)) if deltas else None
 
         elapsed = time.time() - t_start
 
@@ -541,12 +568,14 @@ class ExperimentRunner:
             'results': results,
             'summary': {
                 'median_d': median_d,
+                'median_cliff_delta': median_cliff,
                 'friedman_chi_sq': float(chi_sq) if not np.isnan(chi_sq) else None,
                 'friedman_p': float(p_val) if not np.isnan(p_val) else None,
                 'mean_ranks': (
                     {mname: float(mean_ranks[j]) for j, mname in enumerate(method_names)}
                     if mean_ranks is not None and not np.any(np.isnan(mean_ranks)) else None
                 ),
+                'nemenyi': nemenyi_result,
             },
         }
 

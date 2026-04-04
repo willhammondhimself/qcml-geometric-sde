@@ -11,6 +11,7 @@ Provides:
     permutation_test          — Permutation test for mean difference
     bayes_factor              — Bayesian hypothesis test (BF10)
     friedman_test             — Friedman rank test with Iman-Davenport F-correction
+    nemenyi_posthoc           — Pairwise Nemenyi tests after Friedman (CD diagram)
     compute_detection_metrics — Delay, FAR, precision, recall, F1
 """
 

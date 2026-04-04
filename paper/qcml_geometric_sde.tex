@@ -380,8 +380,8 @@ dimension detects this shift with $d = 0.69$ ($p < 10^{-104}$),
 whereas PCA effective rank barely distinguishes regimes ($d = 0.13$)---a
 five-fold sensitivity advantage.  Spectral
 Entropy (Section~\ref{subsec:spectral_entropy}) tracks the full
-eigenvalue distribution and achieves the highest offline separability
-among geometric channels ($d = 0.83$).
+eigenvalue distribution and achieves mid-range offline separability
+among geometric channels ($d = 0.53$, rank~12 of 46).
 
 \begin{figure}[htb]
 \centering
@@ -481,7 +481,7 @@ Shannon entropy of excitation energy weights:
 Low entropy indicates energy concentration in few excitations
 (ordered regime); high entropy signals a disordered/crisis regime.
 Among the four geometric channels studied here, Spectral Entropy
-achieves the highest offline separability ($d = 0.83$).
+achieves mid-range offline separability ($d = 0.53$, rank~12 of 46).
 
 \subsection{State Dynamics}%
 \label{subsec:ham_sensitivity}\label{subsec:reduced_purity}
@@ -718,6 +718,17 @@ competitive tier---the
 top~15 methods by median~$d$---no pairwise difference exceeds
 $\mathrm{CD}$, so individual rankings should be interpreted with
 caution.
+As a nonparametric robustness check, median $|\text{Cliff's } \delta|$
+for the top-10 methods ranges from $0.09$ to $0.45$ (negligible to
+large effect; median $0.30$), confirming that the Cohen's~$d$ rankings
+are broadly robust to distributional assumptions.
+
+\noindent\textit{Caveat:} These offline $d$ values reflect
+contemporaneous crisis sensitivity, not predictive lead time.
+Granger causality analysis (Section~\ref{subsec:walk_forward})
+reveals that reverse causality (market~$\to$~QCML) dominates forward,
+confirming that observables \emph{detect} rather than \emph{anticipate}
+regime shifts.
 
 \begin{table}[htbp]
 \centering

@@ -40,3 +40,86 @@ papers:
     relationship: foundation
     bib_key: nielsen2020
     notes: "Accessible introduction to information geometry used in our framework"
+
+  # --- Discovered 2026-04-03 via /lit-scan ---
+
+  - title: "Quantum Geometry of Data"
+    authors: ["Abanov, A.G.", "Candelori, L.", "Steinacker, H.C.", "Wells, M.T.", "Busemeyer, J.R.", "Hogan, C.J.", "Kirakosyan, V.", "Marzari, N.", "Pinnamaneni, S.", "Villani, D.", "Xu, M.", "Musaelian, K."]
+    arxiv_id: "2507.21135"
+    discovered: "2026-04-03"
+    source: "lit-scan"
+    status: discovered
+    relevance: 10
+    relationship: foundation
+    notes: "Core QCML theory paper by the framework's originators. Shows QCML encodes data as quantum geometry with intrinsic dimension, quantum metric, and Berry curvature derived from data. Direct theoretical foundation for our geometric observables."
+
+  - title: "Supervised Similarity for High-Yield Corporate Bonds with Quantum Cognition Machine Learning"
+    authors: ["Rosaler, J.", "Candelori, L.", "Kirakosyan, V.", "Musaelian, K.", "Samson, R.", "Wells, M.T.", "Mehta, D.", "Pasquali, S."]
+    arxiv_id: "2502.01495"
+    doi: "10.48550/arXiv.2502.01495"
+    discovered: "2026-04-03"
+    source: "lit-scan"
+    status: discovered
+    relevance: 9
+    relationship: foundation
+    notes: "QCML applied to corporate bond similarity/pricing. Same framework we build on, different application domain. Should cite for QCML lineage."
+
+  - title: "Topological Machine Learning for Financial Crisis Detection: Early Warning Signals from Persistent Homology"
+    authors: ["Guritanu, E.", "Barbierato, E.", "Gatti, A."]
+    doi: "10.3390/computers14100408"
+    discovered: "2026-04-03"
+    source: "lit-scan"
+    status: discovered
+    relevance: 8
+    relationship: competitor
+    notes: "Direct competitor: causal crisis detection via TDA/persistent homology on US equity indices (1999-2021). F1~0.50, 34-day lead time on 4 crises. Comparable problem framing but topological vs our Hilbert-space geometric approach. Should cite in related work."
+
+  - title: "Phase Transitions in Financial Markets Using the Ising Model: A Statistical Mechanics Perspective"
+    authors: ["Giorgio, B."]
+    arxiv_id: "2504.19050"
+    discovered: "2026-04-03"
+    source: "lit-scan"
+    status: discovered
+    relevance: 6
+    relationship: related
+    notes: "Ising model reproducing stylized facts of S&P 500. Phase transition framing overlaps with our regime-shift language but uses statistical mechanics, not information geometry."
+
+  - title: "Cognition in Superposition: Quantum Models in AI, Finance, Defence, Gaming and Collective Behaviour"
+    authors: ["Maksymov, I.S."]
+    arxiv_id: "2508.20098"
+    discovered: "2026-04-03"
+    source: "lit-scan"
+    status: discovered
+    relevance: 6
+    relationship: related
+    notes: "Survey of quantum cognition models across domains including finance. Useful for positioning QCML within broader quantum cognition literature."
+
+  - title: "Trends and Reversion in Financial Markets on Time Scales from Minutes to Decades"
+    authors: ["Safari, S.A.", "Schmidhuber, C."]
+    arxiv_id: "2501.16772"
+    discovered: "2026-04-03"
+    source: "lit-scan"
+    status: discovered
+    relevance: 5
+    relationship: related
+    notes: "Empirical study of trend/reversion regimes across timescales. Proposes lattice gas model near critical point. Regime framework tangentially related."
+
+  - title: "Online Multivariate Changepoint Detection: Leveraging Links With Computational Geometry"
+    authors: ["Pishchagina, L.", "Romano, G.", "Fearnhead, P.", "Runge, V.", "Rigaill, G."]
+    arxiv_id: "2311.01174"
+    discovered: "2026-04-03"
+    source: "lit-scan"
+    status: discovered
+    relevance: 5
+    relationship: related
+    notes: "Computational geometry approach to online changepoint detection. Different meaning of 'geometry' (convex hull algorithms, not differential geometry) but relevant methodologically for M10 comparisons."
+
+  - title: "Approximations to the Fisher Information Metric of Deep Generative Models for Out-Of-Distribution Detection"
+    authors: ["Dauncey, S.", "Holmes, C.", "Williams, C.", "Falck, F."]
+    arxiv_id: "2403.01485"
+    discovered: "2026-04-03"
+    source: "lit-scan"
+    status: discovered
+    relevance: 7
+    relationship: related
+    notes: "Uses Fisher information metric for anomaly/OOD detection in deep models. Different domain but same geometric toolkit (Fisher metric as regime detector). Supports our framing of information geometry for detection tasks."
