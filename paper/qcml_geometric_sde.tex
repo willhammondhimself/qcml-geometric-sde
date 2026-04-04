@@ -826,7 +826,7 @@ strategies.
 \cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10}
 Method & Det. & Delay & FAR & Det. & Delay & FAR & Det. & Delay & FAR \\
 \midrule
-Berry Curv.\ Incr.   & 5/7 & 32 & 1.2 & 5/7 & 24 & 1.2 & 4/7 & 14 & 3.6 \\
+Berry Phase Rate   & 5/7 & 32 & 1.2 & 5/7 & 24 & 1.2 & 4/7 & 14 & 3.6 \\
 QFI Determinant       & 3/7 & 55 & 1.3 & 3/7 & 54 & 2.5 & 3/7 & 55 & 3.6 \\
 Multi-Lag Fidelity    & 5/7 & 23 & 1.2 & \textbf{6/7} & \textbf{16} & \textbf{2.5} & 6/7 & 9 & 3.7 \\
 Rolling Vol Z         & 3/7 & 10 & 1.2 & 6/7 & 13 & 2.5 & 5/7 & 15 & 1.3 \\
@@ -1515,7 +1515,7 @@ observable, maintaining the highest $d$ across all window sizes.
 \toprule
 Method & $\pm 5$d & $\pm 10$d & $\pm 20$d & $\pm 60$d \\
 \midrule
-Berry Curv.\ Incr.  & 0.25 & 0.29 & 0.27 & 0.24 \\
+Berry Phase Rate  & 0.25 & 0.29 & 0.27 & 0.24 \\
 QFI Determinant      & 0.63 & 0.36 & 0.64 & 0.43 \\
 Multi-Lag Fidelity   & 0.40 & 0.27 & 0.38 & 0.26 \\
 Random Forest        & 0.21 & 0.21 & 0.28 & 0.34 \\
@@ -1553,7 +1553,7 @@ $\leq 0.20$, with QFI achieving val $d = 0.60 >$ train $d = 0.50$
 \toprule
 Method & (a) All PCA-Insp. & (b) Best Operator & (c) HPO Val. \\
 \midrule
-Berry Curvature Increment & 0.29 & \textbf{0.55} & 0.49 \\
+Berry Phase Rate & 0.29 & \textbf{0.55} & 0.49 \\
 QFI Determinant           & 0.36 & \textbf{0.61} & \textbf{0.60} \\
 Multi-Lag Fidelity        & 0.27 & \textbf{0.42} & 0.33 \\
 \bottomrule
@@ -1611,7 +1611,7 @@ rolling stats) for all methods.}
 Method & \# Params & Search Space & Training Data \\
 \midrule
 \multicolumn{4}{@{}l}{\emph{Geometric (unsupervised score construction)}} \\
-Berry Curv.\ Incr. & 4 & $n \in \{4,8,16\}$, $p \in \{10,15,20\}$,
+Berry Phase Rate & 4 & $n \in \{4,8,16\}$, $p \in \{10,15,20\}$,
   op $\in$ \{rnd, pca\}, $w \in \{10,20,30\}$ & Full (or expanding) \\
 QFI Determinant    & 4 & same as Berry & Full (or expanding) \\
 Multi-Lag Fidelity & 4 & same as Berry & Full (or expanding) \\
