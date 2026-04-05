@@ -1062,6 +1062,18 @@ require no labeled data.  When the next crisis involves unprecedented
 mechanisms, supervised methods lack training data.  Geometric detection
 channels remain operational.
 
+\paragraph{Ground state energy as detector.}
+The simplest observable from the QCML embedding---the ground state
+energy $E_0(x) = \min_{\|\phi\|=1}\langle\phi|H(x)|\phi\rangle$---requires
+only a single eigendecomposition per time step.  Without HPO, $E_0$
+achieves median $d = 0.31$ across 18~crises, with $d = 1.39$ on the
+2008~GFC and $d = 1.40$ on COVID---strong on structural crises but weak
+on localized events ($d < 0.2$ on the 2007 quant crisis and 2019
+repo).  Correlation with realized volatility is near zero ($r = -0.05$),
+confirming that the Hamiltonian energy landscape carries crisis
+information orthogonal to both geometric observables and classical
+baselines.  HPO-tuned evaluation is deferred to the companion paper.
+
 \subsection{On the ``Quantum'' Label}
 
 Berry phase is differential geometry, not quantum mechanics: it was
