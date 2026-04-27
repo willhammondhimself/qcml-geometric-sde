@@ -72,9 +72,10 @@ off the embedding: Berry Phase Rate, Spectral Entropy, Reduced State
 Purity, and Hamiltonian Sensitivity.
 
 Walk-forward nested HPO gives Berry Phase Rate unbiased
-out-of-sample median $d = 0.72$ across 9 test windows (range
-$0.08$--$1.54$; $d \geq 0.5$ on 7/9 windows), with 30\% fewer
-false alarms than Random Forest and no crisis labels.  On the full
+out-of-sample median $d = 0.72$ (95\% percentile-bootstrap
+CI $[0.34, 1.18]$, 10{,}000 resamples) across 9 labelled
+crises and the highest single-detector score on 5 of them,
+with 30\% fewer false alarms than Random Forest and no crisis labels.  On the full
 17-crisis panel (2000--2024), Reduced State Purity ($d = 0.83$) ranks
 first of 46~methods and Absorption Ratio~\cite{kritzman2011}
 ($d = 0.80$) is the strongest classical baseline.  Geometric and
@@ -143,8 +144,9 @@ selected by ablation (Section~\ref{subsec:operator_ablation}).
 \paragraph{Contributions.}
 \begin{enumerate}
 \item \textbf{Walk-forward detection.}  Nested HPO yields Berry Phase
-  Rate OOS $d = 0.72$ (5/9 crises), with 30\% fewer false alarms than
-  RF (2.5 vs.\ 3.6/yr), without requiring crisis labels.
+  Rate OOS median $d = 0.72$ (CI $[0.34, 1.18]$; best detector on
+  5 of 9 crises), with 30\% fewer false alarms than RF
+  (2.5 vs.\ 3.6/yr), without requiring crisis labels.
 
 \item \textbf{QCML geometric framework.}  Four geometric observables
   from a single embedding, each probing a different property of the
@@ -428,7 +430,7 @@ to calibrate the value added by geometric structure.
 \toprule
 Channel & Family & Geometric property & Equation \\
 \midrule
-Berry curvature rate & Holonomy & U(1) holonomy change rate & \eqref{eq:berry_rate} \\
+Berry Phase Rate & Holonomy & U(1) holonomy change rate & \eqref{eq:berry_rate} \\
 Spectral entropy & Spectral & Excitation distribution & \eqref{eq:spectral_entropy} \\
 Hamiltonian sensitivity & State & Perturbation variance & \eqref{eq:ham_sensitivity} \\
 Reduced purity & State & Subsystem separability & \eqref{eq:reduced_purity} \\
@@ -916,7 +918,7 @@ Berry: $n{=}6$ (57\%), $w{=}20$ (71\%), \texttt{soft} (86\%),
 MLF: $n{=}6$ (100\%), $w{=}20$ (71\%).}
 \end{table}
 
-Berry curvature increment achieves the highest OOS median $d = 0.72$
+Berry Phase Rate achieves the highest OOS median $d = 0.72$
 (95\% percentile bootstrap CI $[0.34, 1.18]$ on the 9 windows; 10{,}000
 resamples) and wins 5 of 9~crises, particularly rate-driven events
 (Rate Hikes $d = 0.72$, SVB $d = 1.54$) and acute shocks (Flash Crash
