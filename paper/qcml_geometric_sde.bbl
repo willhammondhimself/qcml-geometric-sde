@@ -79,18 +79,25 @@ B.~Horvath, Z.~Issa, A.~Muguruza, Clustering market regimes using the
 \newblock \href {https://doi.org/10.21314/jcf.2024.005}
   {\path{doi:10.21314/jcf.2024.005}}.
 
-\bibitem{gidea_katz2018}
-M.~Gidea, Y.~A. Katz, Topological data analysis of financial time series:
-  Landscapes of crashes, Physica A 491 (2018) 820--834.
-\newblock \href {https://doi.org/10.1016/j.physa.2017.09.028}
-  {\path{doi:10.1016/j.physa.2017.09.028}}.
-
 \bibitem{sandhu2016}
 R.~S. Sandhu, T.~T. Georgiou, E.~Reznik, L.~Zhu, I.~Kolesov, Y.~Senbabaoglu,
   A.~Tannenbaum, Ricci curvature: An economic indicator for market fragility
   and systemic risk, Science Advances 2~(6) (2016) e1501495.
 \newblock \href {https://doi.org/10.1126/sciadv.1501495}
   {\path{doi:10.1126/sciadv.1501495}}.
+
+\bibitem{gidea_katz2018}
+M.~Gidea, Y.~A. Katz, Topological data analysis of financial time series:
+  Landscapes of crashes, Physica A 491 (2018) 820--834.
+\newblock \href {https://doi.org/10.1016/j.physa.2017.09.028}
+  {\path{doi:10.1016/j.physa.2017.09.028}}.
+
+\bibitem{guritanu2025}
+E.~Guritanu, E.~Barbierato, A.~Gatti, Topological machine learning for
+  financial crisis detection: {Early} warning signals from persistent homology,
+  Computers 14~(10) (2025) 408.
+\newblock \href {https://doi.org/10.3390/computers14100408}
+  {\path{doi:10.3390/computers14100408}}.
 
 \bibitem{laloux1999}
 L.~Laloux, P.~Cizeau, J.-P. Bouchaud, M.~Potters, Noise dressing of financial
@@ -177,6 +184,12 @@ G.~Chow, E.~Jacquier, M.~Kritzman, K.~Lowry, Optimal portfolios in good times
   and bad, Financial Analysts Journal 55~(3) (1999) 65--73.
 \newblock \href {https://doi.org/10.2469/faj.v55.n3.2273}
   {\path{doi:10.2469/faj.v55.n3.2273}}.
+
+\bibitem{politis2004}
+D.~N. Politis, H.~White, Automatic block-length selection for the dependent
+  bootstrap, Econometric Reviews 23~(1) (2004) 53--70.
+\newblock \href {https://doi.org/10.1081/ETC-120028836}
+  {\path{doi:10.1081/ETC-120028836}}.
 
 \bibitem{pancharatnam1956}
 S.~Pancharatnam, Generalized theory of interference, and its applications,

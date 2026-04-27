@@ -92,6 +92,139 @@ claims:
     json_path: "results.QFI Determinant.2008_gfc.d"
     verified: true
 
+  - name: "Null model: Berry real median d (post-2005 single-fit)"
+    section: "5.1 null model test"
+    paper_value: 0.71
+    source_json: "experiments/outputs/null_model/null_model_results.json"
+    json_path: "summary.Berry Phase Rate.real_median_d"
+    verified: true
+
+  - name: "Null model: Berry random-windows null median"
+    section: "5.1 null model test"
+    paper_value: 0.53
+    source_json: "experiments/outputs/null_model/null_model_results.json"
+    json_path: "summary.Berry Phase Rate.random_windows.null_median"
+    verified: true
+
+  - name: "Null model: Berry random-windows p-value"
+    section: "5.1 null model test"
+    paper_value: 0.045
+    source_json: "experiments/outputs/null_model/null_model_results.json"
+    json_path: "summary.Berry Phase Rate.random_windows.p_value"
+    verified: true
+
+  - name: "Null model: Reduced Purity real median d (post-2005 single-fit)"
+    section: "5.1 null model test"
+    paper_value: 0.73
+    source_json: "experiments/outputs/null_model/null_model_results.json"
+    json_path: "summary.Reduced Purity.real_median_d"
+    verified: true
+
+  - name: "Null model: Reduced Purity random-windows p-value"
+    section: "5.1 null model test"
+    paper_value: 0.18
+    source_json: "experiments/outputs/null_model/null_model_results.json"
+    json_path: "summary.Reduced Purity.random_windows.p_value"
+    verified: true
+
+  - name: "Walk-forward Berry bootstrap CI lower"
+    section: "5.2 walk-forward bootstrap"
+    paper_value: 0.34
+    source_json: "experiments/outputs/regime_detection/walk_forward/wf_bootstrap_ci.json"
+    json_path: "summary.Berry Phase Rate.ci95_lo"
+    verified: true
+
+  - name: "Walk-forward Berry bootstrap CI upper"
+    section: "5.2 walk-forward bootstrap"
+    paper_value: 1.18
+    source_json: "experiments/outputs/regime_detection/walk_forward/wf_bootstrap_ci.json"
+    json_path: "summary.Berry Phase Rate.ci95_hi"
+    verified: true
+
+  - name: "Seed sensitivity: canonical Berry median d (offset=0)"
+    section: "Limitations: operator choice"
+    paper_value: 0.71
+    source_json: "experiments/outputs/seed_sensitivity/seed_sensitivity_results.json"
+    json_path: "per_offset.0.median_d"
+    verified: true
+
+  - name: "Seed sensitivity: alternative bases min"
+    section: "Limitations: operator choice"
+    paper_value: 0.36
+    source_json: "experiments/outputs/seed_sensitivity/seed_sensitivity_results.json"
+    json_path: "summary.min"
+    verified: true
+
+  - name: "Seed sensitivity: alternative bases max"
+    section: "Limitations: operator choice"
+    paper_value: 0.49
+    source_json: "experiments/outputs/seed_sensitivity/seed_sensitivity_results.json"
+    json_path: "per_offset.400.median_d"
+    verified: true
+
+  - name: "E_0 ground state energy: median d (full 18-crisis panel)"
+    section: "6.3 Label-free deployment / ground state energy paragraph"
+    paper_value: 0.31
+    source_json: "research/e0_full_panel_results.json"
+    json_path: "median_d"
+    verified: true
+
+  - name: "E_0 ground state energy: GFC d"
+    section: "6.3 Label-free deployment / ground state energy paragraph"
+    paper_value: 1.39
+    source_json: "research/e0_full_panel_results.json"
+    json_path: "per_crisis.2008_gfc.d"
+    verified: true
+
+  - name: "E_0 ground state energy: COVID d"
+    section: "6.3 Label-free deployment / ground state energy paragraph"
+    paper_value: 1.40
+    source_json: "research/e0_full_panel_results.json"
+    json_path: "per_crisis.2020_covid.d"
+    verified: true
+
+  - name: "Drawdown overlay: buy-and-hold Sharpe"
+    section: "6.3 risk-management overlay"
+    paper_value: 0.61
+    source_json: "experiments/outputs/drawdown_overlay/drawdown_overlay_results.json"
+    json_path: "buy_and_hold.annual_sharpe"
+    verified: true
+
+  - name: "Drawdown overlay: Berry Sharpe"
+    section: "6.3 risk-management overlay"
+    paper_value: 0.70
+    source_json: "experiments/outputs/drawdown_overlay/drawdown_overlay_results.json"
+    json_path: "berry_overlay.annual_sharpe"
+    verified: true
+
+  - name: "Drawdown overlay: RF Sharpe"
+    section: "6.3 risk-management overlay"
+    paper_value: 0.53
+    source_json: "experiments/outputs/drawdown_overlay/drawdown_overlay_results.json"
+    json_path: "rf_overlay.annual_sharpe"
+    verified: true
+
+  - name: "Drawdown overlay: B&H max drawdown"
+    section: "6.3 risk-management overlay"
+    paper_value: -0.55
+    source_json: "experiments/outputs/drawdown_overlay/drawdown_overlay_results.json"
+    json_path: "buy_and_hold.max_drawdown"
+    verified: true
+
+  - name: "Drawdown overlay: Berry max drawdown"
+    section: "6.3 risk-management overlay"
+    paper_value: -0.27
+    source_json: "experiments/outputs/drawdown_overlay/drawdown_overlay_results.json"
+    json_path: "berry_overlay.max_drawdown"
+    verified: true
+
+  - name: "Drawdown overlay: RF max drawdown"
+    section: "6.3 risk-management overlay"
+    paper_value: -0.23
+    source_json: "experiments/outputs/drawdown_overlay/drawdown_overlay_results.json"
+    json_path: "rf_overlay.max_drawdown"
+    verified: true
+
 # =============================================================================
 # PAPER 2/3 CLAIMS — deferred from Paper 1 restructure (2026-03-21)
 # These claims verified against source JSONs but no longer appear in Paper 1.
