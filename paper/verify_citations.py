@@ -51,7 +51,7 @@ class VerificationResult:
     """Result of verifying one citation."""
 
     key: str
-    status: str  # VERIFIED, PARTIAL, NOT_FOUND, SUSPICIOUS, ERROR, SKIPPED
+    status: str = "PENDING"  # VERIFIED, PARTIAL, NOT_FOUND, SUSPICIOUS, ERROR, SKIPPED
     detail: str = ""
     ss_title: str = ""
     ss_year: Optional[int] = None

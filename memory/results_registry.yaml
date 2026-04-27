@@ -72,10 +72,11 @@ claims:
   # Note: tolerance=0.02 is for Cohen's d; chi-sq values need wider tolerance.
   - name: "Friedman chi-squared (main)"
     section: "Sec 5.1"
-    paper_value: 233.13
-    source_json: "experiments/outputs/regime_detection/causal_comparison_20260311_010639.json"
+    paper_value: 220.84
+    source_json: "experiments/outputs/regime_detection/causal_comparison_20260403_155943.json"
     json_path: "summary.friedman_chi_sq"
     verified: true
+    note: "Apr-3 rerun under post-c4ed5a9 methodology (Iman-Davenport added). d-values identical to Mar-11; only chi^2 changed."
 
   # --- Per-crisis d-values (walk-forward table, spot checks) ---
   - name: "Berry Phase Rate d on 2008 GFC"

@@ -2,14 +2,17 @@
 \centering
 \caption{Crisis taxonomy and geometric channel specialization. Each crisis category has a distinct mechanism.  ``Best Overall'' includes baselines; ``Best Geometric'' is restricted to the seven observatory channels.}
 \label{tab:crisis_taxonomy}
-\small
-\begin{tabular}{lllll}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lp{3.2cm}lll}
 \toprule
 Category & Mechanism & Crises & Best Overall & Best Geometric \\
 \midrule
-Systemic/Credit & Credit contagion and bank runs & 2008, 2023 & CUSUM (2.65) & Berry Phase Rate (1.42) \\
-Exogenous Shocks & External trigger, not endogenous & 2020 & Random Forest (13.06) & Dim. Collapse (1.48) \\
-Slow Burns & Gradual regime shift over months & 2022 & Random Forest (2.04) & Berry Phase Rate (1.12) \\
+Volatility Shocks & Sudden volatility regime shift & 2018, 2010, 2018 & Hamilton (1.22) & Berry (1.22) \\
+Systemic/Credit & Credit contagion and bank runs & 2008, 2011, 2023 & VIX Leve (1.90) & Spectral (1.42) \\
+Exogenous Shocks & External trigger, not endogenous & 2020 & EWMA Vol (6.45) & Spectral (1.88) \\
+Slow Burns & Gradual regime shift over months & 2000, 2022, 2024 & Quantum  (1.36) & DimC (0.92) \\
+Liquidity/Micro. & Market structure and liquidity breakdown & 2007, 2019, 2015 & Absorpti (1.22) & SLR (0.61) \\
 \bottomrule
 \end{tabular}
 \end{table}

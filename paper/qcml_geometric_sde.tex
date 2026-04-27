@@ -72,7 +72,8 @@ off the embedding: Berry Phase Rate, Spectral Entropy, Reduced State
 Purity, and Hamiltonian Sensitivity.
 
 Walk-forward nested HPO gives Berry Phase Rate unbiased
-out-of-sample $d = 0.72$ on 5 of 9 test windows, with 30\% fewer
+out-of-sample median $d = 0.72$ across 9 test windows (range
+$0.08$--$1.54$; $d \geq 0.5$ on 7/9 windows), with 30\% fewer
 false alarms than Random Forest and no crisis labels.  On the full
 17-crisis panel (2000--2024), Reduced State Purity ($d = 0.83$) ranks
 first of 46~methods and Absorption Ratio~\cite{kritzman2011}
@@ -705,7 +706,7 @@ Hamiltonian Sensitivity ($0.60$, rank~10), and Spectral Entropy
 ($0.53$, rank~12).  Random Forest ranks 30th ($0.35$); GARCH(1,1)
 33rd ($0.29$).
 
-The Friedman test ($\chi^2_{45} = 233.1$, $p < 10^{-16}$)
+The Friedman test ($\chi^2_{45} = 220.8$, $p < 10^{-16}$)
 confirms that the 46 methods rank differently.  Nemenyi post-hoc
 (CD $= 18.2$ at $\alpha = 0.05$) finds 105 of 1{,}035 pairwise
 differences significant, but these are concentrated between the
@@ -1086,7 +1087,9 @@ The ground state energy
 $E_0(x) = \min_{\|\phi\|=1}\langle\phi|H(x)|\phi\rangle$ is the
 cheapest thing you can compute from the embedding: one
 eigendecomposition per time step.  Without HPO, $E_0$ hits median
-$d = 0.31$ across 18~crises, spiking to $d = 1.39$ on the 2008 GFC
+$d = 0.31$ across the main 17~crises plus 1998 LTCM (added because
+$E_0$ requires no walk-forward training and the extra event sharpens
+the structural-vs-localized contrast), spiking to $d = 1.39$ on the 2008 GFC
 and $d = 1.40$ on COVID but dropping below $d = 0.2$ on the 2007
 quant crisis and 2019 repo.  It does not track realized volatility
 ($r = -0.05$), so whatever it picks up on the big structural
