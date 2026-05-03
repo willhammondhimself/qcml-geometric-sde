@@ -1,0 +1,32 @@
+{
+  "config": {
+    "n_bootstrap": 10000,
+    "seed": 42,
+    "source": "Table 4 (tab:wf_hpo) per-window OOS d values",
+    "ci_method": "percentile"
+  },
+  "summary": {
+    "Berry Phase Rate": {
+      "median_d": 0.72,
+      "mean_d": 0.7633333333333333,
+      "n_windows": 9,
+      "ci95_lo": 0.34,
+      "ci95_hi": 1.18
+    },
+    "QFI Determinant": {
+      "median_d": 0.37,
+      "mean_d": 0.47555555555555556,
+      "n_windows": 9,
+      "ci95_lo": 0.13,
+      "ci95_hi": 0.65
+    },
+    "Multi-Lag Fidelity": {
+      "median_d": 0.52,
+      "mean_d": 0.73,
+      "n_windows": 9,
+      "ci95_lo": 0.22,
+      "ci95_hi": 1.43
+    }
+  },
+  "timestamp": "2026-04-13T22:04:45.956892"
+}

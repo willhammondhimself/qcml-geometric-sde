@@ -36,20 +36,32 @@ RESULTS_DIR = REPO_ROOT / "experiments" / "outputs" / "regime_detection"
 
 # --- Crisis metadata ---
 CRISIS_PRETTY = {
+    "1998_ltcm": "LTCM '98",
     "2000_dotcom": "Dot-Com '00",
     "2001_911": "September 11 '01",
+    "2001911": "September 11 '01",
     "2007_quant": "Quant '07",
     "2008_gfc": "GFC '08",
     "2010_flash": "Flash Crash '10",
     "2011_euro": "Euro Crisis '11",
+    "2013_taper": "Taper '13",
     "2015_china": "China '15",
+    "2016_brexit": "Brexit '16",
     "2018_volmageddon": "Volmageddon '18",
     "2018_q4": "Q4 Selloff '18",
     "2019_repo": "Repo '19",
     "2020_covid": "COVID '20",
+    "2021_meme": "Meme '21",
     "2022_rates": "Rate Hikes '22",
     "2023_svb": "SVB '23",
     "2024_carry": "Carry '24",
+}
+
+# Short year-or-short labels for crisis taxonomy "years" column;
+# disambiguates same-year events (e.g. 2018_volmageddon vs 2018_q4).
+CRISIS_SHORT_YEAR = {
+    "2018_volmageddon": "2018 (Vol)",
+    "2018_q4": "2018 (Q4)",
 }
 
 # Novel vs Conventional classification (a priori)
@@ -95,6 +107,17 @@ SHORT_NAMES = {
     "Rolling Vol Z": "RVol",
     "CUSUM": "CUSUM",
     "Random Forest": "RF",
+    "Hamilton MS": "Ham.MS",
+    "VIX Level": "VIX",
+    "Quantum Rel. Entropy": "QRE",
+    "Quantum Relative Entropy": "QRE",
+    "Absorption Ratio": "AbsR",
+    "EWMA Vol": "EWMA",
+    "Spectral Entropy": "S.Ent",
+    "Spectral Gap": "S.Gap",
+    "Spectral Flow": "S.Flow",
+    "Reduced Purity": "RedPur",
+    "Hamiltonian Sensitivity": "HamSens",
 }
 
 # Methods to display in per_crisis_winners (Table 5)
@@ -142,10 +165,6 @@ def gen_aggregate_comparison(d_matrix, method_names, crisis_keys, summary):
     mean_d = np.nanmean(d_matrix, axis=0)
     max_d = np.nanmax(d_matrix, axis=0)
 
-    # n_sig: count of crises where bootstrap CI excludes zero
-    # For now, count non-NaN entries (all entries have d > 0 in practice)
-    n_sig = np.sum(~np.isnan(d_matrix), axis=0)
-
     # Sort by median d descending
     order = np.argsort(-median_d)
     best_median = np.nanmax(median_d)
@@ -155,17 +174,14 @@ def gen_aggregate_comparison(d_matrix, method_names, crisis_keys, summary):
     lines.append(r"\centering")
     lines.append(
         rf"\caption{{Aggregate effect sizes across {n_crises} crises "
-        rf"({n_methods} methods). Mean and median Cohen's $d$,"
-    )
-    lines.append(
-        r"  with number of crises where bootstrap 95\% CI excludes zero.}"
+        rf"({n_methods} methods): mean, median, and maximum Cohen's $d$.}}"
     )
     lines.append(r"\label{tab:aggregate_comparison}")
     lines.append(r"\small")
-    lines.append(r"\begin{tabular}{lcccc}")
+    lines.append(r"\begin{tabular}{lccc}")
     lines.append(r"\toprule")
     lines.append(
-        r"Method & Mean $d$ & Median $d$ & Max $d$ & $n_{\text{sig}}$ \\"
+        r"Method & Mean $d$ & Median $d$ & Max $d$ \\"
     )
     lines.append(r"\midrule")
 
@@ -185,7 +201,7 @@ def gen_aggregate_comparison(d_matrix, method_names, crisis_keys, summary):
 
         lines.append(
             f"{name} & {mean_d[idx]:.3f} & {med_str} & "
-            f"{max_d[idx]:.3f} & {int(n_sig[idx])}/{n_crises} \\\\"
+            f"{max_d[idx]:.3f} \\\\"
         )
 
     lines.append(r"\bottomrule")
@@ -282,7 +298,7 @@ def gen_crisis_taxonomy(d_matrix, method_names, crisis_keys):
             continue
 
         crisis_indices = [crisis_keys.index(c) for c in cat_crises]
-        crisis_years = ", ".join(c[:4] for c in cat_crises)
+        crisis_years = ", ".join(CRISIS_SHORT_YEAR.get(c, c[:4]) for c in cat_crises)
 
         # Mean d per method across category crises
         best_overall_d = -1

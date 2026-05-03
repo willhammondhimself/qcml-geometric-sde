@@ -56,7 +56,7 @@
 
 % highlights removed for submission
 % \begin{highlights}
-% \item Walk-forward Berry Phase Rate achieves unbiased OOS Cohen's $d = 0.72$ with 30\% fewer false alarms than Random Forest
+% \item Walk-forward Berry Phase Rate achieves unbiased OOS Cohen's $d = 0.72$ with $\sim$67\% fewer false alarms than Random Forest (1.2 vs.\ 3.6/yr)
 % \item Four geometric observables from a single QCML embedding detect regime shifts without crisis labels
 % \item Offline separability on 17 crises (2000--2024): Reduced Purity $d = 0.83$, Absorption Ratio $d = 0.80$ (classical benchmark), Berry Phase Rate $d = 0.61$ (rank~9 of 46)
 % \item Formal framework with three theorems validated empirically on 20 years of market data
@@ -74,8 +74,8 @@ Purity, and Hamiltonian Sensitivity.
 Walk-forward nested HPO gives Berry Phase Rate unbiased
 out-of-sample median $d = 0.72$ (95\% percentile-bootstrap
 CI $[0.34, 1.18]$, 10{,}000 resamples) across 9 labelled
-crises and the highest single-detector score on 5 of them,
-with 30\% fewer false alarms than Random Forest and no crisis labels.  On the full
+crises and the highest per-crisis score among the three walk-forward detectors on 5 of 9 crisis windows,
+with $\sim$67\% fewer false alarms than Random Forest and no crisis labels.  On the full
 17-crisis panel (2000--2024), Reduced State Purity ($d = 0.83$) ranks
 first of 46~methods and Absorption Ratio~\cite{kritzman2011}
 ($d = 0.80$) is the strongest classical baseline.  Geometric and
@@ -99,17 +99,17 @@ geometric observables \sep financial crises \sep QCML
 % =============================================================================
 \section{Introduction}\label{sec:intro}
 
-Financial markets switch between calm trends and violent drawdowns.
+Financial markets switch between calm trends and violent drawdowns--at times, extremely abruptly.
 Detecting these regime transitions is a core problem in quantitative
 finance.  Hidden Markov Models~\cite{hamilton1989,ang_bekaert2002},
 Bayesian Online Changepoint Detection~\cite{adams_mackay2007}, and
-supervised classifiers all work in specific settings, but they live
-in flat Euclidean feature spaces.
+supervised classifiers all work in specific settings, but they are defined on flat Euclidean feature spaces.
+What if we could detect these transitions by measuring the geometry of the data itself?
 
-Quantum Cognition Machine Learning
-(QCML)~\cite{candelori2025} embeds data as unit vectors in
+Quantum Cognitive/Cognition Machine Learning
+(QCML; both appear in the literature)~\cite{candelori2025} embeds data as unit vectors in
 $\CP^{n-1}$ and represents features as Hermitian operators.
-Everything runs on classical hardware; ``quantum'' is shorthand for
+Everything runs on classical hardware; ``quantum'' is referring to
 the Hilbert-space formalism, not quantum computing.  The embedding
 endows the data manifold with a Fubini--Study metric, Berry curvature,
 spectral gap, and quantum Fisher information.  Candelori et
@@ -126,14 +126,14 @@ Sensitivity, which we compare against classical baselines including
 Absorption Ratio, Hamilton Markov-Switching, and GARCH
 (Table~\ref{tab:observatory_channels}).
 
-The primary evaluation is \emph{crisis-window separability}: does the
-score distribution during a known crisis separate from normal?  This
+The primary evaluation is \emph{crisis-window separability}--- does the
+score distribution during a known crisis differ significantly from a non-crisis period? This
 is an offline event study, measuring sensitivity rather than real-time
 prediction.  Walk-forward evaluation
 (Section~\ref{subsec:walkforward}) tests causal detection with
 strictly past-fitted preprocessing.
 
-\paragraph{Supervision level.}
+\paragraph{Supervision level}
 Score construction is unsupervised; no crisis labels are needed for
 z-scores (Algorithm~\ref{alg:zscore}).  But the pipeline is
 \emph{semi-supervised}: hyperparameters are selected via Optuna TPE
@@ -141,12 +141,12 @@ with crisis labels as the optimization objective.  Hilbert dimension
 ranges from $n = 4$ to $n = 16$ per observable; operator method is
 selected by ablation (Section~\ref{subsec:operator_ablation}).
 
-\paragraph{Contributions.}
+\paragraph{Contributions}
 \begin{enumerate}
 \item \textbf{Walk-forward detection.}  Nested HPO yields Berry Phase
-  Rate OOS median $d = 0.72$ (CI $[0.34, 1.18]$; best detector on
-  5 of 9 crises), with 30\% fewer false alarms than RF
-  (2.5 vs.\ 3.6/yr), without requiring crisis labels.
+  Rate OOS median $d = 0.72$ (CI $[0.34, 1.18]$; highest per-crisis Cohen's $d$ among the three walk-forward detectors---Berry, QFI, MLF
+  on five of nine crises), with $\sim$67\% fewer false alarms than Random Forest (RF)
+  (1.2 vs.\ 3.6/yr), without requiring crisis labels.
 
 \item \textbf{QCML geometric framework.}  Four geometric observables
   from a single embedding, each probing a different property of the
@@ -178,43 +178,43 @@ replacing them.
 Several non-Euclidean frameworks have been applied to financial data
 (Table~\ref{tab:geometry_compare}).
 
-\paragraph{Information geometry and optimal transport.}
+\paragraph{Information geometry and optimal transport}
 The Fisher--Rao metric~\cite{amari_nagaoka2000} has been applied to
 interest rate manifolds~\cite{brody_hughston2001} and return
 distributions~\cite{taylor2019}; Horvath et al.~\cite{horvath2024}
-cluster regimes via Wasserstein distance.  These give you a metric on
-the data, nothing more.  There is no curvature, no holonomy, and no
+cluster regimes via Wasserstein distance.  These provide a metric on
+the data manifold, nothing more.  There is no curvature, no holonomy, and no
 spectral gap to work with.
 
-\paragraph{TDA and network curvature.}
+\paragraph{TDA and network curvature}
 The closest curvature-based comparator is Sandhu et
 al.~\cite{sandhu2016}, who put Ollivier--Ricci curvature on
 correlation networks.  The Berry curvature used here is different in
 kind: it lives on the data manifold, not an inter-asset graph, and it
 produces integer Chern invariants via Chern--Weil theory.  Two
-topology-based approaches are closer in spirit. Gidea and
+topology-based approaches are closer in spirit: Gidea and
 Katz~\cite{gidea_katz2018} track persistence landscapes as crash
 early-warnings, and Guritanu et al.~\cite{guritanu2025} use persistent
 homology for causal crisis detection.  Persistent-homology features
 are complementary to differential-geometric observables like Berry
 curvature and the Fubini--Study metric, not substitutes.
 
-\paragraph{Random matrix theory and signatures.}
+\paragraph{Random matrix theory and signatures}
 Laloux et al.~\cite{laloux1999} separate signal from noise via
 Marchenko--Pastur.  That analysis cares about a noise edge; our
-spectral gap is an order parameter for a phase transition, which is
+spectral gap is an order parameter for a phase transition---
 a stronger claim about what the eigenvalue structure encodes.  On
 the signature side, Issa and Horvath~\cite{issa_horvath2023} run
 MMD tests on rough-path signatures, and Bronstein et
 al.~\cite{bronstein2021} impose geometric priors instead of reading
 the geometry off the data.
 
-\paragraph{Classical regime detection.}
+\paragraph{Classical regime detection}
 Hamilton's~\cite{hamilton1989} Markov-switching, Ang and
 Bekaert's~\cite{ang_bekaert2002} financial extensions, and
 Bollerslev's~\cite{bollerslev1986} GARCH are all included as baselines.
 
-\paragraph{QCML literature.}
+\paragraph{QCML literature}
 The framework itself is from Candelori et al.~\cite{candelori2025}
 and Abanov et al.~\cite{abanov2025}.  Financial applications have
 been sketched in industry papers~\cite{musaelian2024,samson2024}.
@@ -252,8 +252,8 @@ Rough Path Sig.\      & Sig.\ kernel & ---       & ---            & --- & --- \\
 
 We work in a finite-dimensional Hilbert space $\calH \cong \C^n$.  A
 \emph{state} is a unit vector $\ket{\psi} \in \calH$, and an
-\emph{observable} is a Hermitian operator
-$A = A^\dagger$~\cite{candelori2025,abanov2025}.
+\emph{observable} is a Hermitian operator---
+$A = A^\dagger$---that is, an operator that is equal to its adjoint~\cite{candelori2025,abanov2025}.
 
 Given $x = (x_1, \ldots, x_p) \in \R^p$ and Hermitian operators
 $\{A_k\}_{k=1}^p$, the QCML \emph{error
@@ -295,7 +295,7 @@ the non-degenerate spectral gap ensures invertibility of the
 relevant Jacobian.  See Appendix~\ref{sec:proofs} for the full argument.
 \end{proof}
 
-\paragraph{Operator construction.}
+\paragraph{Operator construction}
 We use \emph{PCA-inspired} operators: Pauli-basis matrices scaled by
 PCA eigenvalues, $A_k = \sqrt{\lambda_k}\,\sigma_k$.  An alternative
 is \emph{random} Hermitian operators: $A = (M + M^\dagger)/2$, where
@@ -309,7 +309,7 @@ PCA-inspired, and learned-scaling operators appears in
 Section~\ref{subsec:operator_ablation}.  Full QCML gradient-descent
 training~\cite{musaelian2024,samson2024} is left for future work.
 
-\paragraph{Why fixed operators suffice for detection.}
+\paragraph{Why fixed operators suffice for detection}
 The QCML framework~\cite{candelori2025} normally learns operators via
 reconstruction loss to estimate intrinsic dimension and generate
 predictions.  Detection asks less.  By
@@ -319,7 +319,7 @@ well-defined metric, curvature, and topological invariants; regime
 shifts perturb $H(x)$ and the induced geometry responds, whether or
 not the operators were ever optimized.  The ablation
 (Section~\ref{subsec:operator_ablation}) is blunt about this:
-heuristic random and PCA-inspired operators already hit $d > 0.8$
+heuristic random and PCA-inspired operators already achieve $d > 0.5$
 with no gradient training, and discriminative operator learning
 does not systematically improve on them.
 
@@ -363,7 +363,7 @@ underlying data geometry, tying the construction to classical results
 in random matrix theory~\cite{laloux1999,laloux2000} and factor
 models~\cite{bai_ng2002}.
 
-\paragraph{Empirical demonstration.}
+\paragraph{Empirical demonstration}
 We compute the eigenvalue spectrum of $g_{ab}(x_t)$ on the SPY/DIA
 feature space at each time step and identify the spectral gap.
 In normal periods, the largest eigenvalue ratio $\lambda_2/\lambda_3
@@ -395,7 +395,7 @@ $i = 2$ in normal periods (ratio $\approx 4.5$) weakens during crises
 \label{fig:eigenvalue_spectra}
 \end{figure}
 
-\paragraph{Connection to existing observables.}
+\paragraph{Connection to existing observables}
 The Absorption Ratio~\cite{kritzman2011} measures the fraction of
 variance explained by the top eigenvalue of the rolling correlation
 matrix.  That is a \emph{linear} dimension measure: PCA eigenvalue
@@ -431,9 +431,9 @@ to calibrate the value added by geometric structure.
 Channel & Family & Geometric property & Equation \\
 \midrule
 Berry Phase Rate & Holonomy & U(1) holonomy change rate & \eqref{eq:berry_rate} \\
-Spectral entropy & Spectral & Excitation distribution & \eqref{eq:spectral_entropy} \\
-Hamiltonian sensitivity & State & Perturbation variance & \eqref{eq:ham_sensitivity} \\
-Reduced purity & State & Subsystem separability & \eqref{eq:reduced_purity} \\
+Spectral Entropy & Spectral & Excitation distribution & \eqref{eq:spectral_entropy} \\
+Hamiltonian Sensitivity & State & Perturbation variance & \eqref{eq:ham_sensitivity} \\
+Reduced Purity & State & Subsystem separability & \eqref{eq:reduced_purity} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -446,15 +446,14 @@ between consecutive time steps:
   \dot{\gamma}(t) = |F_{01}(x_t) - F_{01}(x_{t-1})|\,,
 \end{equation}
 where $F_{01}$ is the Berry curvature~\eqref{eq:berry} in PCA
-directions $(0,1)$, computed via the plaquette (Wilson loop) method
-with step size $\epsilon = 10^{-5}$.
+directions $(0,1)$, computed via the plaquette (Wilson loop) method.
 
-\paragraph{Hyperparameters.}  Hilbert dimension~$n$, PCA
+\paragraph{Hyperparameters}  Hilbert dimension~$n$, PCA
 components~$p$, operator method $\in
 \{\text{pca\_inspired},\allowbreak \text{random}\}$, rolling
 window~$w$, minimum expanding history~$m$.
 
-\paragraph{Plaquette computation.}
+\paragraph{Plaquette computation}
 The Berry curvature $F_{ab}$ is computed via the discrete plaquette
 (Wilson loop) method.  For each pair of PCA directions $(a,b)$ at
 point~$x$:
@@ -467,8 +466,7 @@ point~$x$:
     \braket{\psi(x{+}\epsilon e_b)}{\psi(x)}
   \bigr),
 \end{multline}
-with $\epsilon = 10^{-5}$.  This gauge-invariant formula avoids
-explicit phase-fixing~\cite{berry1984,simon1983}.
+This gauge-invariant formula avoids explicit phase-fixing~\cite{berry1984,simon1983}.
 
 \subsection{Spectral Entropy}\label{subsec:spectral_entropy}
 
@@ -485,7 +483,7 @@ achieves mid-range offline separability ($d = 0.53$, rank~12 of 46).
 \subsection{State Dynamics}%
 \label{subsec:ham_sensitivity}\label{subsec:reduced_purity}
 
-\paragraph{Hamiltonian Sensitivity.}
+\paragraph{Hamiltonian Sensitivity}
 Variance of the Hamiltonian perturbation:
 \begin{equation}\label{eq:ham_sensitivity}
   \sigma^2_H(t) = \dbraket{\psi(x_t)}{\Delta H^2}{\psi(x_t)}
@@ -494,7 +492,7 @@ Variance of the Hamiltonian perturbation:
 where $\Delta H = H(x_t) - H(x_{t-1})$.  Large sensitivity signals
 rapid structural change in the error Hamiltonian.
 
-\paragraph{Reduced State Purity.}
+\paragraph{Reduced State Purity}
 Purity of the reduced density matrix:
 \begin{equation}\label{eq:reduced_purity}
   P(t) = \tr(\rho_A^2)\,,\qquad \rho_A = \tr_B(\ket{\psi(x_t)}\bra{\psi(x_t)})\,,
@@ -513,7 +511,7 @@ components~$p$, operator construction method, rolling window~$w$,
 and minimum expanding history~$m$.  Values are tuned per observable
 via the HPO protocol of Section~\ref{subsec:methods_protocol}.
 
-\subsection{Z-Score Thresholding (Algorithm~\ref{alg:zscore})}%
+\subsection{Z-Score Thresholding}%
 \label{subsec:zscore}
 
 All observables are converted to z-scores using a \emph{causal
@@ -568,7 +566,7 @@ z-score computation.
 
 \subsection{Data and Crisis Definitions}\label{subsec:data}
 
-Daily OHLCV data for SPY and DIA (1998--2024) from Yahoo Finance via the \texttt{yfinance} library (v0.2.x).
+We use daily OHLCV data for SPY and DIA (1998--2024) from Yahoo Finance via the \texttt{yfinance} library (v0.2.x).
 Features: log returns, 5/20-day rolling volatility, 5/20-day momentum,
 cross-correlation, and cross-dispersion (13 raw features), enriched to
 52 features via rolling statistics (mean, std, min, max over a
@@ -601,13 +599,13 @@ of the rolling correlation matrix.
 The full hyperparameter search spaces for all methods appear in
 Appendix~\ref{sec:hpo_search}, Table~\ref{tab:protocol}.
 
-\paragraph{Random Forest protocol.}
+\paragraph{Random Forest protocol}
 For each held-out crisis, RF is trained on binary labels (crisis = 1,
 normal = 0) from the remaining crises using leave-one-crisis-out CV.
 Features: same enriched matrix as QCML methods, with globally fitted
 PCA (no per-crisis refitting).
 
-\paragraph{Rolling RF (VIX) protocol.}
+\paragraph{Rolling RF (VIX) protocol}
 To provide a fairer supervised baseline, we train a second RF variant
 on a rolling 250-day window before each crisis using VIX~$> 25$ as a
 continuous binary label.  VIX is used \emph{only} for label construction,
@@ -619,7 +617,7 @@ We also include a VIX Level detector (expanding z-score of raw VIX
 close) as an oracle upper bound, since VIX directly measures implied
 volatility.
 
-\paragraph{Per-crisis causal preprocessing.}
+\paragraph{Per-crisis causal preprocessing}
 For each crisis evaluation, the scaler, PCA, and operators are fitted
 \emph{only on data prior to that crisis window}.  Specifically, the
 causal cutoff is set at crisis start minus 10~calendar days; all
@@ -631,7 +629,7 @@ an effective cutoff of ${\sim}33$ trading days before crisis onset.  Classical b
 on pre-crisis data.  RF uses leave-one-crisis-out labels restricted to
 the causal window.  This eliminates lookahead in preprocessing.
 
-\paragraph{Statistical evaluation.}
+\paragraph{Statistical evaluation}
 Each method--crisis pair: Cohen's~$d$ with block-bootstrap 95\% CI
 ($n = 10{,}000$; block size $= \lceil n^{1/3} \rceil$ per
 Politis \& White~\cite{politis2004}; percentile method).  Financial z-scores may violate
@@ -642,7 +640,7 @@ Individual tests: Welch's $t$-test (Holm--Bonferroni corrected),
 permutation test ($n = 5{,}000$).  Multi-method: Friedman rank test
 with Nemenyi post-hoc pairwise comparisons at $\alpha = 0.05$.
 
-\paragraph{HPO-optimized hyperparameters.}
+\paragraph{HPO-optimized hyperparameters}
 The main results (Table~\ref{tab:aggregate_comparison}) use
 hyperparameters selected via Optuna TPE (100~trials) with a
 consistency penalty
@@ -653,7 +651,7 @@ found that some observables benefit from higher $n$ (up to 16);
 each retains its HPO-optimized or dimension-upgraded value.
 Full search spaces in Appendix~\ref{sec:hpo_search}.
 
-\paragraph{HPO optimism bias.}
+\paragraph{HPO optimism bias}
 Nested cross-validation reveals a mean optimism bias of $+0.415\,d$;
 reported HPO-tuned $d$ values should be interpreted as upper bounds.
 The walk-forward results (Section~\ref{subsec:walkforward})
@@ -683,7 +681,7 @@ machine-learning baselines.
 \end{algorithmic}
 \end{algorithm}
 
-\paragraph{Computational cost.}
+\paragraph{Computational cost}
 Per-step eigensolve cost scales as $O(n^3)$.  At $n = 16$,
 representative timings: Spectral Entropy ${\sim}1$s; Hamiltonian
 Sensitivity ${\sim}1$s; Reduced Purity ${\sim}2$s ($T = 3{,}447$,
@@ -708,7 +706,7 @@ Hamiltonian Sensitivity ($0.60$, rank~10), and Spectral Entropy
 ($0.53$, rank~12).  Random Forest ranks 30th ($0.35$); GARCH(1,1)
 33rd ($0.29$).
 
-The Friedman test ($\chi^2_{45} = 220.8$, $p < 10^{-16}$)
+The Friedman test ($\chi^2_{45} = 220.84$, $p < 10^{-16}$)
 confirms that the 46 methods rank differently.  Nemenyi post-hoc
 (CD $= 18.2$ at $\alpha = 0.05$) finds 105 of 1{,}035 pairwise
 differences significant, but these are concentrated between the
@@ -719,7 +717,7 @@ Cliff's~$\delta$ for the top-10 methods (median $|\delta| = 0.30$,
 range $0.09$--$0.45$) confirms that the $d$-based rankings are
 robust to distributional assumptions.
 
-\paragraph{Null-model robustness.}
+\paragraph{Null-model robustness}
 Crisis-window evaluation with short non-overlapping windows is
 known to over-reward heavy-tailed score series, because the
 median across $K$ random short windows is itself noisy.  We
@@ -759,7 +757,7 @@ observables respond to stress rather than leading it.
 \input{tables/table_comparison}
 \end{table}
 
-\paragraph{Per-crisis variation.}
+\paragraph{Per-crisis variation}
 No single channel dominates all 17~crises.  Descriptively, different
 geometric observables lead on different crisis types: Berry Phase
 Rate wins Volmageddon ($d = 1.05$) and Q4~Selloff ($d = 2.00$),
@@ -863,10 +861,10 @@ the fixed $z > 2$ threshold is dimensionally inapplicable.
 Adaptive thresholds not applicable to RF for the same reason.
 Walk-forward evaluation uses fixed configs ($n = 8$, $p = 10$, $w = 10$)
 with monthly operator refits, distinct from the HPO-tuned configs in
-Table~\ref{tab:aggregate_comparison}.}
+Table~\ref{tab:aggregate_comparison}}
 \end{table}
 
-\paragraph{Walk-forward with nested HPO.}
+\paragraph{Walk-forward with nested HPO}
 The preceding walk-forward results use fixed hyperparameters across all
 windows.  To eliminate \emph{all} hyperparameter look-ahead, we run a
 nested walk-forward HPO: at each expanding window (2005--$y{-}1$),
@@ -936,7 +934,7 @@ hyperparameters across expanding windows: Berry takes $n{=}6$ on
 Berry's 0.25 train--OOS gap is the smallest of the three, which is
 the main reason we lead with it.
 
-\paragraph{Adaptive threshold calibration.}\label{subsec:adaptive_threshold}
+\paragraph{Adaptive threshold calibration}\label{subsec:adaptive_threshold}
 The adaptive strategy combines two independent mechanisms:
 (i)~a \emph{rolling quantile threshold} that sets the alarm level at
 the 95th percentile of scores over a trailing 252-day window
@@ -952,7 +950,7 @@ Geometric methods show competitive median detection delays
 (Multi-Lag Fidelity: 5~days, Berry: 8~days) against RF (10~days)
 and Rolling Vol Z (25~days).
 
-\paragraph{Granger causality caveat.}
+\paragraph{Granger causality caveat}
 Granger tests between QCML observables and market targets
 (90 tests, Bonferroni corrected) show reverse causality
 (market~$\to$~QCML) running stronger than forward: 17/45 vs.\ 6/45.
@@ -991,7 +989,7 @@ greater energy separation; the observables' sensitivity to crises
 arises from state \emph{movement} across the energy landscape rather
 than gap closure.
 
-\paragraph{Curvature--gap bound (Theorem~\ref{thm:curvature_gap}).}
+\paragraph{Curvature--gap bound (Theorem~\ref{thm:curvature_gap})}
 We verify the bound
 $|F_{ab}| \leq C / \Delta^2$ (Eq.~\ref{eq:curv_gap_bound}) by
 computing Berry curvature and $1/\Delta^2$ at 1{,}500 randomly sampled
@@ -1001,7 +999,7 @@ reveals a clear positive relationship between curvature and
 $1/\Delta^2$, confirming that Berry curvature is controlled by the
 spectral gap as predicted by perturbation theory.
 
-\paragraph{Curvature integral quantization (Theorem~\ref{thm:chern}).}
+\paragraph{Curvature integral quantization (Theorem~\ref{thm:chern})}
 Theorem~\ref{thm:chern} guarantees integer Chern numbers on closed
 surfaces.  Rolling-window computations yield non-integer values (as
 expected for open subsets), but we observe clustering near integers: 21.3\%
@@ -1011,7 +1009,7 @@ periods vs.\ 14.9\% during crises
 zero (mean $-0.023$, std $1.58$) with a slight rightward shift during
 crises (median $0.17$ vs.\ $0.02$ normal).
 
-\paragraph{QFI--metric identity (Proposition~\ref{prop:fisher}).}
+\paragraph{QFI--metric identity (Proposition~\ref{prop:fisher})}
 The identity $4\,g_{ab} = [F_Q]_{ab}$ is verified numerically by
 computing both the finite-difference metric
 $g_{ab}$~\eqref{eq:metric} and the perturbation-theory metric
@@ -1061,10 +1059,10 @@ blended both families would be drawing on largely independent
 signals.  Part of Absorption Ratio's offline advantage is probably
 HPO optimism (mean bias $+0.415\,d$;
 Section~\ref{subsec:methods_protocol}).  The walk-forward comparison
-removes that confound, and there Berry Phase Rate produces 30\%
-fewer false alarms than RF.
+removes that confound, and there Berry Phase Rate produces $\sim$67\%
+fewer false alarms than RF (1.2 vs.\ 3.6/yr).
 
-\paragraph{Theorem validation.}
+\paragraph{Theorem validation}
 The spectral gap stays positive throughout 20~years
 ($\Delta_{\min} = 2.34$), guaranteeing smoothness
 (Theorem~\ref{thm:smoothness}).  The curvature--gap bound holds at
@@ -1084,7 +1082,7 @@ no labeled data.  When the next crisis involves unprecedented
 mechanisms, supervised methods have nothing to train on; geometric
 detection channels remain operational.
 
-\paragraph{Ground state energy as detector.}
+\paragraph{Ground state energy as detector}
 The ground state energy
 $E_0(x) = \min_{\|\phi\|=1}\langle\phi|H(x)|\phi\rangle$ is the
 cheapest thing you can compute from the embedding: one
@@ -1097,10 +1095,10 @@ quant crisis and 2019 repo.  It does not track realized volatility
 ($r = -0.05$), so whatever it picks up on the big structural
 events isn't already covered by the other channels.
 
-\paragraph{Risk-management overlay.}
+\paragraph{Risk-management overlay}
 A simple use case for the geometric channel is de-risking.  Long
 SPY by default; when the Berry Phase Rate causal $z$-score
-exceeds 2.0 (the same threshold as the §\ref{subsec:walkforward}
+exceeds 2.0 (the same threshold as the Section~\ref{subsec:walkforward}
 walk-forward), exit to cash for 60 trading days (the median
 post-2005 crisis length).  Over 2005--2024 the buy-and-hold
 portfolio returns 607\% with annualized Sharpe 0.61 and a
@@ -1405,7 +1403,7 @@ is an integer, since it equals the degree of the classifying map
 $S \to \CP^{n-1}$.
 \end{proof}
 
-\paragraph{Caveat.}  In practice, we compute curvature integrals over
+\paragraph{Caveat}  In practice, we compute curvature integrals over
 rolling windows (open subsets), yielding non-integer values.
 Topological protection does not strictly apply.
 
@@ -1705,6 +1703,7 @@ VIX Level          & 1 & min\_expanding = 60 & None (expanding z-score) \\
 \toprule
 Crisis & Period & Category & Rationale \\
 \midrule
+1998 LTCM Crisis      & 1998-08 to 1998-12 & Conventional & Hedge-fund failure / contagion \\
 2000 Dot-com Bust     & 2000-03 to 2000-12 & Conventional & Valuation bubble \\
 2001 September 11     & 2001-09 to 2001-10 & Conventional & Exogenous shock \\
 2007 Quant Meltdown   & 2007-08 to 2007-09 & Conventional & Resembles LTCM \\

@@ -43,8 +43,13 @@ optuna-storage.db
 # Canonical JSON pinned in Makefile CANONICAL_JSON + memory/results_registry.yaml (tracked)
 experiments/outputs/**/*.json
 !experiments/outputs/regime_detection/causal_comparison_20260311_010639.json
+!experiments/outputs/regime_detection/causal_comparison_20260403_155943.json
+!experiments/outputs/regime_detection/walk_forward/wf_bootstrap_ci.json
 !experiments/outputs/fusion/fusion_results_20260304_101523.json
 !experiments/outputs/fusion/fusion_results_20260304_101842.json
+!experiments/outputs/null_model/null_model_results.json
+!experiments/outputs/seed_sensitivity/seed_sensitivity_results.json
+!experiments/outputs/drawdown_overlay/drawdown_overlay_results.json
 experiments/outputs/**/*.log
 experiments/outputs/**/*.png
 experiments/outputs/**/*.pdf

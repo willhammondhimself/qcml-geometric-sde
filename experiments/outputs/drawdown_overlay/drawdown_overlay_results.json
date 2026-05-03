@@ -1,0 +1,113 @@
+{
+  "config": {
+    "start": "2005-01-01",
+    "end": "2024-12-31",
+    "alarm_z": 2.0,
+    "cooldown_days": 60,
+    "rf_label": "VIX > 25",
+    "rf_lookback": 250,
+    "sensitivity_grid_z": [
+      1.5,
+      2.0,
+      2.5
+    ],
+    "sensitivity_grid_cd": [
+      20,
+      60,
+      120
+    ]
+  },
+  "buy_and_hold": {
+    "total_return": 6.0697309061411735,
+    "annual_sharpe": 0.6128146278028411,
+    "max_drawdown": -0.5518944815583032,
+    "n_in_cash": 16,
+    "frac_in_cash": 0.0032044862807931104
+  },
+  "berry_overlay": {
+    "total_return": 4.425667268765366,
+    "annual_sharpe": 0.6993422606754944,
+    "max_drawdown": -0.2713168171300444,
+    "n_in_cash": 1650,
+    "frac_in_cash": 0.3304626477067895
+  },
+  "rf_overlay": {
+    "total_return": 1.2435795363290607,
+    "annual_sharpe": 0.5298966022417771,
+    "max_drawdown": -0.23109084151593465,
+    "n_in_cash": 2422,
+    "frac_in_cash": 0.48507911075505705
+  },
+  "berry_sensitivity": {
+    "z=1.5_cd=20": {
+      "total_return": 3.632755966103681,
+      "annual_sharpe": 0.5741382508000319,
+      "max_drawdown": -0.3793680909530668,
+      "n_in_cash": 1222,
+      "frac_in_cash": 0.2447426396955738
+    },
+    "z=1.5_cd=60": {
+      "total_return": 2.1826163122643942,
+      "annual_sharpe": 0.5521946400163147,
+      "max_drawdown": -0.2713168171300446,
+      "n_in_cash": 2223,
+      "frac_in_cash": 0.44522331263769277
+    },
+    "z=1.5_cd=120": {
+      "total_return": 1.909873218306601,
+      "annual_sharpe": 0.6901932000996933,
+      "max_drawdown": -0.14675959055700544,
+      "n_in_cash": 3318,
+      "frac_in_cash": 0.6645303424794713
+    },
+    "z=2.0_cd=20": {
+      "total_return": 3.298905993066083,
+      "annual_sharpe": 0.520221572778261,
+      "max_drawdown": -0.5232585617799487,
+      "n_in_cash": 816,
+      "frac_in_cash": 0.16342880032044863
+    },
+    "z=2.0_cd=60": {
+      "total_return": 4.425667268765366,
+      "annual_sharpe": 0.6993422606754944,
+      "max_drawdown": -0.2713168171300444,
+      "n_in_cash": 1650,
+      "frac_in_cash": 0.3304626477067895
+    },
+    "z=2.0_cd=120": {
+      "total_return": 4.178409126296395,
+      "annual_sharpe": 0.8867522080029605,
+      "max_drawdown": -0.216253235598572,
+      "n_in_cash": 2603,
+      "frac_in_cash": 0.5213298618065292
+    },
+    "z=2.5_cd=20": {
+      "total_return": 4.555233796811948,
+      "annual_sharpe": 0.5616692588587073,
+      "max_drawdown": -0.5547939464517057,
+      "n_in_cash": 496,
+      "frac_in_cash": 0.09933907470458642
+    },
+    "z=2.5_cd=60": {
+      "total_return": 3.664150286153159,
+      "annual_sharpe": 0.5281286333480909,
+      "max_drawdown": -0.4869872772361949,
+      "n_in_cash": 1039,
+      "frac_in_cash": 0.2080913278590026
+    },
+    "z=2.5_cd=120": {
+      "total_return": 6.415326053343391,
+      "annual_sharpe": 0.7293913181108346,
+      "max_drawdown": -0.3653423616481114,
+      "n_in_cash": 1678,
+      "frac_in_cash": 0.33607049869817746
+    }
+  },
+  "summary": {
+    "berry_dd_reduction_pct_vs_bh": 50.839005245356496,
+    "rf_dd_reduction_pct_vs_bh": 58.12771295276635,
+    "berry_sharpe": 0.6993422606754944,
+    "rf_sharpe": 0.5298966022417771,
+    "bh_sharpe": 0.6128146278028411
+  }
+}

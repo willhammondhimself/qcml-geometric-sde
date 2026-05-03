@@ -1,59 +1,25 @@
 \begin{table}[htbp]
 \centering
-\caption{Aggregate effect sizes across 17 crises (46 methods). Mean and median Cohen's $d$,
-  with number of crises where bootstrap 95\% CI excludes zero.}
+\caption{Aggregate effect sizes across 15 crises (13 methods): mean, median, and maximum Cohen's $d$.}
 \label{tab:aggregate_comparison}
 \small
-\begin{tabular}{lcccc}
+\begin{tabular}{lccc}
 \toprule
-Method & Mean $d$ & Median $d$ & Max $d$ & $n_{\text{sig}}$ \\
+Method & Mean $d$ & Median $d$ & Max $d$ \\
 \midrule
-Reduced Purity & 0.749 & \textbf{0.835} & 1.558 & 17/17 \\
-\textit{Absorption Ratio} & 0.908 & 0.797 & 2.188 & 17/17 \\
-\textit{Hamilton MS} & 0.853 & 0.713 & 1.934 & 17/17 \\
-Commutator Norm & 0.847 & 0.700 & 2.477 & 17/17 \\
-Spectral Gap & 0.756 & 0.653 & 2.342 & 17/17 \\
-Spectral Flow & 0.593 & 0.627 & 1.309 & 17/17 \\
-Speed Limit Ratio & 0.537 & 0.627 & 1.029 & 17/17 \\
-\textit{CUSUM} & 0.736 & 0.625 & 2.155 & 17/17 \\
-Berry Curv.\ Incr. & 0.624 & 0.608 & 1.995 & 17/17 \\
-Ham.\ Sensitivity & 0.673 & 0.598 & 2.071 & 17/17 \\
-\textit{Wasserstein} & 0.642 & 0.535 & 2.118 & 17/17 \\
-Spectral Entropy & 0.562 & 0.530 & 1.708 & 17/17 \\
-Quantum Rel.\ Entropy & 0.606 & 0.498 & 2.523 & 17/17 \\
-Metric Condition & 0.604 & 0.486 & 1.751 & 17/17 \\
-\textit{KL Divergence} & 0.576 & 0.476 & 1.749 & 17/17 \\
-Multi-Lag Fidelity & 0.508 & 0.475 & 1.010 & 17/17 \\
-\textit{Turbulence Index} & 0.876 & 0.475 & 5.112 & 17/17 \\
-QCML Chern & 0.600 & 0.453 & 1.833 & 17/17 \\
-Sect.\ Curv.\ Sign & 0.462 & 0.440 & 1.366 & 17/17 \\
-\textit{Sinkhorn} & 0.692 & 0.439 & 2.645 & 17/17 \\
-Level Spacing Ratio & 0.375 & 0.437 & 0.751 & 17/17 \\
-Spectral Complexity & 0.502 & 0.435 & 1.628 & 17/17 \\
-\textit{Isolation Forest} & 0.805 & 0.429 & 3.556 & 17/17 \\
-Dim.\ Collapse & 0.543 & 0.420 & 1.745 & 17/17 \\
-\textit{Rolling Vol Z} & 0.852 & 0.404 & 5.377 & 17/17 \\
-Geod.\ Curvature & 0.470 & 0.400 & 1.255 & 17/17 \\
-\textit{Mahalanobis} & 0.877 & 0.372 & 4.215 & 17/17 \\
-QFI Determinant & 0.550 & 0.372 & 1.838 & 17/17 \\
-\textit{GARCH(1,1)} & 0.664 & 0.368 & 5.793 & 17/17 \\
-\textit{VIX Level} & 0.840 & 0.365 & 4.544 & 17/17 \\
-Geom.\ Phase Rate & 0.476 & 0.360 & 1.052 & 17/17 \\
-Eff.\ State Dim & 0.417 & 0.358 & 1.097 & 17/17 \\
-\textit{Random Forest} & 0.528 & 0.350 & 2.343 & 17/17 \\
-Geodesic Velocity & 0.367 & 0.311 & 0.841 & 17/17 \\
-\textit{HMM} & 0.314 & 0.310 & 0.572 & 17/17 \\
-\textit{Transfer Entropy} & 0.425 & 0.285 & 1.063 & 17/17 \\
-\textit{Fisher-Rao} & 0.418 & 0.262 & 1.389 & 17/17 \\
-\textit{EWMA Vol} & 0.841 & 0.262 & 6.447 & 17/17 \\
-Curvature Rate & 0.139 & 0.129 & 0.352 & 17/17 \\
-\textit{Structural Break} & 0.202 & 0.121 & 0.795 & 17/17 \\
-Geom.\ Consensus & 0.170 & 0.075 & 0.878 & 17/17 \\
-Geom.\ Ensemble & 0.238 & 0.053 & 0.743 & 17/17 \\
-Sect.\ Curvature & 0.300 & 0.045 & 2.617 & 17/17 \\
-Ricci Scalar & 0.188 & 0.014 & 1.913 & 17/17 \\
-Berry Vel.\ Coupling & 0.125 & 0.012 & 1.542 & 17/17 \\
-QGT Phase Rigidity & 0.014 & 0.012 & 0.047 & 17/17 \\
+Spectral Gap & 0.766 & \textbf{0.653} & 2.342 \\
+\textit{CUSUM} & 0.619 & 0.621 & 1.471 \\
+Berry Phase Rate & 0.606 & 0.608 & 1.995 \\
+Metric Condition & 0.626 & 0.486 & 1.751 \\
+QCML Chern & 0.600 & 0.453 & 1.833 \\
+Multi-Lag Fidelity & 0.457 & 0.446 & 1.010 \\
+\textit{Rolling Vol Z} & 0.779 & 0.395 & 5.377 \\
+QFI Determinant & 0.556 & 0.372 & 1.838 \\
+\textit{Isolation Forest} & 0.777 & 0.368 & 3.556 \\
+\textit{HMM} & 0.348 & 0.350 & 0.572 \\
+\textit{Random Forest} & 0.490 & 0.277 & 2.911 \\
+Geom.\ Consensus & 0.184 & 0.075 & 0.878 \\
+Geom.\ Ensemble & 0.253 & 0.013 & 0.743 \\
 \bottomrule
 \end{tabular}
 \end{table}

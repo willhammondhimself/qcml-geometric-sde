@@ -226,6 +226,38 @@ claims:
     json_path: "rf_overlay.max_drawdown"
     verified: true
 
+  - name: "Drawdown overlay: buy-and-hold total return"
+    section: "6.3 risk-management overlay"
+    paper_value: 6.07
+    tolerance: 0.02
+    source_json: "experiments/outputs/drawdown_overlay/drawdown_overlay_results.json"
+    json_path: "buy_and_hold.total_return"
+    verified: true
+
+  - name: "Drawdown overlay: Berry overlay total return"
+    section: "6.3 risk-management overlay"
+    paper_value: 4.43
+    tolerance: 0.02
+    source_json: "experiments/outputs/drawdown_overlay/drawdown_overlay_results.json"
+    json_path: "berry_overlay.total_return"
+    verified: true
+
+  - name: "Drawdown overlay: RF overlay total return"
+    section: "6.3 risk-management overlay"
+    paper_value: 1.24
+    tolerance: 0.02
+    source_json: "experiments/outputs/drawdown_overlay/drawdown_overlay_results.json"
+    json_path: "rf_overlay.total_return"
+    verified: true
+
+  - name: "Drawdown overlay: Berry overlay cash fraction"
+    section: "6.3 risk-management overlay"
+    paper_value: 0.33
+    tolerance: 0.01
+    source_json: "experiments/outputs/drawdown_overlay/drawdown_overlay_results.json"
+    json_path: "berry_overlay.frac_in_cash"
+    verified: true
+
 # =============================================================================
 # PAPER 2/3 CLAIMS — deferred from Paper 1 restructure (2026-03-21)
 # These claims verified against source JSONs but no longer appear in Paper 1.

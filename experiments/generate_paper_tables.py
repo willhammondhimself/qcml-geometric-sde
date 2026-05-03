@@ -90,7 +90,7 @@ METHOD_CATEGORIES = {
 }
 
 LATEX_NAMES = {
-    'Berry Phase Rate': r"Berry Curv.\ Incr.",
+    'Berry Phase Rate': r"Berry Phase Rate",
     'QFI Determinant': 'QFI Determinant',
     'Multi-Lag Fidelity': 'Multi-Lag Fidelity',
     'QCML Chern': 'QCML Chern',
@@ -365,7 +365,7 @@ def generate_table6(d_matrix, method_names, crisis_keys):
     lines.append(r"\midrule")
 
     latex_short = {
-        'Berry Phase Rate': r"Berry Curv.\ Incr.",
+        'Berry Phase Rate': r"Berry Phase Rate",
         'QFI Determinant': 'QFI Determinant',
         'Multi-Lag Fidelity': 'Multi-Lag Fidelity',
         'CUSUM': 'CUSUM',
