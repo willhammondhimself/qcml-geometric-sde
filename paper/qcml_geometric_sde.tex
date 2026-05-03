@@ -71,17 +71,18 @@ spectral metric learning (QCML) and pull four geometric observables
 off the embedding: Berry Phase Rate, Spectral Entropy, Reduced State
 Purity, and Hamiltonian Sensitivity.
 
-Walk-forward nested HPO gives Berry Phase Rate unbiased
-out-of-sample median $d = 0.72$ (95\% percentile-bootstrap
-CI $[0.34, 1.18]$, 10{,}000 resamples) across 9 labelled
-crises and the highest per-crisis score among the three walk-forward detectors on 5 of 9 crisis windows,
-with $\sim$67\% fewer false alarms than Random Forest and no crisis labels.  On the full
+On 9 labelled crises, walk-forward nested HPO gives Berry
+Phase Rate an unbiased out-of-sample median $d = 0.72$
+(95\% percentile-bootstrap CI $[0.34, 1.18]$, 10{,}000 resamples).
+Berry posts the highest per-crisis $d$ among the three walk-forward
+detectors on 5 of those 9 windows, with $\sim$67\% fewer false alarms
+than Random Forest and no crisis labels.  On the full
 17-crisis panel (2000--2024), Reduced State Purity ($d = 0.83$) ranks
 first of 46~methods and Absorption Ratio~\cite{kritzman2011}
 ($d = 0.80$) is the strongest classical baseline.  Geometric and
 classical channels are largely uncorrelated ($|\rho| \approx 0.13$).
-Three theorems characterizing the embedding geometry hold on the
-same data.
+Three theorems about the embedding geometry are stated and
+verified empirically on the same data.
 \end{abstract}
 
 \begin{keyword}
@@ -99,12 +100,14 @@ geometric observables \sep financial crises \sep QCML
 % =============================================================================
 \section{Introduction}\label{sec:intro}
 
-Financial markets switch between calm trends and violent drawdowns--at times, extremely abruptly.
-Detecting these regime transitions is a core problem in quantitative
-finance.  Hidden Markov Models~\cite{hamilton1989,ang_bekaert2002},
+Financial markets switch between calm trends and violent
+drawdowns, sometimes within a single trading day.  Detecting these
+regime transitions is a core problem in quantitative finance.
+Hidden Markov Models~\cite{hamilton1989,ang_bekaert2002},
 Bayesian Online Changepoint Detection~\cite{adams_mackay2007}, and
-supervised classifiers all work in specific settings, but they are defined on flat Euclidean feature spaces.
-What if we could detect these transitions by measuring the geometry of the data itself?
+supervised classifiers all work in specific settings, but they are
+defined on flat Euclidean feature spaces.  An alternative is to
+measure the geometry of the data itself.
 
 Quantum Cognitive/Cognition Machine Learning
 (QCML; both appear in the literature)~\cite{candelori2025} embeds data as unit vectors in
@@ -163,15 +166,13 @@ selected by ablation (Section~\ref{subsec:operator_ablation}).
   developers~\cite{candelori2025,abanov2025,musaelian2024,samson2024}.
 \end{enumerate}
 
-Offline rankings should be read with care: they measure
-sensitivity, not real-time detection.  Reduced Purity ($d = 0.83$
-offline) is sensitive to bipartition choice and drops to
-$d \approx 0.26$ on frozen holdout, so high offline separability
-does not guarantee out-of-sample stability.  Berry Phase Rate,
-which ranks lower offline ($d = 0.61$), gives the strongest
-walk-forward evidence.  The geometric channels complement existing
-methods~\cite{timmermann2006,bates_granger1969} rather than
-replacing them.
+Offline rankings measure sensitivity, not real-time detection.
+Reduced Purity ($d = 0.83$ offline) is sensitive to bipartition
+choice and drops to $d \approx 0.26$ on frozen holdout, so high
+offline separability does not guarantee out-of-sample stability.
+Berry Phase Rate, which ranks lower offline ($d = 0.61$), gives
+the strongest walk-forward evidence.  The geometric channels
+complement existing methods~\cite{timmermann2006,bates_granger1969}.
 
 \subsection{Related Work}\label{subsec:related}
 
