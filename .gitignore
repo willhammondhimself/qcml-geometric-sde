@@ -72,8 +72,8 @@ paper/review/
 *.swp
 
 # Excluded from public repo
-internal-docs
-tooling/
+CLAUDE.md
+.claude/
 archive/
 demo/
 paper2_staging/
