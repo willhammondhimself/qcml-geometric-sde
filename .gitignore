@@ -50,6 +50,7 @@ experiments/outputs/**/*.json
 !experiments/outputs/null_model/null_model_results.json
 !experiments/outputs/seed_sensitivity/seed_sensitivity_results.json
 !experiments/outputs/drawdown_overlay/drawdown_overlay_results.json
+!experiments/outputs/observatory/observatory_20260228_214412.json
 experiments/outputs/**/*.log
 experiments/outputs/**/*.png
 experiments/outputs/**/*.pdf

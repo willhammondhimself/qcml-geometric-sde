@@ -1,0 +1,252 @@
+{
+  "timestamp": "2026-02-28T21:44:12.207445",
+  "n_crises": 14,
+  "crisis_keys": [
+    "2000_dotcom",
+    "2001_911",
+    "2007_quant",
+    "2008_gfc",
+    "2010_flash",
+    "2011_euro",
+    "2015_china",
+    "2018_volmageddon",
+    "2018_q4",
+    "2019_repo",
+    "2020_covid",
+    "2022_rates",
+    "2023_svb",
+    "2024_carry"
+  ],
+  "detector_stats": {
+    "Berry Phase Rate": {
+      "cohens_d": 0.988,
+      "ci": [
+        0.915,
+        1.065
+      ],
+      "p_value": 3.9891313220084906e-145
+    },
+    "QFI Determinant": {
+      "cohens_d": 0.013,
+      "ci": [
+        0.001,
+        0.072
+      ],
+      "p_value": 0.6677638416864524
+    },
+    "Multi-Lag Fidelity": {
+      "cohens_d": 0.225,
+      "ci": [
+        0.165,
+        0.282
+      ],
+      "p_value": 1.2144738548552653e-13
+    },
+    "Geodesic Velocity": {
+      "cohens_d": 0.131,
+      "ci": [
+        0.066,
+        0.195
+      ],
+      "p_value": 0.00010700971040508651
+    },
+    "Speed Limit Ratio": {
+      "cohens_d": 0.081,
+      "ci": [
+        0.023,
+        0.14
+      ],
+      "p_value": 0.006831813349805413
+    },
+    "Dim. Collapse": {
+      "cohens_d": 0.736,
+      "ci": [
+        0.663,
+        0.812
+      ],
+      "p_value": 6.021344466320178e-79
+    },
+    "Sect. Curv. Sign": {
+      "cohens_d": 0.569,
+      "ci": [
+        0.512,
+        0.626
+      ],
+      "p_value": 4.89033128941211e-84
+    },
+    "Rolling Vol Z": {
+      "cohens_d": 0.534,
+      "ci": [
+        0.452,
+        0.612
+      ],
+      "p_value": 2.3577694524885837e-21
+    }
+  },
+  "orthogonality": {
+    "names": [
+      "Berry Phase Rate",
+      "QFI Determinant",
+      "Multi-Lag Fidelity",
+      "Geodesic Velocity",
+      "Speed Limit Ratio",
+      "Dim. Collapse",
+      "Sect. Curv. Sign",
+      "Rolling Vol Z"
+    ],
+    "matrix": [
+      [
+        1.0,
+        -0.0061063125880254365,
+        0.3172392499659299,
+        0.17568786938921582,
+        0.005723636252957853,
+        -0.5065802550649107,
+        -0.3924828428226531,
+        -0.35900196858427796
+      ],
+      [
+        -0.0061063125880254365,
+        1.0,
+        -0.1635292725952572,
+        -0.14019659545175478,
+        -0.12941469046883328,
+        -0.04373939935756913,
+        0.10413439716472792,
+        0.07599753867696277
+      ],
+      [
+        0.3172392499659299,
+        -0.1635292725952572,
+        1.0,
+        0.45520704030784165,
+        0.3792695662608082,
+        0.0030563586452656616,
+        -0.11730935990222183,
+        -0.3868412437368735
+      ],
+      [
+        0.17568786938921582,
+        -0.14019659545175478,
+        0.45520704030784165,
+        1.0,
+        0.2118247126923543,
+        -0.026704244636268273,
+        -0.07464770291381305,
+        -0.2083099847354956
+      ],
+      [
+        0.005723636252957853,
+        -0.12941469046883328,
+        0.3792695662608082,
+        0.2118247126923543,
+        1.0,
+        0.38368991096061056,
+        -0.153031265732913,
+        -0.3341769017687292
+      ],
+      [
+        -0.5065802550649107,
+        -0.04373939935756913,
+        0.0030563586452656616,
+        -0.026704244636268273,
+        0.38368991096061056,
+        1.0,
+        0.17949413981240775,
+        -0.005917559815949052
+      ],
+      [
+        -0.3924828428226531,
+        0.10413439716472792,
+        -0.11730935990222183,
+        -0.07464770291381305,
+        -0.153031265732913,
+        0.17949413981240775,
+        1.0,
+        0.17338600811176744
+      ],
+      [
+        -0.35900196858427796,
+        0.07599753867696277,
+        -0.3868412437368735,
+        -0.2083099847354956,
+        -0.3341769017687292,
+        -0.005917559815949052,
+        0.17338600811176744,
+        1.0
+      ]
+    ],
+    "mean_abs_rho_geometric": 0.189,
+    "mean_abs_rho_geo_vs_baseline": 0.221
+  },
+  "oracle_fusion": {
+    "per_crisis": {
+      "2000_dotcom": {
+        "best_detector": "Berry Phase Rate",
+        "cohens_d": 0.852
+      },
+      "2001_911": {
+        "best_detector": "Dim. Collapse",
+        "cohens_d": 1.383
+      },
+      "2007_quant": {
+        "best_detector": "Dim. Collapse",
+        "cohens_d": 1.815
+      },
+      "2008_gfc": {
+        "best_detector": "Berry Phase Rate",
+        "cohens_d": 1.751
+      },
+      "2010_flash": {
+        "best_detector": "Berry Phase Rate",
+        "cohens_d": 1.718
+      },
+      "2011_euro": {
+        "best_detector": "Sect. Curv. Sign",
+        "cohens_d": 0.724
+      },
+      "2015_china": {
+        "best_detector": "Dim. Collapse",
+        "cohens_d": 0.946
+      },
+      "2018_volmageddon": {
+        "best_detector": "Multi-Lag Fidelity",
+        "cohens_d": 1.174
+      },
+      "2018_q4": {
+        "best_detector": "Dim. Collapse",
+        "cohens_d": 1.238
+      },
+      "2019_repo": {
+        "best_detector": "Multi-Lag Fidelity",
+        "cohens_d": 0.594
+      },
+      "2020_covid": {
+        "best_detector": "Dim. Collapse",
+        "cohens_d": 1.623
+      },
+      "2022_rates": {
+        "best_detector": "Berry Phase Rate",
+        "cohens_d": 1.282
+      },
+      "2023_svb": {
+        "best_detector": "Berry Phase Rate",
+        "cohens_d": 1.451
+      },
+      "2024_carry": {
+        "best_detector": "Sect. Curv. Sign",
+        "cohens_d": 1.028
+      }
+    },
+    "oracle_d": 0.316,
+    "oracle_ci": [
+      0.24,
+      0.393
+    ]
+  },
+  "complementarity": {
+    "n_geometric_channels": 7,
+    "mean_intra_geometric_abs_rho": 0.189,
+    "mean_geo_vs_baseline_abs_rho": 0.221
+  }
+}
