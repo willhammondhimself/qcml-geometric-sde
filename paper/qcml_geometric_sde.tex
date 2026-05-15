@@ -42,17 +42,33 @@
 \DeclareMathOperator*{\argmin}{arg\,min}
 
 % =============================================================================
+% --- Anonymization switch for double-blind submission ---------------------
+% Default: identified version (no command-line define).
+% For the anonymous PDF, compile with the \anonsubmission flag, e.g.:
+%   pdflatex "\def\anonsubmission{}\input{qcml_geometric_sde.tex}"
+% or via the Makefile target:
+%   make paper-anon
+\newif\ifanonymous
+\ifx\anonsubmission\undefined
+  \anonymousfalse
+\else
+  \anonymoustrue
+\fi
+% --------------------------------------------------------------------------
 \begin{document}
 
 \begin{frontmatter}
 
 \title{Geometric Observables for Financial Regime Detection}
 
-\author[pitzer]{Will Hammond}
-\ead{whammond@pitzer.edu}
-
-\affiliation[pitzer]{organization={Pitzer College},
-  city={Claremont}, state={CA}, country={USA}}
+\ifanonymous
+  \author{Anonymous Author}
+\else
+  \author[pitzer]{Will Hammond}
+  \ead{whammond@pitzer.edu}
+  \affiliation[pitzer]{organization={Pitzer College},
+    city={Claremont}, state={CA}, country={USA}}
+\fi
 
 % highlights removed for submission
 % \begin{highlights}
@@ -66,29 +82,29 @@
 % ABSTRACT
 % =============================================================================
 \begin{abstract}
-We embed financial time series into a projective Hilbert space via
-spectral metric learning (QCML) and pull four geometric observables
-off the embedding: Berry Phase Rate, Spectral Entropy, Reduced State
-Purity, and Hamiltonian Sensitivity.
-
-On 9 labelled crises, walk-forward nested HPO gives Berry
-Phase Rate an unbiased out-of-sample median $d = 0.72$
-(95\% percentile-bootstrap CI $[0.34, 1.18]$, 10{,}000 resamples).
-Berry posts the highest per-crisis $d$ among the three walk-forward
-detectors on 5 of those 9 windows, with $\sim$67\% fewer false alarms
-than Random Forest and no crisis labels.  On the full
-17-crisis panel (2000--2024), Reduced State Purity ($d = 0.83$) ranks
-first of 46~methods and Absorption Ratio~\cite{kritzman2011}
-($d = 0.80$) is the strongest classical baseline.  Geometric and
-classical channels are largely uncorrelated ($|\rho| \approx 0.13$).
-Three theorems about the embedding geometry are stated and
-verified empirically on the same data.
+We extract four geometric observables---Berry Phase Rate, Spectral
+Entropy, Reduced State Purity, and Hamiltonian Sensitivity---from a
+learned spectral embedding of equity-index returns and evaluate them
+as regime-shift detectors against 46 classical and machine-learning
+baselines on 17 historical crises spanning 2000--2024.  Under
+walk-forward nested hyperparameter selection on nine labelled windows,
+the Berry Phase Rate achieves an unbiased out-of-sample median
+Cohen's $d = 0.72$ (95\% percentile-bootstrap CI $[0.34, 1.18]$,
+10{,}000 resamples) and produces approximately 67\% fewer false alarms
+per year than a label-supervised Random Forest (1.2 vs.\ 3.6 per year).
+Reduced State Purity attains the highest in-sample separability of
+any method ($d = 0.83$), tied closely by the Absorption
+Ratio~\cite{kritzman2011} ($d = 0.80$); geometric and classical
+channels are largely uncorrelated (mean $|\rho| \approx 0.22$), suggesting
+they capture distinct risk signals.  Score construction is
+unsupervised; hyperparameter selection is the only supervised step.
 \end{abstract}
 
 \begin{keyword}
-spectral metric learning \sep regime detection \sep
-Berry curvature \sep quantum Fisher information \sep Fubini--Study metric \sep
-geometric observables \sep financial crises \sep QCML
+regime detection \sep financial crises \sep walk-forward validation \sep
+false-alarm rate \sep Berry curvature \sep Fubini--Study metric \sep
+quantum Fisher information \sep spectral metric learning \sep
+geometric observables \sep QCML
 \end{keyword}
 
 \end{frontmatter}
@@ -110,18 +126,14 @@ defined on flat Euclidean feature spaces.  An alternative is to
 measure the geometry of the data itself.
 
 Quantum Cognitive/Cognition Machine Learning
-(QCML; both appear in the literature)~\cite{candelori2025} embeds data as unit vectors in
-$\CP^{n-1}$ and represents features as Hermitian operators.
-Everything runs on classical hardware; ``quantum'' is referring to
-the Hilbert-space formalism, not quantum computing.  The embedding
-endows the data manifold with a Fubini--Study metric, Berry curvature,
-spectral gap, and quantum Fisher information.  Candelori et
-al.~\cite{candelori2025} proved that the metric's eigenvalue spectrum
-captures intrinsic manifold dimension; Abanov et
-al.~\cite{abanov2025} developed the mathematical theory.  The
-geometric observables we extract measure deformations of a manifold
-whose metric $g(x)$ captures the underlying data geometry
-(Section~\ref{subsec:intrinsic_dim}).
+(QCML; both appear in the literature)~\cite{candelori2025,abanov2025}
+embeds data as unit vectors in a finite-dimensional complex space and
+represents features as Hermitian operators.  The construction equips
+the data manifold with a learned metric, a curvature, and a spectral
+gap---geometric quantities that respond to deformations in the
+data-generating process (Section~\ref{subsec:intrinsic_dim}).
+Everything runs on classical hardware; ``quantum'' refers to the
+Hilbert-space formalism, not quantum computing.
 
 The QCML embedding yields four geometric observables, Berry
 Phase Rate, Spectral Entropy, Reduced State Purity, and Hamiltonian
@@ -137,19 +149,17 @@ prediction.  Walk-forward evaluation
 strictly past-fitted preprocessing.
 
 \paragraph{Supervision level}
-Score construction is unsupervised; no crisis labels are needed for
-z-scores (Algorithm~\ref{alg:zscore}).  But the pipeline is
-\emph{semi-supervised}: hyperparameters are selected via Optuna TPE
-with crisis labels as the optimization objective.  Hilbert dimension
-ranges from $n = 4$ to $n = 16$ per observable; operator method is
-selected by ablation (Section~\ref{subsec:operator_ablation}).
+Score construction is unsupervised (Algorithm~\ref{alg:zscore}); the
+pipeline is \emph{semi-supervised} only because hyperparameters are
+selected against crisis labels (Section~\ref{subsec:operator_ablation}).
 
 \paragraph{Contributions}
 \begin{enumerate}
-\item \textbf{Walk-forward detection.}  Nested HPO yields Berry Phase
-  Rate OOS median $d = 0.72$ (CI $[0.34, 1.18]$; highest per-crisis Cohen's $d$ among the three walk-forward detectors---Berry, QFI, MLF
-  on five of nine crises), with $\sim$67\% fewer false alarms than Random Forest (RF)
-  (1.2 vs.\ 3.6/yr), without requiring crisis labels.
+\item \textbf{Walk-forward detection.}  Nested HPO yields a Berry
+  Phase Rate OOS median $d = 0.72$ (CI $[0.34, 1.18]$), the highest
+  per-crisis Cohen's $d$ among three walk-forward detectors on
+  five of nine crises, with $\sim$67\% fewer false alarms than
+  Random Forest (1.2 vs.\ 3.6 per year) and no crisis labels.
 
 \item \textbf{QCML geometric framework.}  Four geometric observables
   from a single embedding, each probing a different property of the
@@ -161,18 +171,23 @@ selected by ablation (Section~\ref{subsec:operator_ablation}).
   remaining geometric channels ($d = 0.53$--$0.61$) contribute
   orthogonal crisis coverage.
 
-\item \textbf{Independent evaluation.}  The first academic evaluation
-  of QCML geometry outside the framework's own
-  developers~\cite{candelori2025,abanov2025,musaelian2024,samson2024}.
+\item \textbf{Risk-overlay viability.}  Out-of-sample false-alarm
+  rates of $\sim$1.2/yr for the Berry channel are low enough to
+  support a practitioner risk-management overlay; a SPY de-risking
+  experiment (Section~\ref{subsec:overlay}) cuts maximum drawdown by
+  $\sim$51\% with no degradation in Sharpe ratio.
 \end{enumerate}
 
-Offline rankings measure sensitivity, not real-time detection.
-Reduced Purity ($d = 0.83$ offline) is sensitive to bipartition
-choice and drops to $d \approx 0.26$ on frozen holdout, so high
-offline separability does not guarantee out-of-sample stability.
-Berry Phase Rate, which ranks lower offline ($d = 0.61$), gives
-the strongest walk-forward evidence.  The geometric channels
-complement existing methods~\cite{timmermann2006,bates_granger1969}.
+\paragraph{Scope and limitations}
+Offline rankings measure crisis-window sensitivity, not real-time
+detection.  Reduced Purity ($d = 0.83$ offline) is sensitive to
+bipartition choice and drops to $d \approx 0.26$ on frozen holdout,
+so high offline separability does not guarantee out-of-sample
+stability; Berry Phase Rate, which ranks lower offline
+($d = 0.61$), gives the strongest walk-forward evidence and is the
+load-bearing OOS claim of this paper.  The geometric channels
+complement, rather than replace, existing
+methods~\cite{timmermann2006,bates_granger1969}.
 
 \subsection{Related Work}\label{subsec:related}
 
@@ -790,10 +805,10 @@ deferred to a companion paper.
 \emph{QFI Determinant} ($\log\det\mathcal{F}$) is the total
 statistical volume of the quantum Fisher information matrix,
 which spikes when many features become simultaneously
-distinguishable.  \emph{Multi-Lag Fidelity}
-($\min_{l=1,\ldots,k} |\langle\psi_t|\psi_{t-l}\rangle|^2$) is the
-minimum overlap between the current ground state and its lagged
-copies, which drops when the embedding state evolves rapidly.
+distinguishable.  \emph{Multi-Lag Fidelity},
+defined as $\min_{l=1,\ldots,k} |\langle\psi_t|\psi_{t-l}\rangle|^2$,
+is the minimum overlap between the current ground state and its
+lagged copies, and drops when the embedding state evolves rapidly.
 
 An expanding-window fit (always starting 2005) with 1-year evaluation
 windows produces 7 crisis--window evaluation pairs across 5 years
@@ -1014,13 +1029,17 @@ crises (median $0.17$ vs.\ $0.02$ normal).
 The identity $4\,g_{ab} = [F_Q]_{ab}$ is verified numerically by
 computing both the finite-difference metric
 $g_{ab}$~\eqref{eq:metric} and the perturbation-theory metric
-$g_{ab}^{\text{PT}} = \text{Re}\sum_{n \geq 1}
-\langle\psi_0|\partial_a H|\psi_n\rangle
-\langle\psi_n|\partial_b H|\psi_0\rangle / (E_n - E_0)^2$
+\begin{equation}\label{eq:gab_pt}
+  g_{ab}^{\text{PT}}
+  = \mathrm{Re}\sum_{n \geq 1}
+    \frac{\langle\psi_0|\partial_a H|\psi_n\rangle
+          \langle\psi_n|\partial_b H|\psi_0\rangle}
+         {(E_n - E_0)^2}
+\end{equation}
 at 500~random time steps (Figure~\ref{fig:qfi_metric}).  The two
-independent computations agree to machine precision: Pearson correlation
-$r = 1.000000$, RMSE $= 1.84 \times 10^{-11}$, relative error 95th
-percentile $= 7.8 \times 10^{-11}$.  This confirms that the quantum
+independent computations agree to machine precision: Pearson
+correlation $r = 1.000000$, RMSE $= 1.84 \times 10^{-11}$,
+95th-percentile relative error $= 7.8 \times 10^{-11}$.  This confirms that the quantum
 metric is exactly one-quarter of the QFI matrix, validating
 Proposition~\ref{prop:fisher}.
 
@@ -1053,7 +1072,7 @@ across the board.
 
 What the geometry adds is \emph{orthogonal} information.
 Cross-correlations between QCML observables and classical baselines
-sit at $|\rho| \approx 0.13$: the Fubini--Study metric, Berry
+sit at mean $|\rho| \approx 0.22$: the Fubini--Study metric, Berry
 curvature, and spectral structure pick up aspects of the data
 manifold that covariance-based methods can't see.  A composite that
 blended both families would be drawing on largely independent
@@ -1096,7 +1115,7 @@ quant crisis and 2019 repo.  It does not track realized volatility
 ($r = -0.05$), so whatever it picks up on the big structural
 events isn't already covered by the other channels.
 
-\paragraph{Risk-management overlay}
+\paragraph{Risk-management overlay}\label{subsec:overlay}
 A simple use case for the geometric channel is de-risking.  Long
 SPY by default; when the Berry Phase Rate causal $z$-score
 exceeds 2.0 (the same threshold as the Section~\ref{subsec:walkforward}
@@ -1193,7 +1212,7 @@ alarms than Random Forest and no crisis labels.  That's the main
 result.  Offline, Reduced State Purity leads the 46-method ranking
 and then collapses on holdout; Absorption Ratio ($d = 0.80$) remains
 the strongest classical baseline.  Geometric and classical channels
-are largely uncorrelated ($|\rho| \approx 0.13$), and no single
+are largely uncorrelated (mean $|\rho| \approx 0.22$), and no single
 channel dominates all 17~crises ($p = 0.31$ for specialization).
 All three theorems and the Fisher information identity hold on real
 market data.
@@ -1300,19 +1319,29 @@ library (v0.2.x), freely available at no cost.  All results are fully
 reproducible without any paid subscription.  Researchers with
 institutional access may alternatively use WRDS CRSP data via the
 provided \texttt{wrds\_data\_loader.py} script.  The
-\texttt{qcml\_geometry/} library and all experiment scripts are
-available at \url{https://github.com/willhammondhimself/qcml-geometric-sde}.  Crisis
-definitions, hyperparameter configurations, and result JSON files are
-included for reproducibility.
+\texttt{qcml\_geometry/} library and all experiment scripts,
+together with crisis definitions, hyperparameter configurations,
+and canonical result JSON files, are
+\ifanonymous
+available in a public repository (URL withheld for double-blind
+review; will be provided upon acceptance).
+\else
+available at\\
+\url{https://github.com/willhammondhimself/qcml-geometric-sde}.
+\fi
 
 % =============================================================================
 % ACKNOWLEDGMENTS
 % =============================================================================
+\ifanonymous
 \section*{Acknowledgments}
-
+Acknowledgments withheld for double-blind review.
+\else
+\section*{Acknowledgments}
 The author thanks Dr.\ Trung Phan for advising this research.
 Market data were accessed via the open-source \texttt{yfinance}
 library and the Wharton Research Data Services (WRDS) platform.
+\fi
 
 % =============================================================================
 % COMPETING INTERESTS
@@ -1438,23 +1467,25 @@ denominator satisfies $(E_n - E_0)^2 \geq \Delta^2$.  Hence
   \bigl|\dbraket{\psi_n}{\partial_b H}{\psi_0}\bigr|\,.
 \]
 By the Cauchy--Schwarz inequality on the sum,
-\[
+\begin{multline*}
   \sum_{n \geq 1}
   \bigl|\dbraket{\psi_0}{\partial_a H}{\psi_n}\bigr|\;
-  \bigl|\dbraket{\psi_n}{\partial_b H}{\psi_0}\bigr|
+  \bigl|\dbraket{\psi_n}{\partial_b H}{\psi_0}\bigr| \\
   \leq
   \Bigl(\sum_{n \geq 1}
   \bigl|\dbraket{\psi_0}{\partial_a H}{\psi_n}\bigr|^2\Bigr)^{1/2}
   \Bigl(\sum_{n \geq 1}
   \bigl|\dbraket{\psi_n}{\partial_b H}{\psi_0}\bigr|^2\Bigr)^{1/2}.
-\]
+\end{multline*}
 By the completeness relation
 $\sum_{n \geq 0}\ket{\psi_n}\bra{\psi_n} = I$, each factor is
-bounded by the operator norm:
-$\sum_{n \geq 1}|\dbraket{\psi_0}{\partial_a H}{\psi_n}|^2
-\leq \|\partial_a H\,\ket{\psi_0}\|^2
-\leq \|\partial_a H\|_{\mathrm{op}}^2$.
-Combining yields~\eqref{eq:curv_gap_bound}.
+bounded by the operator norm,
+\[
+  \sum_{n \geq 1}|\dbraket{\psi_0}{\partial_a H}{\psi_n}|^2
+  \leq \|\partial_a H\,\ket{\psi_0}\|^2
+  \leq \|\partial_a H\|_{\mathrm{op}}^2,
+\]
+which combined with the previous inequality yields~\eqref{eq:curv_gap_bound}.
 \end{proof}
 
 \begin{proposition}[QFI volume]\label{prop:qfi_volume}

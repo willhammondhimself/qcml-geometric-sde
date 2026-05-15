@@ -1,0 +1,285 @@
+# =============================================================================
+# Pre-registration: Berry holonomy via Wilson loop product on MPD-simulated paths
+# =============================================================================
+# Committed:    2026-05-15
+# Author:       Will Hammond (with (redacted))
+# Status:       PRE-REGISTERED — success criteria and failure conditions are
+#               LOCKED before any holonomy code runs. Do not edit post-hoc.
+# Plan:         ~/tooling/plans/continue-iridescent-brooks.md
+# Predecessor:  experiments/designs/20260514_qcml_abm_matched_regime.yaml
+#               (Angle 2 — gate failed Day 1; informs why this angle bypasses
+#                matching entirely via the topological-impossibility argument)
+# =============================================================================
+
+experiment_id: qcml_berry_holonomy_v1
+date_committed: 2026-05-15
+project: qcml-geometric-sde
+angle: 1  # of 5 candidate sprint angles
+sprint_day: 2  # Day 2 of 3-day novelty-search budget
+
+# -----------------------------------------------------------------------------
+# Research question
+# -----------------------------------------------------------------------------
+question: >
+  Does the closed-loop Berry phase of the QCML quasi-coherent state, computed
+  as a Wilson loop product over the per-timestep wavefunctions along an MPD
+  simulation, distinguish Type-II-heavy (behavioural cascade) from
+  Type-III-heavy (noise) runs — a contrast that no scalar classical detector
+  can replicate, by Stokes' theorem?
+
+topological_argument: >
+  The Berry connection A_mu(x) = i<psi(x) | d_mu psi(x)> is a 1-form on the
+  data manifold whose curl (Berry curvature F = dA) is generically non-zero.
+  For any classical scalar detector f(x), the natural analogous 1-form is df
+  itself — which is exact, so oint(df) = 0 around any closed loop by Stokes.
+  Therefore "Berry phase distribution differs between Type-II and Type-III
+  sim runs" is, by construction, IMPOSSIBLE to replicate with any scalar
+  classical detector. The matching/confounding fight Angle 2 lost at the gate
+  is sidestepped — there is no classical baseline to control for, because
+  every classical scalar's closed-loop integral is exactly zero. The
+  empirical question is purely "does γ have measurable signal on MPD sims?"
+
+# -----------------------------------------------------------------------------
+# Hypotheses
+# -----------------------------------------------------------------------------
+hypotheses:
+  H0: >
+    Per-run closed-loop Berry phase γ (and its absolute value |γ|, and the
+    per-run mean of windowed sub-loop |γ_w|) shows |Cohen's d| <= 0.3 between
+    Type-II-heavy and Type-III-heavy MPD runs.
+  H1: >
+    At least one of {γ, |γ|, mean|γ_w|} separates the two groups with
+    |Cohen's d| >= 0.5 AND Holm-corrected p < 0.05 AND direction-consistent
+    in >= 4/5 operator bases.
+
+# -----------------------------------------------------------------------------
+# Per-run scalar definition (3 candidate statistics, all pre-registered)
+# -----------------------------------------------------------------------------
+per_run_scalars:
+  - name: gamma
+    description: >
+      Berry phase around the closed temporal loop:
+      W = <psi_{T-1} | psi_0> * Π_{t=0..T-2} <psi_t | psi_{t+1}>
+      γ = Im log W (gauge-invariant; computed in log-space to avoid underflow)
+  - name: abs_gamma
+    description: absolute value of the same γ
+  - name: mean_abs_gamma_window
+    description: >
+      Mean over non-overlapping 252-step sub-windows of |γ_w|, where γ_w is
+      the Wilson-loop phase computed inside each sub-window (closed by the
+      window's end-to-start overlap). Tests whether the signal lives at the
+      year-scale rather than the full-run scale.
+
+per_point_wavefunction:
+  source: qcml_geometry.core.QCMLGeometry.quasi_coherent_state
+  output_shape: (hilbert_dim,)  # unit-normalised complex vector
+  signature: "quasi_coherent_state(x: ndarray) -> ndarray"
+
+wilson_loop_implementation:
+  arithmetic: log-space  # log|<psi_t|psi_{t+1}>| accumulated; phase accumulated separately
+  reason: "T=2520 product of |z|<=1 complex numbers underflows in direct product"
+
+# -----------------------------------------------------------------------------
+# Sample (frozen — no new simulations)
+# -----------------------------------------------------------------------------
+sample:
+  source_file: data/abm_pool/abm_pool_v1.parquet
+  source_sha_constraint: must match the pool's stored design_yaml_sha256 OR
+                          the experiment must emit a warning and proceed only
+                          if the SHA mismatch is explicitly logged.
+  n_runs_total: 3000
+  n_per_group: 1500  # 1500 type_ii_heavy + 1500 type_iii_heavy
+  matching: none  # see topological_argument above
+  T_per_run: 2520  # 10 trading years
+
+# -----------------------------------------------------------------------------
+# Embedding pipeline (identical to Angle 2 — only the summary statistic changes)
+# -----------------------------------------------------------------------------
+embedding:
+  feature_builder: experiments/data_loader.py::create_feature_matrix_single_asset
+  scaler: sklearn.preprocessing.StandardScaler
+  reducer: sklearn.decomposition.PCA(n_components=8, random_state=42)
+  geometry:
+    class: qcml_geometry.core.QCMLGeometry
+    hilbert_dim: 6
+    n_pca_components: 8
+  training_subsample:
+    mode: balanced_random
+    n_per_group: 200
+    held_out_from_test_set: true
+    seed: 42
+
+multi_basis:
+  pattern: |
+    geo.operators = make_basis(offset, n_features, hilbert_dim)
+    geo.is_fitted = True
+  source: experiments/endo_exo_robustness_v2.py:74-95
+  n_bases: 5
+  seed_offsets: [0, 100, 200, 300, 400]
+
+# -----------------------------------------------------------------------------
+# Day-1 smoke test (LOCKED decision rule)
+# -----------------------------------------------------------------------------
+smoke_test:
+  n_per_group: 100
+  random_seed: 42
+  statistic: gamma  # primary statistic for smoke decision
+  decision_rule:
+    proceed:
+      both_required:
+        - median_abs_cohens_d_across_bases >= 0.3
+        - bases_agreeing_on_sign >= 4
+    stop:
+      any_of:
+        - median_abs_cohens_d_across_bases < 0.3
+        - bases_agreeing_on_sign < 4
+
+# -----------------------------------------------------------------------------
+# Statistical tests (full run)
+# -----------------------------------------------------------------------------
+stats:
+  primary:
+    test: welch_t_two_sided
+    alpha: 0.05
+  secondary:
+    - mannwhitney_u_two_sided
+  effect_size: cohens_d
+  bootstrap:
+    method: percentile
+    n_resamples: 10000
+    ci: 0.95
+    seed: 42
+  multiple_comparison_correction:
+    method: holm_bonferroni
+    family_size: 15  # 5 bases x 3 statistics
+
+# -----------------------------------------------------------------------------
+# Classical-loop sanity check (Stokes verification, mandatory)
+# -----------------------------------------------------------------------------
+classical_sanity_check:
+  required: true
+  abort_if_fail: true
+  max_acceptable_value: 1.0e-10
+  detectors:
+    - rolling_vol_z
+    - hmm_2_state_posterior
+    - random_forest_prob
+  loop_integral_definition: |
+    For per-timestep score f_t (length T):
+      I_loop(f) = sum_{t=0..T-2} (f_{t+1} - f_t) + (f_0 - f_{T-1})
+              = (f_{T-1} - f_0) + (f_0 - f_{T-1}) = 0  (algebraically)
+  purpose: >
+    The integral is identically zero by construction. Computing and reporting
+    it for each run makes the topological-impossibility argument auditable in
+    the output JSON: any reviewer can verify the claim themselves.
+
+# -----------------------------------------------------------------------------
+# Success / failure criteria (LOCKED)
+# -----------------------------------------------------------------------------
+success_criteria:
+  STRONG:
+    description: >
+      At least one statistic in {gamma, |gamma|, mean|gamma_w|} clears the bar
+      at EVERY basis offset (5/5 cells significant + |d|>=0.5).
+    conditions_all_required:
+      - any_statistic_clears_at_all_5_bases: true
+      - classical_sanity_check_max_value <= 1.0e-10
+    action: >
+      Write up as Paper 1 headline / JFE-Oxford-grade candidate. Add per-basis
+      Cohen's d rows to memory/results_registry.yaml; confirm make verify.
+  MEDIUM:
+    description: >
+      One statistic clears the bar in 2-3 bases AND classical sanity passes.
+    conditions_all_required:
+      - bases_clearing_bar_for_some_statistic_in: [2, 3, 4]
+      - classical_sanity_check_max_value <= 1.0e-10
+    action: >
+      QF companion section, honest framing as "path-dependence detection in
+      principle; basis-fragile in practice."
+  WEAK_OR_NULL:
+    description: >
+      No statistic clears the bar at >=4 bases, OR classical sanity fails.
+    conditions_any:
+      - max_bases_clearing_bar_for_any_statistic <= 1
+      - classical_sanity_check_max_value > 1.0e-10  # then bug, not finding
+    action: >
+      Ship pre-sprint paper to QF. Document Angle 1 in internal-docs sprint history
+      as "tested on controlled MPD substrate, empirically silent under
+      multi-basis robustness."
+
+# -----------------------------------------------------------------------------
+# Void conditions (no goalpost-moving)
+# -----------------------------------------------------------------------------
+void_conditions:
+  - Wilson-loop product underflows in linear arithmetic — must use log-space.
+    If log-space STILL produces NaN/Inf, implementation bug; fix, do not
+    reinterpret.
+  - Classical sanity check returns nonzero loop integrals — implementation bug;
+    DO NOT REPORT any QCML result until the classical loop integral verifies
+    to zero (this is checking the code, not the theorem).
+  - quasi_coherent_state returns non-unit-norm vectors — bug in core.py; fix.
+
+# -----------------------------------------------------------------------------
+# Power / runtime
+# -----------------------------------------------------------------------------
+power_analysis:
+  effect_size_target: 0.5
+  alpha: 0.05
+  two_sided: true
+  n_per_group: 1500
+  power_at_d_03: ">0.999"
+  power_at_d_02: ">0.94"
+
+runtime_estimates:
+  smoke_test_full: "~5 minutes (200 runs x 5 bases x 130ms)"
+  full_holonomy_pass: "~35 minutes (3000 runs x 5 bases x 130ms)"
+  classical_sanity_check: "<2 minutes"
+  stats + bootstrap: "<5 minutes"
+  total_wall: "<50 minutes"
+
+abort_discipline:
+  smoke_decision_by: "end of session, ~2 hours from start"
+  full_run_decision_by: "end of Day 2"
+  day_3_default: "WEAK_OR_NULL -> ship paper"
+
+# -----------------------------------------------------------------------------
+# Pre-registration checklist
+# -----------------------------------------------------------------------------
+pre_registration_checklist:
+  - hypotheses_specified_before_data: true
+  - per_run_scalar_definitions_locked: true
+  - success_criteria_falsifiable: true
+  - failure_conditions_defined: true
+  - void_conditions_defined: true
+  - multi_basis_robustness_required: true
+  - classical_sanity_check_required: true
+  - smoke_decision_rule_locked: true
+  - sample_frozen_and_disjoint_from_test: true
+
+# -----------------------------------------------------------------------------
+# Output artifacts
+# -----------------------------------------------------------------------------
+output:
+  json_path: experiments/outputs/diagnostics/qcml_berry_holonomy.json
+  must_contain:
+    - pool_metadata_echo
+    - design_yaml_sha256
+    - smoke_summary:
+        - per_basis_cohens_d
+        - bases_agreeing_on_sign
+        - smoke_decision
+    - full_results (if smoke passed):
+        - per_basis_per_statistic:
+            - welch_p
+            - mwu_p
+            - cohens_d
+            - bootstrap_ci_95
+            - mean_a
+            - mean_b
+        - holm_corrected_pvalues
+        - direction_consistency_per_statistic
+    - classical_loop_sanity:
+        - per_detector_max_abs_loop_integral
+        - pass: bool
+    - aggregate_verdict: [STRONG, MEDIUM, WEAK_OR_NULL]
+    - wall_seconds

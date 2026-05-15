@@ -1,0 +1,285 @@
+# =============================================================================
+# Pre-registration: QCML geometry on vol/moment-matched ABM regimes
+# =============================================================================
+# Committed: 2026-05-14
+# Author: Will Hammond (with (redacted))
+# Status: PRE-REGISTERED — success criteria and failure conditions are LOCKED
+#         before any experiment code runs. Do not edit post-hoc.
+# Plan:   ~/tooling/plans/continue-iridescent-brooks.md
+# =============================================================================
+
+experiment_id: qcml_abm_matched_regime_v1
+date_committed: 2026-05-14
+project: qcml-geometric-sde
+angle: 2  # of 5 candidate sprint angles
+predecessor_failures:
+  - endo_exo_robustness_suite (0/25 cells; small-N + single-cell artifact)
+  - curvature_drawdown_multi_asset (N=15 → N=75 sample-size artifact)
+  - berry_vol_incremental (significant but not novel-and-unique)
+
+# -----------------------------------------------------------------------------
+# Research question
+# -----------------------------------------------------------------------------
+question: >
+  Does QCML geometry separate ABM-simulated market runs whose imposed
+  population-mix ground truth is Type-II-heavy (behavioural cascade) vs
+  Type-III-heavy (noise), when the two groups are statistically indistinguishable
+  on all classical return statistics a vol/correlation/HMM/RF detector would use?
+
+framing_rationale: >
+  Every prior sprint angle died of the same disease: N=15 historical crises,
+  post-hoc/uncertain ground truth, single-cell artifacts. The MPD simulator
+  imposes regime labels causally, so N is no longer the bottleneck and a
+  controlled experiment is possible. The naive "Type-II vs Type-III" test is
+  trivially classical-solvable (AC(1) is 0.88 vs 0.01 on default params), so the
+  load-bearing test must MATCH the two groups on the moments classical methods
+  consume. Whatever QCML still separates after matching is, by construction,
+  inaccessible to vol/correlation/HMM/RF.
+
+# -----------------------------------------------------------------------------
+# Hypotheses
+# -----------------------------------------------------------------------------
+hypotheses:
+  H0: >
+    On vol/moment-matched Type-II vs Type-III runs, all QCML observables show
+    |Cohen's d| <= 0.3 (no separation beyond matched classical features).
+  H1: >
+    >=3 of 5 QCML observables separate matched Type-II vs Type-III with
+    |Cohen's d| >= 0.5 AND Holm-Bonferroni-corrected p < 0.05, while all 3
+    classical negative-control detectors stay |d| <= 0.3 (p > 0.05).
+
+# -----------------------------------------------------------------------------
+# Variables
+# -----------------------------------------------------------------------------
+independent_variable:
+  name: group_label
+  type: categorical
+  values: [type_ii_heavy, type_iii_heavy]
+  source: imposed by population mix (p1,p2,p3); causally guaranteed.
+
+dependent_variables:
+  primary: per_run_scalar_per_observable
+  per_run_summary: mean  # of per-timestep observable z-score over the run
+  also_reported: [min, std]  # pre-registered alternate summaries, reported but not primary
+
+matching_covariates:  # the features a classical detector would consume
+  - realized_vol_annualized
+  - return_ac1
+  - return_ac5
+  - return_skew
+  - return_excess_kurt
+
+# -----------------------------------------------------------------------------
+# Simulation pool (MPD side)
+# -----------------------------------------------------------------------------
+simulation_pool:
+  source_repo: market-population-dynamics
+  generator_script: scripts/generate_qcml_pool.py
+  output_path: data/abm_pool/abm_pool_v1.parquet  # QCML-repo-relative
+  T_years: 10.0
+  dt: 0.003968253968  # 1/252
+  n_steps: 2520
+  groups:
+    type_ii_heavy:
+      p2: [0.45, 0.85]
+      p3: [0.05, 0.35]
+      p1: remainder  # auto-derived; rejected if < 0
+      n_runs: 1500
+    type_iii_heavy:
+      p2: [0.05, 0.35]
+      p3: [0.45, 0.85]
+      p1: remainder
+      n_runs: 1500
+  param_ranges:  # widened to produce overlap on matching covariates
+    alpha: [0.5, 5.0]      # momentum sensitivity (default 5.0)
+    beta:  [0.5, 3.0]      # sentiment sensitivity (default 3.0)
+    sigma_n: [0.4, 2.0]    # noise vol (default 1.0)
+  sampling: latin_hypercube_per_group  # over (mix-fractions, alpha, beta, sigma_n)
+  master_seed: 42
+  per_run_seed: deterministic_from_run_id  # ensures bit-reproducible pool
+  metadata_header_fields:
+    - mpd_git_commit
+    - generation_timestamp_utc
+    - generator_script_sha256
+    - design_yaml_sha256
+
+# -----------------------------------------------------------------------------
+# Matching
+# -----------------------------------------------------------------------------
+matching:
+  method: nearest_neighbour_caliper  # primary; coarsened-exact as fallback
+  distance: standardized_mahalanobis_on_5_covariates
+  caliper: 0.25  # std units, on each covariate
+  target_min_per_group: 100
+  smd_threshold: 0.10  # standardised mean diff per covariate post-matching
+  ratio: 1_to_1  # 1 Type-II to 1 Type-III
+
+# -----------------------------------------------------------------------------
+# QCML pipeline
+# -----------------------------------------------------------------------------
+qcml_pipeline:
+  feature_builder: experiments/data_loader.py::create_feature_matrix_single_asset
+  embedding:
+    strategy: single_shared_embedding
+    training_subsample:
+      mode: balanced_random
+      n_per_group: 200
+      held_out_from_test_set: true
+      seed: 42
+    pipeline:
+      - StandardScaler
+      - PCA(n_components=8)
+      - QCMLGeometry(hilbert_dim=6).fit_operators(method='random')
+  observables:  # 5 — same family the paper uses
+    - name: spectral_gap
+      method: qcml_geometry.core.QCMLGeometry.spectral_gap
+    - name: berry_curvature_frobenius
+      method: norm(qcml_geometry.core.QCMLGeometry.berry_curvature)
+    - name: spectral_entropy
+      method: shannon_entropy(eigvals)
+    - name: reduced_purity
+      method: qcml_geometry.core.QCMLGeometry.reduced_state_purity
+      partition: [2, 4]
+    - name: hamiltonian_sensitivity
+      method: qcml_geometry.core.QCMLGeometry.hamiltonian_sensitivity
+  multi_basis_robustness:
+    enabled: true
+    n_bases: 5
+    seed_offsets: [0, 100, 200, 300, 400]
+    pattern: |
+      from experiments/endo_exo_robustness_v2.py:74-95:
+        geo.operators = make_basis(offset, n_features, hilbert_dim)
+        geo.is_fitted = True
+    aggregation: median_d_across_bases
+    direction_consistency_min: 4  # of 5 bases must agree on sign
+  canonical_qcml_params:  # match paper Table 4
+    hilbert_dim: 6
+    n_pca_components: 8
+    rolling_window: 15
+    operator_method: random
+    seed: 42
+    normalization: sphere
+    berry_aggregation: f01
+  timestep_downsampling:
+    enabled: false  # default; enable if observable eval exceeds 90 min
+    every_n: 5
+
+# -----------------------------------------------------------------------------
+# Classical negative-control detectors (must stay null on matched sets)
+# -----------------------------------------------------------------------------
+classical_negative_controls:
+  - name: rolling_vol_z
+    source: experiments/baselines.py::RollingVolatilityDetector
+    params: { vol_window: 20, min_expanding: 60 }
+  - name: hmm_2_state
+    source: experiments/baselines.py::HMMRegimeDetector
+    params: { n_iter: 100, seed: 42 }
+  - name: random_forest_loro  # leave-one-run-out on the 5 classical covariates
+    source: experiments/baselines.py::RandomForestRegimeDetector
+    params: { n_estimators: 200, max_depth: 6, seed: 42 }
+    feature_set: [realized_vol_annualized, return_ac1, return_ac5, return_skew, return_excess_kurt]
+
+# -----------------------------------------------------------------------------
+# Statistical tests (per QCML observable, per basis)
+# -----------------------------------------------------------------------------
+statistical_tests:
+  primary:
+    test: welch_t_two_sided
+    alpha: 0.05
+  secondary:
+    - mannwhitney_u_two_sided
+  effect_size: cohens_d
+  bootstrap:
+    method: percentile
+    n_resamples: 10_000
+    ci: 0.95
+    seed: 42
+  multiple_comparison_correction:
+    method: holm_bonferroni
+    family_size: 25  # 5 observables x 5 bases (treated as one family)
+
+# -----------------------------------------------------------------------------
+# Success / failure criteria (LOCKED)
+# -----------------------------------------------------------------------------
+success_criteria:
+  STRONG:
+    description: Genuine "impossible with vol/correlation/HMM/RF" finding
+    conditions_all_required:
+      - n_qcml_observables_clearing_bar >= 3
+      - per_observable_bar: |d|>=0.5 AND Holm_p<0.05 AND >=4/5 bases agree on sign
+      - classical_negative_controls_significant == 0
+    action: Write up as paper headline candidate; validate Angle 1 (Berry holonomy) on this same sim data.
+  MEDIUM:
+    description: Real partial effect; QF companion section
+    conditions_all_required:
+      - n_qcml_observables_clearing_bar in [1, 2]
+      - classical_negative_controls_significant == 0
+    action: QF companion section ("QCML geometry separates regimes matched on all classical return statistics").
+  WEAK_OR_NULL:
+    description: No unique signal, or matching invalid
+    conditions_any:
+      - n_qcml_observables_clearing_bar == 0
+      - classical_negative_controls_significant >= 1
+    action: Angle 2 dead; ship pre-sprint paper to QF.
+
+failure_or_void_conditions:
+  day1_gate_matching_failed:
+    trigger: cannot construct >=100 matched runs/group with SMD<0.10 on all 5 covariates
+    action: Experiment structurally impossible; STOP; ship paper.
+  matching_invalid:
+    trigger: any classical negative control significant on matched sets
+    action: QCML result VOID (matching failed; result not interpretable).
+  observable_degenerate:
+    trigger: any QCML observable returns constant or NaN time series on sim data
+    action: Implementation bug; debug. Do NOT reinterpret — the experiment is paused until fixed.
+
+# -----------------------------------------------------------------------------
+# Power / runtime
+# -----------------------------------------------------------------------------
+power_analysis:
+  effect_size_target: 0.5
+  alpha: 0.05
+  two_sided: true
+  n_per_group_min: 100
+  power_at_d_05: ">0.99"
+  power_at_d_04: ">0.90"
+
+runtime_estimates:
+  simulation_pool_generation: "<5 minutes (Rust engine)"
+  embedding_fit: "<30 seconds"
+  observable_eval_5obs_5bases_~200runs: "20-90 minutes"
+  classical_negative_controls: "<10 minutes"
+  total_wall: "<3 hours including matching + bootstrap"
+
+abort_discipline:
+  day_2_deadline: matched-set d-values exist by end of Day 2
+  day_3_deadline: null verdict by end of Day 3 -> stop; ship paper.
+
+# -----------------------------------------------------------------------------
+# Pre-registration checklist (signed before running)
+# -----------------------------------------------------------------------------
+pre_registration_checklist:
+  - hypotheses_specified_before_data: true
+  - success_criteria_falsifiable: true
+  - multiple_comparison_correction_specified: true
+  - failure_conditions_defined: true
+  - void_conditions_defined: true
+  - runtime_estimated: true
+  - load_bearing_test_is_matched_not_naive: true
+  - classical_negative_controls_required: true
+  - multi_basis_robustness_required: true
+
+# -----------------------------------------------------------------------------
+# Output artifacts
+# -----------------------------------------------------------------------------
+output:
+  json_path: experiments/outputs/diagnostics/qcml_abm_matched_regime.json
+  must_contain:
+    - matched_set_sizes_per_group
+    - per_covariate_smd_after_matching
+    - per_observable_per_basis: [welch_p, mannwhitney_p, cohens_d, bootstrap_ci_95]
+    - holm_corrected_pvalues
+    - classical_negative_control_results
+    - direction_consistency_per_observable
+    - aggregate_verdict: [STRONG, MEDIUM, WEAK_OR_NULL]
+    - sanity_check_unmatched_classical_separation

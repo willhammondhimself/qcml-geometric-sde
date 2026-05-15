@@ -1,0 +1,12 @@
+% =============================================================================
+% Anonymous wrapper for double-blind submission to Quantitative Finance.
+%
+% Sets the \anonsubmission flag, then re-uses qcml_geometric_sde.tex unchanged.
+% This file exists so latexmk / make can produce a separate
+% qcml_geometric_sde_anon.pdf alongside the identified PDF.
+%
+% Usage:
+%   latexmk -pdf qcml_geometric_sde_anon.tex
+% =============================================================================
+\def\anonsubmission{}
+\input{qcml_geometric_sde.tex}

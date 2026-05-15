@@ -37,17 +37,6 @@ A.~G. Abanov, L.~Candelori, H.~C. Steinacker, M.~T. Wells, J.~R. Busemeyer,
   V.~Kirakosyan, N.~Marzari, S.~Pinnamaneni, D.~Villani, M.~Xu, K.~Musaelian,
   Quantum geometry of data, arXiv preprint arXiv:2507.21135 (2025).
 
-\bibitem{musaelian2024}
-K.~Musaelian, A.~Abanov, J.~Berger, L.~Candelori, V.~Kirakosyan, R.~Samson,
-  J.~Smith, D.~Villani, Quantum cognition machine learning: {AI} needs quantum,
-  Tech. rep., Qognitive, Inc., technical white paper (not peer-reviewed)
-  (2024).
-
-\bibitem{samson2024}
-R.~Samson, J.~Berger, L.~Candelori, V.~Kirakosyan, K.~Musaelian, D.~Villani,
-  Quantum cognition machine learning: Financial forecasting, Tech. rep.,
-  Qognitive, Inc., technical white paper (not peer-reviewed) (2024).
-
 \bibitem{timmermann2006}
 A.~Timmermann, Forecast combinations, in: G.~Elliott, C.~W.~J. Granger,
   A.~Timmermann (Eds.), Handbook of Economic Forecasting, Vol.~1, Elsevier,
@@ -120,6 +109,17 @@ T.~Bollerslev, Generalized autoregressive conditional heteroskedasticity,
   Journal of Econometrics 31~(3) (1986) 307--327.
 \newblock \href {https://doi.org/10.1016/0304-4076(86)90063-1}
   {\path{doi:10.1016/0304-4076(86)90063-1}}.
+
+\bibitem{musaelian2024}
+K.~Musaelian, A.~Abanov, J.~Berger, L.~Candelori, V.~Kirakosyan, R.~Samson,
+  J.~Smith, D.~Villani, Quantum cognition machine learning: {AI} needs quantum,
+  Tech. rep., Qognitive, Inc., technical white paper (not peer-reviewed)
+  (2024).
+
+\bibitem{samson2024}
+R.~Samson, J.~Berger, L.~Candelori, V.~Kirakosyan, K.~Musaelian, D.~Villani,
+  Quantum cognition machine learning: Financial forecasting, Tech. rep.,
+  Qognitive, Inc., technical white paper (not peer-reviewed) (2024).
 
 \bibitem{provost_vallee1980}
 J.~P. Provost, G.~Vallee, Riemannian structure on manifolds of quantum states,

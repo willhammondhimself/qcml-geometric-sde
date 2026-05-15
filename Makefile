@@ -1,6 +1,6 @@
 .PHONY: install install-dev test test-unit test-integration lint format \
        experiments paper clean help pipeline-diagram \
-       rebuild rebuild-force paper-full review verify verify-citations \
+       rebuild rebuild-force paper-full paper-anon review verify verify-citations \
        pre-submit snapshot diff registry-summary validate clear-cache \
        pipeline pipeline-quick pipeline-full canonical dashboard \
        video-preview video-hq video-combine video \
@@ -98,6 +98,12 @@ paper:  ## Compile LaTeX paper
 
 paper-full:  ## Generate tables from canonical JSON + compile paper
 	$(PYTHON) $(PAPER_DIR)/populate_paper.py --json $(CANONICAL_JSON) --compile --copy-figures
+
+paper-anon:  ## Compile anonymized paper for double-blind submission
+	cd $(PAPER_DIR) && pdflatex -interaction=nonstopmode qcml_geometric_sde_anon.tex
+	cd $(PAPER_DIR) && bibtex qcml_geometric_sde_anon
+	cd $(PAPER_DIR) && pdflatex -interaction=nonstopmode qcml_geometric_sde_anon.tex
+	cd $(PAPER_DIR) && pdflatex -interaction=nonstopmode qcml_geometric_sde_anon.tex
 
 # ── Review Pipeline ──────────────────────────────────────────────
 

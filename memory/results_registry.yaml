@@ -78,6 +78,14 @@ claims:
     verified: true
     note: "Apr-3 rerun under post-c4ed5a9 methodology (Iman-Davenport added). d-values identical to Mar-11; only chi^2 changed."
 
+  - name: "Geo-vs-baseline mean |rho| (orthogonality)"
+    section: "Abstract / Sec 6 / Sec 7 / cover_letter"
+    paper_value: 0.22
+    source_json: "experiments/outputs/observatory/observatory_20260228_214412.json"
+    json_path: "orthogonality.mean_abs_rho_geo_vs_baseline"
+    verified: true
+    note: "Replaces the previously-unverified |rho|~0.13 in abstract/cover-letter (Blocker 1 fix, 2026-05-14). Canonical observatory JSON reports 0.221; tolerance 0.02 covers the rounding to 0.22. Paper text rewritten as 'mean |rho| ~ 0.22' to make the cross-channel-average framing explicit."
+
   # --- Per-crisis d-values (walk-forward table, spot checks) ---
   - name: "Berry Phase Rate d on 2008 GFC"
     section: "Walk-forward table"

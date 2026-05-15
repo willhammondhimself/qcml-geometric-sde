@@ -6,36 +6,44 @@
 \address{Will Hammond\\Pitzer College\\1050 N Mills Ave\\Claremont, CA 91711}
 
 \begin{document}
-\begin{letter}{Editorial Office\\Physica A: Statistical Mechanics and its Applications}
+\begin{letter}{Editorial Office\\Quantitative Finance}
 
-\opening{Dear Editor,}
+\opening{Dear Editors,}
 
-I am submitting the manuscript ``A Geometric Observatory for Financial
-Regime Detection'' for consideration in Physica A.
+We submit the manuscript ``Geometric Observables for Financial Regime
+Detection'' for consideration as an original research article in
+\emph{Quantitative Finance}.
 
-The paper applies differential geometry---Fubini--Study metrics, Berry
-curvature, Chern numbers, spectral gaps---to financial time series by
-embedding market data into a projective Hilbert space via spectral metric
-learning (QCML).  We extract nineteen geometric detection channels and
-test them on 17 historical crises spanning 2000--2024, comparing against
-46 methods including Random Forest, GARCH, Hamilton Markov-switching,
-and Absorption Ratio.
+The paper introduces four geometric detectors---Berry Phase Rate,
+Spectral Entropy, Reduced State Purity, and Hamiltonian
+Sensitivity---derived from a learned spectral embedding of equity-index
+returns, and evaluates them against 46 classical and machine-learning
+baselines (including the Absorption Ratio, Hamilton's Markov-switching
+model, GARCH, Bayesian online changepoint detection, and supervised
+Random Forests) on 17 historical crises spanning 2000--2024.  Under
+walk-forward nested hyperparameter selection on nine labelled windows,
+the Berry Phase Rate achieves an unbiased out-of-sample Cohen's
+$d = 0.72$ (95\% percentile-bootstrap CI $[0.34,\,1.18]$) and reduces
+the false-alarm rate by approximately 67\% relative to a label-supervised
+Random Forest (1.2 vs.\ 3.6 alarms per year).  Geometric and classical
+channels are largely uncorrelated (mean $|\rho| \approx 0.22$), suggesting the
+observables provide a complementary risk-overlay signal rather than a
+substitute for existing detectors.
 
-The central result: walk-forward nested HPO gives Berry Phase Rate an
-unbiased out-of-sample Cohen's $d = 0.72$ with 30\% fewer false alarms
-than Random Forest (2.5 vs.\ 3.6 per year), without requiring crisis
-labels.  Regime-Adaptive fusion generalizes on holdout crises
-($d = 0.78$) while top individual methods collapse.
+Although the construction borrows formalism from quantum geometry, every
+computation runs on classical hardware; the contribution is empirical
+and methodological, not physical.  Statistical evaluation uses
+Friedman tests with the Iman--Davenport correction, Nemenyi post-hoc
+analysis, and percentile bootstrap confidence intervals.  All
+experiments are reproducible from a public code release with pinned
+random seeds and canonical result files.
 
-I believe this manuscript is a good fit for Physica A because it brings
-geometric and spectral methods from mathematical physics to an
-econophysics application, with rigorous statistical evaluation.  The
-work includes formal theorems validated on market data, a 46-method
-comparison with proper multiple-testing corrections, and walk-forward
-validation with nested hyperparameter optimization.
-
-All code and data are freely available for reproducibility at
-\url{https://github.com/willhammondhimself/qcml-geometric-sde}.
+For full transparency, a preprint of this manuscript is publicly
+available on SSRN (\href{https://ssrn.com/abstract=6685298}{abstract
+ID 6685298}); a corresponding arXiv posting is forthcoming.  The work
+is original, has not appeared in any peer-reviewed venue, and is not
+under consideration by any other journal.  We have no competing
+interests to declare.
 
 \closing{Sincerely,}
 
