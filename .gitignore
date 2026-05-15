@@ -54,6 +54,12 @@ experiments/outputs/**/*.json
 experiments/outputs/**/*.log
 experiments/outputs/**/*.png
 experiments/outputs/**/*.pdf
+!experiments/outputs/intrinsic_dimension/eigenvalue_spectra.pdf
+!experiments/outputs/regime_detection/superiority_publication/figures/effect_sizes.pdf
+!experiments/outputs/theorem_validation/chern_quantization.pdf
+!experiments/outputs/theorem_validation/curvature_gap_bound.pdf
+!experiments/outputs/theorem_validation/qfi_metric_identity.pdf
+!experiments/outputs/theorem_validation/spectral_gap_dynamics.pdf
 experiments/outputs/**/*.txt
 experiments/outputs/**/*.tex
 !experiments/outputs/regime_detection/narratives/
