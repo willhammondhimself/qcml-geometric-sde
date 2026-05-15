@@ -2,10 +2,9 @@
 # Pre-registration: Berry holonomy via Wilson loop product on MPD-simulated paths
 # =============================================================================
 # Committed:    2026-05-15
-# Author:       Will Hammond (with (redacted))
+# Author:       Will Hammond
 # Status:       PRE-REGISTERED — success criteria and failure conditions are
 #               LOCKED before any holonomy code runs. Do not edit post-hoc.
-# Plan:         ~/tooling/plans/continue-iridescent-brooks.md
 # Predecessor:  experiments/designs/20260514_qcml_abm_matched_regime.yaml
 #               (Angle 2 — gate failed Day 1; informs why this angle bypasses
 #                matching entirely via the topological-impossibility argument)
@@ -203,8 +202,8 @@ success_criteria:
       - max_bases_clearing_bar_for_any_statistic <= 1
       - classical_sanity_check_max_value > 1.0e-10  # then bug, not finding
     action: >
-      Ship pre-sprint paper to QF. Document Angle 1 in internal-docs sprint history
-      as "tested on controlled MPD substrate, empirically silent under
+      Ship pre-sprint paper to QF. Document Angle 1 in sprint history as
+      "tested on controlled MPD substrate, empirically silent under
       multi-basis robustness."
 
 # -----------------------------------------------------------------------------

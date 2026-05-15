@@ -4,7 +4,7 @@ Pulls the raw spectral-gap time series across 2005-2024 SPY/DIA, then for each
 of 17 historical crises computes (a) the minimum gap inside the crisis window
 and (b) the ratio of that minimum to the trailing 252-day mean.
 
-Decision rule (per ~/tooling/plans/here-s-a-prompt-you-scalable-stonebraker.md):
+Decision rule:
     min(gap)/trailing_mean < 0.10 in >= 10 of 17 crises  -> commit to Angle 3
     min(gap)/trailing_mean > 0.50 in most crises          -> commit to Angle 5
     in between                                            -> try power-law version of Angle 3

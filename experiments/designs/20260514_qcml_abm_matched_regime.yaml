@@ -2,10 +2,9 @@
 # Pre-registration: QCML geometry on vol/moment-matched ABM regimes
 # =============================================================================
 # Committed: 2026-05-14
-# Author: Will Hammond (with (redacted))
+# Author: Will Hammond
 # Status: PRE-REGISTERED — success criteria and failure conditions are LOCKED
 #         before any experiment code runs. Do not edit post-hoc.
-# Plan:   ~/tooling/plans/continue-iridescent-brooks.md
 # =============================================================================
 
 experiment_id: qcml_abm_matched_regime_v1

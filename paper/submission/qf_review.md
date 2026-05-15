@@ -106,7 +106,7 @@ The intro is strong on substance but mistimed on emphasis. Specific callouts:
 
 Short answer: **yes, "quantum" is a real reviewer-routing risk for QF, but you have already done the right thing in §1.** The disclaimer "Everything runs on classical hardware; 'quantum' is referring to the Hilbert-space formalism, not quantum computing" is exactly what is needed. Three further recommendations:
 
-1. **Title.** Currently *Geometric Observables for Financial Regime Detection* — already clean, no "quantum" in it. Keep it that way. (The README/PDF inconsistency from your internal-docs is internal-only and doesn't affect submission.)
+1. **Title.** Currently *Geometric Observables for Financial Regime Detection* — already clean, no "quantum" in it. Keep it that way. (The README/PDF title inconsistency is internal-only and doesn't affect submission.)
 2. **Keywords.** Currently includes "QCML" as the last keyword. For QF, I would either drop it or move it to last position behind safer terms ("regime detection", "Fubini–Study metric", "Berry curvature", "spectral metric learning"). The first 2–3 keywords drive editorial routing more than the rest.
 3. **Cover-letter language.** I included a short "borrowed from quantum geometry but runs on classical hardware" line above. Don't elaborate further — over-defending the framing in the cover letter signals weakness.
 4. **Abstract.** I removed "QCML" from the rewritten abstract for the same reason. You can keep it in §1 (where the disclaimer lives) and §2 (where it earns its keep).
@@ -138,7 +138,7 @@ What I would *not* recommend: stripping "Berry", "Fubini–Study", "Hilbert", or
 
 **Preempt:**
 - The orthogonality result (|ρ| ≈ 0.13 with classical baselines) is the right answer. Move it from where it currently sits to the abstract (I did this in §2 above) and to the headline of §5.
-- Add — if you have the run — a Pearson correlation of the Berry detector with rolling 20-day realized vol on SPY/DIA. (Your internal-docs notes this for E_0; the analogous number for Berry should be cheap to produce and would directly defuse this objection.)
+- Add — if you have the run — a Pearson correlation of the Berry detector with rolling 20-day realized vol on SPY/DIA. (Internal notes record this for E_0; the analogous number for Berry should be cheap to produce and would directly defuse this objection.)
 - The lead-time result (Berry leads RF/VIX-style detectors by ~90 days on the median crisis per `experiments/lead_time_analysis.py`) is your strongest disconfirmation that this is just vol — vol-based detectors don't lead by 90 days. Mention it in the abstract or §1 if there is room.
 
 ### Possible 4th objection — "The three theorems are window dressing for a physics audience."
