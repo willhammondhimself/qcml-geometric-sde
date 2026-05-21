@@ -82,22 +82,37 @@
 % ABSTRACT
 % =============================================================================
 \begin{abstract}
-We extract four geometric observables---Berry Phase Rate, Spectral
-Entropy, Reduced State Purity, and Hamiltonian Sensitivity---from a
-learned spectral embedding of equity-index returns and evaluate them
-as regime-shift detectors against 46 classical and machine-learning
-baselines on 17 historical crises spanning 2000--2024.  Under
-walk-forward nested hyperparameter selection on nine labelled windows,
-the Berry Phase Rate achieves an unbiased out-of-sample median
-Cohen's $d = 0.72$ (95\% percentile-bootstrap CI $[0.34, 1.18]$,
-10{,}000 resamples) and produces approximately 67\% fewer false alarms
-per year than a label-supervised Random Forest (1.2 vs.\ 3.6 per year).
-Reduced State Purity attains the highest in-sample separability of
-any method ($d = 0.83$), tied closely by the Absorption
-Ratio~\cite{kritzman2011} ($d = 0.80$); geometric and classical
-channels are largely uncorrelated (mean $|\rho| \approx 0.22$), suggesting
-they capture distinct risk signals.  Score construction is
-unsupervised; hyperparameter selection is the only supervised step.
+Financial markets switch between calm and crisis, sometimes within a
+single trading day, and the standard toolkit for spotting these
+transitions---hidden Markov models, Bayesian changepoint detection,
+GARCH, supervised classifiers---quietly assumes that returns and
+their derived features live in a flat Euclidean vector space.  We
+ask what happens if that assumption is dropped and the geometry of
+the data itself is monitored instead.  Using Quantum
+Cognition Machine Learning (QCML), a classical framework that
+borrows the Hilbert-space formalism of quantum mechanics to equip
+data with a learned curved geometry, we embed daily equity-index
+returns and extract four geometric observables: the Berry Phase
+Rate (how fast the embedding's intrinsic ``twist'' changes),
+Spectral Entropy (disorder among excited states), Reduced State
+Purity (separability of the embedded state into independent
+subsystems), and Hamiltonian Sensitivity (responsiveness to small
+data perturbations).  None of the four uses crisis labels.
+We benchmark them against 46 classical and machine-learning methods
+on 17 historical crises spanning 2000--2024.  Under walk-forward
+nested hyperparameter selection on nine labelled windows---the only
+protocol in the paper free of look-ahead---the Berry Phase Rate
+achieves an unbiased out-of-sample median Cohen's $d = 0.72$ (95\%
+percentile-bootstrap CI $[0.34, 1.18]$, 10{,}000 resamples) and
+produces approximately 67\% fewer false alarms per year than a
+label-supervised Random Forest (1.2 vs.\ 3.6 per year).  Offline,
+Reduced State Purity attains the highest crisis--normal separability
+of any of the 46 methods ($d = 0.83$), narrowly ahead of the
+Absorption Ratio~\cite{kritzman2011} ($d = 0.80$); geometric and
+classical channels are largely uncorrelated (mean $|\rho| \approx
+0.22$), suggesting they capture distinct aspects of market stress.
+Score construction is unsupervised; hyperparameter selection is the
+only supervised step.
 \end{abstract}
 
 \begin{keyword}
@@ -116,77 +131,149 @@ geometric observables \sep QCML
 % =============================================================================
 \section{Introduction}\label{sec:intro}
 
-Financial markets switch between calm trends and violent
-drawdowns, sometimes within a single trading day.  Detecting these
-regime transitions is a core problem in quantitative finance.
-Hidden Markov Models~\cite{hamilton1989,ang_bekaert2002},
-Bayesian Online Changepoint Detection~\cite{adams_mackay2007}, and
-supervised classifiers all work in specific settings, but they are
-defined on flat Euclidean feature spaces.  An alternative is to
-measure the geometry of the data itself.
+Financial markets do not move smoothly.  They alternate between long
+periods of slow drift and short, violent episodes---the 2008
+mortgage panic, the 2020 COVID crash, the March~2023 collapse of
+Silicon Valley Bank---in which prices, volatilities, and cross-asset
+correlations shift simultaneously and on a different timescale than
+the trends they interrupt.  Recognising one of these episodes early
+matters: pension funds, market-makers, central banks, and risk
+desks all act on different rules during a crisis than during a
+normal market, and the cost of acting on the wrong rule for even a
+few days can be very large.
 
-Quantum Cognitive/Cognition Machine Learning
-(QCML; both appear in the literature)~\cite{candelori2025,abanov2025}
-embeds data as unit vectors in a finite-dimensional complex space and
-represents features as Hermitian operators.  The construction equips
-the data manifold with a learned metric, a curvature, and a spectral
-gap---geometric quantities that respond to deformations in the
-data-generating process (Section~\ref{subsec:intrinsic_dim}).
-Everything runs on classical hardware; ``quantum'' refers to the
-Hilbert-space formalism, not quantum computing.
+Detecting these regime transitions has been a core problem in
+quantitative finance for forty years.  The standard toolkit is
+rich---Hamilton's Markov-switching
+models~\cite{hamilton1989,ang_bekaert2002}, Bayesian online
+changepoint detection~\cite{adams_mackay2007}, GARCH volatility
+models~\cite{bollerslev1986}, Kritzman's Absorption
+Ratio~\cite{kritzman2011}, and supervised classifiers trained on
+labelled crises---and each of these tools works well in the setting
+it was built for.  What they share, almost without exception, is an
+assumption about the space in which the data lives: returns and
+their derived features are treated as points in a flat Euclidean
+vector space, and stress is read off as a shift in the mean,
+variance, or covariance of those points.
 
-The QCML embedding yields four geometric observables, Berry
-Phase Rate, Spectral Entropy, Reduced State Purity, and Hamiltonian
-Sensitivity, which we compare against classical baselines including
-Absorption Ratio, Hamilton Markov-Switching, and GARCH
-(Table~\ref{tab:observatory_channels}).
+This paper asks a different question.  What if the features of a
+market do not live in a flat space at all, but on a curved surface
+whose shape responds to market stress?  Then the natural quantity
+to monitor is not the position of a point on the surface but the
+geometry of the surface itself---the way it bends, the way
+distances between nearby states stretch, the way ``neighbours''
+become further apart when the market enters a crisis.  Detection
+becomes a question about deformations of geometry rather than about
+the magnitudes of features.
 
-The primary evaluation is \emph{crisis-window separability}--- does the
-score distribution during a known crisis differ significantly from a non-crisis period? This
-is an offline event study, measuring sensitivity rather than real-time
-prediction.  Walk-forward evaluation
-(Section~\ref{subsec:walkforward}) tests causal detection with
-strictly past-fitted preprocessing.
+To turn that intuition into something measurable we need a way to
+equip the data with a meaningful curved geometry.  We borrow one
+from Quantum Cognition (or Cognitive) Machine Learning
+(QCML)~\cite{candelori2025,abanov2025}, a recent framework that
+embeds data points as unit vectors in a finite-dimensional complex
+Hilbert space and represents features as Hermitian operators.
+Despite the name, no quantum hardware is involved---``quantum''
+refers only to the formalism, and every computation in this paper
+runs on a single classical CPU.  What QCML supplies, intuitively,
+are three geometric instruments that flat Euclidean space simply
+does not have: a \emph{metric} that says how distinguishable two
+market states are, a \emph{curvature} (Berry curvature) that records
+the ``twisting'' of the embedding as it moves through the data
+manifold, and a \emph{spectral gap} whose stability protects all
+the other quantities from numerical noise
+(Section~\ref{subsec:intrinsic_dim}).
+
+From this single embedding we extract four geometric observables,
+each probing a different property of the manifold:
+\begin{itemize}
+\item \textbf{Berry Phase Rate}---how quickly the embedding's
+  intrinsic ``twist'' changes from one day to the next.  Calm
+  markets accumulate twist slowly; crises bend the geometry
+  abruptly.
+\item \textbf{Spectral Entropy}---how diffuse the system is across
+  its excited states.  Ordered, single-mode markets concentrate the
+  spectrum; disordered crisis markets spread it out.
+\item \textbf{Reduced State Purity}---whether the embedded state
+  can still be factored into independent sub-systems.  When markets
+  enter a herding regime, blocks of features stop being separable.
+\item \textbf{Hamiltonian Sensitivity}---how sharply the system
+  reacts to small changes in the input.  A market on the edge of a
+  regime shift is unusually responsive to perturbation.
+\end{itemize}
+
+We evaluate these four observables, together with Kritzman's
+Absorption Ratio~\cite{kritzman2011} as a classical geometric
+baseline, against 46 classical and machine-learning methods on 17
+historical crises spanning 2000--2024---from the dot-com bust
+through COVID, the 2022 rate-hike cycle, and the 2023 banking
+crisis.  Two evaluation modes are used.  An \emph{offline event
+study} measures contemporaneous crisis--normal separability (how
+different the score distribution looks during a known crisis
+compared with calm periods) and ranks methods on a level playing
+field.  A strict \emph{walk-forward test} with nested hyperparameter
+selection (Section~\ref{subsec:walkforward}) fits every
+preprocessing step, threshold, and hyperparameter using only data
+prior to each crisis; this is the only protocol in the paper free
+of look-ahead.
+
+Three results stand out.  First, the geometric channels and the
+classical channels are largely uncorrelated (mean $|\rho| \approx
+0.22$), so they appear to measure distinct aspects of market stress
+rather than rediscover one another.  Second, under the strict
+walk-forward protocol the Berry Phase Rate produces an unbiased
+out-of-sample Cohen's $d$ of $0.72$ and approximately 67\% fewer
+false alarms per year than a fully label-supervised Random Forest
+(1.2 vs.\ 3.6 per year), despite using no crisis labels in score
+construction.  Third, no single channel dominates every crisis---
+different observables lead on different crisis types, and the
+complementarity survives the walk-forward stress test.
 
 \paragraph{Supervision level}
-Score construction is unsupervised (Algorithm~\ref{alg:zscore}); the
-pipeline is \emph{semi-supervised} only because hyperparameters are
-selected against crisis labels (Section~\ref{subsec:operator_ablation}).
+Score construction is unsupervised (Algorithm~\ref{alg:zscore});
+the pipeline is \emph{semi-supervised} only because hyperparameters
+are selected against crisis labels
+(Section~\ref{subsec:operator_ablation}).
 
 \paragraph{Contributions}
 \begin{enumerate}
-\item \textbf{Walk-forward detection.}  Nested HPO yields a Berry
-  Phase Rate OOS median $d = 0.72$ (CI $[0.34, 1.18]$), the highest
-  per-crisis Cohen's $d$ among three walk-forward detectors on
-  five of nine crises, with $\sim$67\% fewer false alarms than
-  Random Forest (1.2 vs.\ 3.6 per year) and no crisis labels.
+\item \textbf{A geometric detector under strict walk-forward
+  validation.}  Nested HPO yields a Berry Phase Rate OOS median
+  $d = 0.72$ (CI $[0.34, 1.18]$), the highest per-crisis Cohen's
+  $d$ among three walk-forward detectors on five of nine crises,
+  with $\sim$67\% fewer false alarms than Random Forest (1.2 vs.\
+  3.6 per year) and no crisis labels used in score construction.
 
-\item \textbf{QCML geometric framework.}  Four geometric observables
-  from a single embedding, each probing a different property of the
-  data manifold (curvature, entropy, sensitivity, entanglement).
+\item \textbf{Four geometric observables from a single QCML
+  embedding}, each probing a different property of the data
+  manifold (curvature, spectral disorder, sensitivity,
+  separability), together with explicit theorems that tie their
+  smoothness, boundedness, and topological structure to the
+  Hamiltonian's spectral gap.
 
-\item \textbf{Offline separability.}  On 17~crises (2000--2024),
-  Reduced Purity ($d = 0.83$) ranks first of 46~methods, with
-  Absorption Ratio ($d = 0.80$) as the classical benchmark; the
-  remaining geometric channels ($d = 0.53$--$0.61$) contribute
-  orthogonal crisis coverage.
+\item \textbf{A 46-method benchmark on 17~crises (2000--2024).}
+  Reduced State Purity ($d = 0.83$) ranks first offline, narrowly
+  ahead of the Absorption Ratio ($d = 0.80$); the remaining
+  geometric channels ($d = 0.53$--$0.61$) contribute orthogonal
+  crisis coverage.
 
-\item \textbf{Risk-overlay viability.}  Out-of-sample false-alarm
-  rates of $\sim$1.2/yr for the Berry channel are low enough to
-  support a practitioner risk-management overlay; a SPY de-risking
-  experiment (Section~\ref{subsec:overlay}) cuts maximum drawdown by
-  $\sim$51\% with no degradation in Sharpe ratio.
+\item \textbf{A practical risk-overlay demonstration.}  A simple
+  SPY de-risking rule built from the Berry Phase Rate
+  (Section~\ref{subsec:overlay}) cuts maximum drawdown by $\sim$51\%
+  with no degradation in Sharpe ratio, illustrating that the
+  detector's low false-alarm rate is enough to support a
+  practitioner overlay.
 \end{enumerate}
 
 \paragraph{Scope and limitations}
 Offline rankings measure crisis-window sensitivity, not real-time
-detection.  Reduced Purity ($d = 0.83$ offline) is sensitive to
-bipartition choice and drops to $d \approx 0.26$ on frozen holdout,
-so high offline separability does not guarantee out-of-sample
-stability; Berry Phase Rate, which ranks lower offline
-($d = 0.61$), gives the strongest walk-forward evidence and is the
-load-bearing OOS claim of this paper.  The geometric channels
-complement, rather than replace, existing
+prediction.  Reduced Purity ($d = 0.83$ offline) is sensitive to
+the choice of state bipartition and drops to $d \approx 0.26$ on a
+frozen holdout, so high offline separability does not guarantee
+out-of-sample stability; the Berry Phase Rate, which ranks lower
+offline ($d = 0.61$), provides the strongest walk-forward evidence
+and is the load-bearing OOS claim of this paper.  All experiments
+use a single SPY/DIA equity pair, and the geometric channels are
+intended to complement, not replace, existing
 methods~\cite{timmermann2006,bates_granger1969}.
 
 \subsection{Related Work}\label{subsec:related}
@@ -1134,22 +1221,35 @@ concrete in dollar terms.
 
 \subsection{On the ``Quantum'' Label}
 
-Berry phase is differential geometry.  Pancharatnam~\cite{pancharatnam1956}
-found it in classical optics; Simon~\cite{simon1983} identified it
-as fiber bundle holonomy.  The metric~\eqref{eq:metric} is the
-Fubini--Study pullback on $\CP^{n-1}$, a Riemannian metric identical
-to the Fisher information metric~\cite{provost_vallee1980}.  The
-Berry curvature~\eqref{eq:berry} is U(1) connection curvature on a
-line bundle, with integer integrals by
-Chern--Weil~\cite{chern1946,nakahara2003}, and the spectral gap is an
-order parameter for a phase transition.  None of this is
-quantum-specific.  What it is, is standard differential geometry
-applied to a nonlinear $\R^p \to \CP^{n-1}$ embedding, with gauge
-invariance under $\ket{\psi} \to e^{i\theta}\ket{\psi}$ as the one
-structural feature flat PCA space genuinely lacks.  The ``quantum''
-label in this paper is a citation to the QCML
-literature~\cite{schuld_killoran2019,busemeyer2012}, not a physics
-claim.
+Nothing in this paper is quantum mechanics.  The four observables
+we use are differential-geometric quantities that happen to be most
+cleanly written down in the bra--ket notation of Hilbert spaces, and
+each of them has a perfectly classical interpretation.  The
+metric~\eqref{eq:metric} on the manifold of embedded states measures
+how distinguishable two market configurations are; it is identical
+in content to the Fisher information metric that statisticians have
+been using since the 1940s~\cite{provost_vallee1980}.  The Berry
+curvature~\eqref{eq:berry} records how the embedding's phase wraps
+around as one moves through the data---the same way a vector
+parallel-transported around a closed loop on a sphere returns
+rotated---and was first identified in classical optics by
+Pancharatnam~\cite{pancharatnam1956} before Simon~\cite{simon1983}
+recognised it as a U(1) fibre-bundle holonomy with integer-valued
+integrals guaranteed by Chern--Weil
+theory~\cite{chern1946,nakahara2003}.  The spectral gap is an order
+parameter for a phase transition, in the same sense as the
+magnetisation of an Ising model.
+
+We use the term ``quantum'' because the framework we build on is
+called QCML~\cite{schuld_killoran2019,busemeyer2012} and the
+construction is naturally phrased in this language.  None of the
+computations require quantum hardware; everything in this paper
+runs on an ordinary CPU.  The structural feature that distinguishes
+our approach from flat-PCA detection is gauge invariance under
+$\ket{\psi} \to e^{i\theta}\ket{\psi}$---a feature flat PCA space
+genuinely lacks, and one that lets us detect things (Berry
+curvature, Chern numbers) that are invisible to covariance-based
+methods.
 
 \subsection{Limitations}
 
