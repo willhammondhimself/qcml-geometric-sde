@@ -69,13 +69,42 @@ def oos_r2(y, yhat):
     return 1.0 - sse / sst if sst > 0 else np.nan
 
 
-def walk_forward_predict(Xf, y, model_fn, first, step=63):
-    """Expanding-window: train on [:i], predict [i:i+step]. Returns OOS yhat aligned to y."""
+def delta_r2_pvalue(y, yhat_a, yhat_b, n_boot=2000, block=63, seed=0):
+    """ΔR² of model B over A + one-sided block-bootstrap p (B no better than A)."""
+    m = np.isfinite(y) & np.isfinite(yhat_a) & np.isfinite(yhat_b)
+    y, ya, yb = y[m], yhat_a[m], yhat_b[m]
+    sst = np.sum((y - np.mean(y)) ** 2)
+    if sst <= 0 or len(y) < 100:
+        return np.nan, np.nan
+    d = (y - ya) ** 2 - (y - yb) ** 2  # >0 where B better
+    dr2 = float(np.sum(d) / sst)
+    rng = np.random.default_rng(seed)
+    n = len(d)
+    nb = int(np.ceil(n / block))
+    boots = np.empty(n_boot)
+    for b in range(n_boot):
+        idx = np.concatenate([np.arange(s, s + block) for s in rng.integers(0, n - block + 1, nb)])[
+            :n
+        ]
+        boots[b] = np.sum(d[idx]) / sst
+    p = float((np.sum(boots <= 0) + 1) / (n_boot + 1))
+    return dr2, p
+
+
+def walk_forward_predict(Xf, y, model_fn, first, step=63, purge=HORIZON):
+    """Expanding-window: train on [:i-purge], predict [i:i+step]. Returns OOS yhat aligned to y.
+
+    ``purge`` drops the last ``purge`` training rows before each test block:
+    y[t] spans returns in (t, t+HORIZON], so unpurged labels at t in
+    [i-HORIZON, i) overlap the test window — a lookahead leak (López de Prado
+    2018, Ch. 7). Purging deflates absolute OOS R² slightly; comparisons
+    between feature sets are unaffected since all see the same windows.
+    """
     T = len(y)
     yhat = np.full(T, np.nan)
     i = first
     while i < T:
-        tr = slice(0, i)
+        tr = slice(0, max(0, i - purge))
         te = slice(i, min(i + step, T))
         mtr = np.isfinite(y[tr]) & np.all(np.isfinite(Xf[tr]), axis=1)
         if mtr.sum() < 250:
@@ -140,8 +169,10 @@ def main():
         "Ridge": lambda: Ridge(alpha=1.0),
         "GBM": lambda: HistGradientBoostingRegressor(max_depth=3, max_iter=200, learning_rate=0.05),
     }
-    print(f"\nOut-of-sample forward-{HORIZON}d log-vol R² (expanding window, refit every 63d):")
-    print(f"{'model':6s} {'HAR baseline':>14s} {'HAR + geometry':>16s} {'geometry only':>15s} {'Δ(geo adds)':>12s}")
+    print(f"\nOut-of-sample forward-{HORIZON}d log-vol R² (expanding window, refit every 63d, "
+          f"purge={HORIZON}d):")
+    print(f"{'model':6s} {'HAR baseline':>14s} {'HAR + geometry':>16s} {'geometry only':>15s} "
+          f"{'Δ(geo adds)':>12s} {'p(Δ≤0)':>8s}")
     for mname, mfn in models.items():
         yh_base = walk_forward_predict(har, y, mfn, first)
         yh_both = walk_forward_predict(np.column_stack([har, geo]), y, mfn, first)
@@ -150,7 +181,8 @@ def main():
         r2_base = oos_r2(y[m], yh_base[m])
         r2_both = oos_r2(y[m], yh_both[m])
         r2_geo = oos_r2(y[m], yh_geo[m])
-        print(f"{mname:6s} {r2_base:14.3f} {r2_both:16.3f} {r2_geo:15.3f} {r2_both - r2_base:+12.3f}")
+        dr2, p = delta_r2_pvalue(y, yh_base, yh_both)
+        print(f"{mname:6s} {r2_base:14.3f} {r2_both:16.3f} {r2_geo:15.3f} {dr2:+12.3f} {p:8.3f}")
 
 
 if __name__ == "__main__":

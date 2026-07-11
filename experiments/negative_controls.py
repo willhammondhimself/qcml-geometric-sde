@@ -130,7 +130,16 @@ def nested_oos_median(method, X, dates, crises, n_trials, seed, memo=None, norma
     return float(np.median(oos)) if oos else float("nan")
 
 
-def leak_test(method, oos_keys, n_trials=25, seed=42, n_perm=10, data=None, normal_mode="global"):
+def leak_test(
+    method,
+    oos_keys,
+    n_trials=25,
+    seed=42,
+    n_perm=10,
+    data=None,
+    normal_mode="global",
+    null_seed_base=1000,
+):
     data = data or prepare_data()
     X, dates = data
     real_crises = {k: ALL_CRISES[k] for k in oos_keys}
@@ -142,7 +151,7 @@ def leak_test(method, oos_keys, n_trials=25, seed=42, n_perm=10, data=None, norm
 
     null_medians = []
     for p in range(n_perm):
-        fake = random_window_crises(dates, real_crises, seed=1000 + p)
+        fake = random_window_crises(dates, real_crises, seed=null_seed_base + p)
         m = nested_oos_median(method, X, dates, fake, n_trials, seed, normal_mode=normal_mode)
         null_medians.append(m)
         logger.info("  null perm %d: median d = %.3f", p, m)
@@ -183,13 +192,23 @@ def main():
     ap.add_argument("--n-perm", type=int, default=10)
     ap.add_argument("--seed", type=int, default=42)
     ap.add_argument("--normal-mode", default="global", choices=["global", "local"])
+    # Null window placements are seeded null_seed_base + p, independent of --seed,
+    # so a replication can draw provably fresh placements (prior runs used 1000).
+    ap.add_argument("--null-seed-base", type=int, default=1000)
     ap.add_argument("--out", default=None)
     args = ap.parse_args()
 
     data = prepare_data()
     results = {
         m: leak_test(
-            m, args.oos_keys, args.n_trials, args.seed, args.n_perm, data, args.normal_mode
+            m,
+            args.oos_keys,
+            args.n_trials,
+            args.seed,
+            args.n_perm,
+            data,
+            args.normal_mode,
+            args.null_seed_base,
         )
         for m in args.methods
     }

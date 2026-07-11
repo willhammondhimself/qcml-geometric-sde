@@ -36,7 +36,11 @@ from experiments.multi_asset_data import (  # noqa: E402
     slice_diversity,
 )
 from experiments.systemic_risk_targets import TARGETS  # noqa: E402
-from experiments.volatility_forecasting import oos_r2, walk_forward_predict  # noqa: E402
+from experiments.volatility_forecasting import (  # noqa: E402
+    delta_r2_pvalue,
+    oos_r2,
+    walk_forward_predict,
+)
 from qcml_geometry import (  # noqa: E402
     BerryPhaseRateDetector,
     DimensionalityCollapseDetector,
@@ -111,27 +115,6 @@ GEO = {
     ),
 }
 
-
-def delta_r2_pvalue(y, yhat_a, yhat_b, n_boot=2000, block=63, seed=0):
-    """ΔR² of model B over A + one-sided block-bootstrap p (B no better than A)."""
-    m = np.isfinite(y) & np.isfinite(yhat_a) & np.isfinite(yhat_b)
-    y, ya, yb = y[m], yhat_a[m], yhat_b[m]
-    sst = np.sum((y - np.mean(y)) ** 2)
-    if sst <= 0 or len(y) < 100:
-        return np.nan, np.nan
-    d = (y - ya) ** 2 - (y - yb) ** 2  # >0 where B better
-    dr2 = float(np.sum(d) / sst)
-    rng = np.random.default_rng(seed)
-    n = len(d)
-    nb = int(np.ceil(n / block))
-    boots = np.empty(n_boot)
-    for b in range(n_boot):
-        idx = np.concatenate([np.arange(s, s + block) for s in rng.integers(0, n - block + 1, nb)])[
-            :n
-        ]
-        boots[b] = np.sum(d[idx]) / sst
-    p = float((np.sum(boots <= 0) + 1) / (n_boot + 1))
-    return dr2, p
 
 
 def build_slice_frame(slice_name, horizon=HORIZON, fit_frac=0.30, corr_window=20):
