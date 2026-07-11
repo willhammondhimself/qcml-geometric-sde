@@ -9,6 +9,7 @@ Key Components:
 - Quasi-coherent states: |psi(x)> = ground state of H(x)
 - Quantum metric tensor: g_ab = Re<d_a psi|d_b psi> - <d_a psi|psi><psi|d_b psi>
 - Berry curvature: F_ab = i(<d_a psi|d_b psi> - <d_b psi|d_a psi>)
+                       = -2 Im<d_a psi|d_b psi>   (equivalent reduced form used in code)
 
 Reference: Qognitive papers on Quantum Metric Learning
 """
@@ -34,7 +35,13 @@ class QCMLGeometry:
         is_fitted: Whether the model has been fitted to data
     """
 
-    def __init__(self, n_features: int, hilbert_dim: int = 4, regularization: float = 1e-6):
+    def __init__(
+        self,
+        n_features: int,
+        hilbert_dim: int = 4,
+        regularization: float = 1e-6,
+        gauge_fix: bool = False,
+    ):
         """
         Initialize QCML geometry learner.
 
@@ -46,11 +53,19 @@ class QCMLGeometry:
         self.n_features = n_features
         self.hilbert_dim = hilbert_dim
         self.regularization = regularization
+        # Opt-in gauge fixing: pin each ground state's global phase (largest
+        # |amplitude| component made real-positive) so overlaps across points
+        # carry a real Berry phase instead of eigh's arbitrary per-call phase.
+        self.gauge_fix = gauge_fix
         self.operators: List[np.ndarray] = []
         self.is_fitted = False
 
         self._identity = np.eye(hilbert_dim, dtype=np.complex128)
-        self._ground_state_cache = {}
+        # Ground-state cache keyed on exact x-tuples. Finite-difference probe
+        # points rarely collide, so this is bounded (FIFO eviction) to avoid
+        # unbounded growth over a long time series.
+        self._ground_state_cache: dict = {}
+        self._cache_max = 100_000
 
     def _create_random_hermitian(self, seed: Optional[int] = None) -> np.ndarray:
         """Create a random Hermitian matrix."""
@@ -325,6 +340,18 @@ class QCMLGeometry:
 
         psi = psi / np.linalg.norm(psi)
 
+        if self.gauge_fix:
+            # Pin global phase: make the largest-magnitude component real-positive.
+            # Deterministic gauge → consecutive states are directly comparable, so
+            # arg(<psi_t|psi_{t+1}>) is a genuine Berry phase, not eigh sign noise.
+            j = int(np.argmax(np.abs(psi)))
+            ph = psi[j]
+            if abs(ph) > 1e-12:
+                psi = psi * (np.conj(ph) / abs(ph))
+
+        if len(self._ground_state_cache) >= self._cache_max:
+            # FIFO eviction: drop the oldest inserted entry.
+            self._ground_state_cache.pop(next(iter(self._ground_state_cache)))
         self._ground_state_cache[x_tuple] = (psi, energy)
 
         if return_energy:

@@ -275,7 +275,7 @@ class StackingFusionDetector(BaseRegimeDetector):
         # Replace NaN with 0 for any remaining
         X_valid = np.nan_to_num(X_valid, nan=0.0)
 
-        lr = LogisticRegression(C=0.1, penalty="l2", max_iter=1000, random_state=42)
+        lr = LogisticRegression(C=0.1, max_iter=1000, random_state=42)
         lr.fit(X_valid, y_valid)
 
         self._weights = lr.coef_.ravel()
@@ -477,15 +477,32 @@ class HierarchicalFusionDetector(BaseRegimeDetector):
         return "Hierarchical Fusion"
 
     def _resolve_families(self, n_cols: int) -> Dict[str, List[int]]:
-        """Map OBSERVABLE_FAMILIES display names to column indices."""
+        """Map OBSERVABLE_FAMILIES display names to column indices.
+
+        ``channel_names`` must use the canonical display names (the
+        ``OBSERVABLE_FAMILIES`` / HPO_CONFIGS keys), NOT ``detector.name`` —
+        some detectors carry variant suffixes in ``.name`` (e.g. "Sectional
+        Curvature Sign (0,1)", "Effective State Dimension") that will not match.
+        Family channels absent from ``channel_names`` are dropped with a warning
+        rather than silently, so a naming mismatch is visible.
+        """
         if self._families_idx is not None:
             return self._families_idx
         name_to_idx = {n: i for i, n in enumerate(self._channel_names)}
         resolved = {}
+        missing = []
         for fam, channels in OBSERVABLE_FAMILIES.items():
             idxs = [name_to_idx[ch] for ch in channels if ch in name_to_idx]
+            missing.extend(ch for ch in channels if ch not in name_to_idx)
             if idxs:
                 resolved[fam] = idxs
+        if missing:
+            logger.warning(
+                "HierarchicalFusion: %d family channel(s) not found in "
+                "channel_names and dropped: %s",
+                len(missing),
+                sorted(set(missing)),
+            )
         return resolved
 
     def set_precomputed_scores(self, score_matrix: np.ndarray) -> "HierarchicalFusionDetector":
@@ -565,7 +582,7 @@ class HierarchicalFusionDetector(BaseRegimeDetector):
             self._cross_weights = np.ones(n_fam) / n_fam
             self._cross_intercept = 0.0
         else:
-            lr = LogisticRegression(C=0.1, penalty="l2", max_iter=1000, random_state=42)
+            lr = LogisticRegression(C=0.1, max_iter=1000, random_state=42)
             lr.fit(X_valid, y_valid)
             self._cross_weights = lr.coef_.ravel()
             self._cross_intercept = lr.intercept_[0]

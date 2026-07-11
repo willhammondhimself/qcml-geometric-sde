@@ -219,7 +219,11 @@ class ExpandingWindowMixin:
                 train_std,
             )
 
-            geometry = QCMLGeometry(n_features=X_pca_prefix.shape[1], hilbert_dim=self.hilbert_dim)
+            geometry = QCMLGeometry(
+                n_features=X_pca_prefix.shape[1],
+                hilbert_dim=self.hilbert_dim,
+                gauge_fix=getattr(self, "gauge_fix", False),
+            )
             custom_ops = getattr(self, "custom_operators", None)
             if custom_ops is not None:
                 geometry.set_operators(custom_ops)
@@ -334,47 +338,7 @@ class QFIDeterminantDetector(ExpandingWindowMixin, BaseRegimeDetector):
         return "QFI Determinant"
 
     def fit(self, X: np.ndarray, **kwargs) -> "QFIDeterminantDetector":
-        if self.expanding_refit_interval is not None:
-            return self._fit_expanding(X)
-
-        from .core import QCMLGeometry
-
-        np.random.seed(self.seed)
-        n_components = min(self.n_pca_components, X.shape[1])
-        fit_end = self.causal_fit_length or X.shape[0]
-
-        self._scaler = StandardScaler()
-        self._scaler.fit(X[:fit_end])
-
-        self._pca = PCA(n_components=n_components)
-        X_scaled_fit = self._scaler.transform(X[:fit_end])
-        self._pca.fit(X_scaled_fit)
-
-        X_pca_raw = self._pca.transform(X_scaled_fit)
-        self._train_norms = np.linalg.norm(X_pca_raw, axis=1)
-        self._train_std = np.std(X_pca_raw, axis=0)
-        X_pca_fit = _apply_normalization(
-            X_pca_raw,
-            self.normalization,
-            self._train_norms,
-            self._train_std,
-        )
-
-        if self.adaptive_epsilon:
-            self._epsilon = 1e-3 * np.median(np.abs(X_pca_fit))
-        else:
-            self._epsilon = 1e-5
-
-        self._geometry = QCMLGeometry(n_features=X_pca_fit.shape[1], hilbert_dim=self.hilbert_dim)
-        if self.custom_operators is not None:
-            self._geometry.set_operators(self.custom_operators)
-        else:
-            self._geometry.fit_operators(
-                X_pca_fit,
-                method=self.operator_method,
-                scale_exponent=self.scale_exponent,
-            )
-        return self
+        return _standard_qcml_fit(self, X)
 
     def _extract_metric_feature(self, g_ij: np.ndarray) -> float:
         """Extract a scalar from the metric tensor based on qfi_mode."""
@@ -485,6 +449,7 @@ class BerryPhaseRateDetector(ExpandingWindowMixin, BaseRegimeDetector):
         adaptive_epsilon: bool = False,
         custom_operators: Optional[List[np.ndarray]] = None,
         adaptive_z_window: Optional[int] = None,
+        gauge_fix: bool = False,
     ):
         self.hilbert_dim = hilbert_dim
         self.n_pca_components = n_pca_components
@@ -500,6 +465,7 @@ class BerryPhaseRateDetector(ExpandingWindowMixin, BaseRegimeDetector):
         self.adaptive_epsilon = adaptive_epsilon
         self.custom_operators = custom_operators
         self.adaptive_z_window = adaptive_z_window
+        self.gauge_fix = gauge_fix
         self._geometry = None
         self._scaler = None
         self._pca = None
@@ -513,47 +479,7 @@ class BerryPhaseRateDetector(ExpandingWindowMixin, BaseRegimeDetector):
         return "Berry Phase Rate"
 
     def fit(self, X: np.ndarray, **kwargs) -> "BerryPhaseRateDetector":
-        if self.expanding_refit_interval is not None:
-            return self._fit_expanding(X)
-
-        from .core import QCMLGeometry
-
-        np.random.seed(self.seed)
-        n_components = min(self.n_pca_components, X.shape[1])
-        fit_end = self.causal_fit_length or X.shape[0]
-
-        self._scaler = StandardScaler()
-        self._scaler.fit(X[:fit_end])
-
-        self._pca = PCA(n_components=n_components)
-        X_scaled_fit = self._scaler.transform(X[:fit_end])
-        self._pca.fit(X_scaled_fit)
-
-        X_pca_raw = self._pca.transform(X_scaled_fit)
-        self._train_norms = np.linalg.norm(X_pca_raw, axis=1)
-        self._train_std = np.std(X_pca_raw, axis=0)
-        X_pca_fit = _apply_normalization(
-            X_pca_raw,
-            self.normalization,
-            self._train_norms,
-            self._train_std,
-        )
-
-        if self.adaptive_epsilon:
-            self._epsilon = 1e-3 * np.median(np.abs(X_pca_fit))
-        else:
-            self._epsilon = 1e-5
-
-        self._geometry = QCMLGeometry(n_features=X_pca_fit.shape[1], hilbert_dim=self.hilbert_dim)
-        if self.custom_operators is not None:
-            self._geometry.set_operators(self.custom_operators)
-        else:
-            self._geometry.fit_operators(
-                X_pca_fit,
-                method=self.operator_method,
-                scale_exponent=self.scale_exponent,
-            )
-        return self
+        return _standard_qcml_fit(self, X)
 
     def _compute_berry_scalar(self, geo, xt, eps) -> float:
         """Compute a scalar Berry curvature value using the configured aggregation."""
@@ -685,47 +611,7 @@ class MultiScaleBerryDetector(ExpandingWindowMixin, BaseRegimeDetector):
         return f"Multi-Scale Berry ({self.aggregation})"
 
     def fit(self, X: np.ndarray, **kwargs) -> "MultiScaleBerryDetector":
-        if self.expanding_refit_interval is not None:
-            return self._fit_expanding(X)
-
-        from .core import QCMLGeometry
-
-        np.random.seed(self.seed)
-        n_components = min(self.n_pca_components, X.shape[1])
-        fit_end = self.causal_fit_length or X.shape[0]
-
-        self._scaler = StandardScaler()
-        self._scaler.fit(X[:fit_end])
-
-        self._pca = PCA(n_components=n_components)
-        X_scaled_fit = self._scaler.transform(X[:fit_end])
-        self._pca.fit(X_scaled_fit)
-
-        X_pca_raw = self._pca.transform(X_scaled_fit)
-        self._train_norms = np.linalg.norm(X_pca_raw, axis=1)
-        self._train_std = np.std(X_pca_raw, axis=0)
-        X_pca_fit = _apply_normalization(
-            X_pca_raw,
-            self.normalization,
-            self._train_norms,
-            self._train_std,
-        )
-
-        if self.adaptive_epsilon:
-            self._epsilon = 1e-3 * np.median(np.abs(X_pca_fit))
-        else:
-            self._epsilon = 1e-5
-
-        self._geometry = QCMLGeometry(n_features=X_pca_fit.shape[1], hilbert_dim=self.hilbert_dim)
-        if self.custom_operators is not None:
-            self._geometry.set_operators(self.custom_operators)
-        else:
-            self._geometry.fit_operators(
-                X_pca_fit,
-                method=self.operator_method,
-                scale_exponent=self.scale_exponent,
-            )
-        return self
+        return _standard_qcml_fit(self, X)
 
     def _compute_berry_scalar(self, geo, xt, eps) -> float:
         """Compute a scalar Berry curvature value using the configured aggregation."""
@@ -871,47 +757,7 @@ class MultiLagFidelityDetector(ExpandingWindowMixin, BaseRegimeDetector):
         return "Multi-Lag Fidelity"
 
     def fit(self, X: np.ndarray, **kwargs) -> "MultiLagFidelityDetector":
-        if self.expanding_refit_interval is not None:
-            return self._fit_expanding(X)
-
-        from .core import QCMLGeometry
-
-        np.random.seed(self.seed)
-        n_components = min(self.n_pca_components, X.shape[1])
-        fit_end = self.causal_fit_length or X.shape[0]
-
-        self._scaler = StandardScaler()
-        self._scaler.fit(X[:fit_end])
-
-        self._pca = PCA(n_components=n_components)
-        X_scaled_fit = self._scaler.transform(X[:fit_end])
-        self._pca.fit(X_scaled_fit)
-
-        X_pca_raw = self._pca.transform(X_scaled_fit)
-        self._train_norms = np.linalg.norm(X_pca_raw, axis=1)
-        self._train_std = np.std(X_pca_raw, axis=0)
-        X_pca_fit = _apply_normalization(
-            X_pca_raw,
-            self.normalization,
-            self._train_norms,
-            self._train_std,
-        )
-
-        if self.adaptive_epsilon:
-            self._epsilon = 1e-3 * np.median(np.abs(X_pca_fit))
-        else:
-            self._epsilon = 1e-5
-
-        self._geometry = QCMLGeometry(n_features=X_pca_fit.shape[1], hilbert_dim=self.hilbert_dim)
-        if self.custom_operators is not None:
-            self._geometry.set_operators(self.custom_operators)
-        else:
-            self._geometry.fit_operators(
-                X_pca_fit,
-                method=self.operator_method,
-                scale_exponent=self.scale_exponent,
-            )
-        return self
+        return _standard_qcml_fit(self, X)
 
     def compute_regime_scores(self, X: np.ndarray) -> np.ndarray:
         if self._geometry is None:
@@ -1025,44 +871,7 @@ class SpectralGapDetector(ExpandingWindowMixin, BaseRegimeDetector):
         return "Spectral Gap"
 
     def fit(self, X: np.ndarray, **kwargs) -> "SpectralGapDetector":
-        if self.expanding_refit_interval is not None:
-            return self._fit_expanding(X)
-
-        from .core import QCMLGeometry
-
-        np.random.seed(self.seed)
-        n_components = min(self.n_pca_components, X.shape[1])
-        fit_end = self.causal_fit_length or X.shape[0]
-
-        self._scaler = StandardScaler()
-        self._scaler.fit(X[:fit_end])
-
-        self._pca = PCA(n_components=n_components)
-        X_scaled_fit = self._scaler.transform(X[:fit_end])
-        self._pca.fit(X_scaled_fit)
-
-        X_pca_raw = self._pca.transform(X_scaled_fit)
-        self._train_norms = np.linalg.norm(X_pca_raw, axis=1)
-        self._train_std = np.std(X_pca_raw, axis=0)
-        X_pca_fit = _apply_normalization(
-            X_pca_raw,
-            self.normalization,
-            self._train_norms,
-            self._train_std,
-        )
-
-        if self.adaptive_epsilon:
-            self._epsilon = 1e-3 * np.median(np.abs(X_pca_fit))
-        else:
-            self._epsilon = 1e-5
-
-        self._geometry = QCMLGeometry(n_features=X_pca_fit.shape[1], hilbert_dim=self.hilbert_dim)
-        self._geometry.fit_operators(
-            X_pca_fit,
-            method=self.operator_method,
-            scale_exponent=self.scale_exponent,
-        )
-        return self
+        return _standard_qcml_fit(self, X)
 
     def compute_regime_scores(self, X: np.ndarray) -> np.ndarray:
         if self._geometry is None:
@@ -1153,44 +962,7 @@ class MetricConditionDetector(ExpandingWindowMixin, BaseRegimeDetector):
         return "Metric Condition"
 
     def fit(self, X: np.ndarray, **kwargs) -> "MetricConditionDetector":
-        if self.expanding_refit_interval is not None:
-            return self._fit_expanding(X)
-
-        from .core import QCMLGeometry
-
-        np.random.seed(self.seed)
-        n_components = min(self.n_pca_components, X.shape[1])
-        fit_end = self.causal_fit_length or X.shape[0]
-
-        self._scaler = StandardScaler()
-        self._scaler.fit(X[:fit_end])
-
-        self._pca = PCA(n_components=n_components)
-        X_scaled_fit = self._scaler.transform(X[:fit_end])
-        self._pca.fit(X_scaled_fit)
-
-        X_pca_raw = self._pca.transform(X_scaled_fit)
-        self._train_norms = np.linalg.norm(X_pca_raw, axis=1)
-        self._train_std = np.std(X_pca_raw, axis=0)
-        X_pca_fit = _apply_normalization(
-            X_pca_raw,
-            self.normalization,
-            self._train_norms,
-            self._train_std,
-        )
-
-        if self.adaptive_epsilon:
-            self._epsilon = 1e-3 * np.median(np.abs(X_pca_fit))
-        else:
-            self._epsilon = 1e-5
-
-        self._geometry = QCMLGeometry(n_features=X_pca_fit.shape[1], hilbert_dim=self.hilbert_dim)
-        self._geometry.fit_operators(
-            X_pca_fit,
-            method=self.operator_method,
-            scale_exponent=self.scale_exponent,
-        )
-        return self
+        return _standard_qcml_fit(self, X)
 
     def compute_regime_scores(self, X: np.ndarray) -> np.ndarray:
         if self._geometry is None:
@@ -1291,44 +1063,7 @@ class GeometricEnsembleDetector(ExpandingWindowMixin, BaseRegimeDetector):
         return "Geometric Ensemble"
 
     def fit(self, X: np.ndarray, **kwargs) -> "GeometricEnsembleDetector":
-        if self.expanding_refit_interval is not None:
-            return self._fit_expanding(X)
-
-        from .core import QCMLGeometry
-
-        np.random.seed(self.seed)
-        n_components = min(self.n_pca_components, X.shape[1])
-        fit_end = self.causal_fit_length or X.shape[0]
-
-        self._scaler = StandardScaler()
-        self._scaler.fit(X[:fit_end])
-
-        self._pca = PCA(n_components=n_components)
-        X_scaled_fit = self._scaler.transform(X[:fit_end])
-        self._pca.fit(X_scaled_fit)
-
-        X_pca_raw = self._pca.transform(X_scaled_fit)
-        self._train_norms = np.linalg.norm(X_pca_raw, axis=1)
-        self._train_std = np.std(X_pca_raw, axis=0)
-        X_pca_fit = _apply_normalization(
-            X_pca_raw,
-            self.normalization,
-            self._train_norms,
-            self._train_std,
-        )
-
-        if self.adaptive_epsilon:
-            self._epsilon = 1e-3 * np.median(np.abs(X_pca_fit))
-        else:
-            self._epsilon = 1e-5
-
-        self._geometry = QCMLGeometry(n_features=X_pca_fit.shape[1], hilbert_dim=self.hilbert_dim)
-        self._geometry.fit_operators(
-            X_pca_fit,
-            method=self.operator_method,
-            scale_exponent=self.scale_exponent,
-        )
-        return self
+        return _standard_qcml_fit(self, X)
 
     def compute_regime_scores(self, X: np.ndarray) -> np.ndarray:
         if self._geometry is None:
@@ -1478,47 +1213,7 @@ class RicciScalarDetector(ExpandingWindowMixin, BaseRegimeDetector):
         return "Ricci Scalar"
 
     def fit(self, X: np.ndarray, **kwargs) -> "RicciScalarDetector":
-        if self.expanding_refit_interval is not None:
-            return self._fit_expanding(X)
-
-        from .core import QCMLGeometry
-
-        np.random.seed(self.seed)
-        n_components = min(self.n_pca_components, X.shape[1])
-        fit_end = self.causal_fit_length or X.shape[0]
-
-        self._scaler = StandardScaler()
-        self._scaler.fit(X[:fit_end])
-
-        self._pca = PCA(n_components=n_components)
-        X_scaled_fit = self._scaler.transform(X[:fit_end])
-        self._pca.fit(X_scaled_fit)
-
-        X_pca_raw = self._pca.transform(X_scaled_fit)
-        self._train_norms = np.linalg.norm(X_pca_raw, axis=1)
-        self._train_std = np.std(X_pca_raw, axis=0)
-        X_pca_fit = _apply_normalization(
-            X_pca_raw,
-            self.normalization,
-            self._train_norms,
-            self._train_std,
-        )
-
-        if self.adaptive_epsilon:
-            self._epsilon = 1e-3 * np.median(np.abs(X_pca_fit))
-        else:
-            self._epsilon = 1e-5
-
-        self._geometry = QCMLGeometry(n_features=X_pca_fit.shape[1], hilbert_dim=self.hilbert_dim)
-        if self.custom_operators is not None:
-            self._geometry.set_operators(self.custom_operators)
-        else:
-            self._geometry.fit_operators(
-                X_pca_fit,
-                method=self.operator_method,
-                scale_exponent=self.scale_exponent,
-            )
-        return self
+        return _standard_qcml_fit(self, X)
 
     def compute_regime_scores(self, X: np.ndarray) -> np.ndarray:
         if self._geometry is None:
@@ -1625,47 +1320,7 @@ class SectionalCurvatureDetector(ExpandingWindowMixin, BaseRegimeDetector):
         return f"Sectional Curvature ({i},{j})"
 
     def fit(self, X: np.ndarray, **kwargs) -> "SectionalCurvatureDetector":
-        if self.expanding_refit_interval is not None:
-            return self._fit_expanding(X)
-
-        from .core import QCMLGeometry
-
-        np.random.seed(self.seed)
-        n_components = min(self.n_pca_components, X.shape[1])
-        fit_end = self.causal_fit_length or X.shape[0]
-
-        self._scaler = StandardScaler()
-        self._scaler.fit(X[:fit_end])
-
-        self._pca = PCA(n_components=n_components)
-        X_scaled_fit = self._scaler.transform(X[:fit_end])
-        self._pca.fit(X_scaled_fit)
-
-        X_pca_raw = self._pca.transform(X_scaled_fit)
-        self._train_norms = np.linalg.norm(X_pca_raw, axis=1)
-        self._train_std = np.std(X_pca_raw, axis=0)
-        X_pca_fit = _apply_normalization(
-            X_pca_raw,
-            self.normalization,
-            self._train_norms,
-            self._train_std,
-        )
-
-        if self.adaptive_epsilon:
-            self._epsilon = 1e-3 * np.median(np.abs(X_pca_fit))
-        else:
-            self._epsilon = 1e-5
-
-        self._geometry = QCMLGeometry(n_features=X_pca_fit.shape[1], hilbert_dim=self.hilbert_dim)
-        if self.custom_operators is not None:
-            self._geometry.set_operators(self.custom_operators)
-        else:
-            self._geometry.fit_operators(
-                X_pca_fit,
-                method=self.operator_method,
-                scale_exponent=self.scale_exponent,
-            )
-        return self
+        return _standard_qcml_fit(self, X)
 
     def compute_regime_scores(self, X: np.ndarray) -> np.ndarray:
         if self._geometry is None:
@@ -1775,47 +1430,7 @@ class GeodesicVelocityDetector(ExpandingWindowMixin, BaseRegimeDetector):
         return "Geodesic Velocity"
 
     def fit(self, X: np.ndarray, **kwargs) -> "GeodesicVelocityDetector":
-        if self.expanding_refit_interval is not None:
-            return self._fit_expanding(X)
-
-        from .core import QCMLGeometry
-
-        np.random.seed(self.seed)
-        n_components = min(self.n_pca_components, X.shape[1])
-        fit_end = self.causal_fit_length or X.shape[0]
-
-        self._scaler = StandardScaler()
-        self._scaler.fit(X[:fit_end])
-
-        self._pca = PCA(n_components=n_components)
-        X_scaled_fit = self._scaler.transform(X[:fit_end])
-        self._pca.fit(X_scaled_fit)
-
-        X_pca_raw = self._pca.transform(X_scaled_fit)
-        self._train_norms = np.linalg.norm(X_pca_raw, axis=1)
-        self._train_std = np.std(X_pca_raw, axis=0)
-        X_pca_fit = _apply_normalization(
-            X_pca_raw,
-            self.normalization,
-            self._train_norms,
-            self._train_std,
-        )
-
-        if self.adaptive_epsilon:
-            self._epsilon = 1e-3 * np.median(np.abs(X_pca_fit))
-        else:
-            self._epsilon = 1e-5
-
-        self._geometry = QCMLGeometry(n_features=X_pca_fit.shape[1], hilbert_dim=self.hilbert_dim)
-        if self.custom_operators is not None:
-            self._geometry.set_operators(self.custom_operators)
-        else:
-            self._geometry.fit_operators(
-                X_pca_fit,
-                method=self.operator_method,
-                scale_exponent=self.scale_exponent,
-            )
-        return self
+        return _standard_qcml_fit(self, X)
 
     def compute_regime_scores(self, X: np.ndarray) -> np.ndarray:
         if self._geometry is None:
@@ -1921,47 +1536,7 @@ class SpeedLimitRatioDetector(ExpandingWindowMixin, BaseRegimeDetector):
         return "Speed Limit Ratio"
 
     def fit(self, X: np.ndarray, **kwargs) -> "SpeedLimitRatioDetector":
-        if self.expanding_refit_interval is not None:
-            return self._fit_expanding(X)
-
-        from .core import QCMLGeometry
-
-        np.random.seed(self.seed)
-        n_components = min(self.n_pca_components, X.shape[1])
-        fit_end = self.causal_fit_length or X.shape[0]
-
-        self._scaler = StandardScaler()
-        self._scaler.fit(X[:fit_end])
-
-        self._pca = PCA(n_components=n_components)
-        X_scaled_fit = self._scaler.transform(X[:fit_end])
-        self._pca.fit(X_scaled_fit)
-
-        X_pca_raw = self._pca.transform(X_scaled_fit)
-        self._train_norms = np.linalg.norm(X_pca_raw, axis=1)
-        self._train_std = np.std(X_pca_raw, axis=0)
-        X_pca_fit = _apply_normalization(
-            X_pca_raw,
-            self.normalization,
-            self._train_norms,
-            self._train_std,
-        )
-
-        if self.adaptive_epsilon:
-            self._epsilon = 1e-3 * np.median(np.abs(X_pca_fit))
-        else:
-            self._epsilon = 1e-5
-
-        self._geometry = QCMLGeometry(n_features=X_pca_fit.shape[1], hilbert_dim=self.hilbert_dim)
-        if self.custom_operators is not None:
-            self._geometry.set_operators(self.custom_operators)
-        else:
-            self._geometry.fit_operators(
-                X_pca_fit,
-                method=self.operator_method,
-                scale_exponent=self.scale_exponent,
-            )
-        return self
+        return _standard_qcml_fit(self, X)
 
     def compute_regime_scores(self, X: np.ndarray) -> np.ndarray:
         if self._geometry is None:
@@ -2076,47 +1651,7 @@ class DimensionalityCollapseDetector(ExpandingWindowMixin, BaseRegimeDetector):
         return "Dimensionality Collapse"
 
     def fit(self, X: np.ndarray, **kwargs) -> "DimensionalityCollapseDetector":
-        if self.expanding_refit_interval is not None:
-            return self._fit_expanding(X)
-
-        from .core import QCMLGeometry
-
-        np.random.seed(self.seed)
-        n_components = min(self.n_pca_components, X.shape[1])
-        fit_end = self.causal_fit_length or X.shape[0]
-
-        self._scaler = StandardScaler()
-        self._scaler.fit(X[:fit_end])
-
-        self._pca = PCA(n_components=n_components)
-        X_scaled_fit = self._scaler.transform(X[:fit_end])
-        self._pca.fit(X_scaled_fit)
-
-        X_pca_raw = self._pca.transform(X_scaled_fit)
-        self._train_norms = np.linalg.norm(X_pca_raw, axis=1)
-        self._train_std = np.std(X_pca_raw, axis=0)
-        X_pca_fit = _apply_normalization(
-            X_pca_raw,
-            self.normalization,
-            self._train_norms,
-            self._train_std,
-        )
-
-        if self.adaptive_epsilon:
-            self._epsilon = 1e-3 * np.median(np.abs(X_pca_fit))
-        else:
-            self._epsilon = 1e-5
-
-        self._geometry = QCMLGeometry(n_features=X_pca_fit.shape[1], hilbert_dim=self.hilbert_dim)
-        if self.custom_operators is not None:
-            self._geometry.set_operators(self.custom_operators)
-        else:
-            self._geometry.fit_operators(
-                X_pca_fit,
-                method=self.operator_method,
-                scale_exponent=self.scale_exponent,
-            )
-        return self
+        return _standard_qcml_fit(self, X)
 
     def compute_regime_scores(self, X: np.ndarray) -> np.ndarray:
         if self._geometry is None:
@@ -2223,47 +1758,7 @@ class SpectralFlowDetector(ExpandingWindowMixin, BaseRegimeDetector):
         return "Spectral Flow"
 
     def fit(self, X: np.ndarray, **kwargs) -> "SpectralFlowDetector":
-        if self.expanding_refit_interval is not None:
-            return self._fit_expanding(X)
-
-        from .core import QCMLGeometry
-
-        np.random.seed(self.seed)
-        n_components = min(self.n_pca_components, X.shape[1])
-        fit_end = self.causal_fit_length or X.shape[0]
-
-        self._scaler = StandardScaler()
-        self._scaler.fit(X[:fit_end])
-
-        self._pca = PCA(n_components=n_components)
-        X_scaled_fit = self._scaler.transform(X[:fit_end])
-        self._pca.fit(X_scaled_fit)
-
-        X_pca_raw = self._pca.transform(X_scaled_fit)
-        self._train_norms = np.linalg.norm(X_pca_raw, axis=1)
-        self._train_std = np.std(X_pca_raw, axis=0)
-        X_pca_fit = _apply_normalization(
-            X_pca_raw,
-            self.normalization,
-            self._train_norms,
-            self._train_std,
-        )
-
-        if self.adaptive_epsilon:
-            self._epsilon = 1e-3 * np.median(np.abs(X_pca_fit))
-        else:
-            self._epsilon = 1e-5
-
-        self._geometry = QCMLGeometry(n_features=X_pca_fit.shape[1], hilbert_dim=self.hilbert_dim)
-        if self.custom_operators is not None:
-            self._geometry.set_operators(self.custom_operators)
-        else:
-            self._geometry.fit_operators(
-                X_pca_fit,
-                method=self.operator_method,
-                scale_exponent=self.scale_exponent,
-            )
-        return self
+        return _standard_qcml_fit(self, X)
 
     def compute_regime_scores(self, X: np.ndarray) -> np.ndarray:
         if self._geometry is None:
@@ -2370,47 +1865,7 @@ class CommutatorNormDetector(ExpandingWindowMixin, BaseRegimeDetector):
         return "Commutator Norm"
 
     def fit(self, X: np.ndarray, **kwargs) -> "CommutatorNormDetector":
-        if self.expanding_refit_interval is not None:
-            return self._fit_expanding(X)
-
-        from .core import QCMLGeometry
-
-        np.random.seed(self.seed)
-        n_components = min(self.n_pca_components, X.shape[1])
-        fit_end = self.causal_fit_length or X.shape[0]
-
-        self._scaler = StandardScaler()
-        self._scaler.fit(X[:fit_end])
-
-        self._pca = PCA(n_components=n_components)
-        X_scaled_fit = self._scaler.transform(X[:fit_end])
-        self._pca.fit(X_scaled_fit)
-
-        X_pca_raw = self._pca.transform(X_scaled_fit)
-        self._train_norms = np.linalg.norm(X_pca_raw, axis=1)
-        self._train_std = np.std(X_pca_raw, axis=0)
-        X_pca_fit = _apply_normalization(
-            X_pca_raw,
-            self.normalization,
-            self._train_norms,
-            self._train_std,
-        )
-
-        if self.adaptive_epsilon:
-            self._epsilon = 1e-3 * np.median(np.abs(X_pca_fit))
-        else:
-            self._epsilon = 1e-5
-
-        self._geometry = QCMLGeometry(n_features=X_pca_fit.shape[1], hilbert_dim=self.hilbert_dim)
-        if self.custom_operators is not None:
-            self._geometry.set_operators(self.custom_operators)
-        else:
-            self._geometry.fit_operators(
-                X_pca_fit,
-                method=self.operator_method,
-                scale_exponent=self.scale_exponent,
-            )
-        return self
+        return _standard_qcml_fit(self, X)
 
     def compute_regime_scores(self, X: np.ndarray) -> np.ndarray:
         if self._geometry is None:
@@ -2496,7 +1951,9 @@ def _standard_qcml_fit(detector, X: np.ndarray):
         detector._epsilon = 1e-5
 
     detector._geometry = QCMLGeometry(
-        n_features=X_pca_fit.shape[1], hilbert_dim=detector.hilbert_dim
+        n_features=X_pca_fit.shape[1],
+        hilbert_dim=detector.hilbert_dim,
+        gauge_fix=getattr(detector, "gauge_fix", False),
     )
     custom_ops = getattr(detector, "custom_operators", None)
     if custom_ops is not None:
@@ -2636,6 +2093,7 @@ class GeometricPhaseRateDetector(ExpandingWindowMixin, BaseRegimeDetector):
         normalization="soft",
         adaptive_epsilon=True,
         custom_operators=None,
+        gauge_fix=False,
     ):
         _standard_init(
             self,
@@ -2651,6 +2109,7 @@ class GeometricPhaseRateDetector(ExpandingWindowMixin, BaseRegimeDetector):
             normalization=normalization,
             adaptive_epsilon=adaptive_epsilon,
             custom_operators=custom_operators,
+            gauge_fix=gauge_fix,
         )
 
     @property
