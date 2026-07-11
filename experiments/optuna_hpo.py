@@ -26,6 +26,7 @@ from pathlib import Path
 
 import numpy as np
 import optuna
+import pandas as pd
 from optuna.pruners import MedianPruner
 from optuna.samplers import TPESampler
 
@@ -41,6 +42,7 @@ from qcml_geometry import (
     DimensionalityCollapseDetector,
     SectionalCurvatureDetector,
     GeodesicVelocityDetector,
+    GeometricPhaseRateDetector,
     SpectralEntropyDetector,
     HamiltonianSensitivityDetector,
     ReducedPurityDetector,
@@ -83,6 +85,21 @@ SEARCH_SPACES = {
             berry_aggregation=trial.suggest_categorical(
                 'berry_aggregation', ['f01', 'trace']
             ),
+            gauge_fix=trial.suggest_categorical('gauge_fix', [False, True]),
+        ),
+    },
+    'Geometric Phase Rate': {
+        'class': GeometricPhaseRateDetector,
+        'params': lambda trial: dict(
+            hilbert_dim=trial.suggest_int('hilbert_dim', 4, 10),
+            n_pca_components=trial.suggest_int('n_pca_components', 6, 15),
+            rolling_window=trial.suggest_int('rolling_window', 10, 30),
+            operator_method='random',
+            seed=42,
+            normalization=trial.suggest_categorical('normalization', ['sphere', 'soft']),
+            # The headline target of the gauge fix: arg(<psi_t|psi_t+1>) is
+            # gauge-dependent without it. Let HPO decide if pinning helps OOS.
+            gauge_fix=trial.suggest_categorical('gauge_fix', [False, True]),
         ),
     },
     'QFI Determinant': {
@@ -287,9 +304,7 @@ def run_hpo(method_name, n_trials=50, resume=False, n_bootstrap=1000):
     Returns:
         Dict with best params and trial history.
     """
-    import pandas as pd
-
-    logger.info(f"Loading data for HPO...")
+    logger.info("Loading data for HPO...")
     raw = fetch_data(['SPY', 'DIA'], '2005-01-01', '2024-12-31')
     prices_df = raw['close'].unstack('symbol').dropna()
     X, dates = create_feature_matrix(prices_df)
