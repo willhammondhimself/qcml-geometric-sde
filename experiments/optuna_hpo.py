@@ -48,6 +48,11 @@ from qcml_geometry import (
     ReducedPurityDetector,
 )
 
+from experiments.baselines import (
+    AbsorptionRatioDetector,
+    RollingVolatilityDetector,
+    TurbulenceIndexDetector,
+)
 from experiments.data_loader import fetch_data, create_feature_matrix, ALL_CRISES
 from experiments.evaluation import compute_cohens_d_with_ci
 
@@ -214,6 +219,28 @@ SEARCH_SPACES = {
             seed=42,
             normalization='soft',
             scoring_mode='neg_fraction',
+        ),
+    },
+    # Classical baselines under the same nested protocol (parity: the geometric
+    # channels must not be the only ones granted an HPO budget).
+    'Rolling Vol Z': {
+        'class': RollingVolatilityDetector,
+        'params': lambda trial: dict(
+            vol_window=trial.suggest_int('vol_window', 5, 66),
+        ),
+    },
+    'Turbulence Index': {
+        'class': TurbulenceIndexDetector,
+        'params': lambda trial: dict(
+            rolling_window=trial.suggest_int('rolling_window', 63, 378),
+            regularization=trial.suggest_float('regularization', 1e-8, 1e-3, log=True),
+        ),
+    },
+    'Absorption Ratio': {
+        'class': AbsorptionRatioDetector,
+        'params': lambda trial: dict(
+            rolling_window=trial.suggest_int('rolling_window', 63, 378),
+            n_components=trial.suggest_int('n_components', 1, 3),
         ),
     },
 }
