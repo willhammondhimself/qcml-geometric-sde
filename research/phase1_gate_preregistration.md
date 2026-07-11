@@ -64,6 +64,29 @@ What is genuinely unobserved, and therefore registrable:
   are observed. Deviations, if forced (e.g. crash), will be documented in this file
   above the results, before re-running.
 
-## Results (to be appended after the runs — empty at registration)
+## Results (appended 2026-07-11, same day as registration; no protocol deviations)
 
-*(pending)*
+**E1 — PASS.** `leak_test_mlf_prereg.json`: real nested-OOS median d = **1.617**;
+25/25 fresh nulls below it (max 1.430, q95 1.374, mean 0.893); permutation
+p = **0.038** (< 0.05). Note: the JSON's `passes_leak_test: false` field is the
+legacy `null_mean < 0.2` heuristic from the original harness-leak check, not this
+registration's criterion; it is reported for completeness and does not bear on
+the registered verdict.
+
+**E2 — FAIL.** Purged forward-vol horse race (purge=20d):
+
+| model | HAR | HAR+geo | geo-only | Δ(geo adds) | p(Δ≤0) |
+|---|---|---|---|---|---|
+| GBM (primary) | 0.349 | 0.277 | 0.106 | **−0.071** | 0.995 |
+| Ridge (secondary) | 0.430 | 0.413 | 0.174 | −0.016 | 0.963 |
+
+Geometry subtracts predictive value on the primary cell. Purging also shrank
+geometry-only R² from the previously observed 0.18 to 0.106 — roughly a third of
+its apparent forward-vol information was the boundary leak.
+
+**Gate verdict: PASSES via E1.** The surviving thread is Multi-Lag Fidelity's
+crisis-specific separation (vol-orthogonal, contemporaneous corr ≈ −0.02). The
+program's predictive claims (forward vol, forward systemic risk) remain closed
+per the disclosures above; what survives is a detection claim for one channel.
+Next verification per the roadmap: 100-trial confirmation + classical baseline
+parity for MLF before anything is built on it.
