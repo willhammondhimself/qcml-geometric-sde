@@ -54,6 +54,17 @@ clearance from one replication. This round decides whether MLF is a foundation
 - No re-runs, seed changes, or threshold adjustments after results are observed.
   Forced deviations documented above the results before re-running.
 
+## Deviations
+
+- 2026-07-11, before any E4 result was observed: the first E4 launch crashed to
+  all-NaN because `crisis_cohens_d` passed `causal_fit_length=` to every detector
+  constructor and the classical baselines don't accept it (TypeError swallowed by
+  the invalid-config guard). Fixed by passing the kwarg only to constructors that
+  declare it (the baselines are causal by construction); verified end-to-end on
+  2020_covid (vol d=2.28, turbulence 2.87, AR 1.83, all finite). E4 re-launched
+  with the identical registered command. E3/E5 unaffected (geometric path
+  unchanged; E5 doesn't use `crisis_cohens_d`).
+
 ## Results (to be appended after the runs — empty at registration)
 
 *(pending)*

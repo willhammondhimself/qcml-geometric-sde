@@ -33,6 +33,7 @@ Usage
 from __future__ import annotations
 
 import argparse
+import inspect
 import json
 import logging
 import sys
@@ -122,7 +123,13 @@ def crisis_cohens_d(
         return np.nan
 
     try:
-        det = detector_class(**params, causal_fit_length=fit_end)
+        # Geometric detectors need the causal preprocessing cutoff; classical
+        # baselines (expanding/rolling stats) are causal by construction and
+        # don't take the kwarg.
+        if "causal_fit_length" in inspect.signature(detector_class.__init__).parameters:
+            det = detector_class(**params, causal_fit_length=fit_end)
+        else:
+            det = detector_class(**params)
         det.fit(X_enriched)
         scores = det.compute_regime_scores(X_enriched)
     except Exception as exc:  # invalid config in the search space → skip
