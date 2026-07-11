@@ -5,11 +5,11 @@ QCML, an unsupervised ML framework, uses Hilbert space geometry to uncover intri
 ## Key results (Paper 1)
 
 - 46 detectors compared on 17 historical crises (2000-2024).
-- Walk-forward Berry Phase Rate: Cohen's d ≈ 0.72 under nested HPO with 30% fewer false alarms than Random Forest (2.5 vs 3.6/yr).
+- Walk-forward Berry Phase Rate: Cohen's d ≈ 0.72 under nested HPO with ~67% fewer false alarms than Random Forest (1.2 vs 3.6/yr).
 - Offline: Reduced Purity d = 0.83 (rank 1/46), Absorption Ratio d = 0.80 (classical benchmark, rank 2), Berry Phase Rate d = 0.61 (rank 9).
-- Friedman test on the big panel: χ² = 233.1, p < 10⁻¹⁶ (methods are not exchangeable).
-- Geometry channels sit far from classical baselines in correlation space: mean |ρ| ≈ 0.13.
-- Lead-time example: Berry Phase Rate ~90 days ahead of the RF benchmark on the median crisis (retrospective methodology; walk-forward median is 4 days).
+- Friedman test on the big panel: χ²₄₅ = 220.84, p < 10⁻¹⁶ (methods are not exchangeable).
+- Geometry channels sit far from classical baselines in correlation space: mean |ρ| ≈ 0.22.
+- Lead-time: walk-forward Berry Phase Rate detects 5/7 crisis windows at a 24-day median delay and 1.2 false alarms/yr; the large full-sample retrospective lead (≈186-day median) reflects contemporaneous sensitivity, not predictive lead time.
 
 ### Upcoming papers
 

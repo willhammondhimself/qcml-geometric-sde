@@ -35,6 +35,5 @@ jobs:
       - name: Run unit tests
         run: |
           python -m pytest tests/ -v \
-            --ignore=tests/test_crisis_validation.py \
             -m "not integration and not slow" \
             -x

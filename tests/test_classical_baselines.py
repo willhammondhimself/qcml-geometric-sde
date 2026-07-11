@@ -20,9 +20,19 @@ import pytest
 
 sys.path.insert(0, "..")
 
-from dotenv import load_dotenv
+# python-dotenv ships with the optional `data` extra. Guard the import so the
+# default test run (`-m "not integration"`) can still collect this module on
+# core deps alone; the API-backed tests below are deselected by the marker.
+try:
+    from dotenv import load_dotenv
 
-load_dotenv()
+    load_dotenv()
+except ModuleNotFoundError:
+    pass
+
+# These tests fetch real market data from the Polygon API; the default CI run
+# excludes them via `-m "not integration"`.
+pytestmark = pytest.mark.integration
 
 from experiments.additional_detectors import (
     GeometricConsensusDetector,
