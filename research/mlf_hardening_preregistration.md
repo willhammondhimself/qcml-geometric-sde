@@ -65,6 +65,44 @@ clearance from one replication. This round decides whether MLF is a foundation
   with the identical registered command. E3/E5 unaffected (geometric path
   unchanged; E5 doesn't use `crisis_cohens_d`).
 
-## Results (to be appended after the runs — empty at registration)
+## Results (appended 2026-07-13; registration 2026-07-11; one documented deviation above)
 
-*(pending)*
+**E5 — PASS.** MLF vs Rolling Vol Z, causal scores, 4,720 post-fit days:
+Spearman ρ = −0.220, Pearson −0.132. Under the registered |ρ| < 0.3 bar, though
+notably less orthogonal than the fixed-param estimate (−0.02) suggested.
+
+**E3 — FAIL.** `leak_test_mlf_100t.json`: real nested-OOS median d = 1.221 vs
+null mean 1.227 (q95 1.790, max 1.980), permutation p = 0.462. The round-1 pass
+(10 trials, p = 0.038) did not survive a 10× HPO budget: real d fell 1.62 → 1.22
+while the null mean rose 0.89 → 1.23.
+
+**E4 — the positive control FAILS.** Identical protocol, same null placements:
+
+| method | real d | null mean | null q95 | p |
+|---|---|---|---|---|
+| Multi-Lag Fidelity | 1.221 | 1.227 | 1.790 | 0.462 |
+| Rolling Vol Z (positive control) | 0.577 | 1.206 | 2.194 | 0.885 |
+| Turbulence Index | 0.617 | 0.678 | 1.001 | 0.654 |
+| Absorption Ratio | 0.872 | 1.771 | 2.651 | 0.923 |
+
+## Verdict
+
+**Formal (per the registered rule): MLF is NOT hardened.** E3 failed; nothing is
+built on the channel. The rule was fixed before the runs and stands.
+
+**Scientific interpretation (registered rule cannot capture what E4 revealed):**
+at 100 trials the test instrument fails its own positive control — realized
+volatility, the canonical crisis signal, scores *half* its null mean. Given
+enough HPO budget, random calm-period windows can be tuned to separate from
+their pre-windows better than real crises separate from theirs (real crises
+have anticipatory volatility, so their local baselines are already elevated —
+the local-normal metric structurally penalizes signals that ramp up early).
+E3's failure is therefore uninformative about MLF specifically: **no detector,
+real or fake, passes this test at realistic HPO budgets.**
+
+The compounding finding across both pre-registered rounds: (i) the global
+metric rewards non-stationarity; (ii) the local-normal fix penalizes
+anticipatory signals; (iii) the random-window permutation null degrades with
+HPO budget until it cannot validate volatility itself. Every layer of the
+standard evaluation stack for unsupervised crisis detectors has a demonstrated
+failure mode. This — not any single detector's death — is the result.

@@ -58,8 +58,11 @@ quantum-machine-learning-for-finance literature.
 |---|---|
 | Metric confound | volatility positive control: crisis d=0.42 < random d=0.84 (global normal); fixed → 2.09 vs 0.76 (local normal) |
 | No crisis-specific signal | local-normal random-window null: Berry real 1.51 vs null 1.21 (p=0.29); Reduced Purity (old offline #1) p=0.69; only Multi-Lag Fidelity weakly survives (p≈0.15) |
-| Observables ≈ volatility | contemporaneous corr with current vol: Spectral Entropy 0.67, Reduced Purity 0.63, Berry 0.49 |
-| No predictive edge | forward-vol OOS R²: geometry-only 0.18, HAR 0.43, HAR+geometry ≤ HAR |
+| The MLF survivor dies under pre-registration | pre-registered fresh replication PASSES at 10 HPO trials (real 1.62 vs 25/25 nulls, p=0.038) then FAILS at 100 trials (real 1.22 ≈ null mean 1.23, p=0.46) — the permutation verdict is HPO-budget-dependent |
+| The null test fails its positive control | at 100 trials, nested-HPO'd Rolling Vol Z scores HALF its null mean (real 0.58 vs null 1.21, p=0.89); Turbulence p=0.65, Absorption Ratio p=0.92 — no detector, real or fake, passes at realistic budgets |
+| The local-normal fix has its own confound | local pre-crisis baselines are already elevated by anticipatory volatility, so the corrected metric structurally penalizes early-ramping signals while HPO pumps calm-period nulls |
+| Observables ≈ volatility | contemporaneous corr with current vol: Spectral Entropy 0.67, Reduced Purity 0.63, Berry 0.49 (MLF is the exception: ρ=−0.22) |
+| No predictive edge | purged forward-vol OOS R²: geometry-only 0.106, HAR 0.349 (GBM); geometry SUBTRACTS from HAR (Δ=−0.071, p=0.995); a third of geometry's unpurged R² (0.18) was train/test boundary leakage |
 | HPO inflation | in-sample vs nested-OOS gap grows with trial budget (overfitting curve) |
 
 ## How to position the preprint update (mechanics)
@@ -79,5 +82,14 @@ quantum-machine-learning-for-finance literature.
 3. **The evaluation framework** (new headline): nested HPO, leak test, PBO, deflation.
 4. **The metric confound + fix** (new), with the volatility positive control.
 5. **Reassessment results** (replaces v1's leaderboard): no crisis-specific signal;
-   volatility-proxy analysis; predictive horse race.
-6. Discussion — cautionary tale for QML-in-finance; the multi-asset open question.
+   volatility-proxy analysis; purged predictive horse race.
+6. **The two pre-registered gates** (new; both public commits before results):
+   the last surviving channel passes at 10 trials, dies at 100; then the positive
+   control dies too. Verdicts from this evaluation stack are budget-dependent, and
+   at realistic budgets the stack validates nothing — including volatility.
+   Prescription: budget-sweep the null test and always run a positive control at
+   every budget; a "pass" at one budget is not evidence.
+7. Discussion — cautionary tale for QML-in-finance; evaluation itself is the open
+   problem; sets up the follow-up audit of the TDA/curvature crisis-detection
+   literature (Gidea-Katz 2018; Samal et al. 2021; Sandhu et al. 2016), whose
+   published claims rest on the layers shown here to fail.
